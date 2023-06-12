@@ -58,8 +58,8 @@ sysinfo.txt
 *.app
 
 # Third Party Assets
-/Assets/WebVerse/3rd-party/*
-/Assets/WorldEngine/3rd-party.meta
+/Assets/3rd-party/*
+/Assets/3rd-party.meta
 
 # Crashlytics generated file
 crashlytics-build.properties
