@@ -58,8 +58,8 @@ sysinfo.txt
 *.app
 
 # Third Party Assets
-/Assets/3rd-party/*
-/Assets/3rd-party.meta
+/Assets/Runtime/3rd-party/*
+/Assets/Runtime/3rd-party.meta
 
 # Crashlytics generated file
 crashlytics-build.properties

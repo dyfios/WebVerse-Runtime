@@ -1,0 +1,341 @@
+using FiveSQD.WebVerse.Runtime;
+using FiveSQD.WebVerse.Utilities;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+namespace FiveSQD.WebVerse.Input.Desktop
+{
+    public class DesktopInput : MonoBehaviour
+    {
+        private static readonly Dictionary<string, string> keyKeyTranslations = new Dictionary<string, string>()
+        {
+            { "escape", "Escape"},
+            { "f1", "F1" },
+            { "f2", "F2" },
+            { "f3", "F3" },
+            { "f4", "F4" },
+            { "f5", "F5" },
+            { "f6", "F6" },
+            { "f7", "F7" },
+            { "f8", "F8" },
+            { "f9", "F9" },
+            { "f10", "F10" },
+            { "f11", "F11" },
+            { "f12", "F12" },
+            { "delete", "Delete" },
+            { "backquote", "`"},
+            { "1", "1"},
+            { "2", "2"},
+            { "3", "3"},
+            { "4", "4"},
+            { "5", "5"},
+            { "6", "6"},
+            { "7", "7"},
+            { "8", "8"},
+            { "9", "9"},
+            { "0", "0"},
+            { "minus", "-"},
+            { "equals", "="},
+            { "backspace", "Backspace" },
+            { "tab", "Tab"},
+            { "q", "q"},
+            { "w", "w"},
+            { "e", "e"},
+            { "r", "r"},
+            { "t", "t"},
+            { "y", "y"},
+            { "u", "u"},
+            { "i", "i"},
+            { "o", "o"},
+            { "p", "p"},
+            { "leftBracket", "["},
+            { "rightBracket", "]"},
+            { "backslash", "\\"},
+            { "capsLock", "CapsLock"},
+            { "a", "a"},
+            { "s", "s"},
+            { "d", "d"},
+            { "f", "f"},
+            { "g", "g"},
+            { "h", "h"},
+            { "j", "j"},
+            { "k", "k"},
+            { "l", "l"},
+            { "semicolon", ";"},
+            { "quote", "'"},
+            { "enter", "Enter" },
+            { "leftShift", "Shift"},
+            { "z", "z"},
+            { "x", "x"},
+            { "c", "c"},
+            { "v", "v"},
+            { "b", "b"},
+            { "n", "n"},
+            { "m", "m"},
+            { "comma", ","},
+            { "period", "."},
+            { "slash", "/"},
+            { "rightShift", "Shift"},
+            { "leftCtrl", "Control"},
+            { "leftAlt", "Alt"},
+            { "space", " "},
+            { "rightAlt", "Alt"},
+            { "contextMenu", "ContextMenu"},
+            { "rightCtrl", "Control"},
+            { "upArrow", "ArrowUp"},
+            { "downArrow", "ArrowDown"},
+            { "leftArrow", "ArrowLeft"},
+            { "rightArrow", "ArrowRight"},
+            { "numpad0", "0" },
+            { "numpad1", "1" },
+            { "numpad2", "2" },
+            { "numpad3", "3" },
+            { "numpad4", "4" },
+            { "numpad5", "5" },
+            { "numpad6", "6" },
+            { "numpad7", "7" },
+            { "numpad8", "8" },
+            { "numpad9", "9" },
+            { "numpadPeriod", "." },
+            { "numpadDivide", "/" },
+            { "numpadMultiply", "*" },
+            { "numpadMinus", "-" },
+            { "numpadPlus", "+" },
+            { "pageUp", "PageUp" },
+            { "pageDown", "PageDown" },
+            { "home", "Home" },
+            { "end", "End" }
+        };
+
+        private static readonly Dictionary<string, string> keyCodeTranslations = new Dictionary<string, string>()
+        {
+            { "escape", "Escape"},
+            { "f1", "F1" },
+            { "f2", "F2" },
+            { "f3", "F3" },
+            { "f4", "F4" },
+            { "f5", "F5" },
+            { "f6", "F6" },
+            { "f7", "F7" },
+            { "f8", "F8" },
+            { "f9", "F9" },
+            { "f10", "F10" },
+            { "f11", "F11" },
+            { "f12", "F12" },
+            { "delete", "Delete" },
+            { "backquote", "Backquote"},
+            { "1", "Digit1"},
+            { "2", "Digit2"},
+            { "3", "Digit3"},
+            { "4", "Digit4"},
+            { "5", "Digit5"},
+            { "6", "Digit6"},
+            { "7", "Digit7"},
+            { "8", "Digit8"},
+            { "9", "Digit9"},
+            { "0", "Digit0"},
+            { "minus", "Minus"},
+            { "equals", "Equal"},
+            { "backspace", "Backspace" },
+            { "tab", "Tab"},
+            { "q", "KeyQ"},
+            { "w", "KeyW"},
+            { "e", "KeyE"},
+            { "r", "KeyR"},
+            { "t", "KeyT"},
+            { "y", "KeyY"},
+            { "u", "KeyU"},
+            { "i", "KeyI"},
+            { "o", "KeyO"},
+            { "p", "KeyP"},
+            { "leftBracket", "BracketLeft"},
+            { "rightBracket", "BracketRight"},
+            { "backslash", "Backslash"},
+            { "capsLock", "CapsLock"},
+            { "a", "KeyA"},
+            { "s", "KeyS"},
+            { "d", "KeyD"},
+            { "f", "KeyF"},
+            { "g", "KeyG"},
+            { "h", "KeyH"},
+            { "j", "KeyJ"},
+            { "k", "KeyK"},
+            { "l", "KeyL"},
+            { "semicolon", "Semicolon"},
+            { "quote", "Quote"},
+            { "enter", "Enter" },
+            { "leftShift", "ShiftLeft"},
+            { "z", "KeyZ"},
+            { "x", "KeyX"},
+            { "c", "KeyC"},
+            { "v", "KeyV"},
+            { "b", "KeyB"},
+            { "n", "KeyN"},
+            { "m", "KeyM"},
+            { "comma", "Comma"},
+            { "period", "Period"},
+            { "slash", "Slash"},
+            { "rightShift", "ShiftRight"},
+            { "leftCtrl", "ControlLeft"},
+            { "leftAlt", "AltLeft"},
+            { "space", "Space"},
+            { "rightAlt", "AltRight"},
+            { "contextMenu", "ContextMenu"},
+            { "rightCtrl", "ControlRight"},
+            { "upArrow", "ArrowUp"},
+            { "downArrow", "ArrowDown"},
+            { "leftArrow", "ArrowLeft"},
+            { "rightArrow", "ArrowRight"},
+            { "numpad0", "Numpad0" },
+            { "numpad1", "Numpad1" },
+            { "numpad2", "Numpad2" },
+            { "numpad3", "Numpad3" },
+            { "numpad4", "Numpad4" },
+            { "numpad5", "Numpad5" },
+            { "numpad6", "Numpad6" },
+            { "numpad7", "Numpad7" },
+            { "numpad8", "Numpad8" },
+            { "numpad9", "Numpad9" },
+            { "numpadPeriod", "NumpadDecimal" },
+            { "numpadDivide", "NumpadDivide" },
+            { "numpadMultiply", "NumpadMultiply" },
+            { "numpadMinus", "NumpadSubtract" },
+            { "numpadPlus", "NumpadAdd" },
+            { "pageUp", "PageUp" },
+            { "pageDown", "PageDown" },
+            { "home", "Home" },
+            { "end", "End" }
+        };
+
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            Vector2 lastValue = WebVerseRuntime.Instance.inputManager.moveValue;
+            WebVerseRuntime.Instance.inputManager.moveValue = value;
+
+            if (context.phase == InputActionPhase.Started)
+            {
+                WebVerseRuntime.Instance.inputManager.Move(value);
+            }
+            else if (context.phase == InputActionPhase.Performed)
+            {
+                if (value != lastValue)
+                {
+                    WebVerseRuntime.Instance.inputManager.Move(value);
+                }
+            }
+            else if (context.phase == InputActionPhase.Canceled)
+            {
+                WebVerseRuntime.Instance.inputManager.EndMove();
+            }
+        }
+
+        public void OnLook(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            WebVerseRuntime.Instance.inputManager.lookValue = value;
+
+            if (context.phase == InputActionPhase.Started)
+            {
+                WebVerseRuntime.Instance.inputManager.Look(value);
+            }
+            else if (context.phase == InputActionPhase.Performed)
+            {
+
+            }
+            else if (context.phase == InputActionPhase.Canceled)
+            {
+                WebVerseRuntime.Instance.inputManager.EndLook();
+            }
+        }
+
+        public void OnKeyboard(InputAction.CallbackContext context)
+        {
+            string key = context.control.name;
+            
+            if (!keyKeyTranslations.ContainsKey(key))
+            {
+                Logging.LogError("[DesktopInput->OnKeyboard] Unable to find key translation.");
+                return;
+            }
+
+            if (!keyCodeTranslations.ContainsKey(key))
+            {
+                Logging.LogError("[DesktopInput->OnKeyboard] Unable to find keyCode translation.");
+                return;
+            }
+
+            if (context.phase == InputActionPhase.Started)
+            {
+                WebVerseRuntime.Instance.inputManager.Key(keyKeyTranslations[key], keyCodeTranslations[key]);
+                WebVerseRuntime.Instance.inputManager.pressedKeys.Add(keyKeyTranslations[key]);
+                WebVerseRuntime.Instance.inputManager.pressedKeyCodes.Add(keyCodeTranslations[key]);
+            }
+            else if (context.phase == InputActionPhase.Performed)
+            {
+                
+            }
+            else if (context.phase == InputActionPhase.Canceled)
+            {
+                WebVerseRuntime.Instance.inputManager.EndKey(keyKeyTranslations[key], keyCodeTranslations[key]);
+                WebVerseRuntime.Instance.inputManager.pressedKeys.Remove(keyKeyTranslations[key]);
+                WebVerseRuntime.Instance.inputManager.pressedKeyCodes.Remove(keyCodeTranslations[key]);
+            }
+        }
+
+        public void OnLeftClick(InputAction.CallbackContext context)
+        {
+            if (context.phase == InputActionPhase.Started)
+            {
+                WebVerseRuntime.Instance.inputManager.Left();
+                WebVerseRuntime.Instance.inputManager.leftValue = true;
+            }
+            else if (context.phase == InputActionPhase.Performed)
+            {
+
+            }
+            else if (context.phase == InputActionPhase.Canceled)
+            {
+                WebVerseRuntime.Instance.inputManager.EndLeft();
+                WebVerseRuntime.Instance.inputManager.leftValue = false;
+            }
+        }
+
+        public void OnMiddleClick(InputAction.CallbackContext context)
+        {
+            if (context.phase == InputActionPhase.Started)
+            {
+                WebVerseRuntime.Instance.inputManager.Middle();
+                WebVerseRuntime.Instance.inputManager.middleValue = true;
+            }
+            else if (context.phase == InputActionPhase.Performed)
+            {
+
+            }
+            else if (context.phase == InputActionPhase.Canceled)
+            {
+                WebVerseRuntime.Instance.inputManager.EndMiddle();
+                WebVerseRuntime.Instance.inputManager.middleValue = false;
+            }
+        }
+
+        public void OnRightClick(InputAction.CallbackContext context)
+        {
+            if (context.phase == InputActionPhase.Started)
+            {
+                WebVerseRuntime.Instance.inputManager.Right();
+                WebVerseRuntime.Instance.inputManager.rightValue = true;
+            }
+            else if (context.phase == InputActionPhase.Performed)
+            {
+
+            }
+            else if (context.phase == InputActionPhase.Canceled)
+            {
+                WebVerseRuntime.Instance.inputManager.EndRight();
+                WebVerseRuntime.Instance.inputManager.rightValue = false;
+            }
+        }
+    }
+}

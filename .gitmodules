@@ -1,3 +1,6 @@
 [submodule "Assets/WebVerse-WorldEngine"]
-	path = Assets/WebVerse-WorldEngine
+	path = Assets/Runtime/WebVerse-WorldEngine
+	url = https://github.com/Five-Squared-Interactive/WebVerse-WorldEngine
+[submodule "Assets/Runtime/WebVerse-WorldEngine"]
+	path = Assets/Runtime/WebVerse-WorldEngine
 	url = https://github.com/Five-Squared-Interactive/WebVerse-WorldEngine
