@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Handlers.File;
 using FiveSQD.WebVerse.Runtime;
 using NUnit.Framework;
@@ -6,6 +8,9 @@ using UnityEngine;
 using FiveSQD.WebVerse.LocalStorage;
 using FiveSQD.WebVerse.WorldEngine;
 
+/// <summary>
+/// Unit tests for the File Handler.
+/// </summary>
 public class FileHandlerTests
 {
     [Test]
@@ -20,6 +25,7 @@ public class FileHandlerTests
         string restoredURI = FileHandler.FromFileURI(fileURI);
         Assert.AreEqual(rawURI, restoredURI);
 
+        // Set up WebVerse Runtime.
         GameObject runtimeGO = new GameObject("runtime");
         WebVerseRuntime runtime = runtimeGO.AddComponent<WebVerseRuntime>();
         runtime.highlightMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));

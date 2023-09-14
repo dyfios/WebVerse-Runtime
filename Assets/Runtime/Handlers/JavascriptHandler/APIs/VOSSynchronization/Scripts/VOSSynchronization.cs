@@ -1,13 +1,30 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.WorldEngine.Utilities;
 using System;
 using FiveSQD.WebVerse.Runtime;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
 {
+    /// <summary>
+    /// VOS Synchronization Methods.
+    /// </summary>
     public class VOSSynchronization
     {
+        /// <summary>
+        /// VOS Synchronization Transports.
+        /// </summary>
         public enum Transport { TCP, WebSocket }
 
+        /// <summary>
+        /// Connect to a VOS Synchronization Server.
+        /// </summary>
+        /// <param name="host">Host to connect to.</param>
+        /// <param name="port">Port at which to connect to host.</param>
+        /// <param name="tls">Whether or not to use TLS.</param>
+        /// <param name="onConnected">Logic to execute upon connection.</param>
+        /// <param name="transport">Transport to use.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool ConnectToService(string host, int port, bool tls,
             string onConnected = null, Transport transport = Transport.TCP)
         {
@@ -37,6 +54,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Disconnect from a VOS Synchronization Server.
+        /// </summary>
+        /// <param name="host">Host of the connection to disconnect.</param>
+        /// <param name="port">Port of the connection to disconnect.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool DisconnectService(string host, int port)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToRemove
@@ -50,6 +73,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Create a VOS Synchronization Session.
+        /// </summary>
+        /// <param name="host">Host of the connection to create the session on.</param>
+        /// <param name="port">Port of the connection to create the session on.</param>
+        /// <param name="id">RFC 4122-encoded UUID identifier for the session.</param>
+        /// <param name="tag">Tag for the session.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool CreateSession(string host, int port, string id, string tag)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToCreateSessionOn
@@ -71,6 +102,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Destroy a VOS Synchronization Session.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session to destroy.</param>
+        /// <param name="port">Port of the connection of the session to destroy.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool DestroySession(string host, int port)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToDestroySessionOn
@@ -84,6 +121,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Join a VOS Synchronization Session.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session to join.</param>
+        /// <param name="port">Port of the connection of the session to join.</param>
+        /// <param name="id">RFC 4122-encoded UUID identifier of the session.</param>
+        /// <param name="tag">Tag of the session.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static string JoinSession(string host, int port, string id, string tag, string callback = null)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToJoinSessionOn
@@ -117,6 +162,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return clientID.HasValue ? clientID.Value.ToString() : null;
         }
 
+        /// <summary>
+        /// Exit a VOS Synchronization Session.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session to exit.</param>
+        /// <param name="port">Port of the connection of the session to exit.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool ExitSession(string host, int port)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToExitSessionOn
@@ -131,6 +182,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Start Synchronizing an Entity.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session to synchronize an entity on.</param>
+        /// <param name="port">Port of the connection of the session to synchronize an entity on.</param>
+        /// <param name="entityID">ID of the entity to synchronize.</param>
+        /// <param name="deleteWithClient">Whether or not to delete the entity upon disconnection of the client.</param>
+        /// <param name="resources">Resources to include with the entity.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool StartSynchronizingEntity(string host, int port,
             string entityID, bool deleteWithClient = false, string resources = null)
         {
@@ -159,6 +219,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Stop Synchronizing an Entity.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session to stop synchronizing an entity on.</param>
+        /// <param name="port">Port of the connection of the session to stop synchronizing an entity on.</param>
+        /// <param name="entityID">ID of the entity to stop synchronizing.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool StopSynchronizingEntity(string host, int port, string entityID)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToStopSynchronizingEntityOn
@@ -187,6 +254,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Send a Message.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session to send a message on.</param>
+        /// <param name="port">Port of the connection of the session to send a message on.</param>
+        /// <param name="topic">Topic to send a message on.</param>
+        /// <param name="message">Message to send.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool SendMessage(string host, int port, string topic, string message)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToSendMessageOn
@@ -201,6 +276,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Register a Message Callback.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session to register a message callback on.</param>
+        /// <param name="port">Port of the connection of the session to register a message callback on.</param>
+        /// <param name="callback">Logic to invoke when message is received.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool RegisterMessageCallback(string host, int port, string callback)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToRegisterMessageCallbackOn
@@ -225,6 +307,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return true;
         }
 
+        /// <summary>
+        /// Get the Tag for a User.
+        /// </summary>
+        /// <param name="host">Host of the connection of the session of the user to get the tag of.</param>
+        /// <param name="port">Port of the connection of the session of the user to get the tag of.</param>
+        /// <param name="userID">ID of the user to get the tag of.</param>
+        /// <returns>Tag of the user.</returns>
         public static string GetUserTag(string host, int port, string userID)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToGetUserTagOn
@@ -238,6 +327,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             return synchronizerToGetUserTagOn.GetUserTag(Guid.Parse(userID));
         }
 
+        /// <summary>
+        /// Invoke a Javascript Callback.
+        /// </summary>
+        /// <param name="function">Logic to invoke.</param>
         private static void InvokeCallback(string function)
         {
             WebVerseRuntime.Instance.javascriptHandler.Run(function);

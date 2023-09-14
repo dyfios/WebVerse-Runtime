@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System;
 using System.Collections;
 using FiveSQD.WebVerse.LocalStorage;
@@ -8,6 +10,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
 
+/// <summary>
+/// Unit tests for the PNG Handler.
+/// </summary>
 public class PNGHandlerTests
 {
     private float waitTime = 10;

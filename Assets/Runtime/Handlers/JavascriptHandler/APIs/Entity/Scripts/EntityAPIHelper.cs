@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System.Collections;
@@ -7,17 +9,34 @@ using UnityEngine;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 {
+    /// <summary>
+    /// A helper class for the Entity API.
+    /// </summary>
     public class EntityAPIHelper : MonoBehaviour
     {
+        /// <summary>
+        /// Dictionary of Entity API references and internal entity references.
+        /// </summary>
         private static Dictionary<WorldEngine.Entity.BaseEntity, BaseEntity> loadedEntities;
 
+        /// <summary>
+        /// Instance of the Entity API Helper.
+        /// </summary>
         private static EntityAPIHelper instance;
 
+        /// <summary>
+        /// Initialize the entity dictionary.
+        /// </summary>
         public static void InitializeEntityMapping()
         {
             loadedEntities = new Dictionary<WorldEngine.Entity.BaseEntity, BaseEntity>();
         }
 
+        /// <summary>
+        /// Add an entity mapping.
+        /// </summary>
+        /// <param name="internalEntity">Internal entity reference.</param>
+        /// <param name="publicEntity">API entity reference.</param>
         public static void AddEntityMapping(WorldEngine.Entity.BaseEntity internalEntity, BaseEntity publicEntity)
         {
             if (loadedEntities.ContainsKey(internalEntity))
@@ -28,6 +47,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             loadedEntities.Add(internalEntity, publicEntity);
         }
 
+        /// <summary>
+        /// Remove an entity mapping.
+        /// </summary>
+        /// <param name="internalEntity">Internal entity reference.</param>
         public static void RemoveEntityMapping(WorldEngine.Entity.BaseEntity internalEntity)
         {
             if (!loadedEntities.ContainsKey(internalEntity))
@@ -39,6 +62,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             loadedEntities.Remove(internalEntity);
         }
 
+        /// <summary>
+        /// Get the API entity reference for an internal entity.
+        /// </summary>
+        /// <param name="internalEntity">Internal entity reference.</param>
         public static BaseEntity GetPublicEntity(WorldEngine.Entity.BaseEntity internalEntity)
         {
             if (internalEntity == null)
@@ -54,6 +81,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return null;
         }
 
+        /// <summary>
+        /// Get the internal entity reference for an API entity.
+        /// </summary>
+        /// <param name="publicEntity">API entity reference.</param>
         public static WorldEngine.Entity.BaseEntity GetPrivateEntity(BaseEntity publicEntity)
         {
             if (publicEntity == null)
@@ -65,6 +96,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 loadedEntities.FirstOrDefault(x => x.Value == publicEntity).Key : null;
         }
 
+        /// <summary>
+        /// Set information for a voxel block type.
+        /// </summary>
+        /// <param name="id">Block ID.</param>
+        /// <param name="info">Information to apply to voxel block type.</param>
+        /// <param name="internalEntity">Internal entity reference.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetBlockInfoAsync(int id, VoxelBlockInfo info, WorldEngine.Entity.VoxelEntity internalEntity)
         {
             if (info == null)
@@ -82,11 +120,21 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return true;
         }
 
+        /// <summary>
+        /// Initialize the Entity API Helper.
+        /// </summary>
         public void Initialize()
         {
             instance = this;
         }
 
+        /// <summary>
+        /// Set information for a voxel block type in a coroutine.
+        /// </summary>
+        /// <param name="id">Block ID.</param>
+        /// <param name="info">Information to apply to voxel block type.</param>
+        /// <param name="internalEntity">Internal entity reference.</param>
+        /// <param name="timeout">Timeout period after which to abort setting the block information.</param>
         private IEnumerator SetBlockInfoCoroutine(int id, VoxelBlockInfo info, WorldEngine.Entity.VoxelEntity internalEntity, float timeout = 10)
         {
             if (info == null)

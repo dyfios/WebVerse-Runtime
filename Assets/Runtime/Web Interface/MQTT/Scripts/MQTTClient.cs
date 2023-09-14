@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using BestMQTT;
 using BestMQTT.Packets.Builders;
 using FiveSQD.WebVerse.Utilities;
@@ -6,26 +8,50 @@ using System.Collections.Generic;
 
 namespace FiveSQD.WebVerse.WebInterface.MQTT
 {
+    /// <summary>
+    /// Enumeration for QoS levels.
+    /// </summary>
     public enum QOSLevel
     {
         AtMostOnceDelivery = 0b00, AtLeastOnceDelivery = 0b01,
         ExactlyOnceDelivery = 0b10, Reserved = 0b11
     }
 
+    /// <summary>
+    /// Enumeration for payload types.
+    /// </summary>
     public enum PayloadTypes
     {
         Bytes = 0b00,
         UTF8 = 0b01
     }
 
+    /// <summary>
+    /// Class for a buffer segment.
+    /// </summary>
     public class BufferSegment
     {
+        /// <summary>
+        /// Count.
+        /// </summary>
         public readonly int count;
 
+        /// <summary>
+        /// Data.
+        /// </summary>
         public readonly byte[] data;
 
+        /// <summary>
+        /// Offset.
+        /// </summary>
         public readonly int offset;
 
+        /// <summary>
+        /// Constructor for a buffer segment.
+        /// </summary>
+        /// <param name="count">Count.</param>
+        /// <param name="data">Data.</param>
+        /// <param name="offset">Offset.</param>
         public BufferSegment(int count, byte[] data, int offset)
         {
             this.count = count;
@@ -33,11 +59,19 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             this.offset = offset;
         }
 
+        /// <summary>
+        /// Convert from MQTT buffer segment.
+        /// </summary>
+        /// <param name="bufferSegment">MQTT buffer segment.</param>
         public static BufferSegment FromBestMQTT(BestHTTP.PlatformSupport.Memory.BufferSegment bufferSegment)
         {
             return new BufferSegment(bufferSegment.Count, bufferSegment.Data, bufferSegment.Offset);
         }
 
+        /// <summary>
+        /// Convert to MQTT buffer segment.
+        /// </summary>
+        /// <param name="bufferSegment">Buffer segment.</param>
         public static BestHTTP.PlatformSupport.Memory.BufferSegment ToBestMQTT(BufferSegment bufferSegment)
         {
             return new BestHTTP.PlatformSupport.Memory.BufferSegment(
@@ -45,30 +79,80 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         }
     }
 
+    /// <summary>
+    /// Class for an MQTT message.
+    /// </summary>
     public class MQTTMessage
     {
+        /// <summary>
+        /// Content type.
+        /// </summary>
         public readonly string contentType;
 
+        /// <summary>
+        /// Correlation data.
+        /// </summary>
         public readonly BufferSegment correlationData;
 
+        /// <summary>
+        /// Expiry interval.
+        /// </summary>
         public readonly TimeSpan expiryInterval;
 
+        /// <summary>
+        /// Is duplicate.
+        /// </summary>
         public readonly bool isDuplicate;
 
+        /// <summary>
+        /// Payload.
+        /// </summary>
         public readonly BufferSegment payload;
 
+        /// <summary>
+        /// Payload format.
+        /// </summary>
         public readonly PayloadTypes payloadFormat;
 
+        /// <summary>
+        /// QoS level.
+        /// </summary>
         public readonly QOSLevel qosLevel;
 
+        /// <summary>
+        /// Response topic.
+        /// </summary>
         public readonly string responseTopic;
 
+        /// <summary>
+        /// Retain.
+        /// </summary>
         public readonly bool retain;
 
+        /// <summary>
+        /// Topic.
+        /// </summary>
         public readonly string topic;
 
+        /// <summary>
+        /// User properties.
+        /// </summary>
         public readonly List<KeyValuePair<string, string>> userProperties;
 
+        /// <summary>
+        /// Constructor for an MQTT message.
+        /// </summary>
+        /// <param name="contentType">Content type.</param>
+        /// <param name="correlationData">Correlation data.</param>
+        /// <param name="expiryInterval">Expiry interval.</param>
+        /// <param name="isDuplicate">Is duplicate.</param>
+        /// <param name="payload">Payload.</param>
+        /// <param name="payloadFormat">Payload format.</param>
+        /// <param name="qosLevel">QoS level.</param>
+        /// <param name="responseTopic">Response topic.</param>
+        /// <param name="retain">Retain.</param>
+        /// <param name="topic">Topic.</param>
+        /// <param name="userProperties">User properties.</param>
         public MQTTMessage(string contentType, BufferSegment correlationData, TimeSpan expiryInterval,
             bool isDuplicate, BufferSegment payload, PayloadTypes payloadFormat, QOSLevel qosLevel,
             string responseTopic, bool retain, string topic, List<KeyValuePair<string, string>> userProperties)
@@ -86,6 +170,10 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             this.userProperties = userProperties;
         }
 
+        /// <summary>
+        /// Convert from MQTT message.
+        /// </summary>
+        /// <param name="applicationMessage">MQTT message.</param>
         public static MQTTMessage FromBestMQTT(ApplicationMessage applicationMessage)
         {
             return new MQTTMessage(applicationMessage.ContentType,
@@ -99,13 +187,25 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         }
     }
 
+    /// <summary>
+    /// Class for an MQTT client.
+    /// </summary>
     public class MQTTClient
     {
+        /// <summary>
+        /// Enumeration for MQTT transports.
+        /// </summary>
         public enum Transports { TCP, WebSockets }
 
+        /// <summary>
+        /// Enumeration for client states.
+        /// </summary>
         public enum ClientState { Initial = 0, TransportConnecting = 1,
             TransportConnected = 2, Connected = 3, Disconnecting = 4, Disconnected = 5 }
 
+        /// <summary>
+        /// Host.
+        /// </summary>
         public string host
         {
             get
@@ -120,6 +220,9 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             }
         }
 
+        /// <summary>
+        /// Port.
+        /// </summary>
         public int port
         {
             get
@@ -134,6 +237,9 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             }
         }
 
+        /// <summary>
+        /// Client state.
+        /// </summary>
         public ClientState clientState
         {
             get
@@ -170,8 +276,23 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             }
         }
 
+        /// <summary>
+        /// Reference to the internal MQTT client.
+        /// </summary>
         private BestMQTT.MQTTClient mqttClient;
 
+        /// <summary>
+        /// Constructor for an MQTT client.
+        /// </summary>
+        /// <param name="host">Host.</param>
+        /// <param name="port">port.</param>
+        /// <param name="useTLS">Whether or not to use TLS.</param>
+        /// <param name="supportedTransports">Supported transports.</param>
+        /// <param name="onConnected">Action to invoke upon connection.</param>
+        /// <param name="onDisconnected">Action to invoke upon disconnection.</param>
+        /// <param name="onStateChanged">Action to invoke upon connection state change.</param>
+        /// <param name="onError">Action to invoke upon connection error.</param>
+        /// <param name="path">Path.</param>
         public MQTTClient(string host, int port, bool useTLS, Transports supportedTransports,
             Action<MQTTClient> onConnected, Action<MQTTClient, byte, string> onDisconnected,
             Action<MQTTClient, ClientState, ClientState> onStateChanged,
@@ -209,6 +330,9 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             });
         }
 
+        /// <summary>
+        /// Connect the MQTT client.
+        /// </summary>
         public void Connect()
         {
             if (mqttClient == null)
@@ -220,6 +344,9 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             mqttClient.BeginConnect(ConnectPacketBuilderCallback);
         }
 
+        /// <summary>
+        /// Disconnect the MQTT client.
+        /// </summary>
         public void Disconnect(string reason = "disconnecting")
         {
             if (mqttClient == null)
@@ -233,6 +360,12 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 .BeginDisconnect();
         }
 
+        /// <summary>
+        /// Subscribe the MQTT client to a topic.
+        /// </summary>
+        /// <param name="topic">Topic to subscribe to.</param>
+        /// <param name="onAcknowledged">Action to invoke upon subscription acknowledgement.</param>
+        /// <param name="onMessage">Action to invoke upon receiving a message.</param>
         public void Subscribe(string topic, Action<string> onAcknowledged,
             Action<MQTTClient, string, string, MQTTMessage> onMessage)
         {
@@ -258,6 +391,11 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 .BeginSubscribe();
         }
 
+        /// <summary>
+        /// Unsubscribe the MQTT client from a topic.
+        /// </summary>
+        /// <param name="topic">Topic to unsubscribe from.</param>
+        /// <param name="onAcknowledged">Action to invoke upon unsubscribe acknowledgement.</param>
         public void UnSubscribe(string topic, Action<string> onAcknowledged)
         {
             if (mqttClient == null)
@@ -277,6 +415,11 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 .BeginUnsubscribe();
         }
 
+        /// <summary>
+        /// Publish a message through the MQTT client.
+        /// </summary>
+        /// <param name="topic">Topic to send the message on.</param>
+        /// <param name="message">Message to send.</param>
         public void Publish(string topic, string message)
         {
             if (mqttClient == null)
@@ -291,6 +434,11 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 .BeginPublish();
         }
 
+        /// <summary>
+        /// Conect packet builder callback.
+        /// </summary>
+        /// <param name="mqttClient">MQTT client.</param>
+        /// <param name="builder">Builder.</param>
         private ConnectPacketBuilder ConnectPacketBuilderCallback(BestMQTT.MQTTClient mqttClient, ConnectPacketBuilder builder)
         {
             return builder;

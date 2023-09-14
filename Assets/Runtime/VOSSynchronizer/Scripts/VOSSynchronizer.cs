@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.WebInterface.MQTT;
 using FiveSQD.WebVerse.WorldEngine.Entity;
 using FiveSQD.WebVerse.WorldEngine.Synchronization;

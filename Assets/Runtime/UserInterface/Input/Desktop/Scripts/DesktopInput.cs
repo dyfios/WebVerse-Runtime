@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System.Collections.Generic;
@@ -6,8 +8,14 @@ using UnityEngine.InputSystem;
 
 namespace FiveSQD.WebVerse.Input.Desktop
 {
+    /// <summary>
+    /// Class for interpreting Desktop input.
+    /// </summary>
     public class DesktopInput : MonoBehaviour
     {
+        /// <summary>
+        /// Translation of Unity keys to Javascript standard keys.
+        /// </summary>
         private static readonly Dictionary<string, string> keyKeyTranslations = new Dictionary<string, string>()
         {
             { "escape", "Escape"},
@@ -108,6 +116,9 @@ namespace FiveSQD.WebVerse.Input.Desktop
             { "end", "End" }
         };
 
+        /// <summary>
+        /// Translation of Unity keys to Javascript standard key codes.
+        /// </summary>
         private static readonly Dictionary<string, string> keyCodeTranslations = new Dictionary<string, string>()
         {
             { "escape", "Escape"},
@@ -208,6 +219,10 @@ namespace FiveSQD.WebVerse.Input.Desktop
             { "end", "End" }
         };
 
+        /// <summary>
+        /// Invoked on a move.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
         public void OnMove(InputAction.CallbackContext context)
         {
             Vector2 value = context.ReadValue<Vector2>();
@@ -231,6 +246,10 @@ namespace FiveSQD.WebVerse.Input.Desktop
             }
         }
 
+        /// <summary>
+        /// Invoked on a look.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
         public void OnLook(InputAction.CallbackContext context)
         {
             Vector2 value = context.ReadValue<Vector2>();
@@ -250,6 +269,10 @@ namespace FiveSQD.WebVerse.Input.Desktop
             }
         }
 
+        /// <summary>
+        /// Invoked on a keyboard press.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
         public void OnKeyboard(InputAction.CallbackContext context)
         {
             string key = context.control.name;
@@ -284,6 +307,10 @@ namespace FiveSQD.WebVerse.Input.Desktop
             }
         }
 
+        /// <summary>
+        /// Invoked on a left click.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
         public void OnLeftClick(InputAction.CallbackContext context)
         {
             if (context.phase == InputActionPhase.Started)
@@ -302,6 +329,10 @@ namespace FiveSQD.WebVerse.Input.Desktop
             }
         }
 
+        /// <summary>
+        /// Invoked on a middle click.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
         public void OnMiddleClick(InputAction.CallbackContext context)
         {
             if (context.phase == InputActionPhase.Started)
@@ -320,6 +351,10 @@ namespace FiveSQD.WebVerse.Input.Desktop
             }
         }
 
+        /// <summary>
+        /// Invoked on a right click.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
         public void OnRightClick(InputAction.CallbackContext context)
         {
             if (context.phase == InputActionPhase.Started)

@@ -7,6 +7,9 @@ using UnityEngine.TestTools;
 using FiveSQD.WebVerse.WebInterface.HTTP;
 using System;
 
+/// <summary>
+/// Unit tests for HTTP.
+/// </summary>
 public class HTTPTests
 {
     private float httpRequestWaitPeriod = 10;

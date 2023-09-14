@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes
@@ -363,11 +365,20 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes
             return v2.ToString(format);
         }
 
+        /// <summary>
+        /// Check this Vector4D for equality with another object.
+        /// </summary>
+        /// <param name="obj">Object to compare.</param>
+        /// <returns>Whether or not the objects are equal.</returns>
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
         }
 
+        /// <summary>
+        /// Get a hash code.
+        /// </summary>
+        /// <returns>Hash code.</returns>
         public override int GetHashCode()
         {
             return base.GetHashCode();

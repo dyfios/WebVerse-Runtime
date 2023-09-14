@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Handlers.File;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
@@ -16,26 +18,53 @@ using System.Xml;
 
 namespace FiveSQD.WebVerse.Handlers.VEML
 {
+    /// <summary>
+    /// Class for the VEML Handler.
+    /// </summary>
     public class VEMLHandler : BaseHandler
     {
+        /// <summary>
+        /// Enumeration for a VEML version number.
+        /// </summary>
         public enum VEMLVersion { Unknown, v1_0 }
 
+        /// <summary>
+        /// Reference to the WebVerse runtime.
+        /// </summary>
         public WebVerseRuntime runtime;
 
+        /// <summary>
+        /// Timeout for requests.
+        /// </summary>
         public float timeout = 10;
 
+        /// <summary>
+        /// Number of entities that are being loaded.
+        /// </summary>
         private int loadingEntities = 0;
 
+        /// <summary>
+        /// Initialize the VEML Handler.
+        /// </summary>
         public override void Initialize()
         {
             base.Initialize();
         }
 
+        /// <summary>
+        /// Terminate the VEML Handler.
+        /// </summary>
         public override void Terminate()
         {
             base.Terminate();
         }
 
+        /// <summary>
+        /// Get the name of a world.
+        /// </summary>
+        /// <param name="resourceURI">URI of the world file.</param>
+        /// <param name="onComplete">Action to invoke when the name has been determined. Provides
+        /// a string containing the world name.</param>
         public void GetWorldName(string resourceURI, Action<string> onComplete)
         {
             Action onDownloaded = () =>
@@ -66,6 +95,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             DownloadVEML(resourceURI, onDownloaded);
         }
 
+        /// <summary>
+        /// Initiate the loading of a VEML document into the current world.
+        /// </summary>
+        /// <param name="resourceURI">URI of the world file.</param>
         public void LoadVEMLDocumentIntoWorld(string resourceURI)
         {
             Action onDownloaded = () =>
@@ -86,6 +119,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             DownloadVEML(resourceURI, onDownloaded);
         }
 
+        /// <summary>
+        /// Download a VEML document.
+        /// </summary>
+        /// <param name="uri">URI of the VEML file.</param>
+        /// <param name="onDownloaded">Action to invoke when the file has been downloaded.</param>
+        /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
         public void DownloadVEML(string uri, Action onDownloaded, bool reDownload = false)
         {
             if (reDownload == false)
@@ -108,6 +147,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             request.Send();
         }
 
+        /// <summary>
+        /// Load a VEML document from a path.
+        /// </summary>
+        /// <param name="path">Path to load the document from.</param>
+        /// <returns>A loaded VEML class, or null.</returns>
         public Schema.V1_0.veml LoadVEML(string path)
         {
             byte[] rawData = System.IO.File.ReadAllBytes(path);
@@ -148,6 +192,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return veml;
         }
 
+        /// <summary>
+        /// Load a script resource as a string.
+        /// </summary>
+        /// <param name="resourceURI">URI of the script resource.</param>
+        /// <param name="onLoaded">Action to invoke when loading of the script resource
+        /// is complete. Provides a string containing the script resource.</param>
         public void LoadScriptResourceAsString(string resourceURI, Action<string> onLoaded)
         {
             Action onDownloaded = () =>
@@ -159,6 +209,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             DownloadScript(resourceURI, onDownloaded);
         }
 
+        /// <summary>
+        /// Download a script.
+        /// </summary>
+        /// <param name="uri">URI of the script resource.</param>
+        /// <param name="onDownloaded">Action to invoke when downloading of the script is complete.</param>
+        /// <param name="reDownload">Whether or not to redownload the script if it already exists.</param>
         public void DownloadScript(string uri, Action onDownloaded, bool reDownload = false)
         {
             if (reDownload == false)
@@ -181,6 +237,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             request.Send();
         }
 
+        /// <summary>
+        /// Load a script from a path.
+        /// </summary>
+        /// <param name="path">Path to load the script from.</param>
+        /// <returns>A string containing the loaded script, or null.</returns>
         public string LoadScript(string path)
         {
             byte[] rawData = System.IO.File.ReadAllBytes(path);
@@ -188,6 +249,13 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return script;
         }
 
+        /// <summary>
+        /// Download a file.
+        /// </summary>
+        /// <param name="uri">URI from which to get the file.</param>
+        /// <param name="onDownloaded">Action to invoke when downloading the file is complete. Provides
+        /// a byte array containing the file data.</param>
+        /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
         public void DownloadFile(string uri, Action<byte[]> onDownloaded, bool reDownload = false)
         {
             if (reDownload == false)
@@ -210,6 +278,13 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             request.Send();
         }
 
+        /// <summary>
+        /// Finish downloading a script.
+        /// </summary>
+        /// <param name="uri">URI from which to get the file.</param>
+        /// <param name="onDownloaded">Action to invoke when downloading the file is complete. Provides
+        /// a byte array containing the file data.</param>
+        /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
         private void FinishScriptDownload(string uri, int responseCode, byte[] rawData)
         {
             Logging.Log("[VEMLHandler->FinishScriptDownload] Got response " + responseCode + " for request " + uri);
@@ -228,6 +303,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             runtime.fileHandler.CreateFileInFileDirectory(filePath, rawData);
         }
 
+        /// <summary>
+        /// Finish downloading a VEML file.
+        /// </summary>
+        /// <param name="uri">URI which the VEML file is from.</param>
+        /// <param name="responseCode">Response code received.</param>
+        /// <param name="rawData">Raw data received.</param>
         private void FinishVEMLDownload(string uri, int responseCode, byte[] rawData)
         {
             Logging.Log("[VEMLHandler->FinishVEMLDownload] Got response " + responseCode + " for request " + uri);
@@ -246,6 +327,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             runtime.fileHandler.CreateFileInFileDirectory(filePath, rawData);
         }
 
+        /// <summary>
+        /// Apply a VEML document.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
         private IEnumerator ApplyVEMLDocument(Schema.V1_0.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -289,6 +375,14 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
         }
 
+        /// <summary>
+        /// Process VEML document metadata.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <param name="onScriptsProcessed">Action to invoke when scripts are processed. Provides an array of
+        /// strings containing the script contents.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessMetadata(Schema.V1_0.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -328,6 +422,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process VEML document environment.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessEnvironment(Schema.V1_0.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -361,6 +461,13 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process VEML document metadata.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <param name="onProcessed">Action to invoke when scripts are processed. Provides an array of
+        /// strings containing the script contents.</param>
         private IEnumerator ProcessScripts(Schema.V1_0.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -420,6 +527,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             yield return null;
         }
 
+        /// <summary>
+        /// Process VEML document metadata input events.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessInputEvents(Schema.V1_0.veml vemlDocument, string baseURI)
         {
             // Set up input events.
@@ -434,6 +547,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process VEML document metadata synchronizers.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessSynchronizers(Schema.V1_0.veml vemlDocument, string baseURI)
         {
             // Set up synchronizers.
@@ -483,6 +602,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process background.
+        /// </summary>
+        /// <param name="entry">The entry for the background setting.</param>
+        /// <param name="uri">Base URI of the VEML document.</param>
         private void ProcessBackground(string entry, string uri)
         {
             switch (entry.ToLower())
@@ -557,6 +681,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
         }
 
+        /// <summary>
+        /// Process VEML document environment entities.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessEntities(Schema.V1_0.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -789,6 +919,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a mesh entity.
+        /// </summary>
+        /// <param name="entity">The mesh entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessMeshEntity(meshentity entity, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -847,6 +983,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a container entity.
+        /// </summary>
+        /// <param name="entity">The container entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessContainerEntity(containerentity entity, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -924,6 +1066,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a character entity.
+        /// </summary>
+        /// <param name="entity">The character entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessCharacterEntity(characterentity entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
@@ -1011,6 +1159,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a light entity.
+        /// </summary>
+        /// <param name="entity">The light entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessLightEntity(lightentity entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
@@ -1082,6 +1236,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a terrain entity.
+        /// </summary>
+        /// <param name="entity">The terrain entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessTerrainEntity(terrainentity entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
@@ -1170,6 +1330,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a text entity.
+        /// </summary>
+        /// <param name="entity">The text entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessTextEntity(textentity entity, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -1242,6 +1408,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a button entity.
+        /// </summary>
+        /// <param name="entity">The button entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessButtonEntity(buttonentity entity, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -1322,6 +1494,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a canvas entity.
+        /// </summary>
+        /// <param name="entity">The canvas entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessCanvasEntity(canvasentity entity, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -1410,6 +1588,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process an input entity.
+        /// </summary>
+        /// <param name="entity">The input entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessInputEntity(inputentity entity, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
@@ -1482,6 +1666,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Process a voxel entity.
+        /// </summary>
+        /// <param name="entity">The voxel entity.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessVoxelEntity(voxelentity entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
@@ -1557,6 +1747,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Apply the hierarchy of entities.
+        /// </summary>
+        /// <param name="entities">Dictionary of entities and their parents.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
         private IEnumerator ApplyEntityHierarchy(Dictionary<entity, entity> entities, string baseURI)
         {
             if (entities == null)
@@ -1607,6 +1802,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
         }
 
+        /// <summary>
+        /// Get a color from a hex string.
+        /// </summary>
+        /// <param name="hex">The VEML-compliant hex color string.</param>
+        /// <returns>A color matching the hex string.</returns>
         private Color FromHex(string hex)
         {
             hex = hex.Replace("#", "");
@@ -1634,6 +1834,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
         }
 
+        /// <summary>
+        /// Sets up entity IDs for entities.
+        /// </summary>
+        /// <param name="entities">A reference to an array of entities to set up the IDs of. Will
+        /// assign an ID to each entity for which one does not already exist.</param>
         private void SetUpEntityIDs(ref entity[] entities)
         {
             Queue<entity> entityQueue = new Queue<entity>();
@@ -1660,6 +1865,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
         }
 
+        /// <summary>
+        /// Get all child entity relationships for the provided entities.
+        /// </summary>
+        /// <param name="entities">List of entities for which to get the child entities of.</param>
+        /// <returns>A dictionary of the provided entities (and any children) and their parents.</returns>
         private Dictionary<entity, entity> GetAllChildEntities(entity[] entities)
         {
             Dictionary<entity, entity> foundEntities = new Dictionary<entity, entity>();
@@ -1674,6 +1884,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return foundEntities;
         }
 
+        /// <summary>
+        /// Get all child entity relationships for the provided entity.
+        /// </summary>
+        /// <param name="entity">Entity for which to get the child entities of.</param>
+        /// <returns>A dictionary of the provided entity (and any children) and their parents.</returns>
         private Dictionary<entity, entity> GetAllChildEntities(entity entity)
         {
             Dictionary<entity, entity> entities = new Dictionary<entity, entity>();
@@ -1696,6 +1911,13 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return entities;
         }
 
+        /// <summary>
+        /// Format a URI to be valid. Will replace single forward slashes in the protocol heading
+        /// with double forward slashes and replace back slashes with forward slashes.
+        /// </summary>
+        /// <param name="unformattedURI">URI to format.</param>
+        /// <returns>The formatted URI. Will replace single forward slashes in the protocol heading
+        /// with double forward slashes and replace back slashes with forward slashes.</returns>
         private string FormatURI(string unformattedURI)
         {
             string uri = unformattedURI;
@@ -1711,6 +1933,15 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return uri;
         }
 
+        /// <summary>
+        /// Apply a transform to an entity.
+        /// </summary>
+        /// <param name="entity">Entity to apply transform to.</param>
+        /// <param name="tf">Transform to apply.</param>
+        /// <param name="scaleTransformValid">Whether or not a scale transform will be treated as valid.</param>
+        /// <param name="sizeTransformValid">Whether or not a size transform will be treated as valid.</param>
+        /// <param name="canvasTransformValid">Whether or not a canvas transform will be treated as valid.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         private bool ApplyTransform(BaseEntity entity, basetransform tf,
             bool scaleTransformValid, bool sizeTransformValid, bool canvasTransformValid)
         {
@@ -1772,6 +2003,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             return true;
         }
 
+        /// <summary>
+        /// Parse VEML-compliant CSV formatted heights.
+        /// </summary>
+        /// <param name="csvHeights">VEML-compliant CSV formatted heights.</param>
+        /// <returns>2D float array representation of the VEML-compliant CSV formatted heights.</returns>
         private float[,] ParseCSVHeights(string csvHeights)
         {
             int numCols = 0;

@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes
@@ -356,22 +358,43 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes
             return quat.ToString(format);
         }
 
+        /// <summary>
+        /// Check this QuaternionD for equality with another object.
+        /// </summary>
+        /// <param name="obj">Object to compare.</param>
+        /// <returns>Whether or not the objects are equal.</returns>
         public override bool Equals(object obj)
         {
             return base.Equals(obj);
         }
 
+        /// <summary>
+        /// Get a hash code.
+        /// </summary>
+        /// <returns>Hash code.</returns>
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
 
+        /// <summary>
+        /// Check the equality of two Quaternions.
+        /// </summary>
+        /// <param name="quaternion1">First quaternion.</param>
+        /// <param name="quaternion2">Second quaternion.</param>
+        /// <returns>Whether or not the quaternions are equal.</returns>
         private static bool AreEqual(QuaternionD quaternion1, QuaternionD quaternion2)
         {
             return quaternion1.x == quaternion2.x && quaternion1.y == quaternion2.y
                 && quaternion1.z == quaternion2.z && quaternion1.w == quaternion2.w;
         }
 
+        /// <summary>
+        /// Combine two Quaternions.
+        /// </summary>
+        /// <param name="quaternion1">First quaternion.</param>
+        /// <param name="quaternion2">Second quaternion.</param>
+        /// <returns>The combination of the two Quaternions.</returns>
         private static QuaternionD Combine(QuaternionD quaternion1, QuaternionD quaternion2)
         {
             UnityEngine.Quaternion first = new UnityEngine.Quaternion((float) quaternion1.x,

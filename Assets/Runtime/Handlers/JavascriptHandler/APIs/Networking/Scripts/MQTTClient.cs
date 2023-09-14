@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System;
@@ -5,26 +7,50 @@ using System.Collections.Generic;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
 {
+    /// <summary>
+    /// MQTT Quality of Service Levels.
+    /// </summary>
     public enum QOSLevel
     {
         AtMostOnceDelivery = 0b00, AtLeastOnceDelivery = 0b01,
         ExactlyOnceDelivery = 0b10, Reserved = 0b11
     }
 
+    /// <summary>
+    /// MQTT Payload Types.
+    /// </summary>
     public enum PayloadTypes
     {
         Bytes = 0b00,
         UTF8 = 0b01
     }
 
+    /// <summary>
+    /// Class for an MQTT Buffer Segment.
+    /// </summary>
     public class BufferSegment
     {
+        /// <summary>
+        /// Count.
+        /// </summary>
         public readonly int count;
 
+        /// <summary>
+        /// Data.
+        /// </summary>
         public readonly byte[] data;
 
+        /// <summary>
+        /// Offset.
+        /// </summary>
         public readonly int offset;
 
+        /// <summary>
+        /// Constructor for an MQTT Buffer Segment.
+        /// </summary>
+        /// <param name="count">Segment count.</param>
+        /// <param name="data">Segment data.</param>
+        /// <param name="offset">Segment offset.</param>
         public BufferSegment(int count, byte[] data, int offset)
         {
             this.count = count;
@@ -33,30 +59,79 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
         }
     }
 
+    /// <summary>
+    /// Class for an MQTT Message.
+    /// </summary>
     public class MQTTMessage
     {
+        /// <summary>
+        /// Content Type.
+        /// </summary>
         public readonly string contentType;
 
+        /// <summary>
+        /// Correlation Data.
+        /// </summary>
         public readonly BufferSegment correlationData;
 
+        /// <summary>
+        /// Expiry Interval.
+        /// </summary>
         public readonly TimeSpan expiryInterval;
 
+        /// <summary>
+        /// Is Duplicate Flag.
+        /// </summary>
         public readonly bool isDuplicate;
 
+        /// <summary>
+        /// Payload.
+        /// </summary>
         public readonly BufferSegment payload;
 
+        /// <summary>
+        /// Payload Format.
+        /// </summary>
         public readonly PayloadTypes payloadFormat;
 
+        /// <summary>
+        /// QoS Level.
+        /// </summary>
         public readonly QOSLevel qosLevel;
 
+        /// <summary>
+        /// Response Topic.
+        /// </summary>
         public readonly string responseTopic;
 
+        /// <summary>
+        /// Retain Flag.
+        /// </summary>
         public readonly bool retain;
 
+        /// <summary>
+        /// Topic.
+        /// </summary>
         public readonly string topic;
 
+        /// <summary>
+        /// User Properties.
+        /// </summary>
         public readonly List<KeyValuePair<string, string>> userProperties;
 
+        /// <summary>
+        /// Constructor for an MQTT Message.
+        /// </summary>
+        /// <param name="contentType">Content type.</param>
+        /// <param name="correlationData">Correlation data.</param>
+        /// <param name="expiryInterval">Expiry interval.</param>
+        /// <param name="isDuplicate">Is duplicate flag.</param>
+        /// <param name="payload">Payload</param>
+        /// <param name="payloadFormat">Payload format.</param>
+        /// <param name="qosLevel">QoS level.</param>
+        /// <param name="responseTopic">Response topic.</param>
+        /// <param name="retain">Retain flag.</param>
+        /// <param name="userProperties">User properties.</param>
         public MQTTMessage(string contentType, BufferSegment correlationData, TimeSpan expiryInterval,
             bool isDuplicate, BufferSegment payload, PayloadTypes payloadFormat, QOSLevel qosLevel,
             string responseTopic, bool retain, string topic, List<KeyValuePair<string, string>> userProperties)
@@ -75,10 +150,28 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
         }
     }
 
+    /// <summary>
+    /// Class for an MQTT Client.
+    /// </summary>
     public class MQTTClient
     {
+        /// <summary>
+        /// Reference to internal MQTT client.
+        /// </summary>
         private WebInterface.MQTT.MQTTClient internalClient;
 
+        /// <summary>
+        /// Constructor for an MQTT Client.
+        /// </summary>
+        /// <param name="host">Host address.</param>
+        /// <param name="port">Host port.</param>
+        /// <param name="useTLS">Whether or not to use TLS.</param>
+        /// <param name="transport">The transport to use (either "tcp" or "websockets").</param>
+        /// <param name="onConnected">Logic to invoke upon connection.</param>
+        /// <param name="onDisconnected">Logic to invoke upon disconnection.</param>
+        /// <param name="onStateChanged">Logic to invoke upon connection state change.</param>
+        /// <param name="onError">Logic to invoke upon connection error.</param>
+        /// <param name="path">Server path.</param>
         public MQTTClient(string host, int port, bool useTLS, string transport,
             string onConnected, string onDisconnected, string onStateChanged, string onError,
             string path = "/mqtt")
@@ -140,6 +233,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
                 onConnectedAction, onDisconnectedAction, onStateChangedAction, onErrorAction, path);
         }
 
+        /// <summary>
+        /// Connect the MQTT Client.
+        /// </summary>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool Connect()
         {
             if (internalClient == null)
@@ -152,6 +249,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             return true;
         }
 
+        /// <summary>
+        /// Disconnect the MQTT Client.
+        /// </summary>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool Disconnect()
         {
             if (internalClient == null)
@@ -164,6 +265,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             return true;
         }
 
+        /// <summary>
+        /// Subscribe to a topic.
+        /// </summary>
+        /// <param name="topic">Topic to subscribe to.</param>
+        /// <param name="onAcknowledged">Logic to execute when subscription request has been acknowledged.</param>
+        /// <param name="onMessage">Logic to execute when a message has been received.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool Subscribe(string topic, string onAcknowledged, string onMessage)
         {
             if (internalClient == null)
@@ -193,7 +301,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             return true;
         }
 
-        public bool UnSubscribe(string topic, string onAcknowledged, string onMessage)
+        /// <summary>
+        /// UnSubscribe from a topic.
+        /// </summary>
+        /// <param name="topic">Topic to subscribe to.</param>
+        /// <param name="onAcknowledged">Logic to execute when unsubscribe request has been acknowledged.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool UnSubscribe(string topic, string onAcknowledged)
         {
             if (internalClient == null)
             {
@@ -213,6 +327,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             return true;
         }
 
+        /// <summary>
+        /// Publish a message.
+        /// </summary>
+        /// <param name="topic">Topic to subscribe send on</param>
+        /// <param name="message">Message to send.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool Publish(string topic, string message)
         {
             if (internalClient == null)

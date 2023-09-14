@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System.Collections;
 using System.Collections.Generic;
 using NUnit.Framework;
@@ -6,6 +8,9 @@ using UnityEngine.TestTools;
 using FiveSQD.WebVerse.VOSSynchronization;
 using System;
 
+/// <summary>
+/// Unit tests for the VOS Synchronizer.
+/// </summary>
 public class VOSSynchronizerTests
 {
     private float waitTime = 5;

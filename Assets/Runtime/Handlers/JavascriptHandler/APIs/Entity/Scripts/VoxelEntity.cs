@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
@@ -10,7 +12,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
     public class VoxelEntity : BaseEntity
     {
         /// <summary>
-        /// Create a terrain entity.
+        /// Create a voxel entity.
         /// </summary>
         /// <param name="parent">Parent of the entity to create.</param>
         /// <param name="position">Position of the entity relative to its parent.</param>

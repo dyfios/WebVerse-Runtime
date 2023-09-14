@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using Jint;
 using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.WorldEngine.Utilities;
@@ -7,8 +9,14 @@ using FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript
 {
+    /// <summary>
+    /// Class for the JavaScript Handler.
+    /// </summary>
     public class JavascriptHandler : BaseHandler
     {
+        /// <summary>
+        /// Tuple of class names and internal types.
+        /// </summary>
         private static readonly System.Tuple<string, System.Type>[] apis = new System.Tuple<string, System.Type>[]
         {
             // World Types.
@@ -61,8 +69,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("WorldStorage", typeof(APIs.Utilities.WorldStorage))
         };
 
+        /// <summary>
+        /// Reference to the JS engine instance.
+        /// </summary>
         private Engine engine;
 
+        /// <summary>
+        /// Initialize the JavascriptHandler.
+        /// </summary>
         public override void Initialize()
         {
             engine = new Engine();
@@ -71,11 +85,18 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             base.Initialize();
         }
 
+        /// <summary>
+        /// Terminate the JavascriptHandler.
+        /// </summary>
         public override void Terminate()
         {
             base.Terminate();
         }
-
+        
+        /// <summary>
+        /// Run a script.
+        /// </summary>
+        /// <param name="script">The script to run.</param>
         public void RunScript(string script)
         {
             if (engine == null)
@@ -87,6 +108,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine = engine.Execute(script);
         }
 
+        /// <summary>
+        /// Run logic.
+        /// </summary>
+        /// <param name="logic">The logic to run.</param>
+        /// <returns>The engine that is running the logic.</returns>
         public object Run(string logic)
         {
             if (engine == null)
@@ -94,10 +120,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 LogSystem.LogError("[JavascriptManager->Run] No engine reference.");
                 return null;
             }
-            UnityEngine.Debug.Log(logic);
+            
             return engine.Evaluate(logic);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <param name="value">The value to set the variable to.</param>
         public void SetValue(string variableName, bool value)
         {
             if (engine == null)
@@ -109,6 +140,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine.SetValue(variableName, value);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <param name="value">The value to set the variable to.</param>
         public void SetValue(string variableName, byte value)
         {
             if (engine == null)
@@ -120,6 +156,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine.SetValue(variableName, value);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <param name="value">The value to set the variable to.</param>
         public void SetValue(string variableName, byte[] value)
         {
             if (engine == null)
@@ -131,6 +172,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine.SetValue(variableName, value);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <param name="value">The value to set the variable to.</param>
         public void SetValue(string variableName, float value)
         {
             if (engine == null)
@@ -142,6 +188,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine.SetValue(variableName, value);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <param name="value">The value to set the variable to.</param>
         public void SetValue(string variableName, double value)
         {
             if (engine == null)
@@ -153,6 +204,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine.SetValue(variableName, value);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <param name="value">The value to set the variable to.</param>
         public void SetValue(string variableName, int value)
         {
             if (engine == null)
@@ -164,6 +220,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine.SetValue(variableName, value);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <param name="value">The value to set the variable to.</param>
         public void SetValue(string variableName, string value)
         {
             if (engine == null)
@@ -175,6 +236,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             engine.SetValue(variableName, value);
         }
 
+        /// <summary>
+        /// Set the value of a variable
+        /// </summary>
+        /// <param name="variableName">The name of the variable to set.</param>
+        /// <returns>The value of the variable, or null.</returns>
         public object GetValue(string variableName)
         {
             if (engine == null)
@@ -186,6 +252,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             return engine.GetValue(variableName);
         }
 
+        /// <summary>
+        /// Register the APIs.
+        /// </summary>
         private void RegisterAllAPIs()
         {
             if (engine == null)
@@ -200,6 +269,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             }
         }
 
+        /// <summary>
+        /// Register an API.
+        /// </summary>
         private void RegisterAPI(string name, System.Type type)
         {
             if (engine == null)

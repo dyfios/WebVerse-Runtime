@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -10,6 +12,9 @@ using UnityEditor;
 using FiveSQD.WebVerse.WorldEngine;
 using FiveSQD.WebVerse.Handlers.File;
 
+/// <summary>
+/// Unit tests for the GLTF Handler.
+/// </summary>
 public class GLTFHandlerTests
 {
     private float waitTime = 10;
@@ -17,6 +22,7 @@ public class GLTFHandlerTests
     [UnityTest]
     public IEnumerator GLTFHandlerTests_General()
     {
+        // Set up WebVerse Runtime.
         GameObject runtimeGO = new GameObject("runtime");
         WebVerseRuntime runtime = runtimeGO.AddComponent<WebVerseRuntime>();
         runtime.highlightMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit"));
@@ -27,12 +33,12 @@ public class GLTFHandlerTests
         runtime.Initialize(LocalStorageManager.LocalStorageMode.Cache, 128, 128, 128);
         WorldEngine.LoadWorld("test");
 
+        // Load GLTF Resource as Mesh Entity.
         MeshEntity mEntity = null;
         Action<MeshEntity> onLoaded = new Action<MeshEntity>((meshEntity) =>
         {
             mEntity = meshEntity;
         });
-
         runtime.gltfHandler.LoadGLTFResourceAsMeshEntity(
             "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/2CylinderEngine/glTF-Draco/2CylinderEngine.gltf",
             new string[] {
@@ -41,6 +47,7 @@ public class GLTFHandlerTests
         yield return new WaitForSeconds(waitTime);
         Assert.IsNotNull(mEntity);
 
+        // Download GLTF Resource.
         bool firstDownloaded = false;
         Action onFirstDownloaded = new Action(() =>
         {
@@ -48,7 +55,6 @@ public class GLTFHandlerTests
         });
         runtime.gltfHandler.DownloadGLTFResource("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF/Box.gltf",
             onFirstDownloaded, true);
-
         bool secondDownloaded = false;
         Action onSecondDownloaded = new Action(() =>
         {
@@ -63,6 +69,7 @@ public class GLTFHandlerTests
 
         Assert.IsTrue(secondDownloaded);
 
+        // Load GLTF.
         GameObject m = null;
         Action<GameObject> onGOLoaded = new Action<GameObject>((mesh) =>
         {

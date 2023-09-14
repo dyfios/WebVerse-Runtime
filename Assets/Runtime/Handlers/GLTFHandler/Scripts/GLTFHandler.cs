@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System.Collections.Generic;
 using UnityEngine;
 using FiveSQD.WebVerse.Utilities;
@@ -10,16 +12,41 @@ using System.Collections;
 
 namespace FiveSQD.WebVerse.Handlers.GLTF
 {
+    /// <summary>
+    /// WebVerse's GLTF Handler.
+    /// </summary>
     public class GLTFHandler : BaseHandler
     {
+        /// <summary>
+        /// The WebVerse runtime.
+        /// </summary>
         public WebVerseRuntime runtime;
 
+        /// <summary>
+        /// Container to use for mesh prefabs.
+        /// </summary>
         public GameObject meshPrefabContainer;
 
+        /// <summary>
+        /// Position to apply to mesh prefabs.
+        /// </summary>
         private static readonly Vector3 prefabLocation = new Vector3(9999, 9999, 9999);
 
+        /// <summary>
+        /// Dictionary of mesh paths and their corresponding prefabs.
+        /// </summary>
         private Dictionary<string, GameObject> gltfMeshPrefabs = new Dictionary<string, GameObject>();
 
+        /// <summary>
+        /// Load a GLTF resource as a mesh entity.
+        /// </summary>
+        /// <param name="gltfResourceURI">URI of the top-level GLTF resource.</param>
+        /// <param name="resourceURIs">URIs of resources needed by the top-level GLTF.</param>
+        /// <param name="id">ID of the mesh entity.</param>
+        /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
+        /// to the loaded mesh entity.</param>
+        /// <param name="timeout">Timeout period after which loading will be aborted.</param>
+        /// <returns>ID of the mesh entity being loaded.</returns>
         public Guid LoadGLTFResourceAsMeshEntity(string gltfResourceURI, string[] resourceURIs,
             Guid? id = null, Action<MeshEntity> onLoaded = null, float timeout = 10)
         {
@@ -57,6 +84,13 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             return guid;
         }
 
+        /// <summary>
+        /// Download a GLTF resource.
+        /// </summary>
+        /// <param name="uri">URI of the GLTF resource.</param>
+        /// <param name="onDownloaded">Action to invoke when downloading is complete.</param>
+        /// <param name="redownload">Whether or not to redownload the resource if it already
+        /// exists locally.</param>
         public void DownloadGLTFResource(string uri, Action onDownloaded, bool reDownload = false)
         {
             if (reDownload == false)
@@ -79,6 +113,12 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             request.Send();
         }
 
+        /// <summary>
+        /// Load a local GLTF resource.
+        /// </summary>
+        /// <param name="path">path to the GLTF resource (relative to the file directory).</param>
+        /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
+        /// to the loaded gameobject.</param>
         public void LoadGLTF(string path, Action<GameObject> onLoaded)
         {
             if (gltfMeshPrefabs.ContainsKey(path))
@@ -99,6 +139,13 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             }
         }
 
+        /// <summary>
+        /// Invoked when a mesh is loaded from a GLTF.
+        /// </summary>
+        /// <param name="path">Path to the GLTF resource.</param>
+        /// <param name="result">Resultant gameobject or null.</param>
+        /// <param name="clips">Animation clips associated with the GLTF.</param>
+        /// <param name="callback">Callback to invoke. Takes a reference to the loaded gameobject.</param>
         private void MeshLoadedFromGLTF(string path, GameObject result, AnimationClip[] clips, Action<GameObject> callback)
         {
             if (gltfMeshPrefabs.ContainsKey(path))
@@ -114,6 +161,12 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             InstantiateMeshFromPrefab(result, callback);
         }
 
+        /// <summary>
+        /// Invoked to finish the downloading of a GLTF resource post-receiving an HTTP response.
+        /// </summary>
+        /// <param name="uri">URI of the GLTF resource.</param>
+        /// <param name="responseCode">Received response code.</param>
+        /// <param name="rawData">Data received in the response.</param>
         private void FinishGLTFDownload(string uri, int responseCode, byte[] rawData)
         {
             Logging.Log("[GLTFHandler->FinishGLTFDownload] Got response " + responseCode + " for request " + uri);
@@ -132,6 +185,13 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             runtime.fileHandler.CreateFileInFileDirectory(filePath, rawData);
         }
 
+        /// <summary>
+        /// Instantiate a mesh from an existing prefab.
+        /// </summary>
+        /// <param name="prefab">Prefab to load instance of.</param>
+        /// <param name="callback">Callback to invoke when instantiation is complete.
+        /// Takes a reference to the loaded gameobject.</param>
+        /// <param name="timeout">Timeout period after which loading will be aborted.</param>
         private void InstantiateMeshFromPrefab(GameObject prefab, Action<GameObject> callback)
         {
             GameObject loadedMesh = Instantiate(prefab);
@@ -139,6 +199,10 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             callback.Invoke(loadedMesh);
         }
 
+        /// <summary>
+        /// Set up a gameobject as a mesh prefab.
+        /// </summary>
+        /// <param name="prefab">GameObject to set up as a mesh prefab.</param>
         private void SetUpMeshPrefab(GameObject prefab)
         {
             prefab.SetActive(false);
@@ -188,6 +252,13 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             rigidbody.isKinematic = true;
         }
 
+        /// <summary>
+        /// Set up a loaded GLTF as a mesh entity.
+        /// </summary>
+        /// <param name="loadedMesh">Loaded gameobject containing mesh.</param>
+        /// <param name="guid">ID of the mesh entity.</param>
+        /// <param name="onLoaded">Action to invoke when setup is complete. Takes a reference
+        /// to the set up mesh entity.</param>
         private void SetUpLoadedGLTFMeshAsMeshEntity(GameObject loadedMesh, Guid guid, Action<MeshEntity> onLoaded)
         {
             Action onLoad = () =>
@@ -209,6 +280,17 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 null, loadedMesh, Vector3.zero, Quaternion.identity, guid, null, onLoad);
         }
 
+        /// <summary>
+        /// Load a GLTF as a mesh entity in the background using a coroutine.
+        /// </summary>
+        /// <param name="guid">ID of the mesh entity.</param>
+        /// <param name="gltfResourceURI">URI of the top-level GLTF resource.</param>
+        /// <param name="resourceDownloadStates">Download states of resources the GLTF
+        /// is dependent on. Dictionary of resource URIs and whether or not they have
+        /// been downlaoded.</param>
+        /// <param name="onLoaded">Action to invoke when loading is complete. Takes a reference
+        /// to the loaded mesh entity.</param>
+        /// <param name="timeout">Timeout period after which loading will be aborted.</param>
         private IEnumerator LoadGLTFInBackground(Guid guid, string gltfResourceURI,
             Dictionary<string, bool> resourceDownloadStates, Action<MeshEntity> onLoaded, float timeout = 10)
         {

@@ -1,21 +1,44 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
 {
+    /// <summary>
+    /// Class for HTTP networking.
+    /// </summary>
     public class HTTPNetworking
     {
+        /// <summary>
+        /// Fetch request options.
+        /// </summary>
         public struct FetchRequestOptions
         {
+            /// <summary>
+            /// Body.
+            /// </summary>
             public string body;
             
+            /// <summary>
+            /// Cache.
+            /// </summary>
             public string cache;
 
+            /// <summary>
+            /// Credentials.
+            /// </summary>
             public string credentials;
 
+            /// <summary>
+            /// Headers.
+            /// </summary>
             public string[] headers;
 
+            /// <summary>
+            /// Keepalive.
+            /// </summary>
             public bool keepalive;
 
             /// <summary>
@@ -23,29 +46,65 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             /// </summary>
             public string method;
 
+            /// <summary>
+            /// Mode.
+            /// </summary>
             public string mode;
 
+            /// <summary>
+            /// Priority.
+            /// </summary>
             public string priority;
 
+            /// <summary>
+            /// Redirect.
+            /// </summary>
             public string redirect;
 
+            /// <summary>
+            /// Referrer.
+            /// </summary>
             public string referrer;
 
+            /// <summary>
+            /// Referrer Policy.
+            /// </summary>
             public string referrerPolicy;
         }
 
+        /// <summary>
+        /// Class for HTTP request.
+        /// </summary>
         public class Request
         {
+            /// <summary>
+            /// Body.
+            /// </summary>
             public string body;
 
+            /// <summary>
+            /// Cache.
+            /// </summary>
             public string cache;
 
+            /// <summary>
+            /// Credentials.
+            /// </summary>
             public string credentials;
 
+            /// <summary>
+            /// Headers.
+            /// </summary>
             public string[] headers;
 
+            /// <summary>
+            /// Keepalive.
+            /// </summary>
             public bool keepalive;
 
+            /// <summary>
+            /// Integrity.
+            /// </summary>
             public string integrity;
 
             /// <summary>
@@ -53,18 +112,40 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             /// </summary>
             public string method;
 
+            /// <summary>
+            /// Mode.
+            /// </summary>
             public string mode;
 
+            /// <summary>
+            /// Priority.
+            /// </summary>
             public string priority;
 
+            /// <summary>
+            /// Redirect.
+            /// </summary>
             public string redirect;
 
+            /// <summary>
+            /// Referrer.
+            /// </summary>
             public string referrer;
 
+            /// <summary>
+            /// Referrer Policy.
+            /// </summary>
             public string referrerPolicy;
 
+            /// <summary>
+            /// Resource URIs.
+            /// </summary>
             public string resourceURI;
 
+            /// <summary>
+            /// Constructor for an HTTP Request.
+            /// </summary>
+            /// <param name="input">URI to use.</param>
             public Request(string input)
             {
                 body = "";
@@ -82,6 +163,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
                 resourceURI = input;
             }
 
+            /// <summary>
+            /// Constructor for an HTTP Request.
+            /// </summary>
+            /// <param name="input">URI to use.</param>
+            /// <param name="options">Fetch Request Options.</param>
             public Request(string input, FetchRequestOptions options)
             {
                 body = options.body;
@@ -100,14 +186,32 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             }
         }
 
+        /// <summary>
+        /// Class for an HTTP Response.
+        /// </summary>
         public class Response
         {
+            /// <summary>
+            /// Status code.
+            /// </summary>
             public int status;
 
+            /// <summary>
+            /// Status text.
+            /// </summary>
             public string statusText;
 
+            /// <summary>
+            /// Data.
+            /// </summary>
             public byte[] data;
 
+            /// <summary>
+            /// Constructor for an HTTP Response.
+            /// </summary>
+            /// <param name="status">Status code.</param>
+            /// <param name="statusText">Status text.</param>
+            /// <param name="data">Data.</param>
             public Response(int status, string statusText, byte[] data) 
             {
                 this.status = status;
@@ -116,6 +220,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             }
         }
 
+        /// <summary>
+        /// Perform a Fetch.
+        /// </summary>
+        /// <param name="resource">URI of the resource to fetch.</param>
+        /// <param name="onFinished">Logic to execute when the request has finished.</param>
         public static void Fetch(string resource, string onFinished)
         {
             if (string.IsNullOrEmpty(resource))
@@ -128,6 +237,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             
         }
 
+        /// <summary>
+        /// Perform a Fetch.
+        /// </summary>
+        /// <param name="resource">URI of the resource to fetch.</param>
+        /// <param name="options">Fetch Request Options.</param>
+        /// <param name="onFinished">Logic to execute when the request has finished.</param>
         public static void Fetch(string resource, FetchRequestOptions options, string onFinished)
         {
             if (string.IsNullOrEmpty(resource))
@@ -139,6 +254,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             Fetch(new Request(resource, options), onFinished);
         }
 
+        /// <summary>
+        /// Perform a Fetch.
+        /// </summary>
+        /// <param name="request">Request to fetch.</param>
+        /// <param name="onFinished">Logic to execute when the request has finished.</param>
         public static void Fetch(Request request, string onFinished)
         {
             WebInterface.HTTP.HTTPRequest.HTTPMethod method = WebInterface.HTTP.HTTPRequest.HTTPMethod.Get;

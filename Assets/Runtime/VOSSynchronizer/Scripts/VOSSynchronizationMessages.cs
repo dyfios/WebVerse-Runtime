@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System;
 using UnityEngine;
 using Newtonsoft.Json;

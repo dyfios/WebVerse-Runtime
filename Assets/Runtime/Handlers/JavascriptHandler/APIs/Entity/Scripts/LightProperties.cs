@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity

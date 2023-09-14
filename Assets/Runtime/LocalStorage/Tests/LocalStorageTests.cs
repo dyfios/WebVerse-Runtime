@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using FiveSQD.WebVerse.LocalStorage;
 
+/// <summary>
+/// Unit tests for Local Storage.
+/// </summary>
 public class LocalStorageTests
 {
     [Test]

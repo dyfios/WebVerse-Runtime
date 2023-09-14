@@ -1,11 +1,19 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
 namespace FiveSQD.WebVerse.Building
 {
+    /// <summary>
+    /// Class for automated building.
+    /// </summary>
     public class Builder
     {
+        /// <summary>
+        /// Build for WebGL.
+        /// </summary>
         public static void BuildWebGL()
         {
             BuildPlayerOptions options = new BuildPlayerOptions()

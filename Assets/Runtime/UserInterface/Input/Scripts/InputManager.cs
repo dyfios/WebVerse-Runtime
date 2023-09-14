@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System.Collections.Generic;
@@ -5,31 +7,119 @@ using UnityEngine;
 
 namespace FiveSQD.WebVerse.Input
 {
+    /// <summary>
+    /// Class for the Input Manager.
+    /// </summary>
     public class InputManager : BaseManager
     {
+        /// <summary>
+        /// The move value.
+        /// </summary>
         public Vector2 moveValue;
+
+        /// <summary>
+        /// The look value.
+        /// </summary>
         public Vector2 lookValue;
+
+        /// <summary>
+        /// Pressed keys.
+        /// </summary>
         public List<string> pressedKeys;
+
+        /// <summary>
+        /// Keycodes of pressed keys.
+        /// </summary>
         public List<string> pressedKeyCodes;
+
+        /// <summary>
+        /// The left value.
+        /// </summary>
         public bool leftValue;
+
+        /// <summary>
+        /// The middle value.
+        /// </summary>
         public bool middleValue;
+
+        /// <summary>
+        /// The right value.
+        /// </summary>
         public bool rightValue;
 
+        /// <summary>
+        /// Move functions.
+        /// </summary>
         private List<string> moveFunctions;
+
+        /// <summary>
+        /// End Move functions.
+        /// </summary>
         private List<string> endMoveFunctions;
+
+        /// <summary>
+        /// Look functions.
+        /// </summary>
         private List<string> lookFunctions;
+
+        /// <summary>
+        /// End Look functions.
+        /// </summary>
         private List<string> endLookFunctions;
+
+        /// <summary>
+        /// Key functions.
+        /// </summary>
         private List<string> keyFunctions;
+
+        /// <summary>
+        /// Key Code functions.
+        /// </summary>
         private List<string> keyCodeFunctions;
+
+        /// <summary>
+        /// End Key functions.
+        /// </summary>
         private List<string> endKeyFunctions;
+
+        /// <summary>
+        /// End Key Code functions.
+        /// </summary>
         private List<string> endKeyCodeFunctions;
+
+        /// <summary>
+        /// Left functions.
+        /// </summary>
         private List<string> leftFunctions;
+
+        /// <summary>
+        /// End Left functions.
+        /// </summary>
         private List<string> endLeftFunctions;
+
+        /// <summary>
+        /// Middle functions.
+        /// </summary>
         private List<string> middleFunctions;
+
+        /// <summary>
+        /// End Middle functions.
+        /// </summary>
         private List<string> endMiddleFunctions;
+
+        /// <summary>
+        /// Right functions.
+        /// </summary>
         private List<string> rightFunctions;
+
+        /// <summary>
+        /// End Right functions.
+        /// </summary>
         private List<string> endRightFunctions;
 
+        /// <summary>
+        /// Initialize the Input Manager.
+        /// </summary>
         public override void Initialize()
         {
             moveFunctions = new List<string>();
@@ -52,11 +142,19 @@ namespace FiveSQD.WebVerse.Input
             base.Initialize();
         }
 
+        /// <summary>
+        /// Terminate the Input Manager.
+        /// </summary>
         public override void Terminate()
         {
             base.Terminate();
         }
 
+        /// <summary>
+        /// Register an Input Event.
+        /// </summary>
+        /// <param name="eventName">Name of the Input Event.</param>
+        /// <param name="call">Logic to call on invocation of Input Event.</param>
         public void RegisterInputEvent(string eventName, string call)
         {
             switch (eventName.ToLower())
@@ -119,6 +217,11 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// Deregister an Input Event.
+        /// </summary>
+        /// <param name="eventName">Name of the Input Event.</param>
+        /// <param name="call">Logic being called on invocation of Input Event.</param>
         public void DeregisterInputEvent(string eventName, string call)
         {
             switch (eventName.ToLower())
@@ -251,6 +354,10 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// Perform a move.
+        /// </summary>
+        /// <param name="amount">Amount on X and Y axes to move.</param>
         public void Move(Vector2 amount)
         {
             foreach (string function in moveFunctions)
@@ -259,6 +366,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// End a move.
+        /// </summary>
         public void EndMove()
         {
             foreach (string function in endMoveFunctions)
@@ -267,6 +377,10 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// Perform a look.
+        /// </summary>
+        /// <param name="amount">Amount on X and Y axes to look.</param>
         public void Look(Vector2 amount)
         {
             foreach (string function in lookFunctions)
@@ -275,6 +389,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// End a look.
+        /// </summary>
         public void EndLook()
         {
             foreach (string function in endLookFunctions)
@@ -283,6 +400,11 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// Perform a key press.
+        /// </summary>
+        /// <param name="key">Key being pressed.</param>
+        /// <param name="keyCode">Keycode of key being pressed.</param>
         public void Key(string key, string keyCode)
         {
             foreach (string function in keyFunctions)
@@ -296,6 +418,11 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// End a key press.
+        /// </summary>
+        /// <param name="key">Key no longer being pressed.</param>
+        /// <param name="keyCode">Keycode of key no longer being pressed.</param>
         public void EndKey(string key, string keyCode)
         {
             foreach (string function in endKeyFunctions)
@@ -309,6 +436,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// Perform a left.
+        /// </summary>
         public void Left()
         {
             foreach (string function in leftFunctions)
@@ -317,6 +447,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// End a left.
+        /// </summary>
         public void EndLeft()
         {
             foreach (string function in endLeftFunctions)
@@ -325,6 +458,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// Perform a middle.
+        /// </summary>
         public void Middle()
         {
             foreach (string function in middleFunctions)
@@ -333,6 +469,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// End a middle.
+        /// </summary>
         public void EndMiddle()
         {
             foreach (string function in endMiddleFunctions)
@@ -341,6 +480,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// Perform a right.
+        /// </summary>
         public void Right()
         {
             foreach (string function in rightFunctions)
@@ -349,6 +491,9 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        /// <summary>
+        /// End a right.
+        /// </summary>
         public void EndRight()
         {
             foreach (string function in endRightFunctions)

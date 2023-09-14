@@ -1,25 +1,58 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
 {
+    /// <summary>
+    /// Class for WebSocket Events.
+    /// </summary>
     public class WebSocketEvent
     {
+        /// <summary>
+        /// Struct for WebSocket Data.
+        /// </summary>
         public struct Data
         {
+            /// <summary>
+            /// Binary Data.
+            /// </summary>
             public byte[] binary;
 
+            /// <summary>
+            /// String Data.
+            /// </summary>
             public string message;
         }
 
+        /// <summary>
+        /// WebSocket for the Event.
+        /// </summary>
         public WebSocket webSocket;
 
+        /// <summary>
+        /// Event Code.
+        /// </summary>
         public int code;
 
+        /// <summary>
+        /// Details of the Event.
+        /// </summary>
         public string details;
 
+        /// <summary>
+        /// Data for the Event.
+        /// </summary>
         public Data data;
 
+        /// <summary>
+        /// Constructor for a WebSocket Event.
+        /// </summary>
+        /// <param name="webSocket">WebSocket for the event.</param>
+        /// <param name="message">Message for the event.</param>
+        /// <param name="code">Event code.</param>
+        /// <param name="details">Details of the event.</param>
         public WebSocketEvent(WebSocket webSocket, string message, int code, string details)
         {
             this.webSocket = webSocket;
@@ -31,6 +64,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             this.details = details;
         }
 
+        /// <summary>
+        /// Constructor for a WebSocket Event.
+        /// </summary>
+        /// <param name="webSocket">WebSocket for the event.</param>
+        /// <param name="binary">Binary data for the event.</param>
+        /// <param name="code">Event code.</param>
+        /// <param name="details">Details of the event.</param>
         public WebSocketEvent(WebSocket webSocket, byte[] binary, int code, string details)
         {
             this.webSocket = webSocket;
@@ -43,15 +83,31 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
         }
     }
 
+    /// <summary>
+    /// Class for a WebSocket.
+    /// </summary>
     public class WebSocket
     {
+        /// <summary>
+        /// Reference to the internal WebSocket.
+        /// </summary>
         private WebInterface.WebSocket.WebSocket internalWebSocket;
 
+        /// <summary>
+        /// Constructor for a WebSocket.
+        /// </summary>
+        /// <param name="uri">URI for the WebSocket.</param>
         public WebSocket(string uri)
         {
             internalWebSocket = new WebInterface.WebSocket.WebSocket(uri, null, null, null, null, null);
         }
 
+        /// <summary>
+        /// Add an event listener to the WebSocket.
+        /// </summary>
+        /// <param name="type">Type of event ("open", "close", "binary", "message", or "error").</param>
+        /// <param name="functionToCall">Logic to execute when event occurs.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool AddEventListener(string type, string functionToCall)
         {
             if (internalWebSocket == null)
@@ -114,6 +170,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             }
         }
 
+        /// <summary>
+        /// Send a message on the WebSocket.
+        /// </summary>
+        /// <param name="dataToSend">Message to send.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool Send(string dataToSend)
         {
             if (internalWebSocket == null)
@@ -132,6 +193,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             return true;
         }
 
+        /// <summary>
+        /// Send a message on the WebSocket.
+        /// </summary>
+        /// <param name="dataToSend">Data to send.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool Send(byte[] dataToSend)
         {
             if (internalWebSocket == null)

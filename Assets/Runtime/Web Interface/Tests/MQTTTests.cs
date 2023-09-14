@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System.Collections;
 using UnityEngine.TestTools;
 using FiveSQD.WebVerse.WebInterface.MQTT;
@@ -5,6 +7,9 @@ using System;
 using UnityEngine;
 using NUnit.Framework;
 
+/// <summary>
+/// Unit tests for MQTT.
+/// </summary>
 public class MQTTTests
 {
     private float waitPeriod = 3;

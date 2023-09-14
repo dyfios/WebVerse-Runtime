@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
@@ -5,6 +7,9 @@ using UnityEngine.TestTools;
 using FiveSQD.WebVerse.WebInterface.WebSocket;
 using System;
 
+/// <summary>
+/// Unit tests for WebSockets.
+/// </summary>
 public class WebSocketTests
 {
     private float waitTime = 3;

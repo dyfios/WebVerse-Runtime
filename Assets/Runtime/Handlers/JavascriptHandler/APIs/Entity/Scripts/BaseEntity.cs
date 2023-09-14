@@ -1,3 +1,5 @@
+// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+
 using System;
 using System.Collections.Generic;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
@@ -10,6 +12,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
     /// </summary>
     public class BaseEntity
     {
+        /// <summary>
+        /// ID of the entity.
+        /// </summary>
         public Guid? id
         {
             get
@@ -24,6 +29,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
         }
 
+        /// <summary>
+        /// Tag of the entity.
+        /// </summary>
         public string tag
         {
             get
@@ -49,10 +57,19 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
         }
 
+        /// <summary>
+        /// Internal entity reference.
+        /// </summary>
         protected WorldEngine.Entity.BaseEntity internalEntity = null;
 
+        /// <summary>
+        /// Type of the entity.
+        /// </summary>
         protected Type internalEntityType = typeof(WorldEngine.Entity.BaseEntity);
 
+        /// <summary>
+        /// Constructor for the entity.
+        /// </summary>
         public BaseEntity()
         {
             if (WorldEngine.WorldEngine.ActiveWorld == null)
@@ -62,6 +79,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
         }
 
+        /// <summary>
+        /// Set the parent of the entity.
+        /// </summary>
+        /// <param name="parent">Entity to make parent of this one, or null.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetParent(BaseEntity parent)
         {
             if (IsValid() == false)
@@ -127,6 +149,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
         }
 
+        /// <summary>
+        /// Get the parent of the entity.
+        /// </summary>
+        /// <returns>Entity that is parent of this one, or null if none.</returns>
         public BaseEntity GetParent()
         {
             if (IsValid() == false)
@@ -156,6 +182,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return EntityAPIHelper.GetPublicEntity(parentEntity);
         }
 
+        /// <summary>
+        /// Place the world camera on this entity.
+        /// </summary>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool PlaceCameraOn()
         {
             if (IsValid() == false)
@@ -169,6 +199,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return true;
         }
 
+        /// <summary>
+        /// Get the children of the entity.
+        /// </summary>
+        /// <returns>An array of entities that are children of this one.</returns>
         public BaseEntity[] GetChildren()
         {
             if (IsValid() == false)
@@ -190,6 +224,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return children.ToArray();
         }
 
+        /// <summary>
+        /// Set the position of the entity.
+        /// </summary>
+        /// <param name="position">Position to apply to the entity.</param>
+        /// <param name="local">Whether or not the position is local.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetPosition(Vector3 position, bool local, bool synchronizeChange = true)
         {
             if (IsValid() == false)
@@ -202,6 +243,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 local, synchronizeChange);
         }
 
+        /// <summary>
+        /// Get the position of the entity.
+        /// </summary>
+        /// <param name="local">Whether or not to get the local position.</param>
+        /// <returns>The position of the entity.</returns>
         public Vector3 GetPosition(bool local)
         {
             if (IsValid() == false)
@@ -214,6 +260,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return new Vector3(position.x, position.y, position.z);
         }
 
+        /// <summary>
+        /// Set the rotation of the entity.
+        /// </summary>
+        /// <param name="rotation">Rotation to apply to the entity.</param>
+        /// <param name="local">Whether or not the rotation is local.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetRotation(Quaternion rotation, bool local, bool synchronizeChange = true)
         {
             if (IsValid() == false)
@@ -226,6 +279,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 local, synchronizeChange);
         }
 
+        /// <summary>
+        /// Get the rotation of the entity.
+        /// </summary>
+        /// <param name="local">Whether or not to get the local rotation.</param>
+        /// <returns>The rotation of the entity.</returns>
         public Quaternion GetRotation(bool local)
         {
             if (IsValid() == false)
@@ -238,6 +296,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
         }
 
+        /// <summary>
+        /// Set the Euler rotation of the entity.
+        /// </summary>
+        /// <param name="eulerRotation">Euler rotation to apply to the entity.</param>
+        /// <param name="local">Whether or not the rotation is local.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetEulerRotation(Vector3 eulerRotation, bool local, bool synchronizeChange = true)
         {
             if (IsValid() == false)
@@ -250,6 +315,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 local, synchronizeChange);
         }
 
+        /// <summary>
+        /// Set the scale of the entity.
+        /// </summary>
+        /// <param name="scale">Scale to apply to the entity.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetScale(Vector3 scale, bool synchronizeChange = true)
         {
             if (IsValid() == false)
@@ -261,6 +332,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return internalEntity.SetScale(new UnityEngine.Vector3(scale.x, scale.y, scale.z), synchronizeChange);
         }
 
+        /// <summary>
+        /// Get the scale of the entity.
+        /// </summary>
+        /// <returns>The scale of the entity.</returns>
         public Vector3 GetScale()
         {
             if (IsValid() == false)
@@ -273,6 +348,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return new Vector3(scale.x, scale.y, scale.z);
         }
 
+        /// <summary>
+        /// Set the size of the entity.
+        /// </summary>
+        /// <param name="size">Size to apply to the entity.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetSize(Vector3 size, bool synchronizeChange)
         {
             if (IsValid() == false)
@@ -284,6 +365,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return internalEntity.SetSize(new UnityEngine.Vector3(size.x, size.y, size.z), synchronizeChange);
         }
 
+        /// <summary>
+        /// Get the size of the entity.
+        /// </summary>
+        /// <returns>The size of the entity.</returns>
         public Vector3 GetSize()
         {
             if (IsValid() == false)
@@ -296,6 +381,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return new Vector3(size.x, size.y, size.z);
         }
 
+        /// <summary>
+        /// Set the visibility of the entity.
+        /// </summary>
+        /// <param name="visible">Whether or not to make entity visible.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetVisibility(bool visible)
         {
             if (IsValid() == false)
@@ -307,6 +397,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return internalEntity.SetVisibility(visible);
         }
 
+        /// <summary>
+        /// Get the visibility of the entity.
+        /// </summary>
+        /// <returns>The visibility of the entity.</returns>
         public bool GetVisibility()
         {
             if (IsValid() == false)
@@ -318,6 +412,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return internalEntity.GetVisibility();
         }
 
+        /// <summary>
+        /// Set the highlight state of the entity.
+        /// </summary>
+        /// <param name="highlight">Whether or not to highlight the entity.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool SetHighlight(bool highlight)
         {
             if (IsValid() == false)
@@ -330,6 +429,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return true;
         }
 
+        /// <summary>
+        /// Get the highlight state of the entity.
+        /// </summary>
+        /// <returns>The highlight state of the entity.</returns>
         public bool GetHighlight()
         {
             if (IsValid() == false)
@@ -341,6 +444,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return internalEntity.GetHighlight();
         }
 
+        /// <summary>
+        /// Delete the entity.
+        /// </summary>
+        /// <returns>Whether or not the operation was successful.</returns>
         public bool Delete()
         {
             if (IsValid() == false)
@@ -352,6 +459,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return internalEntity.Delete();
         }
 
+        /// <summary>
+        /// Compare this entity with another.
+        /// </summary>
+        /// <returns>Whether or not the entities match.</returns>
         public bool Compare(BaseEntity other)
         {
             if (IsValid() == false)
@@ -812,6 +923,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
         }
 
+        /// <summary>
+        /// Determines whether or not this entity is valid.
+        /// </summary>
+        /// <returns>Whether or not this entity is valid.</returns>
         protected bool IsValid()
         {
             if (internalEntity == null)
