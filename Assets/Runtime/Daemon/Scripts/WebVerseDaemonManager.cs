@@ -27,6 +27,11 @@ namespace FiveSQD.WebVerse.Daemon
         private Guid? connectionID;
 
         /// <summary>
+        /// ID for the main app.
+        /// </summary>
+        private Guid? mainAppID;
+
+        /// <summary>
         /// Initialize the Daemon Manager.
         /// </summary>
         public override void Initialize()
@@ -67,7 +72,8 @@ namespace FiveSQD.WebVerse.Daemon
         /// Connect to the Daemon.
         /// </summary>
         /// <param name="port">Port to connect on.</param>
-        public void ConnectToDaemon(uint port)
+        /// <param name="mainAppID">ID for the main app.</param>
+        public void ConnectToDaemon(uint port, Guid mainAppID)
         {
             if (webSocket != null)
             {
@@ -100,6 +106,7 @@ namespace FiveSQD.WebVerse.Daemon
                 OnError(data);
             };
 
+            this.mainAppID = mainAppID;
             webSocket = new WebSocket("wss://localhost:" + port,
                 onOpenedAction, onClosedAction, onBinaryAction, onStringAction, onErrorAction);
             webSocket.Open();
@@ -237,8 +244,14 @@ namespace FiveSQD.WebVerse.Daemon
                 return;
             }
 
+            if (mainAppID.HasValue == false)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleIdentificationRequest] No Main App ID.");
+                return;
+            }
+
             WebVerseDaemonMessages.IdentificationResponse respMessage =
-                new WebVerseDaemonMessages.IdentificationResponse(reqMessage, "WV-FOCUSED-RUNTIME");
+                new WebVerseDaemonMessages.IdentificationResponse(reqMessage, mainAppID, "WV-FOCUSED-RUNTIME");
 
             if (webSocket == null)
             {

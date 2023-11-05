@@ -62,11 +62,17 @@ namespace FiveSQD.WebVerse.Daemon
             public string connectionID;
 
             /// <summary>
+            /// Window ID.
+            /// </summary>
+            [JsonProperty(PropertyName = "windowID")]
+            public string windowID;
+
+            /// <summary>
             /// Constructor for a JSON-serializable identification request.
             /// </summary>
             /// <param name="request">Request Message.</param>
             /// <param name="clientType">Client Type.</param>
-            public IdentificationResponse(IdentificationRequest request, string clientType)
+            public IdentificationResponse(IdentificationRequest request, Guid? windowID, string clientType)
             {
                 if (request == null)
                 {
@@ -75,6 +81,7 @@ namespace FiveSQD.WebVerse.Daemon
 
                 topic = "IDENTIFICATION-RESP";
                 connectionID = request.connectionID.ToString();
+                this.windowID = windowID.HasValue ? windowID.Value.ToString() : "";
                 this.clientType = clientType;
             }
         }

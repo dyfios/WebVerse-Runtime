@@ -1,10 +1,14 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities;
+using System;
 using UnityEngine;
 
 namespace FiveSQD.WebVerse.Runtime
 {
+    /// <summary>
+    /// WebVerse Focused Mode.
+    /// </summary>
     public class FocusedMode : MonoBehaviour
     {
         /// <summary>
@@ -42,6 +46,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("Daemon port to use in Unity Editor tests.")]
         public string testDaemonPort = "0";
+
+        /// <summary>
+        /// Main app ID to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Main app ID to use in Unity Editor tests.")]
+        public string testMainAppID;
 
         /// <summary>
         /// WebVerse Runtime.
@@ -101,7 +111,13 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogError("[FocusedMode->LoadRuntime] Invalid daemon port value.");
             }
 
-            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort);
+            Guid mainAppID = GetMainAppID();
+            if (mainAppID == Guid.Empty)
+            {
+                Logging.LogError("[FocusedMode->LoadRuntime] Invalid main app ID value.");
+            }
+
+            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID);
             runtime.LoadWorld(uri);
         }
 
@@ -245,6 +261,23 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return uint.Parse(daemonPort);
+        }
+
+        private Guid GetMainAppID()
+        {
+            string mainAppID = "";
+#if UNITY_EDITOR
+            mainAppID = testMainAppID;
+#else
+            foreach (string arg in System.Environment.GetCommandLineArgs())
+            {
+                if (arg.StartsWith("mainappid="))
+                {
+                    mainAppID = arg.Substring(10);
+                }
+            }
+#endif
+            return Guid.Parse(mainAppID);
         }
     }
 }

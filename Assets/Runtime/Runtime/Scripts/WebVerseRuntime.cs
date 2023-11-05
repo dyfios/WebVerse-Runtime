@@ -50,6 +50,11 @@ namespace FiveSQD.WebVerse.Runtime
             /// Daemon Port.
             /// </summary>
             public uint? daemonPort;
+
+            /// <summary>
+            /// Main App ID.
+            /// </summary>
+            public Guid? mainAppID;
         }
 
         /// <summary>
@@ -185,7 +190,8 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogError("[WebVerseRuntime->Initialize] Invalid max key length value.");
             }
 
-            Initialize(mode, settings.maxEntries, settings.maxEntryLength, settings.maxKeyLength, settings.daemonPort);
+            Initialize(mode, settings.maxEntries, settings.maxEntryLength,
+                settings.maxKeyLength, settings.daemonPort, settings.mainAppID);
         }
 
         /// <summary>
@@ -196,8 +202,10 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
         /// <param name="daemonPort">Daemon Port.</param>
+        /// <param name="mainAppID">Main App ID.</param>
         public void Initialize(LocalStorageManager.LocalStorageMode storageMode,
-            int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null)
+            int maxEntries, int maxEntryLength, int maxKeyLength,
+            uint? daemonPort = null, Guid? mainAppID = null)
         {
             if (Instance != null)
             {
@@ -207,7 +215,7 @@ namespace FiveSQD.WebVerse.Runtime
 
             Instance = this;
 
-            InitializeComponents(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort);
+            InitializeComponents(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID);
         }
 
         /// <summary>
@@ -274,8 +282,10 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
         /// <param name="daemonPort">Daemon Port.</param>
+        /// <param name="mainAppID">Main App ID.</param>
         private void InitializeComponents(LocalStorageManager.LocalStorageMode storageMode,
-            int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null)
+            int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null,
+            Guid? mainAppID = null)
         {
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
@@ -342,7 +352,11 @@ namespace FiveSQD.WebVerse.Runtime
                 daemonManagerGO.transform.SetParent(transform);
                 webVerseDaemonManager = daemonManagerGO.AddComponent<WebVerseDaemonManager>();
                 webVerseDaemonManager.Initialize();
-                webVerseDaemonManager.ConnectToDaemon(daemonPort.Value);
+                if (mainAppID.HasValue == false)
+                {
+                    Logging.LogError("[WebVerseRuntime->InitializeComponents] No Main App ID.");
+                }
+                webVerseDaemonManager.ConnectToDaemon(daemonPort.Value, mainAppID.Value);
             }
         }
 
