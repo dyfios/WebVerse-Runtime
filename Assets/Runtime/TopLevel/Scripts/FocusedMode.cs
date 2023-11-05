@@ -38,6 +38,12 @@ namespace FiveSQD.WebVerse.Runtime
         public string testMaxKeyLength = "512";
 
         /// <summary>
+        /// Daemon port to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Daemon port to use in Unity Editor tests.")]
+        public string testDaemonPort = "0";
+
+        /// <summary>
         /// WebVerse Runtime.
         /// </summary>
         [Tooltip("WebVerse Runtime.")]
@@ -89,7 +95,13 @@ namespace FiveSQD.WebVerse.Runtime
                 return;
             }
 
-            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength);
+            uint daemonPort = GetDaemonPort();
+            if (daemonPort <= 0 || daemonPort >= 65535)
+            {
+                Logging.LogError("[FocusedMode->LoadRuntime] Invalid daemon port value.");
+            }
+
+            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort);
             runtime.LoadWorld(uri);
         }
 
@@ -216,6 +228,23 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return int.Parse(maxKeyLength);
+        }
+
+        private uint GetDaemonPort()
+        {
+            string daemonPort = "";
+#if UNITY_EDITOR
+            daemonPort = testDaemonPort;
+#else
+            foreach (string arg in System.Environment.GetCommandLineArgs())
+            {
+                if (arg.StartsWith("daemonport="))
+                {
+                    daemonPort = arg.Substring(11);
+                }
+            }
+#endif
+            return uint.Parse(daemonPort);
         }
     }
 }

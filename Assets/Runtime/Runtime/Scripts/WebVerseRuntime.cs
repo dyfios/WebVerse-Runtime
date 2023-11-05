@@ -12,6 +12,7 @@ using System.IO;
 using FiveSQD.WebVerse.Handlers.VEML;
 using System;
 using FiveSQD.WebVerse.Input;
+using FiveSQD.WebVerse.Daemon;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -44,6 +45,11 @@ namespace FiveSQD.WebVerse.Runtime
             /// Maximum storage entry key length.
             /// </summary>
             public int maxKeyLength;
+
+            /// <summary>
+            /// Daemon Port.
+            /// </summary>
+            public uint? daemonPort;
         }
 
         /// <summary>
@@ -104,6 +110,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The Input Manager.")]
         public InputManager inputManager { get; private set; }
+
+        /// <summary>
+        /// The Daemon Manager.
+        /// </summary>
+        [Tooltip("The Daemon Manager.")]
+        public WebVerseDaemonManager webVerseDaemonManager { get; private set; }
 
         /// <summary>
         /// Material to use for highlighting.
@@ -173,7 +185,7 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogError("[WebVerseRuntime->Initialize] Invalid max key length value.");
             }
 
-            Initialize(mode, settings.maxEntries, settings.maxEntryLength, settings.maxKeyLength);
+            Initialize(mode, settings.maxEntries, settings.maxEntryLength, settings.maxKeyLength, settings.daemonPort);
         }
 
         /// <summary>
@@ -183,8 +195,9 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntries">Maximum number of storage entries.</param>
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
+        /// <param name="daemonPort">Daemon Port.</param>
         public void Initialize(LocalStorageManager.LocalStorageMode storageMode,
-            int maxEntries, int maxEntryLength, int maxKeyLength)
+            int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null)
         {
             if (Instance != null)
             {
@@ -194,7 +207,7 @@ namespace FiveSQD.WebVerse.Runtime
 
             Instance = this;
 
-            InitializeComponents(storageMode, maxEntries, maxEntryLength, maxKeyLength);
+            InitializeComponents(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort);
         }
 
         /// <summary>
@@ -260,8 +273,9 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntries">Maximum number of storage entries.</param>
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
+        /// <param name="daemonPort">Daemon Port.</param>
         private void InitializeComponents(LocalStorageManager.LocalStorageMode storageMode,
-            int maxEntries, int maxEntryLength, int maxKeyLength)
+            int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null)
         {
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
@@ -320,6 +334,16 @@ namespace FiveSQD.WebVerse.Runtime
             inputManagerGO.transform.SetParent(transform);
             inputManager = inputManagerGO.AddComponent<InputManager>();
             inputManager.Initialize();
+
+            if (daemonPort != null)
+            {
+                // Set up Daemon Manager.
+                GameObject daemonManagerGO = new GameObject("DaemonManager");
+                daemonManagerGO.transform.SetParent(transform);
+                webVerseDaemonManager = daemonManagerGO.AddComponent<WebVerseDaemonManager>();
+                webVerseDaemonManager.Initialize();
+                webVerseDaemonManager.ConnectToDaemon(daemonPort.Value);
+            }
         }
 
         /// <summary>
@@ -327,6 +351,13 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         private void TerminateComponents()
         {
+            if (webVerseDaemonManager != null)
+            {
+                // Terminate Daemon Manager.
+                webVerseDaemonManager.Terminate();
+                Destroy(webVerseDaemonManager.gameObject);
+            }
+
             // Terminate Input Manager.
             inputManager.Terminate();
             Destroy(inputManager.gameObject);

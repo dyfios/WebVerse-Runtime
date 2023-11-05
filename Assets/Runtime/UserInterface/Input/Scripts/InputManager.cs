@@ -48,6 +48,226 @@ namespace FiveSQD.WebVerse.Input
         public bool rightValue;
 
         /// <summary>
+        /// The left menu value.
+        /// </summary>
+        public bool leftMenuValue;
+
+        /// <summary>
+        /// The right menu value.
+        /// </summary>
+        public bool rightMenuValue;
+
+        /// <summary>
+        /// The menu value.
+        /// </summary>
+        public bool menuValue
+        {
+            get
+            {
+                return leftMenuValue || rightMenuValue;
+            }
+        }
+
+        /// <summary>
+        /// The left trigger touch value.
+        /// </summary>
+        public bool leftTriggerTouchValue;
+
+        /// <summary>
+        /// The right trigger touch value.
+        /// </summary>
+        public bool rightTriggerTouchValue;
+
+        /// <summary>
+        /// The trigger touch value.
+        /// </summary>
+        public bool triggerTouchValue
+        {
+            get
+            {
+                return leftTriggerTouchValue || rightTriggerTouchValue;
+            }
+        }
+
+        /// <summary>
+        /// The left trigger press value.
+        /// </summary>
+        public bool leftTriggerPressValue;
+
+        /// <summary>
+        /// The right trigger press value.
+        /// </summary>
+        public bool rightTriggerPressValue;
+
+        /// <summary>
+        /// The trigger press value.
+        /// </summary>
+        public bool triggerPressValue
+        {
+            get
+            {
+                return leftTriggerPressValue || rightTriggerPressValue;
+            }
+        }
+
+        /// <summary>
+        /// The left grip press value.
+        /// </summary>
+        public bool leftGripPressValue;
+
+        /// <summary>
+        /// The right grip press value.
+        /// </summary>
+        public bool rightGripPressValue;
+
+        /// <summary>
+        /// The grip press value.
+        /// </summary>
+        public bool gripPressValue
+        {
+            get
+            {
+                return leftGripPressValue || rightGripPressValue;
+            }
+        }
+
+        /// <summary>
+        /// The left touchpad touch value.
+        /// </summary>
+        public bool leftTouchPadTouchValue;
+
+        /// <summary>
+        /// The right touchpad touch value.
+        /// </summary>
+        public bool rightTouchPadTouchValue;
+
+        /// <summary>
+        /// The touchpad touch value.
+        /// </summary>
+        public bool touchPadTouchValue
+        {
+            get
+            {
+                return leftTouchPadTouchValue || rightTouchPadTouchValue;
+            }
+        }
+
+        /// <summary>
+        /// The left touchpad press value.
+        /// </summary>
+        public bool leftTouchPadPressValue;
+
+        /// <summary>
+        /// The right touchpad press value.
+        /// </summary>
+        public bool rightTouchPadPressValue;
+
+        /// <summary>
+        /// The touchpad press value.
+        /// </summary>
+        public bool touchPadPressValue
+        {
+            get
+            {
+                return leftTouchPadPressValue || rightTouchPadPressValue;
+            }
+        }
+
+        /// <summary>
+        /// The left primary touch value.
+        /// </summary>
+        public bool leftPrimaryTouchValue;
+
+        /// <summary>
+        /// The right primary touch value.
+        /// </summary>
+        public bool rightPrimaryTouchValue;
+
+        /// <summary>
+        /// The primary touch value.
+        /// </summary>
+        public bool primaryPadTouchValue
+        {
+            get
+            {
+                return leftPrimaryTouchValue || rightPrimaryTouchValue;
+            }
+        }
+
+        /// <summary>
+        /// The left primary press value.
+        /// </summary>
+        public bool leftPrimaryPressValue;
+
+        /// <summary>
+        /// The right primary press value.
+        /// </summary>
+        public bool rightPrimaryPressValue;
+
+        /// <summary>
+        /// The primary press value.
+        /// </summary>
+        public bool primaryPressValue
+        {
+            get
+            {
+                return leftPrimaryPressValue || rightPrimaryPressValue;
+            }
+        }
+
+        /// <summary>
+        /// The left secondary touch value.
+        /// </summary>
+        public bool leftSecondaryTouchValue;
+
+        /// <summary>
+        /// The right secondary touch value.
+        /// </summary>
+        public bool rightSecondaryTouchValue;
+
+        /// <summary>
+        /// The secondary touch value.
+        /// </summary>
+        public bool secondaryTouchValue
+        {
+            get
+            {
+                return leftSecondaryTouchValue || rightSecondaryTouchValue;
+            }
+        }
+
+        /// <summary>
+        /// The left secondary press value.
+        /// </summary>
+        public bool leftSecondaryPressValue;
+
+        /// <summary>
+        /// The right secondary press value.
+        /// </summary>
+        public bool rightSecondaryPressValue;
+
+        /// <summary>
+        /// The touchpad press value.
+        /// </summary>
+        public bool secondaryPressValue
+        {
+            get
+            {
+                return leftSecondaryPressValue || rightSecondaryPressValue;
+            }
+        }
+
+        /// <summary>
+        /// The left stick value.
+        /// </summary>
+        public bool leftStickValue;
+
+        /// <summary>
+        /// The right stick value.
+        /// </summary>
+        public bool rightStickValue;
+
+        /// <summary>
         /// Move functions.
         /// </summary>
         private List<string> moveFunctions;
@@ -118,6 +338,326 @@ namespace FiveSQD.WebVerse.Input
         private List<string> endRightFunctions;
 
         /// <summary>
+        /// Left Menu functions.
+        /// </summary>
+        private List<string> leftMenuFunctions;
+
+        /// <summary>
+        /// End Left Menu functions.
+        /// </summary>
+        private List<string> endLeftMenuFunctions;
+
+        /// <summary>
+        /// Right Menu functions.
+        /// </summary>
+        private List<string> rightMenuFunctions;
+
+        /// <summary>
+        /// End Right Menu functions.
+        /// </summary>
+        private List<string> endRightMenuFunctions;
+
+        /// <summary>
+        /// Menu functions.
+        /// </summary>
+        private List<string> menuFunctions;
+
+        /// <summary>
+        /// End Menu functions.
+        /// </summary>
+        private List<string> endMenuFunctions;
+
+        /// <summary>
+        /// Left Trigger Touch functions.
+        /// </summary>
+        private List<string> leftTriggerTouchFunctions;
+
+        /// <summary>
+        /// End Left Trigger Touch functions.
+        /// </summary>
+        private List<string> endLeftTriggerTouchFunctions;
+
+        /// <summary>
+        /// Right Trigger Touch functions.
+        /// </summary>
+        private List<string> rightTriggerTouchFunctions;
+
+        /// <summary>
+        /// End Right Trigger Touch functions.
+        /// </summary>
+        private List<string> endRightTriggerTouchFunctions;
+
+        /// <summary>
+        /// Trigger Touch functions.
+        /// </summary>
+        private List<string> triggerTouchFunctions;
+
+        /// <summary>
+        /// End Trigger Touch functions.
+        /// </summary>
+        private List<string> endTriggerTouchFunctions;
+
+        /// <summary>
+        /// Left Trigger Press functions.
+        /// </summary>
+        private List<string> leftTriggerPressFunctions;
+
+        /// <summary>
+        /// End Left Trigger Press functions.
+        /// </summary>
+        private List<string> endLeftTriggerPressFunctions;
+
+        /// <summary>
+        /// Right Trigger Press functions.
+        /// </summary>
+        private List<string> rightTriggerPressFunctions;
+
+        /// <summary>
+        /// End Right Trigger Press functions.
+        /// </summary>
+        private List<string> endRightTriggerPressFunctions;
+
+        /// <summary>
+        /// Trigger Press functions.
+        /// </summary>
+        private List<string> triggerPressFunctions;
+
+        /// <summary>
+        /// End Trigger Press functions.
+        /// </summary>
+        private List<string> endTriggerPressFunctions;
+
+        /// <summary>
+        /// Left Grip Press functions.
+        /// </summary>
+        private List<string> leftGripPressFunctions;
+
+        /// <summary>
+        /// End Left Grip Press functions.
+        /// </summary>
+        private List<string> endLeftGripPressFunctions;
+
+        /// <summary>
+        /// Right Grip Press functions.
+        /// </summary>
+        private List<string> rightGripPressFunctions;
+
+        /// <summary>
+        /// End Right Grip Press functions.
+        /// </summary>
+        private List<string> endRightGripPressFunctions;
+
+        /// <summary>
+        /// Grip Press functions.
+        /// </summary>
+        private List<string> gripPressFunctions;
+
+        /// <summary>
+        /// End Grip Press functions.
+        /// </summary>
+        private List<string> endGripPressFunctions;
+
+        /// <summary>
+        /// Left TouchPad Touch functions.
+        /// </summary>
+        private List<string> leftTouchPadTouchFunctions;
+
+        /// <summary>
+        /// End Left TouchPad Touch functions.
+        /// </summary>
+        private List<string> endLeftTouchPadTouchFunctions;
+
+        /// <summary>
+        /// Right TouchPad Touch functions.
+        /// </summary>
+        private List<string> rightTouchPadTouchFunctions;
+
+        /// <summary>
+        /// End Right TouchPad Touch functions.
+        /// </summary>
+        private List<string> endRightTouchPadTouchFunctions;
+
+        /// <summary>
+        /// TouchPad Touch functions.
+        /// </summary>
+        private List<string> touchPadTouchFunctions;
+
+        /// <summary>
+        /// End TouchPad Touch functions.
+        /// </summary>
+        private List<string> endTouchPadTouchFunctions;
+
+        /// <summary>
+        /// Left TouchPad Press functions.
+        /// </summary>
+        private List<string> leftTouchPadPressFunctions;
+
+        /// <summary>
+        /// End Left TouchPad Press functions.
+        /// </summary>
+        private List<string> endLeftTouchPadPressFunctions;
+
+        /// <summary>
+        /// Right TouchPad Press functions.
+        /// </summary>
+        private List<string> rightTouchPadPressFunctions;
+
+        /// <summary>
+        /// End Right TouchPad Press functions.
+        /// </summary>
+        private List<string> endRightTouchPadPressFunctions;
+
+        /// <summary>
+        /// TouchPad Press functions.
+        /// </summary>
+        private List<string> touchPadPressFunctions;
+
+        /// <summary>
+        /// End TouchPad Press functions.
+        /// </summary>
+        private List<string> endTouchPadPressFunctions;
+
+        /// <summary>
+        /// Left Primary Touch functions.
+        /// </summary>
+        private List<string> leftPrimaryTouchFunctions;
+
+        /// <summary>
+        /// End Left Primary Touch functions.
+        /// </summary>
+        private List<string> endLeftPrimaryTouchFunctions;
+
+        /// <summary>
+        /// Right Primary Touch functions.
+        /// </summary>
+        private List<string> rightPrimaryTouchFunctions;
+
+        /// <summary>
+        /// End Right Primary Touch functions.
+        /// </summary>
+        private List<string> endRightPrimaryTouchFunctions;
+
+        /// <summary>
+        /// Primary Touch functions.
+        /// </summary>
+        private List<string> primaryTouchFunctions;
+
+        /// <summary>
+        /// End Primary Touch functions.
+        /// </summary>
+        private List<string> endPrimaryTouchFunctions;
+
+        /// <summary>
+        /// Left Primary Press functions.
+        /// </summary>
+        private List<string> leftPrimaryPressFunctions;
+
+        /// <summary>
+        /// End Left Primary Press functions.
+        /// </summary>
+        private List<string> endLeftPrimaryPressFunctions;
+
+        /// <summary>
+        /// Right Primary Press functions.
+        /// </summary>
+        private List<string> rightPrimaryPressFunctions;
+
+        /// <summary>
+        /// End Right Primary Press functions.
+        /// </summary>
+        private List<string> endRightPrimaryPressFunctions;
+
+        /// <summary>
+        /// Primary Press functions.
+        /// </summary>
+        private List<string> primaryPressFunctions;
+
+        /// <summary>
+        /// End Primary Press functions.
+        /// </summary>
+        private List<string> endPrimaryPressFunctions;
+
+        /// <summary>
+        /// Left Secondary Touch functions.
+        /// </summary>
+        private List<string> leftSecondaryTouchFunctions;
+
+        /// <summary>
+        /// End Left Secondary Touch functions.
+        /// </summary>
+        private List<string> endLeftSecondaryTouchFunctions;
+
+        /// <summary>
+        /// Right Secondary Touch functions.
+        /// </summary>
+        private List<string> rightSecondaryTouchFunctions;
+
+        /// <summary>
+        /// End Right Secondary Touch functions.
+        /// </summary>
+        private List<string> endRightSecondaryTouchFunctions;
+
+        /// <summary>
+        /// Secondary Touch functions.
+        /// </summary>
+        private List<string> secondaryTouchFunctions;
+
+        /// <summary>
+        /// End Secondary Touch functions.
+        /// </summary>
+        private List<string> endSecondaryTouchFunctions;
+
+        /// <summary>
+        /// Left Secondary Press functions.
+        /// </summary>
+        private List<string> leftSecondaryPressFunctions;
+
+        /// <summary>
+        /// End Left Secondary Press functions.
+        /// </summary>
+        private List<string> endLeftSecondaryPressFunctions;
+
+        /// <summary>
+        /// Right Secondary Press functions.
+        /// </summary>
+        private List<string> rightSecondaryPressFunctions;
+
+        /// <summary>
+        /// End Right Secondary Press functions.
+        /// </summary>
+        private List<string> endRightSecondaryPressFunctions;
+
+        /// <summary>
+        /// Secondary Press functions.
+        /// </summary>
+        private List<string> secondaryPressFunctions;
+
+        /// <summary>
+        /// End Secondary Press functions.
+        /// </summary>
+        private List<string> endSecondaryPressFunctions;
+
+        /// <summary>
+        /// Left Stick functions.
+        /// </summary>
+        private List<string> leftStickFunctions;
+
+        /// <summary>
+        /// End Left Stick functions.
+        /// </summary>
+        private List<string> endLeftStickFunctions;
+
+        /// <summary>
+        /// Right Stick functions.
+        /// </summary>
+        private List<string> rightStickFunctions;
+
+        /// <summary>
+        /// End Right Stick functions.
+        /// </summary>
+        private List<string> endRightStickFunctions;
+
+        /// <summary>
         /// Initialize the Input Manager.
         /// </summary>
         public override void Initialize()
@@ -138,6 +678,70 @@ namespace FiveSQD.WebVerse.Input
             endMiddleFunctions = new List<string>();
             rightFunctions = new List<string>();
             endRightFunctions = new List<string>();
+            leftMenuFunctions = new List<string>();
+            endLeftMenuFunctions = new List<string>();
+            rightMenuFunctions = new List<string>();
+            endRightMenuFunctions = new List<string>();
+            menuFunctions = new List<string>();
+            endMenuFunctions = new List<string>();
+            leftTriggerTouchFunctions = new List<string>();
+            endLeftTriggerTouchFunctions = new List<string>();
+            rightTriggerTouchFunctions = new List<string>();
+            endRightTriggerTouchFunctions = new List<string>();
+            triggerTouchFunctions = new List<string>();
+            endTriggerTouchFunctions = new List<string>();
+            leftTriggerPressFunctions = new List<string>();
+            endLeftTriggerPressFunctions = new List<string>();
+            rightTriggerPressFunctions = new List<string>();
+            endRightTriggerPressFunctions = new List<string>();
+            triggerPressFunctions = new List<string>();
+            endTriggerPressFunctions = new List<string>();
+            leftGripPressFunctions = new List<string>();
+            endLeftGripPressFunctions = new List<string>();
+            rightGripPressFunctions = new List<string>();
+            endRightGripPressFunctions = new List<string>();
+            gripPressFunctions = new List<string>();
+            endGripPressFunctions = new List<string>();
+            leftTouchPadTouchFunctions = new List<string>();
+            endLeftTouchPadTouchFunctions = new List<string>();
+            rightTouchPadTouchFunctions = new List<string>();
+            endRightTouchPadTouchFunctions = new List<string>();
+            touchPadTouchFunctions = new List<string>();
+            endTouchPadTouchFunctions = new List<string>();
+            leftTouchPadPressFunctions = new List<string>();
+            endLeftTouchPadPressFunctions = new List<string>();
+            rightTouchPadPressFunctions = new List<string>();
+            endRightTouchPadPressFunctions = new List<string>();
+            touchPadPressFunctions = new List<string>();
+            endTouchPadPressFunctions = new List<string>();
+            leftPrimaryTouchFunctions = new List<string>();
+            endLeftPrimaryTouchFunctions = new List<string>();
+            rightPrimaryTouchFunctions = new List<string>();
+            endRightPrimaryTouchFunctions = new List<string>();
+            primaryTouchFunctions = new List<string>();
+            endPrimaryTouchFunctions = new List<string>();
+            leftPrimaryPressFunctions = new List<string>();
+            endLeftPrimaryPressFunctions = new List<string>();
+            rightPrimaryPressFunctions = new List<string>();
+            endRightPrimaryPressFunctions = new List<string>();
+            primaryPressFunctions = new List<string>();
+            endPrimaryPressFunctions = new List<string>();
+            leftSecondaryTouchFunctions = new List<string>();
+            endLeftSecondaryTouchFunctions = new List<string>();
+            rightSecondaryTouchFunctions = new List<string>();
+            endRightSecondaryTouchFunctions = new List<string>();
+            secondaryTouchFunctions = new List<string>();
+            endSecondaryTouchFunctions = new List<string>();
+            leftSecondaryPressFunctions = new List<string>();
+            endLeftSecondaryPressFunctions = new List<string>();
+            rightSecondaryPressFunctions = new List<string>();
+            endRightSecondaryPressFunctions = new List<string>();
+            secondaryPressFunctions = new List<string>();
+            endSecondaryPressFunctions = new List<string>();
+            leftStickFunctions = new List<string>();
+            endLeftStickFunctions = new List<string>();
+            rightStickFunctions = new List<string>();
+            endRightStickFunctions = new List<string>();
 
             base.Initialize();
         }
@@ -213,6 +817,262 @@ namespace FiveSQD.WebVerse.Input
 
                 case "endright":
                     endRightFunctions.Add(call);
+                    break;
+
+                case "leftmenu":
+                    leftMenuFunctions.Add(call);
+                    break;
+
+                case "endleftmenu":
+                    endLeftMenuFunctions.Add(call);
+                    break;
+
+                case "rightmenu":
+                    rightMenuFunctions.Add(call);
+                    break;
+
+                case "endrightmenu":
+                    endRightMenuFunctions.Add(call);
+                    break;
+
+                case "menu":
+                    menuFunctions.Add(call);
+                    break;
+
+                case "endmenu":
+                    endMenuFunctions.Add(call);
+                    break;
+
+                case "lefttriggertouch":
+                    leftTriggerTouchFunctions.Add(call);
+                    break;
+
+                case "endlefttriggertouch":
+                    endLeftTriggerTouchFunctions.Add(call);
+                    break;
+
+                case "righttriggertouch":
+                    rightTriggerTouchFunctions.Add(call);
+                    break;
+
+                case "endrighttriggertouch":
+                    endRightTriggerTouchFunctions.Add(call);
+                    break;
+
+                case "triggertouch":
+                    triggerTouchFunctions.Add(call);
+                    break;
+
+                case "endtriggertouch":
+                    endTriggerTouchFunctions.Add(call);
+                    break;
+
+                case "lefttriggerpress":
+                    leftTriggerPressFunctions.Add(call);
+                    break;
+
+                case "endlefttriggerpress":
+                    endLeftTriggerPressFunctions.Add(call);
+                    break;
+
+                case "righttriggerpress":
+                    rightTriggerPressFunctions.Add(call);
+                    break;
+
+                case "endrighttriggerpress":
+                    endRightTriggerPressFunctions.Add(call);
+                    break;
+
+                case "triggerpress":
+                    triggerPressFunctions.Add(call);
+                    break;
+
+                case "endtriggerpress":
+                    endTriggerPressFunctions.Add(call);
+                    break;
+
+                case "leftgrippress":
+                    leftGripPressFunctions.Add(call);
+                    break;
+
+                case "endleftgrippress":
+                    endLeftGripPressFunctions.Add(call);
+                    break;
+
+                case "rightgrippress":
+                    rightGripPressFunctions.Add(call);
+                    break;
+
+                case "endrightgrippress":
+                    endRightGripPressFunctions.Add(call);
+                    break;
+
+                case "grippress":
+                    gripPressFunctions.Add(call);
+                    break;
+
+                case "endgrippress":
+                    endGripPressFunctions.Add(call);
+                    break;
+
+                case "lefttouchpadtouch":
+                    leftTouchPadTouchFunctions.Add(call);
+                    break;
+
+                case "endlefttouchpadtouch":
+                    endLeftTouchPadTouchFunctions.Add(call);
+                    break;
+
+                case "righttouchpadtouch":
+                    rightTouchPadTouchFunctions.Add(call);
+                    break;
+
+                case "endrighttouchpadtouch":
+                    endRightTouchPadTouchFunctions.Add(call);
+                    break;
+
+                case "touchpadtouch":
+                    touchPadTouchFunctions.Add(call);
+                    break;
+
+                case "endtouchpadtouch":
+                    endTouchPadTouchFunctions.Add(call);
+                    break;
+
+                case "lefttouchpadpress":
+                    leftTouchPadPressFunctions.Add(call);
+                    break;
+
+                case "endlefttouchpadpress":
+                    endLeftTouchPadPressFunctions.Add(call);
+                    break;
+
+                case "righttouchpadpress":
+                    rightTouchPadPressFunctions.Add(call);
+                    break;
+
+                case "endrighttouchpadpress":
+                    endRightTouchPadPressFunctions.Add(call);
+                    break;
+
+                case "touchpadpress":
+                    touchPadPressFunctions.Add(call);
+                    break;
+
+                case "endtouchpadpress":
+                    endTouchPadPressFunctions.Add(call);
+                    break;
+
+                case "leftprimarytouch":
+                    leftPrimaryTouchFunctions.Add(call);
+                    break;
+
+                case "endleftprimarytouch":
+                    endLeftPrimaryTouchFunctions.Add(call);
+                    break;
+
+                case "rightprimarytouch":
+                    rightPrimaryTouchFunctions.Add(call);
+                    break;
+
+                case "endrightprimarytouch":
+                    endRightPrimaryTouchFunctions.Add(call);
+                    break;
+
+                case "primarytouch":
+                    primaryTouchFunctions.Add(call);
+                    break;
+
+                case "endprimarytouch":
+                    endPrimaryTouchFunctions.Add(call);
+                    break;
+
+                case "leftprimarypress":
+                    leftPrimaryPressFunctions.Add(call);
+                    break;
+
+                case "endleftprimarypress":
+                    endLeftPrimaryPressFunctions.Add(call);
+                    break;
+
+                case "rightprimarypress":
+                    rightPrimaryPressFunctions.Add(call);
+                    break;
+
+                case "endrightprimarypress":
+                    endRightPrimaryPressFunctions.Add(call);
+                    break;
+
+                case "primarypress":
+                    primaryPressFunctions.Add(call);
+                    break;
+
+                case "endprimarypress":
+                    endPrimaryPressFunctions.Add(call);
+                    break;
+
+                case "leftsecondarytouch":
+                    leftSecondaryTouchFunctions.Add(call);
+                    break;
+
+                case "endleftsecondarytouch":
+                    endLeftSecondaryTouchFunctions.Add(call);
+                    break;
+
+                case "rightsecondarytouch":
+                    rightSecondaryTouchFunctions.Add(call);
+                    break;
+
+                case "endrightsecondarytouch":
+                    endRightSecondaryTouchFunctions.Add(call);
+                    break;
+
+                case "secondarytouch":
+                    secondaryTouchFunctions.Add(call);
+                    break;
+
+                case "endsecondarytouch":
+                    endSecondaryTouchFunctions.Add(call);
+                    break;
+
+                case "leftsecondarypress":
+                    leftSecondaryPressFunctions.Add(call);
+                    break;
+
+                case "endleftsecondarypress":
+                    endLeftSecondaryPressFunctions.Add(call);
+                    break;
+
+                case "rightsecondarypress":
+                    rightSecondaryPressFunctions.Add(call);
+                    break;
+
+                case "endrightsecondarypress":
+                    endRightSecondaryPressFunctions.Add(call);
+                    break;
+
+                case "secondarypress":
+                    secondaryPressFunctions.Add(call);
+                    break;
+
+                case "endsecondarypress":
+                    endSecondaryPressFunctions.Add(call);
+                    break;
+
+                case "leftstick":
+                    leftStickFunctions.Add(call);
+                    break;
+
+                case "endleftstick":
+                    endLeftStickFunctions.Add(call);
+                    break;
+
+                case "rightstick":
+                    rightStickFunctions.Add(call);
+                    break;
+
+                case "endrightstick":
+                    endRightStickFunctions.Add(call);
                     break;
             }
         }
@@ -350,6 +1210,582 @@ namespace FiveSQD.WebVerse.Input
                         break;
                     }
                     endRightFunctions.Remove(call);
+                    break;
+
+                case "leftmenu":
+                    if (!leftMenuFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftMenuFunctions.Remove(call);
+                    break;
+
+                case "endleftmenu":
+                    if (!endLeftMenuFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftMenuFunctions.Remove(call);
+                    break;
+
+                case "rightmenu":
+                    if (!rightMenuFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightMenuFunctions.Remove(call);
+                    break;
+
+                case "endrightmenu":
+                    if (!endRightMenuFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightMenuFunctions.Remove(call);
+                    break;
+
+                case "menu":
+                    if (!menuFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    menuFunctions.Remove(call);
+                    break;
+
+                case "endmenu":
+                    if (!endMenuFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endMenuFunctions.Remove(call);
+                    break;
+
+                case "lefttriggertouch":
+                    if (!leftTriggerTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftTriggerTouchFunctions.Remove(call);
+                    break;
+
+                case "endlefttriggertouch":
+                    if (!endLeftTriggerTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftTriggerTouchFunctions.Remove(call);
+                    break;
+
+                case "righttriggertouch":
+                    if (!rightTriggerTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightTriggerTouchFunctions.Remove(call);
+                    break;
+
+                case "endrighttriggertouch":
+                    if (!endRightTriggerTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightTriggerTouchFunctions.Remove(call);
+                    break;
+
+                case "triggertouch":
+                    if (!triggerTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    triggerTouchFunctions.Remove(call);
+                    break;
+
+                case "endtriggertouch":
+                    if (!endTriggerTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endTriggerTouchFunctions.Remove(call);
+                    break;
+
+                case "lefttriggerpress":
+                    if (!leftTriggerPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftTriggerPressFunctions.Remove(call);
+                    break;
+
+                case "endlefttriggerpress":
+                    if (!endLeftTriggerPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftTriggerPressFunctions.Remove(call);
+                    break;
+
+                case "righttriggerpress":
+                    if (!rightTriggerPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightTriggerPressFunctions.Remove(call);
+                    break;
+
+                case "endrighttriggerpress":
+                    if (!endRightTriggerPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightTriggerPressFunctions.Remove(call);
+                    break;
+
+                case "triggerpress":
+                    if (!triggerPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    triggerPressFunctions.Remove(call);
+                    break;
+
+                case "endtriggerpress":
+                    if (!endTriggerPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endTriggerPressFunctions.Remove(call);
+                    break;
+
+                case "leftgrippress":
+                    if (!leftGripPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftGripPressFunctions.Remove(call);
+                    break;
+
+                case "endleftgrippress":
+                    if (!endLeftGripPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftGripPressFunctions.Remove(call);
+                    break;
+
+                case "rightgrippress":
+                    if (!rightGripPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightGripPressFunctions.Remove(call);
+                    break;
+
+                case "endrightgrippress":
+                    if (!endRightGripPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightGripPressFunctions.Remove(call);
+                    break;
+
+                case "grippress":
+                    if (!gripPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    gripPressFunctions.Remove(call);
+                    break;
+
+                case "endgrippress":
+                    if (!endGripPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endGripPressFunctions.Remove(call);
+                    break;
+
+                case "lefttouchpadtouch":
+                    if (!leftTouchPadTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftTouchPadTouchFunctions.Remove(call);
+                    break;
+
+                case "endlefttouchpadtouch":
+                    if (!endLeftTouchPadTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftTouchPadTouchFunctions.Remove(call);
+                    break;
+
+                case "righttouchpadtouch":
+                    if (!rightTouchPadTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightTouchPadTouchFunctions.Remove(call);
+                    break;
+
+                case "endrighttouchpadtouch":
+                    if (!endRightTouchPadTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightTouchPadTouchFunctions.Remove(call);
+                    break;
+
+                case "touchpadtouch":
+                    if (!touchPadTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    touchPadTouchFunctions.Remove(call);
+                    break;
+
+                case "endtouchpadtouch":
+                    if (!endTouchPadTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endTouchPadTouchFunctions.Remove(call);
+                    break;
+
+                case "lefttouchpadpress":
+                    if (!leftTouchPadPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftTouchPadPressFunctions.Remove(call);
+                    break;
+
+                case "endlefttouchpadpress":
+                    if (!endLeftTouchPadPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftTouchPadPressFunctions.Remove(call);
+                    break;
+
+                case "righttouchpadpress":
+                    if (!rightTouchPadPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightTouchPadPressFunctions.Remove(call);
+                    break;
+
+                case "endrighttouchpadpress":
+                    if (!endRightTouchPadPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightTouchPadPressFunctions.Remove(call);
+                    break;
+
+                case "touchpadpress":
+                    if (!touchPadPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    touchPadPressFunctions.Remove(call);
+                    break;
+
+                case "endtouchpadpress":
+                    if (!endTouchPadPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endTouchPadPressFunctions.Remove(call);
+                    break;
+
+                case "leftprimarytouch":
+                    if (!leftPrimaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftPrimaryTouchFunctions.Remove(call);
+                    break;
+
+                case "endleftprimarytouch":
+                    if (!endLeftPrimaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftPrimaryTouchFunctions.Remove(call);
+                    break;
+
+                case "rightprimarytouch":
+                    if (!rightPrimaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightPrimaryTouchFunctions.Remove(call);
+                    break;
+
+                case "endrightprimarytouch":
+                    if (!endRightPrimaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightPrimaryTouchFunctions.Remove(call);
+                    break;
+
+                case "primarytouch":
+                    if (!primaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    primaryTouchFunctions.Remove(call);
+                    break;
+
+                case "endprimarytouch":
+                    if (!endPrimaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endPrimaryTouchFunctions.Remove(call);
+                    break;
+
+                case "leftprimarypress":
+                    if (!leftPrimaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftPrimaryPressFunctions.Remove(call);
+                    break;
+
+                case "endleftprimarypress":
+                    if (!endLeftPrimaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftPrimaryPressFunctions.Remove(call);
+                    break;
+
+                case "rightprimarypress":
+                    if (!rightPrimaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightPrimaryPressFunctions.Remove(call);
+                    break;
+
+                case "endrightprimarypress":
+                    if (!endRightPrimaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightPrimaryPressFunctions.Remove(call);
+                    break;
+
+                case "primarypress":
+                    if (!primaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    primaryPressFunctions.Remove(call);
+                    break;
+
+                case "endprimarypress":
+                    if (!endPrimaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endPrimaryPressFunctions.Remove(call);
+                    break;
+
+                case "leftsecondarytouch":
+                    if (!leftSecondaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftSecondaryTouchFunctions.Remove(call);
+                    break;
+
+                case "endleftsecondarytouch":
+                    if (!endLeftSecondaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftSecondaryTouchFunctions.Remove(call);
+                    break;
+
+                case "rightsecondarytouch":
+                    if (!rightSecondaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightSecondaryTouchFunctions.Remove(call);
+                    break;
+
+                case "endrightsecondarytouch":
+                    if (!endRightSecondaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightSecondaryTouchFunctions.Remove(call);
+                    break;
+
+                case "secondarytouch":
+                    if (!secondaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    secondaryTouchFunctions.Remove(call);
+                    break;
+
+                case "endsecondarytouch":
+                    if (!endSecondaryTouchFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endSecondaryTouchFunctions.Remove(call);
+                    break;
+
+                case "leftsecondarypress":
+                    if (!leftSecondaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftSecondaryPressFunctions.Remove(call);
+                    break;
+
+                case "endleftsecondarypress":
+                    if (!endLeftSecondaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftSecondaryPressFunctions.Remove(call);
+                    break;
+
+                case "rightsecondarypress":
+                    if (!rightSecondaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightSecondaryPressFunctions.Remove(call);
+                    break;
+
+                case "endrightsecondarypress":
+                    if (!endRightSecondaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightSecondaryPressFunctions.Remove(call);
+                    break;
+
+                case "secondarypress":
+                    if (!secondaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    secondaryPressFunctions.Remove(call);
+                    break;
+
+                case "endsecondarypress":
+                    if (!endSecondaryPressFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endSecondaryPressFunctions.Remove(call);
+                    break;
+
+                case "leftstick":
+                    if (!leftStickFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftStickFunctions.Remove(call);
+                    break;
+
+                case "endleftstick":
+                    if (!endLeftStickFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endLeftStickFunctions.Remove(call);
+                    break;
+
+                case "rightstick":
+                    if (!rightStickFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightStickFunctions.Remove(call);
+                    break;
+
+                case "endrightstick":
+                    if (!endRightStickFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    endRightStickFunctions.Remove(call);
                     break;
             }
         }
@@ -497,6 +1933,710 @@ namespace FiveSQD.WebVerse.Input
         public void EndRight()
         {
             foreach (string function in endRightFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left menu press.
+        /// </summary>
+        public void LeftMenu()
+        {
+            foreach (string function in leftMenuFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left menu press.
+        /// </summary>
+        public void EndLeftMenu()
+        {
+            foreach (string function in endLeftMenuFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right menu press.
+        /// </summary>
+        public void RightMenu()
+        {
+            foreach (string function in rightMenuFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right menu press.
+        /// </summary>
+        public void EndRightMenu()
+        {
+            foreach (string function in endRightMenuFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a menu press.
+        /// </summary>
+        public void Menu()
+        {
+            foreach (string function in menuFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a menu press.
+        /// </summary>
+        public void EndMenu()
+        {
+            foreach (string function in endMenuFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left trigger touch.
+        /// </summary>
+        public void LeftTriggerTouch()
+        {
+            foreach (string function in leftTriggerTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left trigger touch.
+        /// </summary>
+        public void EndLeftTriggerTouch()
+        {
+            foreach (string function in endLeftTriggerTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right trigger touch.
+        /// </summary>
+        public void RightTriggerTouch()
+        {
+            foreach (string function in rightTriggerTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right trigger touch.
+        /// </summary>
+        public void EndRightTriggerTouch()
+        {
+            foreach (string function in endRightTriggerTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a trigger touch.
+        /// </summary>
+        public void TriggerTouch()
+        {
+            foreach (string function in triggerTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a trigger touch.
+        /// </summary>
+        public void EndTriggerTouch()
+        {
+            foreach (string function in endTriggerTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left trigger press.
+        /// </summary>
+        public void LeftTriggerPress()
+        {
+            foreach (string function in leftTriggerPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left trigger press.
+        /// </summary>
+        public void EndLeftTriggerPress()
+        {
+            foreach (string function in endLeftTriggerPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right trigger press.
+        /// </summary>
+        public void RightTriggerPress()
+        {
+            foreach (string function in rightTriggerPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right trigger press.
+        /// </summary>
+        public void EndRightTriggerPress()
+        {
+            foreach (string function in endRightTriggerPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a trigger press.
+        /// </summary>
+        public void TriggerPress()
+        {
+            foreach (string function in triggerPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a trigger press.
+        /// </summary>
+        public void EndTriggerPress()
+        {
+            foreach (string function in endTriggerPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left grip press.
+        /// </summary>
+        public void LeftGripPress()
+        {
+            foreach (string function in leftGripPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left grip press.
+        /// </summary>
+        public void EndLeftGripPress()
+        {
+            foreach (string function in endLeftGripPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right grip press.
+        /// </summary>
+        public void RightGripPress()
+        {
+            foreach (string function in rightGripPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right grip press.
+        /// </summary>
+        public void EndRightGripPress()
+        {
+            foreach (string function in endRightGripPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a grip press.
+        /// </summary>
+        public void GripPress()
+        {
+            foreach (string function in gripPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a grip press.
+        /// </summary>
+        public void EndGripPress()
+        {
+            foreach (string function in endGripPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left touchpad touch.
+        /// </summary>
+        public void LeftTouchPadTouch()
+        {
+            foreach (string function in leftTouchPadTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left touchpad touch.
+        /// </summary>
+        public void EndLeftTouchPadTouch()
+        {
+            foreach (string function in endLeftTouchPadTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right touchpad touch.
+        /// </summary>
+        public void RightTouchPadTouch()
+        {
+            foreach (string function in rightTouchPadTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right touchpad touch.
+        /// </summary>
+        public void EndRightTouchPadTouch()
+        {
+            foreach (string function in endRightTouchPadTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a touchpad touch.
+        /// </summary>
+        public void TouchPadTouch()
+        {
+            foreach (string function in touchPadTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a touchpad touch.
+        /// </summary>
+        public void EndTouchPadTouch()
+        {
+            foreach (string function in endTouchPadTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left touchpad press.
+        /// </summary>
+        public void LeftTouchPadPress()
+        {
+            foreach (string function in leftTouchPadPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left touchpad press.
+        /// </summary>
+        public void EndLeftTouchPadPress()
+        {
+            foreach (string function in endLeftTouchPadPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right touchpad press.
+        /// </summary>
+        public void RightTouchPadPress()
+        {
+            foreach (string function in rightTouchPadPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right touchpad press.
+        /// </summary>
+        public void EndRightTouchPadPress()
+        {
+            foreach (string function in endRightTouchPadPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a touchpad press.
+        /// </summary>
+        public void TouchPadPress()
+        {
+            foreach (string function in touchPadPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a touchpad press.
+        /// </summary>
+        public void EndTouchPadPress()
+        {
+            foreach (string function in endTouchPadPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left primary touch.
+        /// </summary>
+        public void LeftPrimaryTouch()
+        {
+            foreach (string function in leftPrimaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left primary touch.
+        /// </summary>
+        public void EndLeftPrimaryTouch()
+        {
+            foreach (string function in endLeftPrimaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right primary touch.
+        /// </summary>
+        public void RightPrimaryTouch()
+        {
+            foreach (string function in rightPrimaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right primary touch.
+        /// </summary>
+        public void EndRightPrimaryTouch()
+        {
+            foreach (string function in endRightPrimaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a primary touch.
+        /// </summary>
+        public void PrimaryTouch()
+        {
+            foreach (string function in primaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a primary touch.
+        /// </summary>
+        public void EndPrimaryTouch()
+        {
+            foreach (string function in endPrimaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left primary press.
+        /// </summary>
+        public void LeftPrimaryPress()
+        {
+            foreach (string function in leftPrimaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left primary press.
+        /// </summary>
+        public void EndLeftPrimaryPress()
+        {
+            foreach (string function in endLeftPrimaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right primary press.
+        /// </summary>
+        public void RightPrimaryPress()
+        {
+            foreach (string function in rightPrimaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right primary press.
+        /// </summary>
+        public void EndRightPrimaryPress()
+        {
+            foreach (string function in endRightPrimaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a primary press.
+        /// </summary>
+        public void PrimaryPress()
+        {
+            foreach (string function in primaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a primary press.
+        /// </summary>
+        public void EndPrimaryPress()
+        {
+            foreach (string function in endPrimaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left secondary touch.
+        /// </summary>
+        public void LeftSecondaryTouch()
+        {
+            foreach (string function in leftSecondaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left secondary touch.
+        /// </summary>
+        public void EndLeftSecondaryTouch()
+        {
+            foreach (string function in endLeftSecondaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right secondary touch.
+        /// </summary>
+        public void RightSecondaryTouch()
+        {
+            foreach (string function in rightSecondaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right secondary touch.
+        /// </summary>
+        public void EndRightSecondaryTouch()
+        {
+            foreach (string function in endRightSecondaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a secondary touch.
+        /// </summary>
+        public void SecondaryTouch()
+        {
+            foreach (string function in secondaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a secondary touch.
+        /// </summary>
+        public void EndSecondaryTouch()
+        {
+            foreach (string function in endSecondaryTouchFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left secondary press.
+        /// </summary>
+        public void LeftSecondaryPress()
+        {
+            foreach (string function in leftSecondaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left secondary press.
+        /// </summary>
+        public void EndLeftSecondaryPress()
+        {
+            foreach (string function in endLeftSecondaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right secondary press.
+        /// </summary>
+        public void RightSecondaryPress()
+        {
+            foreach (string function in rightSecondaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right secondary press.
+        /// </summary>
+        public void EndRightSecondaryPress()
+        {
+            foreach (string function in endRightSecondaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a secondary press.
+        /// </summary>
+        public void SecondaryPress()
+        {
+            foreach (string function in secondaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a secondary press.
+        /// </summary>
+        public void EndSecondaryPress()
+        {
+            foreach (string function in endSecondaryPressFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a left stick.
+        /// </summary>
+        public void LeftStick()
+        {
+            foreach (string function in leftStickFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a left stick.
+        /// </summary>
+        public void EndLeftStick()
+        {
+            foreach (string function in endLeftStickFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// Perform a right stick.
+        /// </summary>
+        public void RightStick()
+        {
+            foreach (string function in rightStickFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        /// <summary>
+        /// End a right stick.
+        /// </summary>
+        public void EndRightStick()
+        {
+            foreach (string function in endRightStickFunctions)
             {
                 WebVerseRuntime.Instance.javascriptHandler.Run(function);
             }
