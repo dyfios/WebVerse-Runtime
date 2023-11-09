@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+using Best.WebSockets;
 using FiveSQD.WebVerse.Utilities;
 using System;
 
@@ -38,7 +39,7 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                     return;
                 }
 
-                webSocket.OnOpen = new BestHTTP.WebSocket.OnWebSocketOpenDelegate((ws) =>
+                webSocket.OnOpen = new Best.WebSockets.Implementations.OnWebSocketOpenDelegate((ws) =>
                 {
                     value.Invoke(this);
                 });
@@ -58,9 +59,9 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                     return;
                 }
 
-                webSocket.OnClosed = new BestHTTP.WebSocket.OnWebSocketClosedDelegate((ws, code, msg) =>
+                webSocket.OnClosed += new Best.WebSockets.Implementations.OnWebSocketClosedDelegate((ws, code, msg) =>
                 {
-                    value.Invoke(this, code, msg);
+                    value.Invoke(this, (ushort) code, msg);
                 });
             }
         }
@@ -78,9 +79,11 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                     return;
                 }
 
-                webSocket.OnBinary = new BestHTTP.WebSocket.OnWebSocketBinaryDelegate((ws, data) =>
+                webSocket.OnBinary = new Best.WebSockets.Implementations.OnWebSocketBinaryNoAllocDelegate((ws, data) =>
                 {
-                    value.Invoke(this, data);
+                    byte[] buf = new byte[data.Count];
+                    data.CopyTo(buf);
+                    value.Invoke(this, buf);
                 });
             }
         }
@@ -98,7 +101,7 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                     return;
                 }
 
-                webSocket.OnMessage = new BestHTTP.WebSocket.OnWebSocketMessageDelegate((ws, msg) =>
+                webSocket.OnMessage = new Best.WebSockets.Implementations.OnWebSocketMessageDelegate((ws, msg) =>
                 {
                     value.Invoke(this, msg);
                 });
@@ -118,9 +121,12 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                     return;
                 }
 
-                webSocket.OnError = new BestHTTP.WebSocket.OnWebSocketErrorDelegate((ws, msg) =>
+                webSocket.OnClosed += new Best.WebSockets.Implementations.OnWebSocketClosedDelegate((ws, code, msg) =>
                 {
-                    value.Invoke(this, msg);
+                    if (code != WebSocketStatusCodes.NormalClosure)
+                    {
+                        value.Invoke(this, msg);
+                    }
                 });
             }
         }
@@ -128,7 +134,7 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
         /// <summary>
         /// Internal WebSocket reference.
         /// </summary>
-        private BestHTTP.WebSocket.WebSocket webSocket;
+        private Best.WebSockets.WebSocket webSocket;
 
         /// <summary>
         /// Constructor for a WebSocket.
@@ -142,31 +148,35 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
         public WebSocket(string uri, Action<WebSocket> onOpen, Action<WebSocket, ushort, string> onClosed,
             Action<WebSocket, byte[]> onBinary, Action<WebSocket, string> onMessage, Action<WebSocket, string> onError)
         {
-            webSocket = new BestHTTP.WebSocket.WebSocket(new Uri(uri));
+            webSocket = new Best.WebSockets.WebSocket(new Uri(uri));
 
-            webSocket.OnOpen = new BestHTTP.WebSocket.OnWebSocketOpenDelegate((ws) =>
+            webSocket.OnOpen = new Best.WebSockets.Implementations.OnWebSocketOpenDelegate((ws) =>
             {
                 onOpen.Invoke(this);
             });
 
-            webSocket.OnClosed = new BestHTTP.WebSocket.OnWebSocketClosedDelegate((ws, code, msg) =>
+            webSocket.OnClosed = new Best.WebSockets.Implementations.OnWebSocketClosedDelegate((ws, code, msg) =>
             {
-                onClosed.Invoke(this, code, msg);
+                if (code == WebSocketStatusCodes.NormalClosure)
+                {
+                    onClosed.Invoke(this, (ushort) code, msg);
+                }
+                else
+                {
+                    onError.Invoke(this, msg);
+                }
             });
 
-            webSocket.OnBinary = new BestHTTP.WebSocket.OnWebSocketBinaryDelegate((ws, data) =>
+            webSocket.OnBinary = new Best.WebSockets.Implementations.OnWebSocketBinaryNoAllocDelegate((ws, data) =>
             {
-                onBinary.Invoke(this, data);
+                byte[] buf = new byte[data.Count];
+                data.CopyTo(buf);
+                onBinary.Invoke(this, buf);
             });
 
-            webSocket.OnMessage = new BestHTTP.WebSocket.OnWebSocketMessageDelegate((ws, msg) =>
+            webSocket.OnMessage = new Best.WebSockets.Implementations.OnWebSocketMessageDelegate((ws, msg) =>
             {
                 onMessage.Invoke(this, msg);
-            });
-
-            webSocket.OnError = new BestHTTP.WebSocket.OnWebSocketErrorDelegate((ws, msg) =>
-            {
-                onError.Invoke(this, msg);
             });
         }
 
@@ -183,7 +193,7 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                 return false;
             }
 
-            webSocket.OnOpen += new BestHTTP.WebSocket.OnWebSocketOpenDelegate((ws) =>
+            webSocket.OnOpen += new Best.WebSockets.Implementations.OnWebSocketOpenDelegate((ws) =>
             {
                 action.Invoke(this);
             });
@@ -204,9 +214,12 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                 return false;
             }
 
-            webSocket.OnClosed += new BestHTTP.WebSocket.OnWebSocketClosedDelegate((ws, code, msg) =>
+            webSocket.OnClosed += new Best.WebSockets.Implementations.OnWebSocketClosedDelegate((ws, code, msg) =>
             {
-                action.Invoke(this, code, msg);
+                if (code == WebSocketStatusCodes.NormalClosure)
+                {
+                    action.Invoke(this, (ushort) code, msg);
+                }
             });
 
             return true;
@@ -225,9 +238,11 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                 return false;
             }
 
-            webSocket.OnBinary += new BestHTTP.WebSocket.OnWebSocketBinaryDelegate((ws, data) =>
+            webSocket.OnBinary += new Best.WebSockets.Implementations.OnWebSocketBinaryNoAllocDelegate((ws, data) =>
             {
-                action.Invoke(this, data);
+                byte[] buf = new byte[data.Count];
+                data.CopyTo(buf);
+                action.Invoke(this, buf);
             });
 
             return true;
@@ -246,7 +261,7 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                 return false;
             }
 
-            webSocket.OnMessage += new BestHTTP.WebSocket.OnWebSocketMessageDelegate((ws, msg) =>
+            webSocket.OnMessage += new Best.WebSockets.Implementations.OnWebSocketMessageDelegate((ws, msg) =>
             {
                 action.Invoke(this, msg);
             });
@@ -267,9 +282,12 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
                 return false;
             }
 
-            webSocket.OnError += new BestHTTP.WebSocket.OnWebSocketErrorDelegate((ws, msg) =>
+            webSocket.OnClosed += new Best.WebSockets.Implementations.OnWebSocketClosedDelegate((ws, code, msg) =>
             {
-                action.Invoke(this, msg);
+                if (code != WebSocketStatusCodes.NormalClosure)
+                {
+                    action.Invoke(this, msg);
+                }
             });
 
             return true;

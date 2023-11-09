@@ -1,7 +1,7 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
-using BestMQTT;
-using BestMQTT.Packets.Builders;
+using Best.MQTT;
+using Best.MQTT.Packets.Builders;
 using FiveSQD.WebVerse.Utilities;
 using System;
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         /// Convert from MQTT buffer segment.
         /// </summary>
         /// <param name="bufferSegment">MQTT buffer segment.</param>
-        public static BufferSegment FromBestMQTT(BestHTTP.PlatformSupport.Memory.BufferSegment bufferSegment)
+        public static BufferSegment FromBestMQTT(Best.HTTP.Shared.PlatformSupport.Memory.BufferSegment bufferSegment)
         {
             return new BufferSegment(bufferSegment.Count, bufferSegment.Data, bufferSegment.Offset);
         }
@@ -72,9 +72,9 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         /// Convert to MQTT buffer segment.
         /// </summary>
         /// <param name="bufferSegment">Buffer segment.</param>
-        public static BestHTTP.PlatformSupport.Memory.BufferSegment ToBestMQTT(BufferSegment bufferSegment)
+        public static Best.HTTP.Shared.PlatformSupport.Memory.BufferSegment ToBestMQTT(BufferSegment bufferSegment)
         {
-            return new BestHTTP.PlatformSupport.Memory.BufferSegment(
+            return new Best.HTTP.Shared.PlatformSupport.Memory.BufferSegment(
                 bufferSegment.data, bufferSegment.offset, bufferSegment.count);
         }
     }
@@ -279,7 +279,7 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         /// <summary>
         /// Reference to the internal MQTT client.
         /// </summary>
-        private BestMQTT.MQTTClient mqttClient;
+        private Best.MQTT.MQTTClient mqttClient;
 
         /// <summary>
         /// Constructor for an MQTT client.
@@ -303,13 +303,17 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             connectionOptions.Host = host;
             connectionOptions.Port = port;
             connectionOptions.UseTLS = useTLS;
+#if UNITY_EDITOR || !UNITY_WEBGL
             connectionOptions.Transport = supportedTransports ==
                 Transports.WebSockets ? SupportedTransports.WebSocket : SupportedTransports.TCP;
+#else
+            connectionOptions.Transport = SupportedTransports.WebSocket;
+#endif
             connectionOptions.Path = path;
 
-            mqttClient = new BestMQTT.MQTTClient(connectionOptions);
+            mqttClient = new Best.MQTT.MQTTClient(connectionOptions);
 
-            mqttClient.OnConnected += new BestMQTT.OnConnectedDelegate((client) =>
+            mqttClient.OnConnected += new Best.MQTT.OnConnectedDelegate((client) =>
             {
                 onConnected.Invoke(this);
             });
@@ -324,7 +328,7 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 onStateChanged.Invoke(this, (ClientState) oldState, (ClientState) newState);
             });
 
-            mqttClient.OnError += new BestMQTT.OnErrorDelegate((client, msg) =>
+            mqttClient.OnError += new Best.MQTT.OnErrorDelegate((client, msg) =>
             {
                 onError.Invoke(this, msg);
             });
@@ -387,7 +391,7 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 {
                     onMessage.Invoke(this, topic.ToString(), topicName, MQTTMessage.FromBestMQTT(msg));
                 }))
-                .WithMaximumQoS(BestMQTT.Packets.QoSLevels.ExactlyOnceDelivery)
+                .WithMaximumQoS(Best.MQTT.Packets.QoSLevels.ExactlyOnceDelivery)
                 .BeginSubscribe();
         }
 
@@ -430,7 +434,7 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
 
             mqttClient.CreateApplicationMessageBuilder(topic)
                 .WithPayload(message)
-                .WithQoS(BestMQTT.Packets.QoSLevels.ExactlyOnceDelivery)
+                .WithQoS(Best.MQTT.Packets.QoSLevels.ExactlyOnceDelivery)
                 .BeginPublish();
         }
 
@@ -439,7 +443,7 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         /// </summary>
         /// <param name="mqttClient">MQTT client.</param>
         /// <param name="builder">Builder.</param>
-        private ConnectPacketBuilder ConnectPacketBuilderCallback(BestMQTT.MQTTClient mqttClient, ConnectPacketBuilder builder)
+        private ConnectPacketBuilder ConnectPacketBuilderCallback(Best.MQTT.MQTTClient mqttClient, ConnectPacketBuilder builder)
         {
             return builder;
         }

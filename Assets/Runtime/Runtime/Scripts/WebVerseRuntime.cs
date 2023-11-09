@@ -345,17 +345,13 @@ namespace FiveSQD.WebVerse.Runtime
             inputManager = inputManagerGO.AddComponent<InputManager>();
             inputManager.Initialize();
 
-            if (daemonPort != null)
+            if (daemonPort != null && mainAppID != null)
             {
                 // Set up Daemon Manager.
                 GameObject daemonManagerGO = new GameObject("DaemonManager");
                 daemonManagerGO.transform.SetParent(transform);
                 webVerseDaemonManager = daemonManagerGO.AddComponent<WebVerseDaemonManager>();
                 webVerseDaemonManager.Initialize();
-                if (mainAppID.HasValue == false)
-                {
-                    Logging.LogError("[WebVerseRuntime->InitializeComponents] No Main App ID.");
-                }
                 webVerseDaemonManager.ConnectToDaemon(daemonPort.Value, mainAppID.Value);
             }
         }

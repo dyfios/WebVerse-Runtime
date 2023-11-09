@@ -11,6 +11,10 @@ namespace FiveSQD.WebVerse.Daemon
 {
     public class WebVerseDaemonManager : BaseManager
     {
+        public enum RuntimeType { Focused = 0, WebGL = 1 }
+
+        public RuntimeType runtimeType;
+
         /// <summary>
         /// Interval in seconds between heartbeats.
         /// </summary>

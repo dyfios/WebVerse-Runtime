@@ -1,6 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
-using BestHTTP;
+using Best.HTTP;
 using System;
 using UnityEngine;
 
@@ -20,7 +20,7 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <summary>
         /// Internal HTTP request object.
         /// </summary>
-        private BestHTTP.HTTPRequest request;
+        private Best.HTTP.HTTPRequest request;
 
         /// <summary>
         /// Constructor for an HTTP request.
@@ -30,7 +30,7 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <param name="onFinished">Action to perform upon completing the request.</param>
         public HTTPRequest(string uri, HTTPMethod method, Action<int, byte[]> onFinished)
         {
-            request = new BestHTTP.HTTPRequest(new Uri(uri), (HTTPMethods) method, new OnRequestFinishedDelegate((req, resp) =>
+            request = new Best.HTTP.HTTPRequest(new Uri(uri), (HTTPMethods) method, new OnRequestFinishedDelegate((req, resp) =>
             {
                 if (onFinished != null)
                 {
@@ -54,7 +54,7 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <param name="onFinished">Action to perform upon completing the request.</param>
         public HTTPRequest(string uri, HTTPMethod method, Action<int, Texture2D> onFinished)
         {
-            request = new BestHTTP.HTTPRequest(new Uri(uri), (HTTPMethods) method, new OnRequestFinishedDelegate((req, resp) =>
+            request = new Best.HTTP.HTTPRequest(new Uri(uri), (HTTPMethods) method, new OnRequestFinishedDelegate((req, resp) =>
             {
                 if (onFinished != null)
                 {

@@ -1,6 +1,8 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+#if UNITY_WEBGL
 using System;
+#endif
 using UnityEngine;
 using FiveSQD.WebVerse.Utilities;
 
@@ -9,7 +11,7 @@ namespace FiveSQD.WebVerse.Runtime
     /// <summary>
     /// WebVerse WebGL Mode.
     /// </summary>
-    public class WebGLMode : MonoBehaviour
+    public class LightweightMode : MonoBehaviour
     {
         /// <summary>
         /// Maximum local storage entries to use in Unity Editor tests.
@@ -28,18 +30,6 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("Maximum local storage key length to use in Unity Editor tests.")]
         public string testMaxKeyLength = "512";
-
-        /// <summary>
-        /// Daemon port to use in Unity Editor tests.
-        /// </summary>
-        [Tooltip("Daemon port to use in Unity Editor tests.")]
-        public string testDaemonPort = "0";
-
-        /// <summary>
-        /// Main app ID to use in Unity Editor tests.
-        /// </summary>
-        [Tooltip("Main app ID to use in Unity Editor tests.")]
-        public string testMainAppID;
 
         /// <summary>
         /// WebVerse Runtime.
@@ -107,20 +97,8 @@ namespace FiveSQD.WebVerse.Runtime
                 return;
             }
 
-            uint daemonPort = GetDaemonPort();
-            if (daemonPort <= 0 || daemonPort >= 65535)
-            {
-                Logging.LogError("[WebGLMode->LoadRuntime] Invalid daemon port value.");
-            }
-
-            Guid mainAppID = GetMainAppID();
-            if (mainAppID == Guid.Empty)
-            {
-                Logging.LogError("[WebGLMode->LoadRuntime] Invalid main app ID value.");
-            }
-
             runtime.Initialize(LocalStorage.LocalStorageManager.LocalStorageMode.Cache,
-                maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID);
+                maxEntries, maxEntryLength, maxKeyLength);
         }
 
         /// <summary>
@@ -235,70 +213,6 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return int.Parse(maxKeyLength);
-        }
-
-        private uint GetDaemonPort()
-        {
-            string daemonPort = "";
-#if UNITY_EDITOR
-            daemonPort = testDaemonPort;
-#elif UNITY_WEBGL
-            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
-            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
-            {
-                string query = Application.absoluteURL.Substring(queryStart);
-
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string section in sections)
-                {
-                    int valueStart = section.IndexOf("=") + 1;
-                    string[] keyValue = section.Split('=');
-                    if (keyValue.Length >= 2)
-                    {
-                        string key = keyValue[0];
-                        string value = section.Substring(valueStart);
-                        if (key.ToLower() == "daemonport")
-                        {
-                            daemonPort = value;
-                            break;
-                        }
-                    }
-                }
-            }
-#endif
-            return uint.Parse(daemonPort);
-        }
-
-        private Guid GetMainAppID()
-        {
-            string mainAppID = "";
-#if UNITY_EDITOR
-            mainAppID = testMainAppID;
-#elif UNITY_WEBGL
-            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
-            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
-            {
-                string query = Application.absoluteURL.Substring(queryStart);
-
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string section in sections)
-                {
-                    int valueStart = section.IndexOf("=") + 1;
-                    string[] keyValue = section.Split('=');
-                    if (keyValue.Length >= 2)
-                    {
-                        string key = keyValue[0];
-                        string value = section.Substring(valueStart);
-                        if (key.ToLower() == "mainappid")
-                        {
-                            mainAppID = value;
-                            break;
-                        }
-                    }
-                }
-            }
-#endif
-            return Guid.Parse(mainAppID);
         }
     }
 }
