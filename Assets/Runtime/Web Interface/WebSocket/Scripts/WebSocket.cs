@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+#if USE_BESTHTTP
 using Best.WebSockets;
 using FiveSQD.WebVerse.Utilities;
 using System;
@@ -363,3 +364,4 @@ namespace FiveSQD.WebVerse.WebInterface.WebSocket
         }
     }
 }
+#endif

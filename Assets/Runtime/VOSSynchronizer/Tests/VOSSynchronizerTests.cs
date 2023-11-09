@@ -13,6 +13,7 @@ using System;
 /// </summary>
 public class VOSSynchronizerTests
 {
+#if USE_WEBINTERFACE
     private float waitTime = 5;
 
     [UnityTest]
@@ -38,4 +39,5 @@ public class VOSSynchronizerTests
         LogAssert.Expect(LogType.Error, "[VOSSynchronizer->ExitSession] Not in session.");
         synchronizer.Terminate();
     }
+#endif
 }

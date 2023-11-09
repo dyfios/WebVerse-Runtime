@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+#if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WorldEngine.Utilities;
 using System;
 using FiveSQD.WebVerse.Runtime;
@@ -337,3 +338,4 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
         }
     }
 }
+#endif

@@ -1,7 +1,9 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
 using UnityEngine;
+#if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.WebSocket;
+#endif
 using FiveSQD.WebVerse.Utilities;
 using Newtonsoft.Json;
 using System.IO;
@@ -20,10 +22,12 @@ namespace FiveSQD.WebVerse.Daemon
         /// </summary>
         public float heartbeatInterval = 5;
 
+#if USE_WEBINTERFACE
         /// <summary>
         /// WebSocket being used.
         /// </summary>
         private WebSocket webSocket = null;
+#endif
 
         /// <summary>
         /// ID for the connection.
@@ -59,6 +63,7 @@ namespace FiveSQD.WebVerse.Daemon
         private float timeSinceLastHeartbeat = 0;
         private void Update()
         {
+#if USE_WEBINTERFACE
             if (webSocket == null)
             {
                 return;
@@ -70,6 +75,7 @@ namespace FiveSQD.WebVerse.Daemon
                 timeSinceLastHeartbeat = 0;
                 SendHeartbeatMessage();
             }
+#endif
         }
 
         /// <summary>
@@ -79,6 +85,7 @@ namespace FiveSQD.WebVerse.Daemon
         /// <param name="mainAppID">ID for the main app.</param>
         public void ConnectToDaemon(uint port, Guid mainAppID)
         {
+#if USE_WEBINTERFACE
             if (webSocket != null)
             {
                 Logging.LogError("[WebVerseDaemonManager->ConnectToDaemon] Connection already exists.");
@@ -114,10 +121,12 @@ namespace FiveSQD.WebVerse.Daemon
             webSocket = new WebSocket("wss://localhost:" + port,
                 onOpenedAction, onClosedAction, onBinaryAction, onStringAction, onErrorAction);
             webSocket.Open();
+#endif
         }
 
         public void CloseDaemonConnection()
         {
+#if USE_WEBINTERFACE
             if (webSocket == null || !webSocket.isOpen)
             {
                 Logging.LogWarning("[WebVerseDaemonManager->CloseDaemonConnection] Connection already closed.");
@@ -125,6 +134,7 @@ namespace FiveSQD.WebVerse.Daemon
             }
 
             webSocket.Close();
+#endif
         }
 
         /// <summary>
@@ -256,7 +266,7 @@ namespace FiveSQD.WebVerse.Daemon
 
             WebVerseDaemonMessages.IdentificationResponse respMessage =
                 new WebVerseDaemonMessages.IdentificationResponse(reqMessage, mainAppID, "WV-FOCUSED-RUNTIME");
-
+#if USE_WEBINTERFACE
             if (webSocket == null)
             {
                 Logging.LogError("[WebVerseDaemonManager->HandleIdentificationRequest] WebSocket not set up.");
@@ -266,6 +276,7 @@ namespace FiveSQD.WebVerse.Daemon
             connectionID = Guid.Parse(respMessage.connectionID);
             Logging.Log("[WebVerseDaemonManager->HandleIdentificationRequest] Sending identification response.");
             webSocket.Send(JsonConvert.SerializeObject(respMessage));
+#endif
         }
 
         /// <summary>
@@ -273,6 +284,7 @@ namespace FiveSQD.WebVerse.Daemon
         /// </summary>
         private void SendHeartbeatMessage()
         {
+#if USE_WEBINTERFACE
             WebVerseDaemonMessages.HeartbeatMessage hbMessage =
                 new WebVerseDaemonMessages.HeartbeatMessage("HEARTBEAT", connectionID);
 
@@ -284,6 +296,7 @@ namespace FiveSQD.WebVerse.Daemon
 
             Logging.Log("[WebVerseDaemonManager->SendHeartbeat] Sending heartbeat.");
             webSocket.Send(JsonConvert.SerializeObject(hbMessage));
+#endif
         }
     }
 }

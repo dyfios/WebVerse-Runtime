@@ -7,7 +7,9 @@ using FiveSQD.WebVerse.Handlers.File;
 using FiveSQD.WebVerse.Handlers.GLTF;
 using FiveSQD.WebVerse.Handlers.PNG;
 using FiveSQD.WebVerse.Handlers.Javascript;
+#if USE_WEBINTERFACE
 using FiveSQD.WebVerse.VOSSynchronization;
+#endif
 using System.IO;
 using FiveSQD.WebVerse.Handlers.VEML;
 using System;
@@ -98,11 +100,13 @@ namespace FiveSQD.WebVerse.Runtime
         [Tooltip("The VEML Handler.")]
         public VEMLHandler vemlHandler { get; private set; }
 
+#if USE_WEBINTERFACE
         /// <summary>
         /// The VOS Synchronization Manager.
         /// </summary>
         [Tooltip("The VOS Synchronization Manager.")]
         public VOSSynchronizationManager vosSynchronizationManager { get; private set; }
+#endif
 
         /// <summary>
         /// The Local Storage Manager.
@@ -330,8 +334,10 @@ namespace FiveSQD.WebVerse.Runtime
             // Set up VOS Synchronization Manager.
             GameObject vosSynchronizationManagerGO = new GameObject("VOSSynchronizationManager");
             vosSynchronizationManagerGO.transform.SetParent(transform);
+#if USE_WEBINTERFACE
             vosSynchronizationManager = vosSynchronizationManagerGO.AddComponent<VOSSynchronizationManager>();
             vosSynchronizationManager.Initialize();
+#endif
 
             // Set up Local Storage Manager.
             GameObject localStorageManagerGO = new GameObject("LocalStorageManager");
@@ -376,9 +382,11 @@ namespace FiveSQD.WebVerse.Runtime
             localStorageManager.Terminate();
             Destroy(localStorageManager.gameObject);
 
+#if USE_WEBINTERFACE
             // Terminate VOS Synchronization Manager.
             vosSynchronizationManager.Terminate();
             Destroy(vosSynchronizationManager.gameObject);
+#endif
 
             // Terminate Handlers.
             vemlHandler.Terminate();

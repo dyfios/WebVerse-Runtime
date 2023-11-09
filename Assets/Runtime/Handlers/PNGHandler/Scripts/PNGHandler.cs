@@ -5,7 +5,9 @@ using FiveSQD.WebVerse.Utilities;
 using System;
 using UnityEngine;
 using FiveSQD.WebVerse.Runtime;
+#if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.HTTP;
+#endif
 
 namespace FiveSQD.WebVerse.Handlers.PNG
 {
@@ -60,6 +62,7 @@ namespace FiveSQD.WebVerse.Handlers.PNG
         /// <param name="reDownload">Whether or not to redownload the PNG if it already exists.</param>
         public void DownloadPNG(string uri, Action onDownloaded, bool reDownload = false)
         {
+#if USE_WEBINTERFACE
             if (reDownload == false)
             {
                 if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
@@ -78,6 +81,7 @@ namespace FiveSQD.WebVerse.Handlers.PNG
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
             request.Send();
+#endif
         }
 
         /// <summary>

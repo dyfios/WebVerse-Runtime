@@ -1,5 +1,5 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
-
+#if USE_WEBINTERFACE
 using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.WebInterface.MQTT;
 using System;
@@ -196,3 +196,4 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         }
     }
 }
+#endif

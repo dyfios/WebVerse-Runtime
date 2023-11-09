@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+#if USE_BESTHTTP
 using Best.HTTP;
 using System;
 using UnityEngine;
@@ -82,3 +83,4 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         }
     }
 }
+#endif

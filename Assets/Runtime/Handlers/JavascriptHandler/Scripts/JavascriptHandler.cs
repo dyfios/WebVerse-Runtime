@@ -54,14 +54,18 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
 
             // Networking.
             new System.Tuple<string, System.Type>("HTTPNetworking", typeof(HTTPNetworking)),
+#if USE_WEBINTERFACE
             new System.Tuple<string, System.Type>("MQTTClient", typeof(MQTTClient)),
             new System.Tuple<string, System.Type>("WebSocket", typeof(WebSocket)),
+#endif
 
             // Input.
             new System.Tuple<string, System.Type>("Input", typeof(APIs.Input.Input)),
 
+#if USE_WEBINTERFACE
             // VOS Synchronization.
             new System.Tuple<string, System.Type>("VOSSynchronization", typeof(APIs.VOSSynchronization.VOSSynchronization)),
+#endif
 
             // World Browser Utilities.
             new System.Tuple<string, System.Type>("LocalStorage", typeof(APIs.Utilities.LocalStorage)),

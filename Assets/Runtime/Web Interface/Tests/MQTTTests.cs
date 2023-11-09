@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+#if USE_BESTHTTP
 using System.Collections;
 using UnityEngine.TestTools;
 using FiveSQD.WebVerse.WebInterface.MQTT;
@@ -282,3 +283,4 @@ public class MQTTTests
         yield return new WaitForSeconds(waitPeriod);
     }
 }
+#endif

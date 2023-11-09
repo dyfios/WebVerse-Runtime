@@ -4,7 +4,9 @@ using FiveSQD.WebVerse.Handlers.File;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System;
+#if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.HTTP;
+#endif
 using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
@@ -127,6 +129,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
         public void DownloadVEML(string uri, Action onDownloaded, bool reDownload = false)
         {
+#if USE_WEBINTERFACE
             if (reDownload == false)
             {
                 if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
@@ -145,6 +148,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
             request.Send();
+#endif
         }
 
         /// <summary>
@@ -217,6 +221,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="reDownload">Whether or not to redownload the script if it already exists.</param>
         public void DownloadScript(string uri, Action onDownloaded, bool reDownload = false)
         {
+#if USE_WEBINTERFACE
             if (reDownload == false)
             {
                 if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
@@ -235,6 +240,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
             request.Send();
+#endif
         }
 
         /// <summary>
@@ -258,6 +264,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
         public void DownloadFile(string uri, Action<byte[]> onDownloaded, bool reDownload = false)
         {
+#if USE_WEBINTERFACE
             if (reDownload == false)
             {
                 if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
@@ -276,6 +283,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
             request.Send();
+#endif
         }
 
         /// <summary>
@@ -563,6 +571,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     switch (synchronizationservice.type.ToLower())
                     {
                         case "vos":
+#if USE_WEBINTERFACE
                             bool tls = false;
                             string hostPortSection = "";
                             if (synchronizationservice.address.StartsWith("vss:"))
@@ -589,6 +598,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             WebVerseRuntime.Instance.vosSynchronizationManager.AddSynchronizerAndSession(
                                 synchronizationservice.id, parts[0], int.Parse(parts[1]), tls, WebInterface.MQTT.MQTTClient.Transports.TCP,
                                 synchronizationservice.session);
+#endif
                             break;
 
                         default:
@@ -959,6 +969,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     meshEntity.SetVisibility(true);
                     meshEntity.SetParent(null);
                     ApplyTransform(meshEntity, entity.transform, true, true, false);
+#if USE_WEBINTERFACE
                     if (!string.IsNullOrEmpty(entity.synchronizer))
                     {
                         Tuple<VOSSynchronizer, Guid> synchronizer
@@ -970,6 +981,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         }
                         synchronizer.Item1.AddSynchronizedEntity(meshEntity, false, entity.meshname);
                     }
+#endif
                     loadingEntities--;
                 });
             List<string> resources = new List<string>();
@@ -1046,6 +1058,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1057,6 +1070,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1139,6 +1153,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
                 loadedEntity.entityTag = entity.tag;
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1150,6 +1165,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1216,6 +1232,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1227,6 +1244,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1308,6 +1326,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1319,6 +1338,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1388,6 +1408,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1399,6 +1420,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1474,6 +1496,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1485,6 +1508,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1568,6 +1592,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1579,6 +1604,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1646,6 +1672,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1657,6 +1684,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 
@@ -1727,6 +1755,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+#if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
                     Tuple<VOSSynchronizer, Guid> synchronizer
@@ -1738,6 +1767,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
+#endif
                 loadingEntities--;
             });
 

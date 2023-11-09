@@ -5,6 +5,7 @@ using FiveSQD.WebVerse.Utilities;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
 {
+#if USE_WEBINTERFACE
     /// <summary>
     /// Class for WebSocket Events.
     /// </summary>
@@ -215,4 +216,5 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             return true;
         }
     }
+#endif
 }

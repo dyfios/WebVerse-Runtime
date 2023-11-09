@@ -150,6 +150,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
         }
     }
 
+#if USE_WEBINTERFACE
     /// <summary>
     /// Class for an MQTT Client.
     /// </summary>
@@ -345,4 +346,5 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             return true;
         }
     }
+#endif
 }

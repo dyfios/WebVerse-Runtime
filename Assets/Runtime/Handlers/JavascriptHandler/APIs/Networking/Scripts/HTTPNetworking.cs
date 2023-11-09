@@ -261,6 +261,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
         /// <param name="onFinished">Logic to execute when the request has finished.</param>
         public static void Fetch(Request request, string onFinished)
         {
+#if USE_WEBINTERFACE
             WebInterface.HTTP.HTTPRequest.HTTPMethod method = WebInterface.HTTP.HTTPRequest.HTTPMethod.Get;
             switch (request.method.ToUpper())
             {
@@ -315,6 +316,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             });
 
             WebInterface.HTTP.HTTPRequest httpReq = new WebInterface.HTTP.HTTPRequest(request.resourceURI, method, onFinishedAction);
+#endif
         }
     }
 }

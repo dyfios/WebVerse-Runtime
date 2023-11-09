@@ -6,7 +6,9 @@ using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.Handlers.File;
 using System;
 using FiveSQD.WebVerse.Runtime;
+#if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.HTTP;
+#endif
 using FiveSQD.WebVerse.WorldEngine.Entity;
 using System.Collections;
 
@@ -93,6 +95,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// exists locally.</param>
         public void DownloadGLTFResource(string uri, Action onDownloaded, bool reDownload = false)
         {
+#if USE_WEBINTERFACE
             if (reDownload == false)
             {
                 if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
@@ -111,6 +114,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
             request.Send();
+#endif
         }
 
         /// <summary>

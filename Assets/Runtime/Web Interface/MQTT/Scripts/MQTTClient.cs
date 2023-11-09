@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+#if USE_BESTHTTP
 using Best.MQTT;
 using Best.MQTT.Packets.Builders;
 using FiveSQD.WebVerse.Utilities;
@@ -449,3 +450,4 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         }
     }
 }
+#endif
