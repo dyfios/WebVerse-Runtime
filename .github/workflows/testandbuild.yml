@@ -4,9 +4,9 @@ name: WebVerse Runtime Unit Test Runner and Builder
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+##  push:
+##    branches:
+##      - main
   pull_request:
 
 permissions:
