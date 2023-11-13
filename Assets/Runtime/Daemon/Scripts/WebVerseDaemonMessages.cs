@@ -87,6 +87,43 @@ namespace FiveSQD.WebVerse.Daemon
         }
 
         /// <summary>
+        /// Class for a JSON-serializable load world command.
+        /// </summary>
+        public class LoadWorldCommand
+        {
+            /// <summary>
+            /// Topic.
+            /// </summary>
+            [JsonProperty(PropertyName = "topic")]
+            public string topic;
+
+            /// <summary>
+            /// World URL.
+            /// </summary>
+            [JsonProperty(PropertyName = "url")]
+            public string url;
+
+            /// <summary>
+            /// Connection ID.
+            /// </summary>
+            [JsonProperty(PropertyName = "connectionID")]
+            public string connectionID;
+
+            /// <summary>
+            /// Constructor for a JSON-serializable identification request.
+            /// </summary>
+            /// <param name="topic">Topic.</param>
+            /// <param name="url">World URL.</param>
+            /// <param name="connectionID">Connection ID.</param>
+            public LoadWorldCommand(string topic, string url, Guid? connectionID)
+            {
+                this.topic = topic;
+                this.url = url;
+                this.connectionID = connectionID.HasValue ? connectionID.Value.ToString() : "";
+            }
+        }
+
+        /// <summary>
         /// Class for a JSON-serializable heartbeat message.
         /// </summary>
         public class HeartbeatMessage

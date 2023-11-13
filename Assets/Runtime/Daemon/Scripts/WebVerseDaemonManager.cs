@@ -8,6 +8,7 @@ using FiveSQD.WebVerse.Utilities;
 using Newtonsoft.Json;
 using System.IO;
 using System;
+using FiveSQD.WebVerse.Runtime;
 
 namespace FiveSQD.WebVerse.Daemon
 {
@@ -178,6 +179,11 @@ namespace FiveSQD.WebVerse.Daemon
                     HandleIndentificationRequest(data);
                     break;
 
+                case "LOAD-WORLD-REQ":
+                    Logging.Log("[WebVerseDaemonManager->OnString] Received load world request.");
+                    HandleLoadWorldCommand(data);
+                    break;
+
                 default:
                     Logging.LogWarning("[WebVerseDaemonManager->OnString] Unhandled message received.");
                     break;
@@ -276,6 +282,34 @@ namespace FiveSQD.WebVerse.Daemon
             connectionID = Guid.Parse(respMessage.connectionID);
             Logging.Log("[WebVerseDaemonManager->HandleIdentificationRequest] Sending identification response.");
             webSocket.Send(JsonConvert.SerializeObject(respMessage));
+#endif
+        }
+
+        private void HandleLoadWorldCommand(string request)
+        {
+            WebVerseDaemonMessages.LoadWorldCommand loadWorldCommandMessage =
+                JsonConvert.DeserializeObject<WebVerseDaemonMessages.LoadWorldCommand>(request);
+
+            if (loadWorldCommandMessage == null)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleLoadWorldCommand] Error deserializing message.");
+                return;
+            }
+
+            if (mainAppID.HasValue == false)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleLoadWorldCommand] No Main App ID.");
+                return;
+            }
+
+#if USE_WEBINTERFACE
+            if (webSocket == null)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleLoadWorldCommand] WebSocket not set up.");
+                return;
+            }
+
+            WebVerseRuntime.Instance.LoadWorld(loadWorldCommandMessage.url);
 #endif
         }
 

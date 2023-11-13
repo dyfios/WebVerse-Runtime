@@ -3,7 +3,7 @@
 using FiveSQD.WebVerse.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Events;
+//using UnityEngine.Events;
 
 namespace FiveSQD.WebVerse.Input.SteamVR
 {
@@ -12,6 +12,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
     /// </summary>
     public class SteamVRInput : MonoBehaviour
     {
+        /*
         /// <summary>
         /// Event to invoke when left menu button has been held.
         /// </summary>
@@ -49,7 +50,9 @@ namespace FiveSQD.WebVerse.Input.SteamVR
         /// Whether or not the right menu hold event has been activated.
         /// </summary>
         private bool rightMenuHoldActivated = false;
+        */
 
+        /*
         private void Update()
         {
             float deltaTime = Time.deltaTime;
@@ -76,6 +79,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                 }
             }
         }
+        */
 
         /// <summary>
         /// Invoked on a left menu.
@@ -91,8 +95,8 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                 {
                     WebVerseRuntime.Instance.inputManager.Menu();
                 }
-                leftMenuHoldTime = 0;
-                leftMenuHoldActivated = false;
+                //leftMenuHoldTime = 0;
+                //leftMenuHoldActivated = false;
             }
             else if (context.phase == InputActionPhase.Performed)
             {
@@ -106,7 +110,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                 {
                     WebVerseRuntime.Instance.inputManager.EndMenu();
                 }
-                leftMenuHoldTime = -1;
+                //leftMenuHoldTime = -1;
             }
         }
 
@@ -124,8 +128,8 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                 {
                     WebVerseRuntime.Instance.inputManager.Menu();
                 }
-                rightMenuHoldTime = 0;
-                rightMenuHoldActivated = false;
+                //rightMenuHoldTime = 0;
+                //rightMenuHoldActivated = false;
             }
             else if (context.phase == InputActionPhase.Performed)
             {
@@ -139,7 +143,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                 {
                     WebVerseRuntime.Instance.inputManager.EndMenu();
                 }
-                rightMenuHoldTime -= 1;
+                //rightMenuHoldTime -= 1;
             }
         }
 
