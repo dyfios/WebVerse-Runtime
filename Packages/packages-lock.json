@@ -1,13 +1,13 @@
 {
   "dependencies": {
     "com.atteneder.draco": {
-      "version": "4.1.0",
+      "version": "https://github.com/Five-Squared-Interactive/DracoUnity.git",
       "depth": 0,
-      "source": "registry",
+      "source": "git",
       "dependencies": {
-        "com.unity.burst": "1.4.11"
+        "com.unity.burst": "1.8.4"
       },
-      "url": "https://package.openupm.com"
+      "hash": "fa02bde570e8d3b6ae04eef7e8fd41f69e7ac2e3"
     },
     "com.siccity.gltfutility": {
       "version": "https://github.com/Five-Squared-Interactive/GLTFUtility.git",
