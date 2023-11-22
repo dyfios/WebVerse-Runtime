@@ -17,7 +17,8 @@
     "precompiledReferences": [
         "Jint.dll",
         "Esprima.dll",
-        "Newtonsoft.Json.dll"
+        "Newtonsoft.Json.dll",
+        "System.Data.SQLite.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],

@@ -9,7 +9,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "System.Data.SQLite.dll"
+        "Mono.Data.Sqlite.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],

@@ -1,8 +1,9 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+#if !UNITY_WEBGL || UNITY_EDITOR
 using FiveSQD.WebVerse.Utilities;
 using System.Collections.Generic;
-using System.Data.SQLite;
+using Mono.Data.Sqlite;
 
 namespace FiveSQD.WebVerse.LocalStorage
 {
@@ -85,15 +86,15 @@ namespace FiveSQD.WebVerse.LocalStorage
 
             value = RestrictSize(value, maxEntryLength);
 
-            SQLiteConnection dbConn = new SQLiteConnection(GetConnectionString(tablePath));
+            SqliteConnection dbConn = new SqliteConnection(GetConnectionString(tablePath));
             dbConn.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand(dbConn);
+            SqliteCommand cmd = new SqliteCommand(dbConn);
             cmd.CommandText = "DELETE FROM STORAGE WHERE KEY=@KEY";
             cmd.Parameters.AddWithValue("@KEY", key);
             cmd.Prepare();
             cmd.ExecuteNonQuery();
-            cmd = new SQLiteCommand(dbConn);
+            cmd = new SqliteCommand(dbConn);
             cmd.CommandText = "INSERT INTO STORAGE(KEY,VALUE) VALUES(@KEY, @VALUE)";
             cmd.Parameters.AddWithValue("@KEY", key);
             cmd.Parameters.AddWithValue("@VALUE", value);
@@ -110,11 +111,11 @@ namespace FiveSQD.WebVerse.LocalStorage
         /// <returns>The entry corresponding to the key, or null if none exist.</returns>
         public override string GetItem(string key)
         {
-            SQLiteConnection dbConn = new SQLiteConnection(GetConnectionString(tablePath));
+            SqliteConnection dbConn = new SqliteConnection(GetConnectionString(tablePath));
             dbConn.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM STORAGE WHERE KEY='" + key + "'", dbConn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
+            SqliteCommand cmd = new SqliteCommand("SELECT * FROM STORAGE WHERE KEY='" + key + "'", dbConn);
+            SqliteDataReader reader = cmd.ExecuteReader();
 
             List<string> readResults = new List<string>();
             while (reader.Read())
@@ -145,10 +146,10 @@ namespace FiveSQD.WebVerse.LocalStorage
         /// <param name="key">Entry key.</param>
         public override void RemoveItem(string key)
         {
-            SQLiteConnection dbConn = new SQLiteConnection(GetConnectionString(tablePath));
+            SqliteConnection dbConn = new SqliteConnection(GetConnectionString(tablePath));
             dbConn.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand(dbConn);
+            SqliteCommand cmd = new SqliteCommand(dbConn);
             cmd.CommandText = "DELETE FROM STORAGE WHERE KEY=@KEY";
             cmd.Parameters.AddWithValue("@KEY", key);
             cmd.Prepare();
@@ -162,10 +163,10 @@ namespace FiveSQD.WebVerse.LocalStorage
         /// </summary>
         public override void Clear()
         {
-            SQLiteConnection dbConn = new SQLiteConnection(GetConnectionString(tablePath));
+            SqliteConnection dbConn = new SqliteConnection(GetConnectionString(tablePath));
             dbConn.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand(dbConn);
+            SqliteCommand cmd = new SqliteCommand(dbConn);
             cmd.CommandText = "DELETE FROM STORAGE";
             cmd.Prepare();
             cmd.ExecuteNonQuery();
@@ -180,11 +181,11 @@ namespace FiveSQD.WebVerse.LocalStorage
         /// <returns>The key corresponding to the index, or null if the index does not exist.</returns>
         public override string Key(int index)
         {
-            SQLiteConnection dbConn = new SQLiteConnection(GetConnectionString(tablePath));
+            SqliteConnection dbConn = new SqliteConnection(GetConnectionString(tablePath));
             dbConn.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand("SELECT KEY FROM STORAGE LIMIT 1 OFFSET " + index, dbConn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
+            SqliteCommand cmd = new SqliteCommand("SELECT KEY FROM STORAGE LIMIT 1 OFFSET " + index, dbConn);
+            SqliteDataReader reader = cmd.ExecuteReader();
 
             List<string> readResults = new List<string>();
             while (reader.Read())
@@ -215,11 +216,11 @@ namespace FiveSQD.WebVerse.LocalStorage
         /// <returns>The count of entries in storage.</returns>
         private int GetEntryCount()
         {
-            SQLiteConnection dbConn = new SQLiteConnection(GetConnectionString(tablePath));
+            SqliteConnection dbConn = new SqliteConnection(GetConnectionString(tablePath));
             dbConn.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand("SELECT COUNT(*) FROM STORAGE", dbConn);
-            SQLiteDataReader reader = cmd.ExecuteReader();
+            SqliteCommand cmd = new SqliteCommand("SELECT COUNT(*) FROM STORAGE", dbConn);
+            SqliteDataReader reader = cmd.ExecuteReader();
 
             List<int> readResults = new List<int>();
             while (reader.Read())
@@ -250,10 +251,10 @@ namespace FiveSQD.WebVerse.LocalStorage
         /// </summary>
         private void InitializeTable()
         {
-            SQLiteConnection dbConn = new SQLiteConnection(GetConnectionString(tablePath));
+            SqliteConnection dbConn = new SqliteConnection(GetConnectionString(tablePath));
             dbConn.Open();
 
-            SQLiteCommand cmd = new SQLiteCommand(dbConn);
+            SqliteCommand cmd = new SqliteCommand(dbConn);
             cmd.CommandText = "CREATE TABLE IF NOT EXISTS STORAGE (KEY,VALUE)";
             cmd.ExecuteNonQuery();
 
@@ -289,3 +290,4 @@ namespace FiveSQD.WebVerse.LocalStorage
         }
     }
 }
+#endif

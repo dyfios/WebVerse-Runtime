@@ -117,13 +117,13 @@ namespace FiveSQD.WebVerse.LocalStorage
                     storageControllers.Add(site, cSC);
                     cSC.Initialize(maxEntries, maxEntryLength, maxKeyLength);
                     return;
-
+#if !UNITY_WEBGL || UNITY_EDITOR
                 case LocalStorageMode.Persistent:
                     PersistentStorageController pSC = scGO.AddComponent<PersistentStorageController>();
                     storageControllers.Add(site, pSC);
                     pSC.Initialize(maxEntries, maxEntryLength, maxKeyLength, "3", site + ".db");
                     return;
-
+#endif
                 default:
                     return;
             }
