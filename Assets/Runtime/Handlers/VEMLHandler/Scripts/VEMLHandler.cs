@@ -496,7 +496,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             scriptsToRun[scriptID] = scr;
                         });
                         scriptsToRun.Add(scriptID, null);
-                        LoadScriptResourceAsString(formattedBaseURI + "/" + script, onLoadedAction);
+
+                        LoadScriptResourceAsString(FullyQualifyURI(script, formattedBaseURI), onLoadedAction);
                     }
                     else
                     {
@@ -680,7 +681,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                                 WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
                             }
                         });
-                        DownloadFile(uri + "/" + entry, onDownloaded);
+                        DownloadFile(FullyQualifyURI(entry, uri), onDownloaded);
                     }
                     else
                     {
@@ -987,10 +988,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             List<string> resources = new List<string>();
             foreach (string res in entity.meshresource)
             {
-                resources.Add(formattedBaseURI + "/" + res);
+                resources.Add(FullyQualifyURI(res, formattedBaseURI));
             }
-            WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsMeshEntity(
-                formattedBaseURI + "/" + entity.meshname, resources.ToArray(), Guid.Parse(entity.id), onLoadedAction);
+            WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsMeshEntity(FullyQualifyURI(entity.meshname, formattedBaseURI),
+                resources.ToArray(), Guid.Parse(entity.id), onLoadedAction);
 
             return true;
         }
@@ -1794,8 +1795,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             {
                 if (elapsedTime > timeout)
                 {
-                    Logging.LogWarning("[VEMLHandler->ApplyEntityHierarchy] Load timed out.");
-                    yield return null;
+                    Logging.LogError("[VEMLHandler->ApplyEntityHierarchy] Load timed out.");
+                    yield break;
                 }
                 elapsedTime += 0.25f;
                 yield return new WaitForSeconds(0.25f);
@@ -1955,12 +1956,39 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             {
                 uri = uri.Replace("http:/", "http://");
             }
+            if (uri.Contains("http:\\") && !uri.Contains("http:\\\\"))
+            {
+                uri = uri.Replace("http:\\", "http://");
+            }
             if (uri.Contains("https:/") && !uri.Contains("https://"))
             {
                 uri = uri.Replace("https:/", "https://");
             }
+            if (uri.Contains("https:\\") && !uri.Contains("https:\\\\"))
+            {
+                uri = uri.Replace("https:\\", "https://");
+            }
             uri = uri.Replace("\\", "/");
             return uri;
+        }
+
+        /// <summary>
+        /// Attempts to return a fully qualified URI.
+        /// </summary>
+        /// <param name="rawURI"></param>
+        /// <param name="uriBase"></param>
+        /// <returns>If URI is already fully qualified, returns
+        /// raw string. Otherwise, will prepend raw string with URI base.</returns>
+        private string FullyQualifyURI(string rawURI, string uriBase)
+        {
+            if (Uri.IsWellFormedUriString(rawURI, UriKind.Absolute))
+            {
+                return rawURI;
+            }
+            else
+            {
+                return uriBase + "/" + rawURI;
+            }
         }
 
         /// <summary>

@@ -68,11 +68,17 @@ namespace FiveSQD.WebVerse.Daemon
             public string windowID;
 
             /// <summary>
+            /// Tab ID.
+            /// </summary>
+            [JsonProperty(PropertyName = "tabID")]
+            public int tabID;
+
+            /// <summary>
             /// Constructor for a JSON-serializable identification request.
             /// </summary>
             /// <param name="request">Request Message.</param>
             /// <param name="clientType">Client Type.</param>
-            public IdentificationResponse(IdentificationRequest request, Guid? windowID, string clientType)
+            public IdentificationResponse(IdentificationRequest request, Guid? windowID, int? tabID, string clientType)
             {
                 if (request == null)
                 {
@@ -82,6 +88,7 @@ namespace FiveSQD.WebVerse.Daemon
                 topic = "IDENTIFICATION-RESP";
                 connectionID = request.connectionID.ToString();
                 this.windowID = windowID.HasValue ? windowID.Value.ToString() : "";
+                this.tabID = tabID.HasValue ? tabID.Value : 0;
                 this.clientType = clientType;
             }
         }
@@ -115,9 +122,9 @@ namespace FiveSQD.WebVerse.Daemon
             /// <param name="topic">Topic.</param>
             /// <param name="url">World URL.</param>
             /// <param name="connectionID">Connection ID.</param>
-            public LoadWorldCommand(string topic, string url, Guid? connectionID)
+            public LoadWorldCommand(string url, Guid? connectionID)
             {
-                this.topic = topic;
+                topic = "LOAD-WORLD-CMD";
                 this.url = url;
                 this.connectionID = connectionID.HasValue ? connectionID.Value.ToString() : "";
             }

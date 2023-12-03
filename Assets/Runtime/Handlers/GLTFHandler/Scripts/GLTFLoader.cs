@@ -12,30 +12,30 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
     public class GLTFLoader : MonoBehaviour
     {
         /// <summary>
-        /// Instance of the GLTF loader.
-        /// </summary>
-        private static GLTFLoader instance;
-
-        /// <summary>
-        /// Unity awake function.
-        /// </summary>
-        private void Awake()
-        {
-            instance = this;
-        }
-
-        /// <summary>
         /// Load a GLTF model asynchronously.
         /// </summary>
         /// <param name="pathToModel">Path to the GLTF model.</param>
         /// <param name="callback">Action to invoke when loading is complete. Provides reference
         /// to the loaded gameobject and any animation clips.</param>
-        public static void LoadModelAsync(string pathToModel, Action<GameObject, AnimationClip[]> callback)
+        public void LoadModelAsync(string pathToModel, Action<GameObject, AnimationClip[]> callback)
         {
 #if UNITY_WEBGL
-        instance.StartCoroutine(instance.LoadModelCoroutine(pathToModel, callback));
+            StartCoroutine(LoadModelCoroutine(pathToModel, callback));
 #else
             Importer.ImportGLTFAsync(pathToModel, new ImportSettings(), callback);
+#endif
+        }
+
+        /// <summary>
+        /// Load a GLB model asynchronously.
+        /// </summary>
+        /// <param name="modelData">GLB model data.</param>
+        /// <param name="callback">Action to invoke when loading is complete. Provides reference
+        /// to the loaded gameobject and any animation clips.</param>
+        public void LoadModelAsync(byte[] modelData, Action<GameObject, AnimationClip[]> callback)
+        {
+#if UNITY_WEBGL
+            StartCoroutine(LoadModelCoroutine(modelData, callback));
 #endif
         }
 
@@ -57,6 +57,24 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         private System.Collections.IEnumerator LoadModelCoroutine(string pathToModel, Action<GameObject, AnimationClip[]> callback)
         {
             GameObject loadedObj = Importer.LoadFromFile(pathToModel);
+
+            if (callback != null)
+            {
+                callback.Invoke(loadedObj, null);
+            }
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Load a GLB model directly in a coroutine.
+        /// </summary>
+        /// <param name="data">GLB model data.</param>
+        /// <param name="callback">Action to invoke when loading is complete. Takes a reference
+        /// to the loaded gameobject and any animation clips.</param>
+        private System.Collections.IEnumerator LoadModelCoroutine(byte[] data, Action<GameObject, AnimationClip[]> callback)
+        {
+            GameObject loadedObj = Importer.LoadFromBytes(data);
 
             if (callback != null)
             {

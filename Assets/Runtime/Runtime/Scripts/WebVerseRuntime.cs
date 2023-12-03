@@ -57,6 +57,11 @@ namespace FiveSQD.WebVerse.Runtime
             /// Main App ID.
             /// </summary>
             public Guid? mainAppID;
+
+            /// <summary>
+            /// Tab ID.
+            /// </summary>
+            public int tabID;
         }
 
         /// <summary>
@@ -195,7 +200,7 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             Initialize(mode, settings.maxEntries, settings.maxEntryLength,
-                settings.maxKeyLength, settings.daemonPort, settings.mainAppID);
+                settings.maxKeyLength, settings.daemonPort, settings.mainAppID, settings.tabID);
         }
 
         /// <summary>
@@ -209,7 +214,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="mainAppID">Main App ID.</param>
         public void Initialize(LocalStorageManager.LocalStorageMode storageMode,
             int maxEntries, int maxEntryLength, int maxKeyLength,
-            uint? daemonPort = null, Guid? mainAppID = null)
+            uint? daemonPort = null, Guid? mainAppID = null, int? tabID = null)
         {
             if (Instance != null)
             {
@@ -219,7 +224,8 @@ namespace FiveSQD.WebVerse.Runtime
 
             Instance = this;
 
-            InitializeComponents(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID);
+            InitializeComponents(storageMode, maxEntries, maxEntryLength,
+                maxKeyLength, daemonPort, mainAppID, tabID);
         }
 
         /// <summary>
@@ -289,7 +295,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="mainAppID">Main App ID.</param>
         private void InitializeComponents(LocalStorageManager.LocalStorageMode storageMode,
             int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null,
-            Guid? mainAppID = null)
+            Guid? mainAppID = null, int? tabID = null)
         {
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
@@ -351,14 +357,14 @@ namespace FiveSQD.WebVerse.Runtime
             inputManager = inputManagerGO.AddComponent<InputManager>();
             inputManager.Initialize();
 
-            if (daemonPort != null && mainAppID != null)
+            if (daemonPort != null && mainAppID != null && tabID != null)
             {
                 // Set up Daemon Manager.
                 GameObject daemonManagerGO = new GameObject("DaemonManager");
                 daemonManagerGO.transform.SetParent(transform);
                 webVerseDaemonManager = daemonManagerGO.AddComponent<WebVerseDaemonManager>();
                 webVerseDaemonManager.Initialize();
-                webVerseDaemonManager.ConnectToDaemon(daemonPort.Value, mainAppID.Value);
+                webVerseDaemonManager.ConnectToDaemon(daemonPort.Value, mainAppID.Value, tabID.Value);
             }
         }
 

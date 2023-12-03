@@ -41,6 +41,11 @@ namespace FiveSQD.WebVerse.Daemon
         private Guid? mainAppID;
 
         /// <summary>
+        /// ID for the tab.
+        /// </summary>
+        private int? tabID;
+
+        /// <summary>
         /// Initialize the Daemon Manager.
         /// </summary>
         public override void Initialize()
@@ -84,7 +89,8 @@ namespace FiveSQD.WebVerse.Daemon
         /// </summary>
         /// <param name="port">Port to connect on.</param>
         /// <param name="mainAppID">ID for the main app.</param>
-        public void ConnectToDaemon(uint port, Guid mainAppID)
+        /// <param name="tabID">ID for the tab.</param>
+        public void ConnectToDaemon(uint port, Guid mainAppID, int tabID)
         {
 #if USE_WEBINTERFACE
             if (webSocket != null)
@@ -119,6 +125,7 @@ namespace FiveSQD.WebVerse.Daemon
             };
 
             this.mainAppID = mainAppID;
+            this.tabID = tabID;
             webSocket = new WebSocket("wss://localhost:" + port,
                 onOpenedAction, onClosedAction, onBinaryAction, onStringAction, onErrorAction);
             webSocket.Open();
@@ -179,8 +186,8 @@ namespace FiveSQD.WebVerse.Daemon
                     HandleIndentificationRequest(data);
                     break;
 
-                case "LOAD-WORLD-REQ":
-                    Logging.Log("[WebVerseDaemonManager->OnString] Received load world request.");
+                case "LOAD-WORLD-CMD":
+                    Logging.Log("[WebVerseDaemonManager->OnString] Received load world command.");
                     HandleLoadWorldCommand(data);
                     break;
 
@@ -270,8 +277,14 @@ namespace FiveSQD.WebVerse.Daemon
                 return;
             }
 
+            if (tabID.HasValue == false)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleIdentificationRequest] No Tab ID.");
+                return;
+            }
+
             WebVerseDaemonMessages.IdentificationResponse respMessage =
-                new WebVerseDaemonMessages.IdentificationResponse(reqMessage, mainAppID, "WV-FOCUSED-RUNTIME");
+                new WebVerseDaemonMessages.IdentificationResponse(reqMessage, mainAppID, tabID, "WV-FOCUSED-RUNTIME");
 #if USE_WEBINTERFACE
             if (webSocket == null)
             {

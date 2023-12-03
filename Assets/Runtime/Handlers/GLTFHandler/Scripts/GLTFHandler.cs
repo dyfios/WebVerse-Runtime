@@ -11,6 +11,7 @@ using FiveSQD.WebVerse.WebInterface.HTTP;
 #endif
 using FiveSQD.WebVerse.WorldEngine.Entity;
 using System.Collections;
+using UnityEditor;
 
 namespace FiveSQD.WebVerse.Handlers.GLTF
 {
@@ -40,6 +41,17 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         private Dictionary<string, GameObject> gltfMeshPrefabs = new Dictionary<string, GameObject>();
 
         /// <summary>
+        /// The GLTF loader.
+        /// </summary>
+        private GLTFLoader gltfLoader;
+
+        public override void Initialize()
+        {
+            gltfLoader = gameObject.AddComponent<GLTFLoader>();
+            base.Initialize();
+        }
+
+        /// <summary>
         /// Load a GLTF resource as a mesh entity.
         /// </summary>
         /// <param name="gltfResourceURI">URI of the top-level GLTF resource.</param>
@@ -52,6 +64,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         public Guid LoadGLTFResourceAsMeshEntity(string gltfResourceURI, string[] resourceURIs,
             Guid? id = null, Action<MeshEntity> onLoaded = null, float timeout = 10)
         {
+#if !UNITY_WEBGL
             Dictionary<string, bool> downloadedState = new Dictionary<string, bool>();
 
             if (resourceURIs != null)
@@ -70,7 +83,6 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     }
                 }
             }
-
             Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
             Action onDownloaded = () =>
             {
@@ -84,6 +96,20 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
 
             DownloadGLTFResource(gltfResourceURI, onDownloaded);
             return guid;
+#else
+            Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
+            Action<byte[]> onDownloaded = (data) =>
+            {
+                LoadGLTF(gltfResourceURI.Substring(gltfResourceURI.LastIndexOf("/")), data,
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        SetUpLoadedGLTFMeshAsMeshEntity(meshObject, guid, onLoaded);
+                    }));
+            };
+
+            DownloadGLTFDirect(gltfResourceURI, onDownloaded);
+            return guid;
+#endif
         }
 
         /// <summary>
@@ -91,7 +117,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// </summary>
         /// <param name="uri">URI of the GLTF resource.</param>
         /// <param name="onDownloaded">Action to invoke when downloading is complete.</param>
-        /// <param name="redownload">Whether or not to redownload the resource if it already
+        /// <param name="reDownload">Whether or not to redownload the resource if it already
         /// exists locally.</param>
         public void DownloadGLTFResource(string uri, Action onDownloaded, bool reDownload = false)
         {
@@ -118,6 +144,26 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         }
 
         /// <summary>
+        /// Download a GLTF model and load directly.
+        /// </summary>
+        /// <param name="uri">URI of the GLTF resource.</param>
+        /// <param name="onDownloaded">Action to invoke when downloading is complete.</param>
+        /// <param name="reDownload">Whether or not to redownload the resource if it already
+        /// exists locally.</param>
+        public void DownloadGLTFDirect(string uri, Action<byte[]> onDownloaded)
+        {
+#if USE_WEBINTERFACE
+            Action<int, byte[]> onDownloadedAction = new Action<int, byte[]>((code, data) =>
+            {
+                onDownloaded.Invoke(data);
+            });
+
+            HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
+            request.Send();
+#endif
+        }
+
+        /// <summary>
         /// Load a local GLTF resource.
         /// </summary>
         /// <param name="path">path to the GLTF resource (relative to the file directory).</param>
@@ -135,11 +181,32 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 {
                     Logging.LogWarning("[GLTFHandler->LoadGLTF] File not found: " + path);
                     return;
-                }    
-
+                }
+                
                 Action<GameObject, AnimationClip[]> callback =
                     (GameObject go, AnimationClip[] ac) => { MeshLoadedFromGLTF(path, go, ac, onLoaded); };
-                GLTFLoader.LoadModelAsync(path, callback);
+                gltfLoader.LoadModelAsync(path, callback);
+            }
+        }
+
+        /// <summary>
+        /// Load a GLB resource directly.
+        /// </summary>
+        /// <param name="modelName">GLB model name.</param>
+        /// <param name="modelData">GLB resource data.</param>
+        /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
+        /// to the loaded gameobject.</param>
+        public void LoadGLTF(string modelName, byte[] modelData, Action<GameObject> onLoaded)
+        {
+            if (gltfMeshPrefabs.ContainsKey(modelName))
+            {
+                InstantiateMeshFromPrefab(gltfMeshPrefabs[modelName], onLoaded);
+            }
+            else
+            {
+                Action<GameObject, AnimationClip[]> callback =
+                    (GameObject go, AnimationClip[] ac) => { MeshLoadedFromGLTF(modelName, go, ac, onLoaded); };
+                gltfLoader.LoadModelAsync(modelData, callback);
             }
         }
 

@@ -1,15 +1,13 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
-#if UNITY_WEBGL
 using System;
-#endif
 using UnityEngine;
 using FiveSQD.WebVerse.Utilities;
 
 namespace FiveSQD.WebVerse.Runtime
 {
     /// <summary>
-    /// WebVerse WebGL Mode.
+    /// WebVerse Lightweight Mode.
     /// </summary>
     public class LightweightMode : MonoBehaviour
     {
@@ -32,6 +30,30 @@ namespace FiveSQD.WebVerse.Runtime
         public string testMaxKeyLength = "512";
 
         /// <summary>
+        /// Daemon port to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Daemon port to use in Unity Editor tests.")]
+        public string testDaemonPort = "0";
+
+        /// <summary>
+        /// Main app ID to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Main app ID to use in Unity Editor tests.")]
+        public string testMainAppID;
+
+        /// <summary>
+        /// Tab ID to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Tab ID to use in Unity Editor tests.")]
+        public string testTabID;
+
+        /// <summary>
+        /// URL to load in Unity Editor tests.
+        /// </summary>
+        [Tooltip("URL to load in Unity Editor tests.")]
+        public string testWorldURL = "https://raw.githubusercontent.com/Five-Squared-Interactive/WebVerse-Samples/main/Simple-Meshes-Scene/index.veml";
+
+        /// <summary>
         /// WebVerse Runtime.
         /// </summary>
         [Tooltip("WebVerse Runtime.")]
@@ -45,7 +67,7 @@ namespace FiveSQD.WebVerse.Runtime
         {
             if (runtime == null)
             {
-                Logging.LogError("[WebGLMode->LoadWorld] No runtime.");
+                Logging.LogError("[LightweightMode->LoadWorld] No runtime.");
                 return;
             }
 
@@ -59,7 +81,7 @@ namespace FiveSQD.WebVerse.Runtime
         {
             if (runtime == null)
             {
-                Logging.LogError("[WebGLMode->LoadWorld] No runtime.");
+                Logging.LogError("[LightweightMode->LoadWorld] No runtime.");
                 return;
             }
 
@@ -68,6 +90,7 @@ namespace FiveSQD.WebVerse.Runtime
 
         private void Awake()
         {
+
             LoadRuntime();
         }
 
@@ -79,26 +102,55 @@ namespace FiveSQD.WebVerse.Runtime
             int maxEntries = GetMaxEntries();
             if (maxEntries <= 0 || maxEntries >= 8192)
             {
-                Logging.LogError("[WebGLMode->LoadRuntime] Invalid max entries value.");
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid max entries value.");
                 return;
             }
 
             int maxEntryLength = GetMaxEntryLength();
             if (maxEntryLength <= 8 || maxEntryLength >= 131072)
             {
-                Logging.LogError("[WebGLMode->LoadRuntime] Invalid max entry length value.");
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid max entry length value.");
                 return;
             }
 
             int maxKeyLength = GetMaxKeyLength();
             if (maxKeyLength <= 4 || maxKeyLength >= 8192)
             {
-                Logging.LogError("[WebGLMode->LoadRuntime] Invalid max key length value.");
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid max key length value.");
                 return;
             }
 
+            uint daemonPort = GetDaemonPort();
+            if (daemonPort <= 0 || daemonPort >= 65535)
+            {
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid daemon port value.");
+            }
+
+            Guid mainAppID = GetMainAppID();
+            if (mainAppID == Guid.Empty)
+            {
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid main app ID value.");
+            }
+
+            int tabID = GetTabID();
+            if (mainAppID == Guid.Empty)
+            {
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid tab ID value.");
+            }
+
+            string worldURL = GetWorldURL();
+            if (mainAppID == Guid.Empty)
+            {
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid world URL value.");
+            }
+
             runtime.Initialize(LocalStorage.LocalStorageManager.LocalStorageMode.Cache,
-                maxEntries, maxEntryLength, maxKeyLength);
+                maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID, tabID);
+
+            if (!string.IsNullOrEmpty(worldURL))
+            {
+                LoadWorld(worldURL);
+            }
         }
 
         /// <summary>
@@ -127,7 +179,7 @@ namespace FiveSQD.WebVerse.Runtime
                     {
                         string key = keyValue[0];
                         string value = section.Substring(valueStart);
-                        if (key.ToLower() == "maxentries")
+                        if (key.ToLower() == "max_entries")
                         {
                             maxEntries = value;
                             break;
@@ -165,7 +217,7 @@ namespace FiveSQD.WebVerse.Runtime
                     {
                         string key = keyValue[0];
                         string value = section.Substring(valueStart);
-                        if (key.ToLower() == "maxentrylength")
+                        if (key.ToLower() == "max_entry_length")
                         {
                             maxEntryLength = value;
                             break;
@@ -203,7 +255,7 @@ namespace FiveSQD.WebVerse.Runtime
                     {
                         string key = keyValue[0];
                         string value = section.Substring(valueStart);
-                        if (key.ToLower() == "maxkeylength")
+                        if (key.ToLower() == "max_key_length")
                         {
                             maxKeyLength = value;
                             break;
@@ -213,6 +265,134 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return int.Parse(maxKeyLength);
+        }
+
+        private uint GetDaemonPort()
+        {
+            string daemonPort = "";
+#if UNITY_EDITOR
+            daemonPort = testDaemonPort;
+#elif UNITY_WEBGL
+            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
+            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
+            {
+                string query = Application.absoluteURL.Substring(queryStart);
+
+                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string section in sections)
+                {
+                    int valueStart = section.IndexOf("=") + 1;
+                    string[] keyValue = section.Split('=');
+                    if (keyValue.Length >= 2)
+                    {
+                        string key = keyValue[0];
+                        string value = section.Substring(valueStart);
+                        if (key.ToLower() == "daemon_port")
+                        {
+                            daemonPort = value;
+                            break;
+                        }
+                    }
+                }
+            }
+#endif
+            return uint.Parse(daemonPort);
+        }
+
+        private Guid GetMainAppID()
+        {
+            string mainAppID = "";
+#if UNITY_EDITOR
+            mainAppID = testMainAppID;
+#elif UNITY_WEBGL
+            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
+            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
+            {
+                string query = Application.absoluteURL.Substring(queryStart);
+
+                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string section in sections)
+                {
+                    int valueStart = section.IndexOf("=") + 1;
+                    string[] keyValue = section.Split('=');
+                    if (keyValue.Length >= 2)
+                    {
+                        string key = keyValue[0];
+                        string value = section.Substring(valueStart);
+                        if (key.ToLower() == "main_app_id")
+                        {
+                            mainAppID = value;
+                            break;
+                        }
+                    }
+                }
+            }
+#endif
+            return Guid.Parse(mainAppID);
+        }
+
+        private int GetTabID()
+        {
+            string tabID = "";
+#if UNITY_EDITOR
+            tabID = testTabID;
+#elif UNITY_WEBGL
+            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
+            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
+            {
+                string query = Application.absoluteURL.Substring(queryStart);
+
+                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string section in sections)
+                {
+                    int valueStart = section.IndexOf("=") + 1;
+                    string[] keyValue = section.Split('=');
+                    if (keyValue.Length >= 2)
+                    {
+                        string key = keyValue[0];
+                        string value = section.Substring(valueStart);
+                        if (key.ToLower() == "tab_id")
+                        {
+                            tabID = value;
+                            break;
+                        }
+                    }
+                }
+            }
+#endif
+            return int.Parse(tabID);
+        }
+
+        private string GetWorldURL()
+        {
+            string worldURL = "";
+#if UNITY_EDITOR
+            worldURL = testWorldURL;
+#elif UNITY_WEBGL
+            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
+            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
+            {
+                string query = Application.absoluteURL.Substring(queryStart);
+
+                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string section in sections)
+                {
+                    int valueStart = section.IndexOf("=") + 1;
+                    string[] keyValue = section.Split('=');
+                    if (keyValue.Length >= 2)
+                    {
+                        string key = keyValue[0];
+                        string value = section.Substring(valueStart);
+                        if (key.ToLower() == "world_url")
+                        {
+                            worldURL = value;
+                            break;
+                        }
+                    }
+                }
+            }
+#endif
+            return worldURL;
         }
     }
 }
