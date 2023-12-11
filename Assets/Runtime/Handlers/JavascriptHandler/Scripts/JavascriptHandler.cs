@@ -32,8 +32,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("Vector4Int", typeof(Vector4Int)),
             new System.Tuple<string, System.Type>("Quaternion", typeof(Quaternion)),
             new System.Tuple<string, System.Type>("QuaternionD", typeof(QuaternionD)),
+            new System.Tuple<string, System.Type>("UUID", typeof(UUID)),
 
             // Entity.
+            new System.Tuple<string, System.Type>("Entity", typeof(Entity)),
             new System.Tuple<string, System.Type>("ButtonEntity", typeof(ButtonEntity)),
             new System.Tuple<string, System.Type>("CanvasEntity", typeof(CanvasEntity)),
             new System.Tuple<string, System.Type>("CharacterEntity", typeof(CharacterEntity)),
@@ -68,8 +70,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
 #endif
 
             // World Browser Utilities.
+            new System.Tuple<string, System.Type>("Camera", typeof(APIs.Utilities.Camera)),
+            new System.Tuple<string, System.Type>("Context", typeof(APIs.Utilities.Context)),
             new System.Tuple<string, System.Type>("LocalStorage", typeof(APIs.Utilities.LocalStorage)),
             new System.Tuple<string, System.Type>("Logging", typeof(APIs.Utilities.Logging)),
+            new System.Tuple<string, System.Type>("Time", typeof(APIs.Utilities.Time)),
             new System.Tuple<string, System.Type>("WorldStorage", typeof(APIs.Utilities.WorldStorage))
         };
 
@@ -87,6 +92,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             RegisterAllAPIs();
 
             base.Initialize();
+            EntityAPIHelper.InitializeEntityMapping();
         }
 
         /// <summary>
@@ -254,6 +260,38 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             }
 
             return engine.GetValue(variableName);
+        }
+
+        /// <summary>
+        /// Set a context.
+        /// </summary>
+        /// <param name="contextName">Name of the context.</param>
+        /// <param name="context">Context.</param>
+        public void DefineContext(string contextName, object context)
+        {
+            if (engine == null)
+            {
+                LogSystem.LogError("[JavascriptManager->DefineContext] No engine reference.");
+                return;
+            }
+
+            engine.SetValue("INTERNAL_CONTEXTS_" + contextName, context);
+        }
+
+        /// <summary>
+        /// Get a context.
+        /// </summary>
+        /// <param name="contextName">Name of the context.</param>
+        /// <returns>Context.</returns>
+        public object GetContext(string contextName)
+        {
+            if (engine == null)
+            {
+                LogSystem.LogError("[JavascriptManager->DefineContext] No engine reference.");
+                return null;
+            }
+
+            return engine.GetValue("INTERNAL_CONTEXTS_" + contextName);
         }
 
         /// <summary>

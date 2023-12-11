@@ -1422,7 +1422,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         newClientMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.SessionMessages.NewClientMessage>(message);
                     synchronizedUsers.Add(Guid.Parse(newClientMessage.clientID), newClientMessage.clientTag);
-                    Debug.Log(newClientMessage.clientID);
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/clientleft")
                 {

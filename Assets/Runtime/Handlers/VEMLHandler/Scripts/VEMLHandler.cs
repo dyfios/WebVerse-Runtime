@@ -1593,6 +1593,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+
+                // Default to screen canvas.
+                ((CanvasEntity) loadedEntity).MakeScreenCanvas();
+
 #if USE_WEBINTERFACE
                 if (!string.IsNullOrEmpty(entity.synchronizer))
                 {
@@ -1829,7 +1833,19 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     yield break;
                 }
 
-                entityToSet.SetParent(entityParent);
+                if (entityToSet is UIElementEntity)
+                {
+                    if (entityParent is not UIEntity)
+                    {
+                        LogSystem.LogError("[VEMLHandler->ApplyEntityHierarchy] UI Element Entity not parented by UI Entity.");
+                        yield break;
+                    }
+                    entityToSet.SetParent(((UIEntity) entityParent));
+                }
+                else
+                {
+                    entityToSet.SetParent(entityParent);
+                }
             }
         }
 

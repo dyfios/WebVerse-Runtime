@@ -1,7 +1,7 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
-using UnityEngine;
+using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
 {
@@ -37,7 +37,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetPosition(Vector3 position, bool local)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetPosition(position, local);
+            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetPosition(
+                new UnityEngine.Vector3(position.x, position.y, position.z), local);
 
             return true;
         }
@@ -50,7 +51,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetRotation(Quaternion rotation, bool local)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetRotation(rotation, local);
+            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetRotation(
+                new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w), local);
 
             return true;
         }
@@ -63,7 +65,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetEulerRotation(Vector3 rotation, bool local)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetEulerRotation(rotation, local);
+            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetEulerRotation(
+                new UnityEngine.Vector3(rotation.x, rotation.y, rotation.z), local);
 
             return true;
         }
@@ -75,7 +78,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetScale(Vector3 scale)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetScale(scale);
+            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetScale(
+                new UnityEngine.Vector3(scale.x, scale.y, scale.z));
 
             return true;
         }

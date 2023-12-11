@@ -94,12 +94,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes
         public static bool operator !=(Quaternion first, Quaternion second) => !AreEqual(first, second);
 
         /// <summary>
-        /// Get an identity (0, 0, 0, 1) quaternion.
+        /// An identity (0, 0, 0, 1) quaternion.
         /// </summary>
-        /// <returns>An identity (0, 0, 0, 1) quaternion.</returns>
-        public static Quaternion Identity()
+        public static Quaternion identity
         {
-            return new Quaternion(0, 0, 0, 1);
+            get
+            {
+                return new Quaternion(0, 0, 0, 1);
+            }
         }
 
         /// <summary>

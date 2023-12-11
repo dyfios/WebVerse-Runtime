@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+using System;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
@@ -24,10 +25,20 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// canvas entity object.</param>
         /// <returns>The ID of the canvas entity object.</returns>
-        public static System.Guid Create(BaseEntity parent,
+        public static CanvasEntity Create(BaseEntity parent,
             Vector3 position, Quaternion rotation, Vector3 scale, bool isSize = false,
-            System.Guid? id = null, string tag = null, string onLoaded = null)
+            string id = null, string tag = null, string onLoaded = null)
         {
+            Guid guid;
+            if (string.IsNullOrEmpty(id))
+            {
+                guid = Guid.NewGuid();
+            }
+            else
+            {
+                guid = Guid.Parse(id);
+            }
+
             WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -36,24 +47,19 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             CanvasEntity ce = new CanvasEntity();
 
             System.Action onLoadAction = null;
-            if (!string.IsNullOrEmpty(onLoaded))
+            onLoadAction = () =>
             {
-                onLoadAction = () =>
+                ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
+                if (!string.IsNullOrEmpty(onLoaded))
                 {
-                    if (id.HasValue == false)
-                    {
-                        Logging.LogError("[CanvasEntity:Create] Unable to finish entity creation.");
-                    }
-                    else
-                    {
-                        ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(id.Value);
-                        EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
-                        WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
-                    }
-                };
-            }
+                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
+                }
+            };
 
-            return WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(pBE, pos, rot, scl, id, isSize, tag, onLoadAction);
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(pBE, pos, rot, scl, guid, isSize, tag, onLoadAction);
+
+            return ce;
         }
 
         internal CanvasEntity()

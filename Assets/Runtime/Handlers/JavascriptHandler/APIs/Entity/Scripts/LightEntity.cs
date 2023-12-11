@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+using System;
 using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Runtime;
@@ -22,10 +23,20 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// light entity object.</param>
         /// <returns>The ID of the light entity object.</returns>
-        public static System.Guid Create(BaseEntity parent,
+        public static LightEntity Create(BaseEntity parent,
             Vector3 position, Quaternion rotation,
-            System.Guid? id = null, string tag = null, string onLoaded = null)
+            string id = null, string tag = null, string onLoaded = null)
         {
+            Guid guid;
+            if (string.IsNullOrEmpty(id))
+            {
+                guid = Guid.NewGuid();
+            }
+            else
+            {
+                guid = Guid.Parse(id);
+            }
+
             WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -33,24 +44,19 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             LightEntity le = new LightEntity();
 
             System.Action onLoadAction = null;
-            if (!string.IsNullOrEmpty(onLoaded))
+            onLoadAction = () =>
             {
-                onLoadAction = () =>
+                le.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                EntityAPIHelper.AddEntityMapping(le.internalEntity, le);
+                if (!string.IsNullOrEmpty(onLoaded))
                 {
-                    if (id.HasValue == false)
-                    {
-                        Logging.LogError("[LightEntity:Create] Unable to finish entity creation.");
-                    }
-                    else
-                    {
-                        le.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(id.Value);
-                        EntityAPIHelper.AddEntityMapping(le.internalEntity, le);
-                        WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "le"));
-                    }
-                };
-            }
+                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "le"));
+                }
+            };
 
-            return WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(pBE, pos, rot, id, tag, onLoadAction);
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(pBE, pos, rot, guid, tag, onLoadAction);
+
+            return le;
         }
 
         internal LightEntity()

@@ -1959,10 +1959,10 @@ MonoBehaviour:
   testMaxEntries: 2048
   testMaxEntryLength: 2048
   testMaxKeyLength: 512
-  testDaemonPort: 
-  testMainAppID: 
+  testDaemonPort: 1025
+  testMainAppID: 00000000-0000-0000-0000-000000000000
   testTabID: 100
-  testWorldURL: 
+  testWorldURL: C:\Users\dbake\Desktop\WebVerse-Samples\Simple-Meshes-Scene\index.veml
   runtime: {fileID: 472491403}
 --- !u!1 &1240903272
 GameObject:

@@ -105,6 +105,12 @@ namespace FiveSQD.WebVerse.Runtime
         [Tooltip("The VEML Handler.")]
         public VEMLHandler vemlHandler { get; private set; }
 
+        /// <summary>
+        /// The Time Handler.
+        /// </summary>
+        [Tooltip("The Time Handler.")]
+        public TimeHandler timeHandler { get; private set; }
+
 #if USE_WEBINTERFACE
         /// <summary>
         /// The VOS Synchronization Manager.
@@ -336,6 +342,10 @@ namespace FiveSQD.WebVerse.Runtime
             vemlHandler = vemlHandlerGO.AddComponent<VEMLHandler>();
             vemlHandler.runtime = this;
             vemlHandler.Initialize();
+            GameObject timeHandlerGO = new GameObject("Time");
+            timeHandlerGO.transform.SetParent(handlersGO.transform);
+            timeHandler = timeHandlerGO.AddComponent<TimeHandler>();
+            timeHandler.Initialize();
 
             // Set up VOS Synchronization Manager.
             GameObject vosSynchronizationManagerGO = new GameObject("VOSSynchronizationManager");
@@ -395,6 +405,7 @@ namespace FiveSQD.WebVerse.Runtime
 #endif
 
             // Terminate Handlers.
+            timeHandler.Terminate();
             vemlHandler.Terminate();
             gltfHandler.Terminate();
             javascriptHandler.Terminate();

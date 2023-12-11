@@ -80,6 +80,22 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         }
 
         /// <summary>
+        /// Get the entity corresponding to an ID.
+        /// </summary>
+        /// <param name="id">ID of the entity to get.</param>
+        /// <returns>The entity corresponding to the ID, or null.</returns>
+        public static BaseEntity Get(Guid id)
+        {
+            WorldEngine.Entity.BaseEntity internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(id);
+            if (internalEntity == null)
+            {
+                Logging.Log("[BaseEntity->Get] Could not find entity.");
+                return null;
+            }
+            return EntityAPIHelper.GetPublicEntity(internalEntity);
+        }
+
+        /// <summary>
         /// Set the parent of the entity.
         /// </summary>
         /// <param name="parent">Entity to make parent of this one, or null.</param>
@@ -222,6 +238,26 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             }
             return children.ToArray();
+        }
+
+        /// <summary>
+        /// Get the transform of the entity.
+        /// </summary>
+        /// <returns>The transform of the entity.</returns>
+        public Transform GetTransform()
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:GetTransform] Unknown entity.");
+                return null;
+            }
+
+            UnityEngine.Transform transform = internalEntity.transform;
+            Transform t = new Transform();
+            t.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            t.rotation = new Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
+            t.scale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+            return t;
         }
 
         /// <summary>

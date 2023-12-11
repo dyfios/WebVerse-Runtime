@@ -1,8 +1,8 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Runtime;
-using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
+using System;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 {
@@ -23,11 +23,21 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="id">ID of the entity. One will be created if not provided.</param>
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// character entity object.</param>
-        /// <returns>The ID of the character entity object.</returns>
-        public static System.Guid Create(BaseEntity parent, 
+        /// <returns>The character entity object.</returns>
+        public static CharacterEntity Create(BaseEntity parent, 
             Vector3 position, Quaternion rotation, Vector3 scale, bool isSize = false,
-            string tag = null, System.Guid? id = null, string onLoaded = null)
+            string tag = null, string id = null, string onLoaded = null)
         {
+            Guid guid;
+            if (string.IsNullOrEmpty(id))
+            {
+                guid = Guid.NewGuid();
+            }
+            else
+            {
+                guid = Guid.Parse(id);
+            }
+
             WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -36,24 +46,19 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             CharacterEntity ce = new CharacterEntity();
 
             System.Action onLoadAction = null;
-            if (!string.IsNullOrEmpty(onLoaded))
+            onLoadAction = () =>
             {
-                onLoadAction = () =>
+                ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
+                if (!string.IsNullOrEmpty(onLoaded))
                 {
-                    if (id.HasValue == false)
-                    {
-                        Logging.LogError("[CharacterEntity:Create] Unable to finish entity creation.");
-                    }
-                    else
-                    {
-                        ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(id.Value);
-                        EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
-                        WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
-                    }
-                };
-            }
+                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
+                }
+            };
 
-            return WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(pBE, pos, rot, scl, id, tag, isSize, onLoadAction);
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(pBE, pos, rot, scl, guid, tag, isSize, onLoadAction);
+
+            return ce;
         }
 
         internal CharacterEntity()

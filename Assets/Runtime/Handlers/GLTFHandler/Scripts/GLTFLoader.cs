@@ -3,6 +3,7 @@
 using System;
 using UnityEngine;
 using Siccity.GLTFUtility;
+using FiveSQD.WebVerse.Utilities;
 
 namespace FiveSQD.WebVerse.Handlers.GLTF
 {
@@ -22,7 +23,20 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
 #if UNITY_WEBGL
             StartCoroutine(LoadModelCoroutine(pathToModel, callback));
 #else
-            Importer.ImportGLTFAsync(pathToModel, new ImportSettings(), callback);
+            if (pathToModel.EndsWith(".gltf"))
+            {
+                Importer.ImportGLTFAsync(pathToModel, new ImportSettings(), callback);
+            }
+            else
+            {
+                if (!pathToModel.EndsWith(".glb"))
+                {
+                    Logging.LogError("[GLTFLoader->LoadModelAsync] Unknown model file format. Trying GLB.");
+                }
+
+                byte[] modelData = System.IO.File.ReadAllBytes(pathToModel);
+                StartCoroutine(LoadModelCoroutine(modelData, callback));
+            }
 #endif
         }
 

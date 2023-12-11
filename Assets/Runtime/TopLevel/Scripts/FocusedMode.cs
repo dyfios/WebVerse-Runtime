@@ -54,6 +54,12 @@ namespace FiveSQD.WebVerse.Runtime
         public string testMainAppID;
 
         /// <summary>
+        /// Tab ID to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Tab ID to use in Unity Editor tests.")]
+        public string testTabID;
+
+        /// <summary>
         /// WebVerse Runtime.
         /// </summary>
         [Tooltip("WebVerse Runtime.")]
@@ -117,7 +123,13 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogError("[FocusedMode->LoadRuntime] Invalid main app ID value.");
             }
 
-            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID);
+            int tabID = GetTabID();
+            if (tabID < 1)
+            {
+                Logging.LogError("[FocusedMode->LoadRuntime] Invalid tab ID value.");
+            }
+
+            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID, tabID);
             runtime.LoadWorld(uri);
         }
 
@@ -246,6 +258,11 @@ namespace FiveSQD.WebVerse.Runtime
             return int.Parse(maxKeyLength);
         }
 
+        /// <summary>
+        /// Get the Daemon Port, provided by command line in built app, and by 'testDaemonPort'
+        /// variable in Editor mode.
+        /// </summary>
+        /// <returns>Daemon Port.</returns>
         private uint GetDaemonPort()
         {
             string daemonPort = "";
@@ -263,6 +280,11 @@ namespace FiveSQD.WebVerse.Runtime
             return uint.Parse(daemonPort);
         }
 
+        /// <summary>
+        /// Get the Main App ID, provided by command line in built app, and by 'testMainAppID'
+        /// variable in Editor mode.
+        /// </summary>
+        /// <returns>Main App ID.</returns>
         private Guid GetMainAppID()
         {
             string mainAppID = "";
@@ -278,6 +300,28 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return Guid.Parse(mainAppID);
+        }
+
+        /// <summary>
+        /// Get the Tab ID, provided by command line in built app, and by 'testTabID'
+        /// variable in Editor mode.
+        /// </summary>
+        /// <returns>Tab ID.</returns>
+        private int GetTabID()
+        {
+            string tabID = "";
+#if UNITY_EDITOR
+            tabID = testTabID;
+#else
+            foreach (string arg in System.Environment.GetCommandLineArgs())
+            {
+                if (arg.StartsWith("tabid="))
+                {
+                    tabID = arg.Substring(6);
+                }
+            }
+#endif
+            return int.Parse(tabID);
         }
     }
 }

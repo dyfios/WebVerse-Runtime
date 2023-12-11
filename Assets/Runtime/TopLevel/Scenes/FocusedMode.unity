@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.12731749, g: 0.13414757, b: 0.1210787, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -230,11 +230,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5196a43aa7f340a4e9acf81f395e3528, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testURI: C:\Users\dbake\Desktop\WebVerse-Samples\Simple-Meshes-Scene\index.veml
+  testURI: https://webverse-samples.s3.amazonaws.com/Simple-Meshes-Scene/index.veml
   testStorageMode: persistent
   testMaxEntries: 512
   testMaxEntryLength: 2048
   testMaxKeyLength: 128
+  testDaemonPort: 1025
+  testMainAppID: 00000000-0000-0000-0000-000000000000
+  testTabID: 10
+  testWorldURL: 
   runtime: {fileID: 472491403}
 --- !u!114 &472491406
 MonoBehaviour:

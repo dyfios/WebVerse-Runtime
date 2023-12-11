@@ -1,7 +1,6 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Runtime;
-using FiveSQD.WebVerse.Utilities;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -279,13 +278,14 @@ namespace FiveSQD.WebVerse.Input.Desktop
             
             if (!keyKeyTranslations.ContainsKey(key))
             {
-                Logging.LogError("[DesktopInput->OnKeyboard] Unable to find key translation.");
+                // This appears to be nominal, particularly with device callbacks.
+                //Logging.LogError("[DesktopInput->OnKeyboard] Unable to find key translation.");
                 return;
             }
 
             if (!keyCodeTranslations.ContainsKey(key))
             {
-                Logging.LogError("[DesktopInput->OnKeyboard] Unable to find keyCode translation.");
+                //Logging.LogError("[DesktopInput->OnKeyboard] Unable to find keyCode translation.");
                 return;
             }
 
