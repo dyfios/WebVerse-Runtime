@@ -481,7 +481,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddMeshEntityMessage
                     addMeshEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddMeshEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, filePath, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, filePath, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createmeshentity",
@@ -492,7 +492,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddContainerEntityMessage
                     addContainerEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddContainerEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createcontainerentity",
@@ -503,7 +503,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddCharacterEntityMessage
                     addCharacterEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddCharacterEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID, filePath, resourcesPaths,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID, filePath, resourcesPaths,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createcharacterentity",
@@ -520,7 +520,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddButtonEntityMessage
                     addButtonEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddButtonEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((ButtonEntity) entityToSynchronize).GetPositionPercent(),
                     ((ButtonEntity) entityToSynchronize).GetSizePercent(), null, deleteWithClient); // TODO event.
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createbuttonentity",
@@ -531,7 +531,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddCanvasEntityMessage
                     addCanvasEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddCanvasEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createcanvasentity",
@@ -548,7 +548,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddInputEntityMessage
                     addInputEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddInputEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((InputEntity) entityToSynchronize).GetPositionPercent(),
                     ((InputEntity) entityToSynchronize).GetSizePercent(), deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createinputentity",
@@ -559,7 +559,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddLightEntityMessage
                     addLightEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddLightEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createlightentity",
@@ -570,7 +570,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddTerrainEntityMessage
                     addTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, 0, 0, 0,
                     ((TerrainEntity) entityToSynchronize).GetHeights(), deleteWithClient); // TODO dimensions.
@@ -588,7 +588,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddTextEntityMessage
                     addTextEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddTextEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((TextEntity) entityToSynchronize).GetPositionPercent(),
                     ((TextEntity) entityToSynchronize).GetSizePercent(),
                     ((TextEntity) entityToSynchronize).GetText(),
@@ -601,7 +601,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 VOSSynchronizationMessages.RequestMessages.AddVoxelEntityMessage
                     addVoxelEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddVoxelEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                    entityToSynchronize.id, entityToSynchronize.tag, parentID,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createvoxelentity",
@@ -1429,7 +1429,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         clientLeftMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.SessionMessages.ClientLeftMessage>(message);
                     synchronizedUsers.Remove(Guid.Parse(clientLeftMessage.clientID));
-                    Debug.Log(clientLeftMessage.clientID);
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createcontainerentity")
                 {
@@ -1522,7 +1521,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parent, addCharacterEntityMessage.position.ToVector3(),
                         addCharacterEntityMessage.rotation.ToQuaternion(), scaleSize,
-                        Guid.Parse(addCharacterEntityMessage.id), tag, isSize);
+                        Guid.Parse(addCharacterEntityMessage.id), addCharacterEntityMessage.tag, isSize);
                     BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addCharacterEntityMessage.id));
                     if (ce == null)
                     {
@@ -1574,7 +1573,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             me.SetScale(scaleSize, false);
                         }
-                        me.tag = addMeshEntityMessage.tag;
+                        me.entityTag = addMeshEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createbuttonentity")
@@ -1618,7 +1617,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         be.SetVisibility(true);
-                        be.tag = addButtonEntityMessage.tag;
+                        be.entityTag = addButtonEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createcanvasentity")
@@ -1663,7 +1662,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         ce.SetVisibility(true);
-                        ce.tag = addCanvasEntityMessage.tag;
+                        ce.entityTag = addCanvasEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createinputentity")
@@ -1698,7 +1697,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         be.SetVisibility(true);
-                        be.tag = addInputEntityMessage.tag;
+                        be.entityTag = addInputEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createlightentity")
@@ -1720,7 +1719,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         me.SetVisibility(true);
-                        me.tag = addLightEntityMessage.tag;
+                        me.entityTag = addLightEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createterrainentity")
@@ -1761,7 +1760,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         me.SetVisibility(true);
-                        me.tag = addTerrainEntityMessage.tag;
+                        me.entityTag = addTerrainEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createtextentity")
@@ -1797,7 +1796,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         be.SetVisibility(true);
-                        be.tag = addTextEntityMessage.tag;
+                        be.entityTag = addTextEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createvoxelentity")
@@ -1820,7 +1819,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         ve.SetVisibility(true);
-                        ve.tag = addVoxelEntityMessage.tag;
+                        ve.entityTag = addVoxelEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/state")
@@ -1890,7 +1889,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         VOSSynchronizationMessages.StatusMessages.RemoveEntityMessage
                             removeEntityMessage = JsonConvert.DeserializeObject<
                             VOSSynchronizationMessages.StatusMessages.RemoveEntityMessage>(message);
-                        Debug.Log(removeEntityMessage.id);
                     }
                     else if (topic.EndsWith("/delete"))
                     {
@@ -2193,7 +2191,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             ne.SetScale(scaleSize, false);
                         }
-                        ne.tag = entityInfo.tag;
+                        ne.entityTag = entityInfo.tag;
                     }
                     return ne;
 

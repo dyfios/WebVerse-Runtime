@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Utilities;
 
@@ -15,7 +16,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <summary>
         /// ID of the entity.
         /// </summary>
-        public Guid? id
+        public UUID id
         {
             get
             {
@@ -25,7 +26,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     return null;
                 }
 
-                return internalEntity.id;
+                return internalEntity.id == null ? null
+                    : new UUID(internalEntity.id.ToString());
             }
         }
 
