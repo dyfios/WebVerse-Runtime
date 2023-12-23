@@ -328,6 +328,28 @@ namespace FiveSQD.WebVerse.Input.SteamVR
         }
 
         /// <summary>
+        /// Invoked on a left touchpad touch location change.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
+        public void OnLeftTouchPadValue(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            WebVerseRuntime.Instance.inputManager.LeftTouchPadTouchValueChange(value);
+            WebVerseRuntime.Instance.inputManager.leftTouchPadTouchLocation = value;
+        }
+
+        /// <summary>
+        /// Invoked on a right touchpad touch location change.
+        /// </summary>
+        /// <param name="context">Callback context.</param>
+        public void OnRightTouchPadValue(InputAction.CallbackContext context)
+        {
+            Vector2 value = context.ReadValue<Vector2>();
+            WebVerseRuntime.Instance.inputManager.RightTouchPadTouchValueChange(value);
+            WebVerseRuntime.Instance.inputManager.rightTouchPadTouchLocation = value;
+        }
+
+        /// <summary>
         /// Invoked on a left touchpad touch.
         /// </summary>
         /// <param name="context">Callback context.</param>

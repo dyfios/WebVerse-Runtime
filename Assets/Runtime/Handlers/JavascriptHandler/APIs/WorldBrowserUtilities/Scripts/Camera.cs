@@ -29,6 +29,30 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
             return true;
         }
 
+        public static bool AddCameraFollower(BaseEntity entity)
+        {
+            if (entity == null)
+            {
+                Logging.LogWarning("[Camera:AddCameraFollower] Invalid entity.");
+                return false;
+            }
+
+            WorldEngine.WorldEngine.ActiveWorld.cameraManager.AddFollower(EntityAPIHelper.GetPrivateEntity(entity));
+            return true;
+        }
+
+        public static bool RemoveCameraFollower(BaseEntity entity)
+        {
+            if (entity == null)
+            {
+                Logging.LogWarning("[Camera:RemoveCameraFollower] Invalid entity.");
+                return false;
+            }
+
+            WorldEngine.WorldEngine.ActiveWorld.cameraManager.RemoveFollower(EntityAPIHelper.GetPrivateEntity(entity));
+            return true;
+        }
+
         /// <summary>
         /// Set position of the camera.
         /// </summary>
@@ -41,6 +65,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
                 new UnityEngine.Vector3(position.x, position.y, position.z), local);
 
             return true;
+        }
+
+        /// <summary>
+        /// Get the position of the camera.
+        /// </summary>
+        /// <param name="local">Whether or not the position is local.</param>
+        /// <returns>The position of the camera.</returns>
+        public static Vector3 GetPosition(bool local)
+        {
+            UnityEngine.Vector3 pos = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetPosition(local);
+            return new Vector3(pos.x, pos.y, pos.z);
         }
 
         /// <summary>
@@ -58,6 +93,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         }
 
         /// <summary>
+        /// Get the rotation of the camera.
+        /// </summary>
+        /// <param name="local">Whether or not the rotation is local.</param>
+        /// <returns>The rotation of the camera.</returns>
+        public static Quaternion GetRotation(bool local)
+        {
+            UnityEngine.Quaternion rot = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetRotation(local);
+            return new Quaternion(rot.x, rot.y, rot.z, rot.w);
+        }
+
+        /// <summary>
         /// Set the Euler rotation of the camera.
         /// </summary>
         /// <param name="rotation">Euler rotation to apply to camera.</param>
@@ -72,6 +118,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         }
 
         /// <summary>
+        /// Get the Euler rotation of the camera.
+        /// </summary>
+        /// <param name="local">Whether or not the Euler rotation is local.</param>
+        /// <returns>The Euler rotation of the camera.</returns>
+        public static Vector3 GetEulerRotation(bool local)
+        {
+            UnityEngine.Vector3 rot = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetEulerRotation(local);
+            return new Vector3(rot.x, rot.y, rot.z);
+        }
+
+        /// <summary>
         /// Set the scale of the camera.
         /// </summary>
         /// <param name="scale">Scale to apply to camera.</param>
@@ -82,6 +139,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
                 new UnityEngine.Vector3(scale.x, scale.y, scale.z));
 
             return true;
+        }
+
+        /// <summary>
+        /// Get the scale of the camera.
+        /// </summary>
+        /// <returns>The scale of the camera.</returns>
+        public static Vector3 GetScale()
+        {
+            UnityEngine.Vector3 scl = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetScale();
+            return new Vector3(scl.x, scl.y, scl.z);
         }
     }
 }

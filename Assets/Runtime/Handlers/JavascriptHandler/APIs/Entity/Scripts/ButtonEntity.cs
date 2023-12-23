@@ -39,6 +39,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            if (pCE == null)
+            {
+                Logging.LogWarning("[ButtonEntity->Create] Invalid parent entity.");
+                return null;
+            }
+
             UnityEngine.Vector2 pos = new UnityEngine.Vector2(positionPercent.x, positionPercent.y);
             UnityEngine.Vector2 size = new UnityEngine.Vector2(sizePercent.x, sizePercent.y);
 

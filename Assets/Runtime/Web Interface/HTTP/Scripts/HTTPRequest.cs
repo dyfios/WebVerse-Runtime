@@ -45,7 +45,7 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
                     }
                 }
             }));
-            request.DownloadSettings.ContentStreamMaxBuffered = 16777216;
+            request.DownloadSettings.ContentStreamMaxBuffered = 1073741824;
         }
 
         /// <summary>

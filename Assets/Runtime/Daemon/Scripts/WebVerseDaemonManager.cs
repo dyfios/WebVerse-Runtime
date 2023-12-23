@@ -341,7 +341,7 @@ namespace FiveSQD.WebVerse.Daemon
                 return;
             }
 
-            Logging.Log("[WebVerseDaemonManager->SendHeartbeat] Sending heartbeat.");
+            //Logging.Log("[WebVerseDaemonManager->SendHeartbeat] Sending heartbeat.");
             webSocket.Send(JsonConvert.SerializeObject(hbMessage));
 #endif
         }

@@ -229,7 +229,8 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             }
             result.transform.position = prefabLocation;
             SetUpMeshPrefab(result);
-            InstantiateMeshFromPrefab(result, callback);
+            callback.Invoke(result);
+            //InstantiateMeshFromPrefab(result, callback);
         }
 
         /// <summary>

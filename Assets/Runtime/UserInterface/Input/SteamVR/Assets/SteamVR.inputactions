@@ -114,6 +114,24 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "LeftTouchPadValue",
+                    "type": "Value",
+                    "id": "f941ee03-c310-4326-a338-c906d0963d61",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "RightTouchPadValue",
+                    "type": "Value",
+                    "id": "b1793e4e-077e-4f4f-9a57-ae45e7ab96dc",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
                     "name": "LeftPrimaryTouch",
                     "type": "Button",
                     "id": "1c720f2f-a31c-47d8-96e7-63995c5a77c4",
@@ -317,6 +335,17 @@
                 },
                 {
                     "name": "",
+                    "id": "53b1ef8e-e143-499c-bf86-13e731f19171",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftTouchPadTouch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "08b78aeb-4981-4ca8-b18e-38e42d2073cb",
                     "path": "<XRController>{RightHand}/trackpadTouched",
                     "interactions": "",
@@ -488,6 +517,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "RightStick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "224251ac-16cf-4d9d-b516-74072508df8d",
+                    "path": "<XRController>{LeftHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LeftTouchPadValue",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "81dd1e1d-ca85-431a-864a-0d69a3c99014",
+                    "path": "<XRController>{RightHand}/trackpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightTouchPadValue",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

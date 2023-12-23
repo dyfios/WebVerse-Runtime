@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Utilities;
 
@@ -43,7 +42,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     Logging.LogError("[BaseEntity:tag] Unknown entity.");
                     return null;
                 }
-                return internalEntity.tag;
+                return internalEntity.entityTag;
             }
             
             set
@@ -54,7 +53,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
                 else
                 {
-                    internalEntity.tag = value;
+                    internalEntity.entityTag = value;
                 }    
             }
         }
@@ -62,12 +61,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <summary>
         /// Internal entity reference.
         /// </summary>
-        protected WorldEngine.Entity.BaseEntity internalEntity = null;
+        internal WorldEngine.Entity.BaseEntity internalEntity = null;
 
         /// <summary>
         /// Type of the entity.
         /// </summary>
-        protected Type internalEntityType = typeof(WorldEngine.Entity.BaseEntity);
+        internal Type internalEntityType = typeof(WorldEngine.Entity.BaseEntity);
 
         /// <summary>
         /// Constructor for the entity.

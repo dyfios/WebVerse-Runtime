@@ -142,6 +142,16 @@ namespace FiveSQD.WebVerse.Input
         public bool rightTouchPadTouchValue;
 
         /// <summary>
+        /// The left touchpad touch location.
+        /// </summary>
+        public Vector2 leftTouchPadTouchLocation;
+
+        /// <summary>
+        /// The right touchpad touch location.
+        /// </summary>
+        public Vector2 rightTouchPadTouchLocation;
+
+        /// <summary>
         /// The touchpad touch value.
         /// </summary>
         public bool touchPadTouchValue
@@ -186,7 +196,7 @@ namespace FiveSQD.WebVerse.Input
         /// <summary>
         /// The primary touch value.
         /// </summary>
-        public bool primaryPadTouchValue
+        public bool primaryTouchValue
         {
             get
             {
@@ -468,6 +478,11 @@ namespace FiveSQD.WebVerse.Input
         private List<string> endLeftTouchPadTouchFunctions;
 
         /// <summary>
+        /// Left TouchPad Value Change functions.
+        /// </summary>
+        private List<string> leftTouchPadValueChangeFunctions;
+
+        /// <summary>
         /// Right TouchPad Touch functions.
         /// </summary>
         private List<string> rightTouchPadTouchFunctions;
@@ -476,6 +491,11 @@ namespace FiveSQD.WebVerse.Input
         /// End Right TouchPad Touch functions.
         /// </summary>
         private List<string> endRightTouchPadTouchFunctions;
+
+        /// <summary>
+        /// Left TouchPad Value Change functions.
+        /// </summary>
+        private List<string> rightTouchPadValueChangeFunctions;
 
         /// <summary>
         /// TouchPad Touch functions.
@@ -704,8 +724,10 @@ namespace FiveSQD.WebVerse.Input
             endGripPressFunctions = new List<string>();
             leftTouchPadTouchFunctions = new List<string>();
             endLeftTouchPadTouchFunctions = new List<string>();
+            leftTouchPadValueChangeFunctions = new List<string>();
             rightTouchPadTouchFunctions = new List<string>();
             endRightTouchPadTouchFunctions = new List<string>();
+            rightTouchPadValueChangeFunctions = new List<string>();
             touchPadTouchFunctions = new List<string>();
             endTouchPadTouchFunctions = new List<string>();
             leftTouchPadPressFunctions = new List<string>();
@@ -923,12 +945,20 @@ namespace FiveSQD.WebVerse.Input
                     endLeftTouchPadTouchFunctions.Add(call);
                     break;
 
+                case "lefttouchpadvaluechange":
+                    leftTouchPadValueChangeFunctions.Add(call);
+                    break;
+
                 case "righttouchpadtouch":
                     rightTouchPadTouchFunctions.Add(call);
                     break;
 
                 case "endrighttouchpadtouch":
                     endRightTouchPadTouchFunctions.Add(call);
+                    break;
+
+                case "righttouchpadvaluechange":
+                    rightTouchPadValueChangeFunctions.Add(call);
                     break;
 
                 case "touchpadtouch":
@@ -1446,6 +1476,15 @@ namespace FiveSQD.WebVerse.Input
                     endLeftTouchPadTouchFunctions.Remove(call);
                     break;
 
+                case "lefttouchpadvaluechange":
+                    if (!leftTouchPadValueChangeFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftTouchPadValueChangeFunctions.Remove(call);
+                    break;
+
                 case "righttouchpadtouch":
                     if (!rightTouchPadTouchFunctions.Contains(call))
                     {
@@ -1462,6 +1501,15 @@ namespace FiveSQD.WebVerse.Input
                         break;
                     }
                     endRightTouchPadTouchFunctions.Remove(call);
+                    break;
+
+                case "righttouchpadvaluechange":
+                    if (!rightTouchPadValueChangeFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightTouchPadValueChangeFunctions.Remove(call);
                     break;
 
                 case "touchpadtouch":
@@ -1845,12 +1893,12 @@ namespace FiveSQD.WebVerse.Input
         {
             foreach (string function in keyFunctions)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", key));
+                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
             }
 
             foreach (string function in keyCodeFunctions)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", keyCode));
+                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?","\"" + keyCode + "\""));
             }
         }
 
@@ -1863,12 +1911,12 @@ namespace FiveSQD.WebVerse.Input
         {
             foreach (string function in endKeyFunctions)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", key));
+                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
             }
 
             foreach (string function in endKeyCodeFunctions)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", keyCode));
+                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode + "\""));
             }
         }
 
@@ -2224,6 +2272,18 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        // <summary>
+        /// Perform a left touchpad touch vaue change.
+        /// </summary>
+        /// <param name="position">Position of the touchpad touch.</param>
+        public void LeftTouchPadTouchValueChange(Vector2 position)
+        {
+            foreach (string function in leftTouchPadValueChangeFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
+            }
+        }
+
         /// <summary>
         /// Perform a right touchpad touch.
         /// </summary>
@@ -2243,6 +2303,18 @@ namespace FiveSQD.WebVerse.Input
             foreach (string function in endRightTouchPadTouchFunctions)
             {
                 WebVerseRuntime.Instance.javascriptHandler.Run(function);
+            }
+        }
+
+        // <summary>
+        /// Perform a right touchpad touch vaue change.
+        /// </summary>
+        /// <param name="position">Position of the touchpad touch.</param>
+        public void RightTouchPadTouchValueChange(Vector2 position)
+        {
+            foreach (string function in rightTouchPadValueChangeFunctions)
+            {
+                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
             }
         }
 

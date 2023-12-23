@@ -168,6 +168,18 @@ namespace FiveSQD.WebVerse.Runtime
         public GameObject voxelPrefab;
 
         /// <summary>
+        /// Camera offset.
+        /// </summary>
+        [Tooltip("Camera offset.")]
+        public GameObject cameraOffset;
+
+        /// <summary>
+        /// Whether or not world is in VR mode.
+        /// </summary>
+        [Tooltip("Whether or not world is in VR mode.")]
+        public bool vr;
+
+        /// <summary>
         /// Initialize the WebVerse Runtime.
         /// </summary>
         /// <param name="settings">The runtime settings to use.</param>
@@ -265,13 +277,21 @@ namespace FiveSQD.WebVerse.Runtime
                 UnloadWorld();
             }
 
+            string baseURL = url;
+            string queryParams = "";
+            if (url.Contains("?"))
+            {
+                baseURL = url.Substring(0, url.IndexOf('?'));
+                queryParams = url.Substring(url.IndexOf('?') + 1);
+            }
+
             Action<string> onFound = (title) =>
             {
-                WorldEngine.WorldEngine.LoadWorld(title);
-                vemlHandler.LoadVEMLDocumentIntoWorld(url);
+                WorldEngine.WorldEngine.LoadWorld(title, queryParams);
+                vemlHandler.LoadVEMLDocumentIntoWorld(baseURL);
             };
 
-            vemlHandler.GetWorldName(url, onFound);
+            vemlHandler.GetWorldName(baseURL, onFound);
         }
 
         /// <summary>
@@ -312,6 +332,8 @@ namespace FiveSQD.WebVerse.Runtime
             worldEngine.inputEntityPrefab = inputEntityPrefab;
             worldEngine.characterControllerPrefab = characterControllerPrefab;
             worldEngine.voxelPrefab = voxelPrefab;
+            worldEngine.cameraOffset = cameraOffset;
+            worldEngine.vr = vr;
 
             // Set up Handlers.
             GameObject handlersGO = new GameObject("Handlers");

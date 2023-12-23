@@ -120,6 +120,95 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return true;
         }
 
+        public static bool RegisterPrivateEntity(WorldEngine.Entity.BaseEntity entityToRegister)
+        {
+            if (entityToRegister is WorldEngine.Entity.ButtonEntity)
+            {
+                ButtonEntity be = new ButtonEntity();
+                be.internalEntity = entityToRegister;
+                be.internalEntityType = typeof(ButtonEntity);
+                AddEntityMapping(entityToRegister, be);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.CanvasEntity)
+            {
+                CanvasEntity ce = new CanvasEntity();
+                ce.internalEntity = entityToRegister;
+                ce.internalEntityType = typeof(CanvasEntity);
+                AddEntityMapping(entityToRegister, ce);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.CharacterEntity)
+            {
+                CharacterEntity ce = new CharacterEntity();
+                ce.internalEntity = entityToRegister;
+                ce.internalEntityType = typeof(CanvasEntity);
+                AddEntityMapping(entityToRegister, ce);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.ContainerEntity)
+            {
+                ContainerEntity ce = new ContainerEntity();
+                ce.internalEntity = entityToRegister;
+                ce.internalEntityType = typeof(ContainerEntity);
+                AddEntityMapping(entityToRegister, ce);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.InputEntity)
+            {
+                InputEntity ie = new InputEntity();
+                ie.internalEntity = entityToRegister;
+                ie.internalEntityType = typeof(InputEntity);
+                AddEntityMapping(entityToRegister, ie);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.LightEntity)
+            {
+                LightEntity le = new LightEntity();
+                le.internalEntity = entityToRegister;
+                le.internalEntityType = typeof(LightEntity);
+                AddEntityMapping(entityToRegister, le);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.MeshEntity)
+            {
+                MeshEntity me = new MeshEntity();
+                me.internalEntity = entityToRegister;
+                me.internalEntityType = typeof(MeshEntity);
+                AddEntityMapping(entityToRegister, me);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.TerrainEntity)
+            {
+                TerrainEntity te = new TerrainEntity();
+                te.internalEntity = entityToRegister;
+                te.internalEntityType = typeof(TerrainEntity);
+                AddEntityMapping(entityToRegister, te);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.TextEntity)
+            {
+                TextEntity te = new TextEntity();
+                te.internalEntity = entityToRegister;
+                te.internalEntityType = typeof(TextEntity);
+                AddEntityMapping(entityToRegister, te);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.VoxelEntity)
+            {
+                VoxelEntity ve = new VoxelEntity();
+                ve.internalEntity = entityToRegister;
+                ve.internalEntityType = typeof(VoxelEntity);
+                AddEntityMapping(entityToRegister, ve);
+                return true;
+            }
+            else
+            {
+                Logging.LogError("[EntityAPIHelper->RegisterPrivateEntity] Invalid entity type.");
+                return false;
+            }
+        }
+
         /// <summary>
         /// Initialize the Entity API Helper.
         /// </summary>

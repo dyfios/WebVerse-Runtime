@@ -67,6 +67,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
 #if USE_WEBINTERFACE
             // VOS Synchronization.
             new System.Tuple<string, System.Type>("VOSSynchronization", typeof(APIs.VOSSynchronization.VOSSynchronization)),
+            new System.Tuple<string, System.Type>("VSSTransport",
+                typeof(APIs.VOSSynchronization.VOSSynchronization.Transport)),
 #endif
 
             // World Browser Utilities.
@@ -75,6 +77,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("LocalStorage", typeof(APIs.Utilities.LocalStorage)),
             new System.Tuple<string, System.Type>("Logging", typeof(APIs.Utilities.Logging)),
             new System.Tuple<string, System.Type>("Time", typeof(APIs.Utilities.Time)),
+            new System.Tuple<string, System.Type>("World", typeof(APIs.Utilities.World)),
             new System.Tuple<string, System.Type>("WorldStorage", typeof(APIs.Utilities.WorldStorage))
         };
 

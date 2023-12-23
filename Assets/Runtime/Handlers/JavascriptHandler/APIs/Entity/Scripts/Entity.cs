@@ -21,7 +21,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 Logging.LogWarning("[Entity:Get] Invalid id.");
                 return null;
             }
-
+            
             BaseEntity result = BaseEntity.Get(System.Guid.Parse(id));
 
             if (result == null)
@@ -73,6 +73,30 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 Logging.LogError("[Entity:Get] Unknown entity type.");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Get the entity corresponding to a tag.
+        /// </summary>
+        /// <param name="tag">Tag of the entity to get.</param>
+        /// <returns>The entity corresponding to the tag, or null.</returns>
+        public static object GetByTag(string tag)
+        {
+            foreach (WorldEngine.Entity.BaseEntity entity in WorldEngine.WorldEngine.ActiveWorld.entityManager.GetAllEntities())
+            {
+                if (entity.entityTag == tag)
+                {
+                    if (entity.id == null)
+                    {
+                        Logging.LogError("[Entity:GetByTag] Entity has no ID.");
+                        return null;
+                    }
+
+                    return Get(entity.id.ToString());
+                }
+            }
+
+            return null;
         }
     }
 }

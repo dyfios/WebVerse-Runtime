@@ -374,6 +374,14 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 elapsedTime += 0.25f;
             }
 
+            // Wait for all entities to load.
+            elapsedTime = 0f;
+            while (loadingEntities > 0 && elapsedTime < timeout)
+            {
+                yield return new WaitForSeconds(0.25f);
+                elapsedTime += 0.25f;
+            }
+
             if (scripts != null)
             {
                 foreach (string script in scripts)
@@ -983,6 +991,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         synchronizer.Item1.AddSynchronizedEntity(meshEntity, false, entity.meshname);
                     }
 #endif
+                    Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(meshEntity);
                     loadingEntities--;
                 });
             List<string> resources = new List<string>();
@@ -1072,6 +1081,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1167,6 +1177,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1246,6 +1257,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1340,6 +1352,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1422,6 +1435,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1510,6 +1524,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1610,6 +1625,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1690,6 +1706,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1773,6 +1790,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
@@ -1840,7 +1858,14 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         LogSystem.LogError("[VEMLHandler->ApplyEntityHierarchy] UI Element Entity not parented by UI Entity.");
                         yield break;
                     }
-                    entityToSet.SetParent(((UIEntity) entityParent));
+                    ((UIElementEntity) entityToSet).SetParent((UIEntity) entityParent);
+
+                    Vector2 posPercent = new Vector2((float) ((canvastransform) entityParentRelationship.Key.transform).positionpercent.x,
+                        (float) ((canvastransform) entityParentRelationship.Key.transform).positionpercent.y);
+                    Vector2 sizePercent = new Vector2((float) ((canvastransform) entityParentRelationship.Key.transform).sizepercent.x,
+                        (float) ((canvastransform) entityParentRelationship.Key.transform).sizepercent.y);
+                    ((UIElementEntity) entityToSet).SetPositionPercent(posPercent, false);
+                    ((UIElementEntity) entityToSet).SetSizePercent(sizePercent, false);
                 }
                 else
                 {
