@@ -1922,9 +1922,9 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             while (entityQueue.Count > 0)
             {
                 entity entity = entityQueue.Dequeue();
-                if (entity.child != null)
+                if (entity.entity1 != null)
                 {
-                    foreach (entity child in entity.child)
+                    foreach (entity child in entity.entity1)
                     {
                         entityQueue.Enqueue(child);
                     }
@@ -1970,9 +1970,9 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             while (entityQueue.Count > 0)
             {
                 KeyValuePair<entity, entity> item = entityQueue.Dequeue();
-                if (item.Key.child != null)
+                if (item.Key.entity1 != null)
                 {
-                    foreach (entity child in item.Key.child)
+                    foreach (entity child in item.Key.entity1)
                     {
                         entityQueue.Enqueue(new KeyValuePair<entity, entity>(child, item.Key));
                     }

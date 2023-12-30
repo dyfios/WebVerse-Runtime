@@ -750,7 +750,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V1_0
 
         private basetransform transformField;
 
-        private entity[] childField;
+        private entity[] entity1Field;
 
         private string synchronizerField;
 
@@ -774,16 +774,16 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V1_0
         }
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("child")]
-        public entity[] child
+        [System.Xml.Serialization.XmlElementAttribute("entity")]
+        public entity[] entity1
         {
             get
             {
-                return this.childField;
+                return this.entity1Field;
             }
             set
             {
-                this.childField = value;
+                this.entity1Field = value;
             }
         }
 
