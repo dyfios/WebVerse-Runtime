@@ -15,6 +15,7 @@ using FiveSQD.WebVerse.Handlers.VEML;
 using System;
 using FiveSQD.WebVerse.Input;
 using FiveSQD.WebVerse.Daemon;
+using FiveSQD.WebVerse.WebInterface.HTTP;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -136,6 +137,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The Daemon Manager.")]
         public WebVerseDaemonManager webVerseDaemonManager { get; private set; }
+
+        /// <summary>
+        /// The HTTP Request Manager. This is a part of a stopgap solution while BestHTTP is broken.
+        /// </summary>
+        [Tooltip("The HTTP Request Manager. This is a part of a stopgap solution while BestHTTP is broken.")]
+        public HTTPRequestManager httpRequestManager { get; private set; }
 
         /// <summary>
         /// Material to use for highlighting.
@@ -398,6 +405,12 @@ namespace FiveSQD.WebVerse.Runtime
                 webVerseDaemonManager.Initialize();
                 webVerseDaemonManager.ConnectToDaemon(daemonPort.Value, mainAppID.Value, tabID.Value);
             }
+
+            // Set up HTTP Request Manager.
+            GameObject httpRequestManagerGO = new GameObject("HTTPRequestManager");
+            httpRequestManagerGO.transform.SetParent(transform);
+            httpRequestManager = httpRequestManagerGO.AddComponent<HTTPRequestManager>();
+            httpRequestManager.Initialize();
         }
 
         /// <summary>
@@ -405,6 +418,10 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         private void TerminateComponents()
         {
+            // Terminate HTTP Request Manager.
+            httpRequestManager.Terminate();
+            Destroy(httpRequestManager.gameObject);
+
             if (webVerseDaemonManager != null)
             {
                 // Terminate Daemon Manager.

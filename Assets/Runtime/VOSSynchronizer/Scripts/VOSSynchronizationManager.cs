@@ -36,6 +36,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
             vosSynchronizers = new List<VOSSynchronizer>();
             vosSynchronizersAndSessions = new Dictionary<string, Tuple<VOSSynchronizer, Guid>>();
+
+            base.Initialize();
         }
 
         /// <summary>

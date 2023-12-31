@@ -133,13 +133,13 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             int tabID = GetTabID();
-            if (mainAppID == Guid.Empty)
+            if (tabID < 0)
             {
                 Logging.LogError("[LightweightMode->LoadRuntime] Invalid tab ID value.");
             }
 
             string worldURL = GetWorldURL();
-            if (mainAppID == Guid.Empty)
+            if (string.IsNullOrEmpty(worldURL))
             {
                 Logging.LogError("[LightweightMode->LoadRuntime] Invalid world URL value.");
             }
@@ -373,7 +373,7 @@ namespace FiveSQD.WebVerse.Runtime
             if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
             {
                 string query = Application.absoluteURL.Substring(queryStart);
-
+                
                 string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string section in sections)
                 {
@@ -392,6 +392,7 @@ namespace FiveSQD.WebVerse.Runtime
                 }
             }
 #endif
+            
             return worldURL;
         }
     }
