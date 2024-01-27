@@ -19,7 +19,6 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
 
         public IEnumerator HandleRequest(UnityWebRequest request, Action<int, byte[]> onFinished)
         {
-            Debug.Log("here");
             if (request != null)
             {
                 yield return request.SendWebRequest();
