@@ -579,7 +579,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 {
                     switch (synchronizationservice.type.ToLower())
                     {
-                        case "vos":
+                        case "vss":
 #if USE_WEBINTERFACE
                             bool tls = false;
                             string hostPortSection = "";
