@@ -55,7 +55,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 onClickAction = () =>
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onClick);
+                    if (WebVerseRuntime.Instance.inputManager.inputEnabled)
+                    {
+                        WebVerseRuntime.Instance.javascriptHandler.Run(onClick);
+                    }
                 };
             }
 
@@ -98,7 +101,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 onClickAction = () =>
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onClick);
+                    if (WebVerseRuntime.Instance.inputManager.inputEnabled)
+                    {
+                        WebVerseRuntime.Instance.javascriptHandler.Run(onClick);
+                    }
                 };
             }
 

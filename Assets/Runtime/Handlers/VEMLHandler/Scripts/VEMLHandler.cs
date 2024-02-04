@@ -1497,9 +1497,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onClickEvent = new Action(() =>
             {
-                if (!string.IsNullOrEmpty(entity.onclickevent))
+                if (WebVerseRuntime.Instance.inputManager.inputEnabled)
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(entity.onclickevent);
+                    if (!string.IsNullOrEmpty(entity.onclickevent))
+                    {
+                        WebVerseRuntime.Instance.javascriptHandler.Run(entity.onclickevent);
+                    }
                 }
             });
 
