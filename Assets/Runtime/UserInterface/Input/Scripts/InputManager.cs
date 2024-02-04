@@ -13,6 +13,11 @@ namespace FiveSQD.WebVerse.Input
     public class InputManager : BaseManager
     {
         /// <summary>
+        /// Whether or not input is enabled.
+        /// </summary>
+        public bool inputEnabled;
+
+        /// <summary>
         /// The move value.
         /// </summary>
         public Vector2 moveValue;
@@ -682,6 +687,8 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public override void Initialize()
         {
+            inputEnabled = false;
+
             moveFunctions = new List<string>();
             endMoveFunctions = new List<string>();
             lookFunctions = new List<string>();
@@ -1844,9 +1851,12 @@ namespace FiveSQD.WebVerse.Input
         /// <param name="amount">Amount on X and Y axes to move.</param>
         public void Move(Vector2 amount)
         {
-            foreach (string function in moveFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", amount.x + ", " + amount.y));
+                foreach (string function in moveFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", amount.x + ", " + amount.y));
+                }
             }
         }
 
@@ -1855,9 +1865,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndMove()
         {
-            foreach (string function in endMoveFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endMoveFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1867,9 +1880,12 @@ namespace FiveSQD.WebVerse.Input
         /// <param name="amount">Amount on X and Y axes to look.</param>
         public void Look(Vector2 amount)
         {
-            foreach (string function in lookFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", amount.x + ", " + amount.y));
+                foreach (string function in lookFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", amount.x + ", " + amount.y));
+                }
             }
         }
 
@@ -1878,9 +1894,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLook()
         {
-            foreach (string function in endLookFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLookFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1891,14 +1910,17 @@ namespace FiveSQD.WebVerse.Input
         /// <param name="keyCode">Keycode of key being pressed.</param>
         public void Key(string key, string keyCode)
         {
-            foreach (string function in keyFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
-            }
+                foreach (string function in keyFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
+                }
 
-            foreach (string function in keyCodeFunctions)
-            {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?","\"" + keyCode + "\""));
+                foreach (string function in keyCodeFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode + "\""));
+                }
             }
         }
 
@@ -1909,14 +1931,17 @@ namespace FiveSQD.WebVerse.Input
         /// <param name="keyCode">Keycode of key no longer being pressed.</param>
         public void EndKey(string key, string keyCode)
         {
-            foreach (string function in endKeyFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
-            }
+                foreach (string function in endKeyFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
+                }
 
-            foreach (string function in endKeyCodeFunctions)
-            {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode + "\""));
+                foreach (string function in endKeyCodeFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode + "\""));
+                }
             }
         }
 
@@ -1925,9 +1950,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void Left()
         {
-            foreach (string function in leftFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1936,9 +1964,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeft()
         {
-            foreach (string function in endLeftFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1947,9 +1978,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void Middle()
         {
-            foreach (string function in middleFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in middleFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1958,9 +1992,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndMiddle()
         {
-            foreach (string function in endMiddleFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endMiddleFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1969,9 +2006,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void Right()
         {
-            foreach (string function in rightFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1980,9 +2020,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRight()
         {
-            foreach (string function in endRightFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -1991,9 +2034,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftMenu()
         {
-            foreach (string function in leftMenuFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftMenuFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2002,9 +2048,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftMenu()
         {
-            foreach (string function in endLeftMenuFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftMenuFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2013,9 +2062,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightMenu()
         {
-            foreach (string function in rightMenuFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightMenuFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2024,9 +2076,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightMenu()
         {
-            foreach (string function in endRightMenuFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightMenuFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2035,9 +2090,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void Menu()
         {
-            foreach (string function in menuFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in menuFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2046,9 +2104,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndMenu()
         {
-            foreach (string function in endMenuFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endMenuFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2057,9 +2118,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftTriggerTouch()
         {
-            foreach (string function in leftTriggerTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftTriggerTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2068,9 +2132,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftTriggerTouch()
         {
-            foreach (string function in endLeftTriggerTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftTriggerTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2079,9 +2146,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightTriggerTouch()
         {
-            foreach (string function in rightTriggerTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightTriggerTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2090,9 +2160,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightTriggerTouch()
         {
-            foreach (string function in endRightTriggerTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightTriggerTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2101,9 +2174,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void TriggerTouch()
         {
-            foreach (string function in triggerTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in triggerTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2112,9 +2188,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndTriggerTouch()
         {
-            foreach (string function in endTriggerTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endTriggerTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2123,9 +2202,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftTriggerPress()
         {
-            foreach (string function in leftTriggerPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftTriggerPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2134,9 +2216,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftTriggerPress()
         {
-            foreach (string function in endLeftTriggerPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftTriggerPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2145,9 +2230,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightTriggerPress()
         {
-            foreach (string function in rightTriggerPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightTriggerPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2156,9 +2244,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightTriggerPress()
         {
-            foreach (string function in endRightTriggerPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightTriggerPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2167,9 +2258,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void TriggerPress()
         {
-            foreach (string function in triggerPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in triggerPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2178,9 +2272,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndTriggerPress()
         {
-            foreach (string function in endTriggerPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endTriggerPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2189,9 +2286,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftGripPress()
         {
-            foreach (string function in leftGripPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftGripPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2200,9 +2300,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftGripPress()
         {
-            foreach (string function in endLeftGripPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftGripPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2211,9 +2314,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightGripPress()
         {
-            foreach (string function in rightGripPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightGripPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2222,9 +2328,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightGripPress()
         {
-            foreach (string function in endRightGripPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightGripPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2233,9 +2342,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void GripPress()
         {
-            foreach (string function in gripPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in gripPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2244,9 +2356,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndGripPress()
         {
-            foreach (string function in endGripPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endGripPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2255,9 +2370,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftTouchPadTouch()
         {
-            foreach (string function in leftTouchPadTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftTouchPadTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2266,9 +2384,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftTouchPadTouch()
         {
-            foreach (string function in endLeftTouchPadTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftTouchPadTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2278,9 +2399,12 @@ namespace FiveSQD.WebVerse.Input
         /// <param name="position">Position of the touchpad touch.</param>
         public void LeftTouchPadTouchValueChange(Vector2 position)
         {
-            foreach (string function in leftTouchPadValueChangeFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
+                foreach (string function in leftTouchPadValueChangeFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
+                }
             }
         }
 
@@ -2289,9 +2413,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightTouchPadTouch()
         {
-            foreach (string function in rightTouchPadTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightTouchPadTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2300,9 +2427,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightTouchPadTouch()
         {
-            foreach (string function in endRightTouchPadTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightTouchPadTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2312,9 +2442,12 @@ namespace FiveSQD.WebVerse.Input
         /// <param name="position">Position of the touchpad touch.</param>
         public void RightTouchPadTouchValueChange(Vector2 position)
         {
-            foreach (string function in rightTouchPadValueChangeFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
+                foreach (string function in rightTouchPadValueChangeFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
+                }
             }
         }
 
@@ -2323,9 +2456,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void TouchPadTouch()
         {
-            foreach (string function in touchPadTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in touchPadTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2334,9 +2470,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndTouchPadTouch()
         {
-            foreach (string function in endTouchPadTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endTouchPadTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2345,9 +2484,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftTouchPadPress()
         {
-            foreach (string function in leftTouchPadPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftTouchPadPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2356,9 +2498,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftTouchPadPress()
         {
-            foreach (string function in endLeftTouchPadPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftTouchPadPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2367,9 +2512,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightTouchPadPress()
         {
-            foreach (string function in rightTouchPadPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightTouchPadPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2378,9 +2526,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightTouchPadPress()
         {
-            foreach (string function in endRightTouchPadPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightTouchPadPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2389,9 +2540,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void TouchPadPress()
         {
-            foreach (string function in touchPadPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in touchPadPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2400,9 +2554,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndTouchPadPress()
         {
-            foreach (string function in endTouchPadPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endTouchPadPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2411,9 +2568,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftPrimaryTouch()
         {
-            foreach (string function in leftPrimaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftPrimaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2422,9 +2582,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftPrimaryTouch()
         {
-            foreach (string function in endLeftPrimaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftPrimaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2433,9 +2596,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightPrimaryTouch()
         {
-            foreach (string function in rightPrimaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightPrimaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2444,9 +2610,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightPrimaryTouch()
         {
-            foreach (string function in endRightPrimaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightPrimaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2455,9 +2624,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void PrimaryTouch()
         {
-            foreach (string function in primaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in primaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2466,9 +2638,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndPrimaryTouch()
         {
-            foreach (string function in endPrimaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endPrimaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2477,9 +2652,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftPrimaryPress()
         {
-            foreach (string function in leftPrimaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftPrimaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2488,9 +2666,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftPrimaryPress()
         {
-            foreach (string function in endLeftPrimaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftPrimaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2499,9 +2680,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightPrimaryPress()
         {
-            foreach (string function in rightPrimaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightPrimaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2510,9 +2694,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightPrimaryPress()
         {
-            foreach (string function in endRightPrimaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightPrimaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2521,9 +2708,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void PrimaryPress()
         {
-            foreach (string function in primaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in primaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2532,9 +2722,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndPrimaryPress()
         {
-            foreach (string function in endPrimaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endPrimaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2543,9 +2736,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftSecondaryTouch()
         {
-            foreach (string function in leftSecondaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftSecondaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2554,9 +2750,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftSecondaryTouch()
         {
-            foreach (string function in endLeftSecondaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftSecondaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2565,9 +2764,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightSecondaryTouch()
         {
-            foreach (string function in rightSecondaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightSecondaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2576,9 +2778,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightSecondaryTouch()
         {
-            foreach (string function in endRightSecondaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightSecondaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2587,9 +2792,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void SecondaryTouch()
         {
-            foreach (string function in secondaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in secondaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2598,9 +2806,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndSecondaryTouch()
         {
-            foreach (string function in endSecondaryTouchFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endSecondaryTouchFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2609,9 +2820,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftSecondaryPress()
         {
-            foreach (string function in leftSecondaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftSecondaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2620,9 +2834,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftSecondaryPress()
         {
-            foreach (string function in endLeftSecondaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftSecondaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2631,9 +2848,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightSecondaryPress()
         {
-            foreach (string function in rightSecondaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightSecondaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2642,9 +2862,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightSecondaryPress()
         {
-            foreach (string function in endRightSecondaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightSecondaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2653,9 +2876,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void SecondaryPress()
         {
-            foreach (string function in secondaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in secondaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2664,9 +2890,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndSecondaryPress()
         {
-            foreach (string function in endSecondaryPressFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endSecondaryPressFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2675,9 +2904,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void LeftStick()
         {
-            foreach (string function in leftStickFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in leftStickFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2686,9 +2918,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndLeftStick()
         {
-            foreach (string function in endLeftStickFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endLeftStickFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2697,9 +2932,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void RightStick()
         {
-            foreach (string function in rightStickFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in rightStickFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
 
@@ -2708,9 +2946,12 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public void EndRightStick()
         {
-            foreach (string function in endRightStickFunctions)
+            if (inputEnabled)
             {
-                WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                foreach (string function in endRightStickFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
             }
         }
     }

@@ -389,6 +389,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     WebVerseRuntime.Instance.javascriptHandler.RunScript(script);
                 }
             }
+
+            WebVerseRuntime.Instance.inputManager.inputEnabled = true;
         }
 
         /// <summary>
