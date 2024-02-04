@@ -297,7 +297,7 @@ namespace FiveSQD.WebVerse.Runtime
                 WorldEngine.WorldEngine.LoadWorld(title, queryParams);
                 vemlHandler.LoadVEMLDocumentIntoWorld(baseURL);
             };
-
+            
             vemlHandler.GetWorldName(baseURL, onFound);
         }
 
@@ -369,6 +369,7 @@ namespace FiveSQD.WebVerse.Runtime
             GameObject vemlHandlerGO = new GameObject("VEML");
             vemlHandlerGO.transform.SetParent(handlersGO.transform);
             vemlHandler = vemlHandlerGO.AddComponent<VEMLHandler>();
+            vemlHandler.timeout = 120;
             vemlHandler.runtime = this;
             vemlHandler.Initialize();
             GameObject timeHandlerGO = new GameObject("Time");
