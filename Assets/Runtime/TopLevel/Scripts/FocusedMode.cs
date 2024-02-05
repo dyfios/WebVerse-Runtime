@@ -60,6 +60,12 @@ namespace FiveSQD.WebVerse.Runtime
         public string testTabID;
 
         /// <summary>
+        /// World Load Timeout to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("World Load Timeout to use in Unity Editor tests.")]
+        public string testWorldLoadTimeout;
+
+        /// <summary>
         /// WebVerse Runtime.
         /// </summary>
         [Tooltip("WebVerse Runtime.")]
@@ -129,7 +135,15 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogError("[FocusedMode->LoadRuntime] Invalid tab ID value.");
             }
 
-            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID, tabID);
+            float worldLoadTimeout = GetWorldLoadTimeout();
+            if (worldLoadTimeout <= 0)
+            {
+                Logging.LogError("[FocusedMode->LoadRuntime] Invalid world load timeout.");
+                worldLoadTimeout = 120;
+            }
+
+            runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength,
+                daemonPort, mainAppID, tabID, worldLoadTimeout);
             runtime.LoadWorld(uri);
         }
 
@@ -322,6 +336,28 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return int.Parse(tabID);
+        }
+
+        /// <summary>
+        /// Get the World Load Timeout, provided by command line in built app, and by 'testWorldLoadTimeout'
+        /// variable in Editor mode.
+        /// </summary>
+        /// <returns>World Load Timeout.</returns>
+        private float GetWorldLoadTimeout()
+        {
+            string timeout = "";
+#if UNITY_EDITOR
+            timeout = testWorldLoadTimeout;
+#else
+            foreach (string arg in System.Environment.GetCommandLineArgs())
+            {
+                if (arg.StartsWith("worldloadtimeout="))
+                {
+                    timeout = arg.Substring(17);
+                }
+            }
+#endif
+            return float.Parse(timeout);
         }
     }
 }

@@ -54,6 +54,12 @@ namespace FiveSQD.WebVerse.Runtime
         public string testWorldURL = "https://raw.githubusercontent.com/Five-Squared-Interactive/WebVerse-Samples/main/Simple-Meshes-Scene/index.veml";
 
         /// <summary>
+        /// World Load Timeout to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("World Load Timeout to use in Unity Editor tests.")]
+        public string testWorldLoadTimeout;
+
+        /// <summary>
         /// WebVerse Runtime.
         /// </summary>
         [Tooltip("WebVerse Runtime.")]
@@ -144,8 +150,15 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogError("[LightweightMode->LoadRuntime] Invalid world URL value.");
             }
 
+            float worldLoadTimeout = GetWorldLoadTimeout();
+            if (worldLoadTimeout <= 0)
+            {
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid world load timeout.");
+                worldLoadTimeout = 120;
+            }
+
             runtime.Initialize(LocalStorage.LocalStorageManager.LocalStorageMode.Cache,
-                maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID, tabID);
+                maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID, tabID, worldLoadTimeout);
 
             if (!string.IsNullOrEmpty(worldURL))
             {
@@ -394,6 +407,39 @@ namespace FiveSQD.WebVerse.Runtime
 #endif
             
             return worldURL;
+        }
+
+        private float GetWorldLoadTimeout()
+        {
+            string timeout = "";
+#if UNITY_EDITOR
+            timeout = testWorldLoadTimeout;
+#elif UNITY_WEBGL
+            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
+            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
+            {
+                string query = Application.absoluteURL.Substring(queryStart);
+                
+                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string section in sections)
+                {
+                    int valueStart = section.IndexOf("=") + 1;
+                    string[] keyValue = section.Split('=');
+                    if (keyValue.Length >= 2)
+                    {
+                        string key = keyValue[0];
+                        string value = section.Substring(valueStart);
+                        if (key.ToLower() == "world_load_timeout")
+                        {
+                            timeout = value;
+                            break;
+                        }
+                    }
+                }
+            }
+#endif
+
+            return float.Parse(timeout);
         }
     }
 }
