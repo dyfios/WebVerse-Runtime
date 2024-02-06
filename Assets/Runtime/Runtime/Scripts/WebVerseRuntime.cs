@@ -63,6 +63,11 @@ namespace FiveSQD.WebVerse.Runtime
             /// Tab ID.
             /// </summary>
             public int tabID;
+
+            /// <summary>
+            /// World Load Timeout.
+            /// </summary>
+            public float timeout;
         }
 
         /// <summary>
@@ -225,7 +230,8 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             Initialize(mode, settings.maxEntries, settings.maxEntryLength,
-                settings.maxKeyLength, settings.daemonPort, settings.mainAppID, settings.tabID);
+                settings.maxKeyLength, settings.daemonPort, settings.mainAppID, settings.tabID,
+                settings.timeout);
         }
 
         /// <summary>
@@ -237,9 +243,11 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
         /// <param name="daemonPort">Daemon Port.</param>
         /// <param name="mainAppID">Main App ID.</param>
+        /// <param name="tabID">Tab ID.</param>
+        /// <param name="timeout">World Load Timeout.</param>
         public void Initialize(LocalStorageManager.LocalStorageMode storageMode,
             int maxEntries, int maxEntryLength, int maxKeyLength,
-            uint? daemonPort = null, Guid? mainAppID = null, int? tabID = null)
+            uint? daemonPort = null, Guid? mainAppID = null, int? tabID = null, float timeout = 120)
         {
             if (Instance != null)
             {
@@ -250,7 +258,7 @@ namespace FiveSQD.WebVerse.Runtime
             Instance = this;
 
             InitializeComponents(storageMode, maxEntries, maxEntryLength,
-                maxKeyLength, daemonPort, mainAppID, tabID);
+                maxKeyLength, daemonPort, mainAppID, tabID, timeout);
         }
 
         /// <summary>
@@ -326,9 +334,11 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
         /// <param name="daemonPort">Daemon Port.</param>
         /// <param name="mainAppID">Main App ID.</param>
+        /// <param name="tabID">Tab ID.</param>
+        /// <param name="timeout">World Load Timeout.</param>
         private void InitializeComponents(LocalStorageManager.LocalStorageMode storageMode,
             int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null,
-            Guid? mainAppID = null, int? tabID = null)
+            Guid? mainAppID = null, int? tabID = null, float timeout = 120)
         {
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
@@ -369,7 +379,7 @@ namespace FiveSQD.WebVerse.Runtime
             GameObject vemlHandlerGO = new GameObject("VEML");
             vemlHandlerGO.transform.SetParent(handlersGO.transform);
             vemlHandler = vemlHandlerGO.AddComponent<VEMLHandler>();
-            vemlHandler.timeout = 120;
+            vemlHandler.timeout = timeout;
             vemlHandler.runtime = this;
             vemlHandler.Initialize();
             GameObject timeHandlerGO = new GameObject("Time");
