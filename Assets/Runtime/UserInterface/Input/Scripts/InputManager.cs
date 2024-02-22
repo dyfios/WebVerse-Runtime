@@ -1,7 +1,8 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,11 @@ namespace FiveSQD.WebVerse.Input
     /// </summary>
     public class InputManager : BaseManager
     {
+        /// <summary>
+        /// Platform input.
+        /// </summary>
+        public BasePlatformInput platformInput;
+
         /// <summary>
         /// Whether or not input is enabled.
         /// </summary>
@@ -2953,6 +2959,17 @@ namespace FiveSQD.WebVerse.Input
                     WebVerseRuntime.Instance.javascriptHandler.Run(function);
                 }
             }
+        }
+
+        /// <summary>
+        /// Get a raycast from the pointer.
+        /// </summary>
+        /// <param name="direction">Direction to cast the ray in.</param>
+        /// <param name="pointerIndex">Index of the pointer to get raycast from.</param>
+        /// <returns>A raycast from the pointer, or null.</returns>
+        public Tuple<RaycastHit, Vector3> GetPointerRaycast(Vector3 direction, int pointerIndex = 0)
+        {
+            return platformInput.GetPointerRaycast(direction, pointerIndex);
         }
     }
 }

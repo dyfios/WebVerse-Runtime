@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
@@ -149,6 +149,41 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         {
             UnityEngine.Vector3 scl = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetScale();
             return new Vector3(scl.x, scl.y, scl.z);
+        }
+
+        /// <summary>
+        /// Get a raycast from the camera.
+        /// </summary>
+        /// <returns>A raycast from the camera, or null.</returns>
+        public static RaycastHitInfo? GetRaycast()
+        {
+            UnityEngine.RaycastHit? hit = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetRaycast();
+            if (hit == null)
+            {
+                return null;
+            }
+            else
+            {
+                WorldEngine.Entity.BaseEntity hitEntity = null;
+                if (hitEntity = hit.Value.collider.GetComponentInParent<WorldEngine.Entity.BaseEntity>())
+                {
+                    BaseEntity hitPublicEntity = EntityAPIHelper.GetPublicEntity(hitEntity);
+                    if (hitPublicEntity == null)
+                    {
+                        return null;
+                    }
+
+                    return new RaycastHitInfo()
+                    {
+                        entity = hitPublicEntity,
+                        hitPoint = new Vector3(hit.Value.point.x, hit.Value.point.y, hit.Value.point.z),
+                        hitPointNormal = new Vector3(hit.Value.normal.x, hit.Value.normal.y, hit.Value.normal.z),
+                        origin = GetPosition(false)
+                    };
+                }
+
+                return null;
+            }
         }
     }
 }

@@ -1,7 +1,8 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -118,6 +119,81 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
             instance.StartCoroutine(instance.SetBlockInfoCoroutine(id, info, internalEntity));
             return true;
+        }
+
+        /// <summary>
+        /// Create a hybrid terrain entity.
+        /// </summary>
+        /// <param name="parent">Parent of the entity to create.</param>
+        /// <param name="length">Length of the terrain in terrain units.</param>
+        /// <param name="width">Width of the terrain in terrain units.</param>
+        /// <param name="height">Height of the terrain in terrain units.</param>
+        /// <param name="heights">2D array of heights for the terrain.</param>
+        /// <param name="layers">Layers for the terrain.</param>
+        /// <param name="layerMasks">Layer masks for the terrain.</param>
+        /// <param name="position">Position of the entity relative to its parent.</param>
+        /// <param name="rotation">Rotation of the entity relative to its parent.</param>
+        /// <param name="scale">Scale of the entity relative to its parent.</param>
+        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
+        /// <param name="id">ID of the entity. One will be created if not provided.</param>
+        /// <param name="tag">Tag of the entity.</param>
+        /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
+        /// terrain entity object.</param>
+        /// <param name="timeout">Timeout for PNG loads.</param>
+        /// <returns>The hybrid terrain entity object.</returns>
+        public static TerrainEntity LoadHybridTerrainEntityAsync(BaseEntity parent, float length, float width,
+            float height, float[][] heights, TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks,
+            WorldTypes.Vector3 position, WorldTypes.Quaternion rotation, WorldTypes.Vector3 scale, bool isSize = false,
+            string id = null, string tag = null, string onLoaded = null, float timeout = 10)
+        {
+            TerrainEntity te = new TerrainEntity();
+
+            Guid guid;
+            if (string.IsNullOrEmpty(id))
+            {
+                guid = Guid.NewGuid();
+            }
+            else
+            {
+                guid = Guid.Parse(id);
+            }
+
+            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            Vector3 pos = new Vector3(position.x, position.y, position.z);
+            Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+            Vector3 scl = new Vector3(scale.x, scale.y, scale.z);
+
+            if (heights == null || heights[0] == null)
+            {
+                Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid heights array.");
+                return null;
+            }
+
+            float[,] processedHeights = new float[heights.Length, heights[0].Length];
+            for (int i = 0; i < heights.Length; i++)
+            {
+                for (int j = 0; j < heights[0].Length; j++)
+                {
+                    processedHeights[i, j] = heights[i][j];
+                }
+            }
+
+            if (layers == null || layers.Length < 1)
+            {
+                Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid layers array.");
+                return null;
+            }
+
+            if (layerMasks == null)
+            {
+                Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid layer masks.");
+                return null;
+            }
+
+            instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, processedHeights, layers,
+                layerMasks.ToFloatArrays(), pos, rot, scl, isSize, tag, onLoaded, timeout));
+
+            return te;
         }
 
         public static bool RegisterPrivateEntity(WorldEngine.Entity.BaseEntity entityToRegister)
@@ -245,42 +321,42 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 Texture2D frontTex = null;
                 Texture2D backTex = null;
 
-                System.Action<Texture2D> lOnDownloaded = new System.Action<Texture2D>((tex) =>
+                Action<Texture2D> lOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     leftTex = tex;
                     completedRequests++;
                 });
                 WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].leftTex, lOnDownloaded);
 
-                System.Action<Texture2D> rOnDownloaded = new System.Action<Texture2D>((tex) =>
+                Action<Texture2D> rOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     rightTex = tex;
                     completedRequests++;
                 });
                 WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].rightTex, rOnDownloaded);
 
-                System.Action<Texture2D> fOnDownloaded = new System.Action<Texture2D>((tex) =>
+                Action<Texture2D> fOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     frontTex = tex;
                     completedRequests++;
                 });
                 WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].frontTex, fOnDownloaded);
 
-                System.Action<Texture2D> bOnDownloaded = new System.Action<Texture2D>((tex) =>
+                Action<Texture2D> bOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     backTex = tex;
                     completedRequests++;
                 });
                 WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].backTex, bOnDownloaded);
 
-                System.Action<Texture2D> tOnDownloaded = new System.Action<Texture2D>((tex) =>
+                Action<Texture2D> tOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     topTex = tex;
                     completedRequests++;
                 });
                 WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].topTex, tOnDownloaded);
 
-                System.Action<Texture2D> boOnDownloaded = new System.Action<Texture2D>((tex) =>
+                Action<Texture2D> boOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     bottomTex = tex;
                     completedRequests++;
@@ -299,6 +375,125 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             internalEntity.SetBlockInfo(id, blockInfo);
+        }
+
+        /// <summary>
+        /// Create a hybrid terrain entity in a coroutine.
+        /// </summary>
+        /// <param name="te">Public terrain entity object.</param>
+        /// <param name="pBE">Parent entity.</param>
+        /// <param name="guid">ID for the terrain entity.</param>
+        /// <param name="length">Length of the terrain in terrain units.</param>
+        /// <param name="width">Width of the terrain in terrain units.</param>
+        /// <param name="height">Height of the terrain in terrain units.</param>
+        /// <param name="heights">2D array of heights for the terrain.</param>
+        /// <param name="layers">Layers for the terrain.</param>
+        /// <param name="layerMasks">Layer masks for the terrain.</param>
+        /// <param name="pos">Position of the entity relative to its parent.</param>
+        /// <param name="rot">Rotation of the entity relative to its parent.</param>
+        /// <param name="scl">Scale of the entity relative to its parent.</param>
+        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
+        /// <param name="tag">Tag of the entity.</param>
+        /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
+        /// terrain entity object.</param>
+        /// <param name="timeout">Timeout for PNG loads.</param>
+        /// <returns>Coroutine.</returns>
+        private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, WorldEngine.Entity.BaseEntity pBE, Guid guid,
+            float length, float width, float height, float[,] heights, TerrainEntityLayer[] layers, float[][,] layerMasks,
+            Vector3 pos, Quaternion rot, Vector3 scl, bool isSize = false,
+            string tag = null, string onLoaded = null, float timeout = 10)
+        {
+            Dictionary<int, float[,]> formattedMasks = new Dictionary<int, float[,]>();
+            if (layerMasks == null)
+            {
+                int layerIdx = 0;
+                foreach (float[,] layerMask in layerMasks)
+                {
+                    formattedMasks.Add(layerIdx++, layerMask);
+                }
+            }
+
+            Action onLoadAction = null;
+            onLoadAction = () =>
+            {
+                te.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                AddEntityMapping(te.internalEntity, te);
+                if (!string.IsNullOrEmpty(onLoaded))
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "te"));
+                }
+            };
+
+            List<WorldEngine.Entity.Terrain.TerrainEntityLayer> formattedLayers
+                    = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+            if (layers != null)
+            {
+                foreach (TerrainEntityLayer layer in layers)
+                {
+                    uint completedRequests = 0;
+
+                    WorldEngine.Entity.Terrain.TerrainEntityLayer newFormattedLayer
+                        = new WorldEngine.Entity.Terrain.TerrainEntityLayer();
+                    newFormattedLayer.metallic = layer.metallic;
+                    newFormattedLayer.smoothness = layer.smoothness;
+                    newFormattedLayer.specular = new Color(layer.specular.r,
+                        layer.specular.g, layer.specular.b, layer.specular.a);
+
+                    if (!string.IsNullOrEmpty(layer.diffuseTexture))
+                    {
+                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(layer.diffuseTexture,
+                        new Action<Texture2D>((tex) =>
+                        {
+                            newFormattedLayer.diffuse = tex;
+                            completedRequests++;
+                        }));
+                    }
+                    else
+                    {
+                        completedRequests++;
+                    }
+
+                    if (!string.IsNullOrEmpty(layer.normalTexture))
+                    {
+                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(layer.normalTexture,
+                        new Action<Texture2D>((tex) =>
+                        {
+                            newFormattedLayer.normal = tex;
+                            completedRequests++;
+                        }));
+                    }
+                    else
+                    {
+                        completedRequests++;
+                    }
+
+                    if (!string.IsNullOrEmpty(layer.maskTexture))
+                    {
+                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(layer.maskTexture,
+                        new Action<Texture2D>((tex) =>
+                        {
+                            newFormattedLayer.mask = tex;
+                            completedRequests++;
+                        }));
+                    }
+                    else
+                    {
+                        completedRequests++;
+                    }
+
+                    float elapsedTime = 0;
+                    do
+                    {
+                        yield return new WaitForSeconds(0.25f);
+                        elapsedTime += 0.25f;
+                    } while (elapsedTime < timeout && completedRequests < 3);
+
+                    formattedLayers.Add(newFormattedLayer);
+                }
+            }
+
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, heights,
+                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, scl, guid, isSize, tag, onLoadAction);
         }
     }
 }

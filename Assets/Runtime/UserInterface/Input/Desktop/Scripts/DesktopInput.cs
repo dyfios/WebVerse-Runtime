@@ -1,6 +1,8 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Runtime;
+using FiveSQD.WebVerse.Utilities;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -10,7 +12,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
     /// <summary>
     /// Class for interpreting Desktop input.
     /// </summary>
-    public class DesktopInput : MonoBehaviour
+    public class DesktopInput : BasePlatformInput
     {
         /// <summary>
         /// Translation of Unity keys to Javascript standard keys.
@@ -371,6 +373,37 @@ namespace FiveSQD.WebVerse.Input.Desktop
                 WebVerseRuntime.Instance.inputManager.EndRight();
                 WebVerseRuntime.Instance.inputManager.rightValue = false;
             }
+        }
+
+        /// <summary>
+        /// Get a raycast from the pointer.
+        /// </summary>
+        /// <param name="direction">Direction to cast the ray in.</param>
+        /// <param name="pointerIndex">Index of the pointer to get raycast from.</param>
+        /// <returns>A raycast from the pointer, or null.</returns>
+        public override Tuple<RaycastHit, Vector3> GetPointerRaycast(Vector3 direction, int pointerIndex = 0)
+        {
+            if (pointerIndex == 0)
+            {
+                RaycastHit hit;
+                Ray ray = GetComponent<Camera>().ScreenPointToRay(Mouse.current.position.ReadValue());
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    Transform objectHit = hit.transform;
+
+                    if (objectHit)
+                    {
+                        return new Tuple<RaycastHit, Vector3>(hit, WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetPosition(false));
+                    }
+                }
+            }
+            else
+            {
+                Logging.LogWarning("[DesktopInput->GetPointerRaycast] Only indices of 0 are supported for Desktop.");
+            }
+
+            return null;
         }
     }
 }

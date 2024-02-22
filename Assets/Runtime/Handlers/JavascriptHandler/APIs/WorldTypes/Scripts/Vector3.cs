@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using System;
 
@@ -140,6 +140,28 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes
         /// <param name="second">Second Vector3.</param>
         /// <returns>Whether or not the Vector3s are different.</returns>
         public static bool operator !=(Vector3 first, Vector3 second) => !first.AreEqual(second);
+
+        /// <summary>
+        /// Get a forward (0, 0, 1) vector.
+        /// </summary>
+        public static Vector3 forward
+        {
+            get
+            {
+                return new Vector3(0, 0, 1);
+            }
+        }
+
+        /// <summary>
+        /// Get a back (0, 0, -1) vector.
+        /// </summary>
+        public static Vector3 back
+        {
+            get
+            {
+                return new Vector3(0, 0, -1);
+            }
+        }
 
         /// <summary>
         /// Get a down (0, -1, 0) vector.
