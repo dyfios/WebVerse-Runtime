@@ -1,8 +1,11 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Runtime;
+using FiveSQD.WebVerse.Utilities;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 //using UnityEngine.Events;
 
 namespace FiveSQD.WebVerse.Input.SteamVR
@@ -10,8 +13,32 @@ namespace FiveSQD.WebVerse.Input.SteamVR
     /// <summary>
     /// Class for interpreting SteamVR input.
     /// </summary>
-    public class SteamVRInput : MonoBehaviour
+    public class SteamVRInput : BasePlatformInput
     {
+        /// <summary>
+        /// The left controller gameobject.
+        /// </summary>
+        [Tooltip("The left controller gameobject.")]
+        public GameObject leftControllerGO;
+
+        /// <summary>
+        /// The right controller gameobject.
+        /// </summary>
+        [Tooltip("The right controller gameobject.")]
+        public GameObject rightControllerGO;
+
+        /// <summary>
+        /// The left controller.
+        /// </summary>
+        [Tooltip("The left controller.")]
+        public XRController leftController;
+
+        /// <summary>
+        /// The right controller.
+        /// </summary>
+        [Tooltip("The right controller.")]
+        public XRController rightController;
+
         /*
         /// <summary>
         /// Event to invoke when left menu button has been held.
@@ -751,6 +778,41 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                 WebVerseRuntime.Instance.inputManager.EndRightStick();
                 WebVerseRuntime.Instance.inputManager.rightStickValue = false;
             }
+        }
+
+        /// <summary>
+        /// Get a raycast from the pointer.
+        /// </summary>
+        /// <param name="direction">Direction to cast the ray in.</param>
+        /// <param name="pointerIndex">Index of the pointer to get raycast from.</param>
+        /// <returns>A raycast from the pointer, or null.</returns>
+        public override Tuple<RaycastHit, Vector3> GetPointerRaycast(Vector3 direction, int pointerIndex = 0)
+        {
+            if (pointerIndex == 0)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(leftControllerGO.transform.position,
+                    direction, out hit))
+                {
+                    return new Tuple<RaycastHit, Vector3>(hit, leftControllerGO.transform.position);
+                }
+            }
+            else if (pointerIndex == 1)
+            {
+                RaycastHit hit;
+                if (Physics.Raycast(rightControllerGO.transform.position,
+                    direction, out hit))
+                {
+                    return new Tuple<RaycastHit, Vector3>(hit, rightControllerGO.transform.position);
+                }
+            }
+            else
+            {
+                Logging.LogWarning("[SteamVRInput->GetPointerRaycast] Only indices of 0 (left) or 1 (right)" +
+                    " are supported for SteamVR.");
+            }
+
+            return null;
         }
     }
 }

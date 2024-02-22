@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -157,7 +157,6 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             {
                 onDownloaded.Invoke(data);
             });
-
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
             request.Send();
 #endif

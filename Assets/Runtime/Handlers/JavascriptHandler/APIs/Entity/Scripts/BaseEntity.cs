@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using System;
 using System.Collections.Generic;
@@ -958,6 +958,54 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 default:
                     return InteractionState.Hidden;
             }
+        }
+
+        /// <summary>
+        /// Get a raycast forward from this entity.
+        /// </summary>
+        /// <returns>A raycast forward from this entity, or null.</returns>
+        public RaycastHitInfo? GetRaycast()
+        {
+            return GetRaycast(Vector3.forward);
+        }
+
+        /// <summary>
+        /// Get a raycast from this entity.
+        /// </summary>
+        /// <param name="direction">Direction to cast the ray in.</param>
+        /// <returns>A raycast from this entity, or null.</returns>
+        public RaycastHitInfo? GetRaycast(Vector3 direction)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:GetRaycast] Unknown entity.");
+                return null;
+            }
+
+            UnityEngine.RaycastHit hit;
+            if (UnityEngine.Physics.Raycast(internalEntity.transform.position,
+                new UnityEngine.Vector3(direction.x, direction.y, direction.z), out hit))
+            {
+                WorldEngine.Entity.BaseEntity hitEntity = null;
+                if (hitEntity = hit.collider.GetComponentInParent<WorldEngine.Entity.BaseEntity>())
+                {
+                    BaseEntity hitPublicEntity = EntityAPIHelper.GetPublicEntity(hitEntity);
+                    if (hitPublicEntity == null)
+                    {
+                        return null;
+                    }
+
+                    return new RaycastHitInfo()
+                    {
+                        entity = hitPublicEntity,
+                        hitPoint = new Vector3(hit.point.x, hit.point.y, hit.point.z),
+                        hitPointNormal = new Vector3(hit.normal.x, hit.normal.y, hit.normal.z),
+                        origin = GetPosition(false)
+                    };
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

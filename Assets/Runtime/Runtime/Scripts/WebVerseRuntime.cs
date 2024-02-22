@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using UnityEngine;
 using FiveSQD.WebVerse.Utilities;
@@ -16,6 +16,7 @@ using System;
 using FiveSQD.WebVerse.Input;
 using FiveSQD.WebVerse.Daemon;
 using FiveSQD.WebVerse.WebInterface.HTTP;
+using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -190,6 +191,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("Whether or not world is in VR mode.")]
         public bool vr;
+
+        /// <summary>
+        /// Platform Input.
+        /// </summary>
+        [Tooltip("Platform Input.")]
+        public BasePlatformInput platformInput;
 
         /// <summary>
         /// Initialize the WebVerse Runtime.
@@ -368,6 +375,11 @@ namespace FiveSQD.WebVerse.Runtime
             javascriptHandlerGO.transform.SetParent(handlersGO.transform);
             javascriptHandler = javascriptHandlerGO.AddComponent<JavascriptHandler>();
             javascriptHandler.Initialize();
+            GameObject entityAPIHelperGO = new GameObject("EntityAPIHelper");
+            entityAPIHelperGO.transform.SetParent(javascriptHandlerGO.transform);
+            EntityAPIHelper entityAPIHelper = entityAPIHelperGO.AddComponent<EntityAPIHelper>();
+            entityAPIHelper.Initialize();
+
             GameObject gltfHandlerGO = new GameObject("GLTF");
             gltfHandlerGO.transform.SetParent(handlersGO.transform);
             gltfHandler = gltfHandlerGO.AddComponent<GLTFHandler>();
@@ -405,6 +417,7 @@ namespace FiveSQD.WebVerse.Runtime
             GameObject inputManagerGO = new GameObject("InputManager");
             inputManagerGO.transform.SetParent(transform);
             inputManager = inputManagerGO.AddComponent<InputManager>();
+            inputManager.platformInput = platformInput;
             inputManager.Initialize();
 
             if (daemonPort != null && mainAppID != null && tabID != null)

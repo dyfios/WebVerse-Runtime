@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using Jint;
 using FiveSQD.WebVerse.Utilities;
@@ -21,6 +21,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
         {
             // World Types.
             new System.Tuple<string, System.Type>("Color", typeof(Color)),
+            new System.Tuple<string, System.Type>("RaycastHitInfo", typeof(RaycastHitInfo)),
             new System.Tuple<string, System.Type>("Vector2", typeof(Vector2)),
             new System.Tuple<string, System.Type>("Vector2D", typeof(Vector2D)),
             new System.Tuple<string, System.Type>("Vector2Int", typeof(Vector2Int)),
@@ -44,6 +45,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("LightEntity", typeof(LightEntity)),
             new System.Tuple<string, System.Type>("MeshEntity", typeof(MeshEntity)),
             new System.Tuple<string, System.Type>("TerrainEntity", typeof(TerrainEntity)),
+            new System.Tuple<string, System.Type>("TerrainEntityBrushType", typeof(TerrainEntityBrushType)),
+            new System.Tuple<string, System.Type>("TerrainEntityLayer", typeof(TerrainEntityLayer)),
+            new System.Tuple<string, System.Type>("TerrainEntityLayerMask", typeof(TerrainEntityLayerMask)),
+            new System.Tuple<string, System.Type>("TerrainEntityLayerMaskCollection", typeof(TerrainEntityLayerMaskCollection)),
             new System.Tuple<string, System.Type>("TextEntity", typeof(TextEntity)),
             new System.Tuple<string, System.Type>("VoxelEntity", typeof(VoxelEntity)),
             new System.Tuple<string, System.Type>("InteractionState", typeof(InteractionState)),
@@ -118,7 +123,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine = engine.Execute(script);
+            try
+            {
+                engine = engine.Execute(script);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -133,8 +145,18 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 LogSystem.LogError("[JavascriptManager->Run] No engine reference.");
                 return null;
             }
-            
-            return engine.Evaluate(logic);
+
+            object result = null;
+            try
+            {
+                result = engine.Evaluate(logic);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -150,7 +172,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(variableName, value);
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -166,7 +195,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(variableName, value);
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -182,7 +218,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(variableName, value);
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -198,7 +241,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(variableName, value);
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -214,7 +264,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(variableName, value);
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -230,7 +287,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(variableName, value);
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -246,7 +310,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(variableName, value);
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -262,7 +333,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return null;
             }
 
-            return engine.GetValue(variableName);
+            try
+            {
+                return engine.GetValue(variableName);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+                return null;
+            }
         }
 
         /// <summary>
@@ -278,7 +357,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue("INTERNAL_CONTEXTS_" + contextName, context);
+            try
+            {
+                engine.SetValue("INTERNAL_CONTEXTS_" + contextName, context);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
 
         /// <summary>
@@ -294,7 +380,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return null;
             }
 
-            return engine.GetValue("INTERNAL_CONTEXTS_" + contextName);
+            try
+            {
+                return engine.GetValue("INTERNAL_CONTEXTS_" + contextName);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+                return null;
+            }
         }
 
         /// <summary>
@@ -325,7 +419,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 return;
             }
 
-            engine.SetValue(name, type);
+            try
+            {
+                engine.SetValue(name, type);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
         }
     }
 }

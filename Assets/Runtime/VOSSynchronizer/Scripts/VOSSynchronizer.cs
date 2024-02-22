@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 #if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.MQTT;
@@ -1751,7 +1751,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(addTerrainEntityMessage.length,
                         addTerrainEntityMessage.width, addTerrainEntityMessage.height, addTerrainEntityMessage.heights,
                         parentEntity, addTerrainEntityMessage.position.ToVector3(), addTerrainEntityMessage.rotation.ToQuaternion(),
-                        addTerrainEntityMessage.scale.ToVector3(), Guid.Parse(addTerrainEntityMessage.id), isSize, null);
+                        Guid.Parse(addTerrainEntityMessage.id), null);
                     BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addTerrainEntityMessage.id));
                     if (me == null)
                     {
@@ -2301,7 +2301,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 case "terrain":
                     newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(entityInfo.length,
                         entityInfo.width, entityInfo.height, entityInfo.heights, parentEntity, entityInfo.position.ToVector3(),
-                        entityInfo.rotation.ToQuaternion(), scaleSize, Guid.Parse(entityInfo.id), isSize, null);
+                        entityInfo.rotation.ToQuaternion(), Guid.Parse(entityInfo.id), null);
                     ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Handlers.File;
 using FiveSQD.WebVerse.Runtime;
@@ -1361,7 +1361,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             float[,] heights = ParseCSVHeights(entity.heights);
             WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity((float) entity.length, (float) entity.width,
                 (float) entity.height, heights, null, positionValue, rotationValue,
-                sizeValue, Guid.Parse(entity.id), isSize, entity.tag, onLoadEvent);
+                Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
         }
