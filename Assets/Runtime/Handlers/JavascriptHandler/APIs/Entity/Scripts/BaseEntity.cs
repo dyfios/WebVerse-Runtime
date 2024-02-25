@@ -1009,6 +1009,33 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         }
 
         /// <summary>
+        /// Add a placement socket to the entity.
+        /// </summary>
+        /// <param name="position">Position of the placement socket relative to the entity.</param>
+        /// <param name="rotation">Rotation of the placement socket relative to the entity.</param>
+        /// <param name="connectingOffset">Offset to apply when connecting to another socket.</param>
+        public virtual bool AddSocket(Vector3 position, Quaternion rotation, Vector3 connectingOffset)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:AddSocket] Unknown entity.");
+                return false;
+            }
+
+            if (internalEntityType != typeof(WorldEngine.Entity.MeshEntity))
+            {
+                Logging.LogWarning("[BaseEntity:AddSocket] Sockets only supported on mesh entities.");
+                return false;
+            }
+
+            internalEntity.AddSocket(new UnityEngine.Vector3(position.x, position.y, position.z),
+                new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w),
+                new UnityEngine.Vector3(connectingOffset.x, connectingOffset.y, connectingOffset.z));
+
+            return true;
+        }
+
+        /// <summary>
         /// Determines whether or not this entity is valid.
         /// </summary>
         /// <returns>Whether or not this entity is valid.</returns>
