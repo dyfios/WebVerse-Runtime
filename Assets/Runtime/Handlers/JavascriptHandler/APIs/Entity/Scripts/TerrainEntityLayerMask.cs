@@ -36,5 +36,20 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
             this.heights = list;
         }
+
+        /// <summary>
+        /// Terrain entity layer mask.
+        /// </summary>
+        /// <param name="heights">Heights for the layer mask.</param>
+        public TerrainEntityLayerMask(float[,] heights)
+        {
+            if (heights == null)
+            {
+                Logging.LogWarning("[TerrainEntityLayerMask] Invalid heights array.");
+                return;
+            }
+
+            this.heights = heights;
+        }
     }
 }

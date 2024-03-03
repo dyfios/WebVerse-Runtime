@@ -222,6 +222,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             public string type;
 
             /// <summary>
+            /// Entity subtype
+            /// </summary>
+            [JsonProperty(PropertyName = "subtype")]
+            public string subType;
+
+            /// <summary>
             /// Path to entity resource.
             /// </summary>
             [JsonProperty(PropertyName = "path")]
@@ -319,6 +325,47 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             public int fontSize;
 
             /// <summary>
+            /// Array of diffuse textures for the terrain entity's layers.
+            /// </summary>
+            [JsonProperty(PropertyName = "diffuse-texture")]
+            public string[] diffuseTextures;
+
+            /// <summary>
+            /// Array of normal textures for the terrain entity's layers.
+            /// </summary>
+            [JsonProperty(PropertyName = "normal-texture")]
+            public string[] normalTextures;
+
+            /// <summary>
+            /// Array of mask textures for the terrain entity's layers.
+            /// </summary>
+            [JsonProperty(PropertyName = "mask-texture")]
+            public string[] maskTextures;
+
+            /// <summary>
+            /// Array of specular values for the terrain entity's layers
+            /// </summary>
+            [JsonProperty(PropertyName = "specular-values")]
+            public string[] specularValues;
+
+            /// <summary>
+            /// Array of metallic values for the terrain entity's layers
+            /// </summary>
+            [JsonProperty(PropertyName = "metallic-values")]
+            public float[] metallicValues;
+
+            /// <summary>
+            /// Array of smoothness values for the terrain entity's layers
+            /// </summary>
+            [JsonProperty(PropertyName = "smoothness-values")]
+            public float[] smoothnessValues;
+
+            /// <summary>
+            /// The layer mask (VEML CSV-formatted) for the terrain entity.
+            /// </summary>
+            public string layerMask;
+
+            /// <summary>
             /// Guid representation of the ID.
             /// </summary>
             public Guid uuid
@@ -336,7 +383,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             /// <param name="_tag">Tag for the entity.</param>
             /// <param name="_type">Type of the entity.</param>
             /// <param name="_path">Path to a resource for the entity.</param>
-            /// <param name="resources">Paths to resources for the entity.</param>
+            /// <param name="_resources">Paths to resources for the entity.</param>
             /// <param name="_parentID">ID of the entity's parent.</param>
             /// <param name="_position">Position of the entity.</param>
             /// <param name="_rotation">Rotation of the entity.</param>
@@ -356,7 +403,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 Quaternion _rotation, Vector3 _scaleSize, bool isSize,
                 Vector2 _positionPercent, Vector2 _sizePercent, string _onClick,
                 float _length, float _width, float _height, float[,] _heights,
-                string _text, int _fontSize)
+                string _text, int _fontSize, string[] _diffuseTextures,
+                string[] _normalTextures, string[] _maskTextures,
+                string[] _specularValues, float[] _metallicValues,
+                float[] _smoothnessValues, string _layerMask, string _subType)
             {
                 id = _id.ToString();
                 tag = _tag;
@@ -383,6 +433,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 heights = _heights;
                 text = _text;
                 fontSize = _fontSize;
+                diffuseTextures = _diffuseTextures;
+                normalTextures = _normalTextures;
+                maskTextures = _maskTextures;
+                specularValues = _specularValues;
+                metallicValues = _metallicValues;
+                smoothnessValues = _smoothnessValues;
+                layerMask = _layerMask;
+                subType = _subType;
             }
         }
 
@@ -1539,6 +1597,53 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public float[,] heights;
 
                 /// <summary>
+                /// Array of diffuse textures for the terrain entity's layers.
+                /// </summary>
+                [JsonProperty(PropertyName = "diffuse-texture")]
+                public string[] diffuseTextures;
+
+                /// <summary>
+                /// Array of normal textures for the terrain entity's layers.
+                /// </summary>
+                [JsonProperty(PropertyName = "normal-texture")]
+                public string[] normalTextures;
+
+                /// <summary>
+                /// Array of mask textures for the terrain entity's layers.
+                /// </summary>
+                [JsonProperty(PropertyName = "mask-texture")]
+                public string[] maskTextures;
+
+                /// <summary>
+                /// Array of specular values for the terrain entity's layers
+                /// </summary>
+                [JsonProperty(PropertyName = "specular-values")]
+                public string[] specularValues;
+
+                /// <summary>
+                /// Array of metallic values for the terrain entity's layers
+                /// </summary>
+                [JsonProperty(PropertyName = "metallic-values")]
+                public float[] metallicValues;
+
+                /// <summary>
+                /// Array of smoothness values for the terrain entity's layers
+                /// </summary>
+                [JsonProperty(PropertyName = "smoothness-values")]
+                public float[] smoothnessValues;
+
+                /// <summary>
+                /// The layer mask (VEML CSV-formatted) for the terrain entity.
+                /// </summary>
+                public string layerMask;
+
+                /// <summary>
+                /// Type of terrain entity ("heightmap, voxel, or hybrid").
+                /// </summary>
+                [JsonProperty(PropertyName = "type")]
+                public string type;
+
+                /// <summary>
                 /// Whether or not to delete the entity when the client leaves the session.
                 /// </summary>
                 [JsonProperty(PropertyName = "delete-with-client")]
@@ -1549,6 +1654,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, float _length,
                     float _width, float _height, float[,] _heights,
+                    WorldEngine.Entity.Terrain.TerrainEntityLayer[] layers,
+                    string _layerMask, string _type,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
@@ -1571,6 +1678,34 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     width = _width;
                     height = _height;
                     heights = _heights;
+                    if (layers != null)
+                    {
+                        string[] _diffuseTextures = new string[layers.Length];
+                        string[] _normalTextures = new string[layers.Length];
+                        string[] _maskTextures = new string[layers.Length];
+                        string[] _specularValues = new string[layers.Length];
+                        float[] _metallicValues = new float[layers.Length];
+                        float[] _smoothnessValues = new float[layers.Length];
+                        int idx = 0;
+                        foreach (WorldEngine.Entity.Terrain.TerrainEntityLayer layer in layers)
+                        {
+                            _diffuseTextures[idx] = layer.diffusePath;
+                            _normalTextures[idx] = layer.normalPath;
+                            _maskTextures[idx] = layer.maskPath;
+                            _specularValues[idx] = ColorUtility.ToHtmlStringRGBA(layer.specular);
+                            _metallicValues[idx] = layer.metallic;
+                            _smoothnessValues[idx] = layer.smoothness;
+                            idx++;
+                        }
+                        diffuseTextures = _diffuseTextures;
+                        normalTextures = _normalTextures;
+                        maskTextures = _maskTextures;
+                        specularValues = _specularValues;
+                        metallicValues = _metallicValues;
+                        smoothnessValues = _smoothnessValues;
+                    }
+                    layerMask = _layerMask;
+                    type = _type;
                     deleteWithClient = _deleteWithClient;
                 }
             }
@@ -3159,11 +3294,62 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "heights")]
                 public float[,] heights;
 
+                /// <summary>
+                /// Array of diffuse textures for the terrain entity's layers.
+                /// </summary>
+                [JsonProperty(PropertyName = "diffuse-texture")]
+                public string[] diffuseTextures;
+
+                /// <summary>
+                /// Array of normal textures for the terrain entity's layers.
+                /// </summary>
+                [JsonProperty(PropertyName = "normal-texture")]
+                public string[] normalTextures;
+
+                /// <summary>
+                /// Array of mask textures for the terrain entity's layers.
+                /// </summary>
+                [JsonProperty(PropertyName = "mask-texture")]
+                public string[] maskTextures;
+
+                /// <summary>
+                /// Array of specular values for the terrain entity's layers
+                /// </summary>
+                [JsonProperty(PropertyName = "specular-values")]
+                public string[] specularValues;
+
+                /// <summary>
+                /// Array of metallic values for the terrain entity's layers
+                /// </summary>
+                [JsonProperty(PropertyName = "metallic-values")]
+                public float[] metallicValues;
+
+                /// <summary>
+                /// Array of smoothness values for the terrain entity's layers
+                /// </summary>
+                [JsonProperty(PropertyName = "smoothness-values")]
+                public float[] smoothnessValues;
+
+                /// <summary>
+                /// The layer mask (VEML CSV-formatted) for the terrain entity.
+                /// </summary>
+                public string layerMask;
+
+                /// <summary>
+                /// Type of terrain entity ("heightmap, voxel, or hybrid").
+                /// </summary>
+                [JsonProperty(PropertyName = "type")]
+                public string type;
+
                 public AddTerrainEntityMessage(Guid _messageID, Guid _clientID,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, float _length,
-                    float _width, float _height, float[,] _heights)
+                    float _width, float _height, float[,] _heights,
+                    string[] _diffuseTextures, string[] _normalTextures,
+                    string[] _maskTextures, string[] _specularValues,
+                    float[] _metallicValues, float[] _smoothnessValues,
+                    string _layerMask, string _type)
                 {
                     messageID = _messageID.ToString();
                     clientID = _clientID.ToString();
@@ -3185,6 +3371,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     width = _width;
                     height = _height;
                     heights = _heights;
+                    diffuseTextures = _diffuseTextures;
+                    normalTextures = _normalTextures;
+                    maskTextures = _maskTextures;
+                    specularValues = _specularValues;
+                    metallicValues = _metallicValues;
+                    smoothnessValues = _smoothnessValues;
+                    layerMask = _layerMask;
+                    type = _type;
                 }
             }
 

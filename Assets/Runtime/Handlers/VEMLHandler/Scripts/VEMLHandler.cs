@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using FiveSQD.WebVerse.Handlers.VEML.Schema.V1_0;
+using FiveSQD.WebVerse.Handlers.VEML.Schema.V1_1;
 using FiveSQD.WebVerse.VOSSynchronization;
 using FiveSQD.WebVerse.WorldEngine.Utilities;
 using FiveSQD.WebVerse.WorldEngine.Entity;
@@ -28,7 +28,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <summary>
         /// Enumeration for a VEML version number.
         /// </summary>
-        public enum VEMLVersion { Unknown, v1_0 }
+        public enum VEMLVersion { Unknown, v1_0, v1_1 }
 
         /// <summary>
         /// Reference to the WebVerse runtime.
@@ -71,7 +71,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V1_0.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V1_1.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -105,7 +105,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V1_0.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V1_1.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -156,35 +156,49 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         /// <param name="path">Path to load the document from.</param>
         /// <returns>A loaded VEML class, or null.</returns>
-        public Schema.V1_0.veml LoadVEML(string path)
+        public Schema.V1_1.veml LoadVEML(string path)
         {
             byte[] rawData = System.IO.File.ReadAllBytes(path);
 
-            VEMLVersion version = VEMLVersion.v1_0;
-            Schema.V1_0.veml veml = null;
+            VEMLVersion version = VEMLVersion.v1_1;
+            Schema.V1_1.veml veml = null;
             try
             {
-                XmlSerializer ser = new XmlSerializer(typeof(Schema.V1_0.veml));
+                XmlSerializer ser = new XmlSerializer(typeof(Schema.V1_1.veml));
                 TextReader reader = new StringReader(System.Text.Encoding.UTF8.GetString(rawData));
                 XmlReader xmlReader = XmlReader.Create(reader);
 
-                // Attempt deserialization using v1.0 (latest) of the schema. In future,
-                // old XML will be converted to current version before being deserialized.
+                // Attempt deserialization using v1.1 (latest) of the schema. Old XML will be converted
+                // to current version before being deserialized.
                 if (ser.CanDeserialize(xmlReader))
                 {
-                    version = VEMLVersion.v1_0;
-                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.0");
-                    veml = (Schema.V1_0.veml) ser.Deserialize(xmlReader);
+                    version = VEMLVersion.v1_1;
+                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.1");
+                    veml = (Schema.V1_1.veml) ser.Deserialize(xmlReader);
                 }
 
-                // Unknown VEML Version. Throw Error.
+                // Attempt deserialization using v1.0 of the schema. Convert to latest if deserialization succeeds.
                 else
                 {
-                    version = VEMLVersion.Unknown;
-                    Logging.LogWarning("[VEMLHandler->LoadVEML] Unknown VEML version.");
-                    // Attempt deserialization to throw appropriate exceptions.
-                    ser.Deserialize(xmlReader);
-                    return null;
+                    ser = new XmlSerializer(typeof(Schema.V1_0.veml));
+
+                    if (ser.CanDeserialize(xmlReader))
+                    {
+                        version = VEMLVersion.v1_1;
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.0. Upgrading to VEML v1.1.");
+                        Schema.V1_0.veml v1_0VEML = (Schema.V1_0.veml) ser.Deserialize(xmlReader);
+                        veml = VEMLUtilities.ConvertFromV1_0(v1_0VEML);
+                    }
+
+                    // Unknown VEML Version. Throw Error.
+                    else
+                    {
+                        version = VEMLVersion.Unknown;
+                        Logging.LogWarning("[VEMLHandler->LoadVEML] Unknown VEML version.");
+                        // Attempt deserialization to throw appropriate exceptions.
+                        ser.Deserialize(xmlReader);
+                        return null;
+                    }
                 }
             }
             catch (Exception e)
@@ -340,7 +354,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
-        private IEnumerator ApplyVEMLDocument(Schema.V1_0.veml vemlDocument, string baseURI)
+        private IEnumerator ApplyVEMLDocument(Schema.V1_1.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
 
@@ -401,7 +415,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="onScriptsProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessMetadata(Schema.V1_0.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
+        private bool ProcessMetadata(Schema.V1_1.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
         {
             string formattedBaseURI = FormatURI(baseURI);
 
@@ -446,7 +460,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEnvironment(Schema.V1_0.veml vemlDocument, string baseURI)
+        private bool ProcessEnvironment(Schema.V1_1.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
 
@@ -486,7 +500,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <param name="onProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
-        private IEnumerator ProcessScripts(Schema.V1_0.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
+        private IEnumerator ProcessScripts(Schema.V1_1.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
         {
             string formattedBaseURI = FormatURI(baseURI);
 
@@ -552,7 +566,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessInputEvents(Schema.V1_0.veml vemlDocument, string baseURI)
+        private bool ProcessInputEvents(Schema.V1_1.veml vemlDocument, string baseURI)
         {
             // Set up input events.
             if (vemlDocument.metadata.inputevent != null)
@@ -572,7 +586,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessSynchronizers(Schema.V1_0.veml vemlDocument, string baseURI)
+        private bool ProcessSynchronizers(Schema.V1_1.veml vemlDocument, string baseURI)
         {
             // Set up synchronizers.
             if (vemlDocument.metadata.synchronizationservice != null)
@@ -708,7 +722,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEntities(Schema.V1_0.veml vemlDocument, string baseURI)
+        private bool ProcessEntities(Schema.V1_1.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = FormatURI(baseURI);
 
@@ -994,6 +1008,18 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
 #endif
                     Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(meshEntity);
+                    foreach (placementsocket sock in entity.placementsocket)
+                    {
+                        if (sock == null || sock.position == null || sock.rotation == null || sock.connectingoffset == null)
+                        {
+                            LogSystem.LogWarning("[VEMLHandler->ProcessMeshEntity] Invalid placement socket.");
+                            return;
+                        }
+
+                        meshEntity.AddSocket(new Vector3((float) sock.position.x, (float) sock.position.y, (float) sock.position.z),
+                            new Quaternion((float) sock.rotation.x, (float) sock.rotation.y, (float) sock.rotation.z, (float) sock.rotation.w),
+                            new Vector3((float) sock.connectingoffset.x, (float) sock.connectingoffset.y, (float) sock.connectingoffset.z));
+                    }
                     loadingEntities--;
                 });
             List<string> resources = new List<string>();
@@ -1288,13 +1314,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 entity.id = Guid.NewGuid().ToString();
             }
 
-            bool isSize;
             Vector3 positionValue;
             Quaternion rotationValue;
             Vector3 sizeValue;
             if (entity.transform is scaletransform)
             {
-                isSize = false;
                 positionValue = new Vector3((float) ((scaletransform) entity.transform).position.x,
                     (float) ((scaletransform) entity.transform).position.y,
                     (float) ((scaletransform) entity.transform).position.z);
@@ -1308,7 +1332,6 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
             else if (entity.transform is sizetransform)
             {
-                isSize = true;
                 positionValue = new Vector3((float) ((sizetransform) entity.transform).position.x,
                     (float) ((sizetransform) entity.transform).position.y,
                     (float) ((sizetransform) entity.transform).position.z);
@@ -1358,10 +1381,80 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            float[,] heights = ParseCSVHeights(entity.heights);
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity((float) entity.length, (float) entity.width,
-                (float) entity.height, heights, null, positionValue, rotationValue,
-                Guid.Parse(entity.id), entity.tag, onLoadEvent);
+            if (entity.type == "heightmap")
+            {
+                if (entity.layer == null)
+                {
+                    LogSystem.LogWarning("[VEMLHandler->ProcessTerrainEntity] At least 1 layer required for Heightmap Terrain Entity.");
+                    return false;
+                }
+
+                List<WorldEngine.Entity.Terrain.TerrainEntityLayer> layers
+                    = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+                foreach (terrainentitylayer layer in entity.layer)
+                {
+                    Color specValue = ProcessColor(layer.specular);
+                    WorldEngine.Entity.Terrain.TerrainEntityLayer tel
+                        = new WorldEngine.Entity.Terrain.TerrainEntityLayer();
+                    tel.normalPath = layer.normaltexture;
+                    tel.maskPath = layer.masktexture;
+                    tel.diffusePath = layer.diffusetexture;
+                    tel.smoothness = layer.smoothness;
+                    tel.metallic = layer.metallic;
+                    tel.specular = specValue;
+                    layers.Add(tel);
+                }
+
+                float[,] heights = Handlers.VEML.VEMLUtilities.ParseCSVHeights(entity.heights);
+
+                WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(
+                    (float) entity.length, (float) entity.width, (float) entity.height,
+                    heights, layers.ToArray(), VEMLUtilities.ParseCSVLayerMasksToInternalFormat(entity.layermasks), null, positionValue, rotationValue, Guid.Parse(entity.id),
+                    entity.tag, onLoadEvent);
+            }
+            else if (entity.type == "voxel")
+            {
+                LogSystem.LogWarning("[VEMLHandler->ProcessTerrainEntity] Voxel Terrain Entities not currently supported.");
+                return false;
+            }
+            else if (entity.type == "hybrid")
+            {
+                if (entity.layer == null)
+                {
+                    LogSystem.LogWarning("[VEMLHandler->ProcessTerrainEntity] At least 1 layer required for Hybrid Terrain Entity.");
+                    return false;
+                }
+
+                List<Javascript.APIs.Entity.TerrainEntityLayer> layers = new List<Javascript.APIs.Entity.TerrainEntityLayer>();
+                foreach (terrainentitylayer layer in entity.layer)
+                {
+                    Color specValue = ProcessColor(layer.specular);
+                    Javascript.APIs.Entity.TerrainEntityLayer tel
+                        = new Javascript.APIs.Entity.TerrainEntityLayer();
+                    tel.normalTexture = layer.normaltexture;
+                    tel.maskTexture = layer.masktexture;
+                    tel.diffuseTexture = layer.diffusetexture;
+                    tel.smoothness = layer.smoothness;
+                    tel.metallic = layer.metallic;
+                    tel.specular = new Javascript.APIs.WorldTypes.Color(specValue.r, specValue.g, specValue.b, specValue.a);
+                    layers.Add(tel);
+                }
+
+                if (string.IsNullOrEmpty(entity.layermasks))
+                {
+                    LogSystem.LogWarning("[VEMLHandler->ProcessTerrainEntity] At least 1 layer mask required for Hybrid Terrain Entity.");
+                    return false;
+                }
+
+                float[][] heights = Handlers.VEML.VEMLUtilities.ParseCSVHeightsArrayOfArray(entity.heights);
+
+                Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(
+                    null, (float) entity.length, (float) entity.width, (float) entity.height, heights,
+                    layers.ToArray(), Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(entity.layermasks),
+                    new Javascript.APIs.WorldTypes.Vector3(positionValue.x, positionValue.y, positionValue.z),
+                    new Javascript.APIs.WorldTypes.Quaternion(rotationValue.x, rotationValue.y, rotationValue.z, rotationValue.w),
+                    new Javascript.APIs.WorldTypes.Vector3(1, 1, 1), false, entity.id, entity.tag, onLoadEvent);
+            }
 
             return true;
         }
@@ -1912,6 +2005,49 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         }
 
         /// <summary>
+        /// Process a color from a string.
+        /// </summary>
+        /// <param name="color">Color string.</param>
+        /// <returns>A color matching the string.</returns>
+        private Color ProcessColor(string color)
+        {
+            switch (color.ToLower())
+            {
+                case "white":
+                    return Color.white;
+
+                case "black":
+                    return Color.black;
+
+                case "grey":
+                case "gray":
+                    return Color.gray;
+
+                case "red":
+                    return Color.red;
+
+                case "yellow":
+                    return Color.yellow;
+
+                case "blue":
+                    return Color.blue;
+
+                case "cyan":
+                    return Color.cyan;
+
+                case "magenta":
+                    return Color.magenta;
+
+                case "green":
+                    return Color.green;
+
+                default:
+                    // Assume color code.
+                    return FromHex(color);
+            }
+        }
+
+        /// <summary>
         /// Sets up entity IDs for entities.
         /// </summary>
         /// <param name="entities">A reference to an array of entities to set up the IDs of. Will
@@ -2105,39 +2241,6 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Parse VEML-compliant CSV formatted heights.
-        /// </summary>
-        /// <param name="csvHeights">VEML-compliant CSV formatted heights.</param>
-        /// <returns>2D float array representation of the VEML-compliant CSV formatted heights.</returns>
-        private float[,] ParseCSVHeights(string csvHeights)
-        {
-            int numCols = 0;
-            string[] rows = csvHeights.Split(';');
-            int numRows = rows.Length;
-            foreach (string row in rows)
-            {
-                string[] cols = row.Split(",");
-                int colLength = cols.Length;
-                if (colLength > numCols)
-                {
-                    colLength = numCols;
-                }
-            }
-
-            float[,] heights = new float[numRows, numCols];
-            for (int i = 0; i < numRows; i++)
-            {
-                string[] cols = rows[i].Split(",");
-                for (int j = 0; j < cols.Length; j++)
-                {
-                    heights[i, j] = float.Parse(cols[j]);
-                }
-            }
-
-            return heights;
         }
     }
 }
