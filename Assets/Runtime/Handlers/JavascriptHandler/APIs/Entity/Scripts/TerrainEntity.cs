@@ -5,6 +5,7 @@ using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.WorldEngine.Entity;
+using System.Collections.Generic;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 {
@@ -21,6 +22,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="width">Width of the terrain in terrain units.</param>
         /// <param name="height">Height of the terrain in terrain units.</param>
         /// <param name="heights">2D array of heights for the terrain.</param>
+        /// <param name="layers">Layers for the terrain.</param>
+        /// <param name="layerMasks">Layer masks for the terrain.</param>
         /// <param name="position">Position of the entity relative to its parent.</param>
         /// <param name="rotation">Rotation of the entity relative to its parent.</param>
         /// <param name="scale">Scale of the entity relative to its parent.</param>
@@ -31,8 +34,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// terrain entity object.</param>
         /// <returns>The heightmap terrain entity object.</returns>
         public static TerrainEntity CreateHeightmap(BaseEntity parent, float length, float width, float height, float[,] heights,
-            Vector3 position, Quaternion rotation, Vector3 scale, bool isSize = false,
-            string id = null, string tag = null, string onLoaded = null)
+            TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, Vector3 position, Quaternion rotation,
+            Vector3 scale, bool isSize = false, string id = null, string tag = null, string onLoaded = null)
         {
             Guid guid;
             if (string.IsNullOrEmpty(id))
@@ -49,6 +52,28 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
             UnityEngine.Vector3 scl = new UnityEngine.Vector3(scale.x, scale.y, scale.z);
 
+            List<WorldEngine.Entity.Terrain.TerrainEntityLayer> convertedLayers
+                            = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+            foreach (TerrainEntityLayer layer in layers)
+            {
+                convertedLayers.Add(new WorldEngine.Entity.Terrain.TerrainEntityLayer()
+                {
+                    diffusePath = layer.diffuseTexture,
+                    normalPath = layer.normalTexture,
+                    maskPath = layer.maskTexture,
+                    specular = new UnityEngine.Color(layer.specular.r, layer.specular.g, layer.specular.b, layer.specular.a),
+                    metallic = layer.metallic,
+                    smoothness = layer.smoothness
+                });
+            }
+
+            Dictionary<int, float[,]> convertedLayerMasks = new Dictionary<int, float[,]>();
+            int idx = 0;
+            foreach (float[,] layerMask in layerMasks.ToFloatArrays())
+            {
+                convertedLayerMasks.Add(idx++, layerMask);
+            }
+
             TerrainEntity te = new TerrainEntity();
 
             Action onLoadAction = null;
@@ -63,7 +88,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             };
 
             WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(length, width, height, heights,
-                pBE, pos, rot, guid, tag, onLoadAction);
+                convertedLayers.ToArray(), convertedLayerMasks, pBE, pos, rot, guid, tag, onLoadAction);
 
             return te;
         }

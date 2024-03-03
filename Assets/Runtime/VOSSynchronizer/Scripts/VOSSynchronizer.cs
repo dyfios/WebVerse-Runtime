@@ -567,13 +567,53 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             }
             else if (entityToSynchronize is TerrainEntity)
             {
+                Vector3 size =  ((TerrainEntity) entityToSynchronize).GetSize();
+                Handlers.Javascript.APIs.Entity.TerrainEntityLayerMaskCollection lmc
+                    = new Handlers.Javascript.APIs.Entity.TerrainEntityLayerMaskCollection();
+                Dictionary<int, float[,]> lMasks = ((TerrainEntity) entityToSynchronize).GetLayerMasks();
+                if (lMasks != null)
+                {
+                    foreach (float[,] mask in lMasks.Values)
+                    {
+                        lmc.AddLayerMask(new Handlers.Javascript.APIs.Entity.TerrainEntityLayerMask(mask));
+                    }
+                }
                 VOSSynchronizationMessages.RequestMessages.AddTerrainEntityMessage
                     addTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
-                    entityToSynchronize.GetScale(), false, 0, 0, 0,
-                    ((TerrainEntity) entityToSynchronize).GetHeights(), deleteWithClient); // TODO dimensions.
+                    entityToSynchronize.GetScale(), false, size.x, size.y, size.z,
+                    ((TerrainEntity) entityToSynchronize).GetHeights(),
+                    ((TerrainEntity) entityToSynchronize).GetLayers(),
+                    Handlers.VEML.VEMLUtilities.ToCSVLayerMasks(lmc),
+                    "heightmap", deleteWithClient);
+                mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createterrainentity",
+                    JsonConvert.SerializeObject(addTerrainEntityMessage));
+            }
+            else if (entityToSynchronize is HybridTerrainEntity)
+            {
+                Vector3 size = ((HybridTerrainEntity) entityToSynchronize).GetSize();
+                Handlers.Javascript.APIs.Entity.TerrainEntityLayerMaskCollection lmc
+                    = new Handlers.Javascript.APIs.Entity.TerrainEntityLayerMaskCollection();
+                Dictionary<int, float[,]> lMasks = ((HybridTerrainEntity) entityToSynchronize).GetLayerMasks();
+                if (lMasks != null)
+                {
+                    foreach (float[,] mask in lMasks.Values)
+                    {
+                        lmc.AddLayerMask(new Handlers.Javascript.APIs.Entity.TerrainEntityLayerMask(mask));
+                    }
+                }
+
+                VOSSynchronizationMessages.RequestMessages.AddTerrainEntityMessage
+                    addTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                    .AddTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
+                    entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
+                    entityToSynchronize.GetScale(), false, size.x, size.y, size.z,
+                    ((HybridTerrainEntity) entityToSynchronize).GetBaseHeights(),
+                    ((HybridTerrainEntity) entityToSynchronize).GetLayers(),
+                    Handlers.VEML.VEMLUtilities.ToCSVLayerMasks(lmc), "hybrid", deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createterrainentity",
                     JsonConvert.SerializeObject(addTerrainEntityMessage));
             }
@@ -1748,10 +1788,105 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addTerrainEntityMessage.parentID));
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(addTerrainEntityMessage.length,
-                        addTerrainEntityMessage.width, addTerrainEntityMessage.height, addTerrainEntityMessage.heights,
-                        parentEntity, addTerrainEntityMessage.position.ToVector3(), addTerrainEntityMessage.rotation.ToQuaternion(),
-                        Guid.Parse(addTerrainEntityMessage.id), null);
+                    if (addTerrainEntityMessage.type == "heightmap")
+                    {
+                        List<WorldEngine.Entity.Terrain.TerrainEntityLayer> layers
+                            = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+                        if (addTerrainEntityMessage.normalTextures != null && addTerrainEntityMessage.maskTextures != null &&
+                                addTerrainEntityMessage.specularValues != null && addTerrainEntityMessage.metallicValues != null &&
+                                addTerrainEntityMessage.smoothnessValues != null)
+                        {
+                            int diffArrayLength = addTerrainEntityMessage.diffuseTextures.Length;
+                            if (addTerrainEntityMessage.normalTextures.Length == diffArrayLength &&
+                                addTerrainEntityMessage.maskTextures.Length == diffArrayLength &&
+                                addTerrainEntityMessage.specularValues.Length == diffArrayLength &&
+                                addTerrainEntityMessage.metallicValues.Length == diffArrayLength &&
+                                addTerrainEntityMessage.smoothnessValues.Length == diffArrayLength)
+                            {
+                                for (int idx = 0; idx < diffArrayLength; idx++)
+                                {
+                                    Color spec = new Color(127, 127, 127, 127);
+                                    ColorUtility.TryParseHtmlString(addTerrainEntityMessage.specularValues[idx], out spec);
+                                    layers.Add(new WorldEngine.Entity.Terrain.TerrainEntityLayer()
+                                    {
+                                        diffusePath = addTerrainEntityMessage.diffuseTextures[idx],
+                                        normalPath = addTerrainEntityMessage.maskTextures[idx],
+                                        maskPath = addTerrainEntityMessage.maskTextures[idx],
+                                        specular = spec,
+                                        metallic = addTerrainEntityMessage.metallicValues[idx],
+                                        smoothness = addTerrainEntityMessage.smoothnessValues[idx]
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Received terrain entity layer arrays of unequal length.");
+                            }
+                        }
+
+                        WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(addTerrainEntityMessage.length,
+                            addTerrainEntityMessage.width, addTerrainEntityMessage.height, addTerrainEntityMessage.heights,
+                            layers.ToArray(), Handlers.VEML.VEMLUtilities.ParseCSVLayerMasksToInternalFormat(addTerrainEntityMessage.layerMask),
+                            parentEntity, addTerrainEntityMessage.position.ToVector3(), addTerrainEntityMessage.rotation.ToQuaternion(),
+                            Guid.Parse(addTerrainEntityMessage.id), addTerrainEntityMessage.tag, null);
+                    }
+                    else if (addTerrainEntityMessage.type == "voxel")
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Voxel terrain entities not yet supported.");
+                    }
+                    else if (addTerrainEntityMessage.type == "hybrid")
+                    {
+                        List<Handlers.Javascript.APIs.Entity.TerrainEntityLayer> layers
+                            = new List<Handlers.Javascript.APIs.Entity.TerrainEntityLayer>();
+                        if (addTerrainEntityMessage.normalTextures != null && addTerrainEntityMessage.maskTextures != null &&
+                                addTerrainEntityMessage.specularValues != null && addTerrainEntityMessage.metallicValues != null &&
+                                addTerrainEntityMessage.smoothnessValues != null)
+                        {
+                            int diffArrayLength = addTerrainEntityMessage.diffuseTextures.Length;
+                            if (addTerrainEntityMessage.normalTextures.Length == diffArrayLength &&
+                                addTerrainEntityMessage.maskTextures.Length == diffArrayLength &&
+                                addTerrainEntityMessage.specularValues.Length == diffArrayLength &&
+                                addTerrainEntityMessage.metallicValues.Length == diffArrayLength &&
+                                addTerrainEntityMessage.smoothnessValues.Length == diffArrayLength)
+                            {
+                                for (int idx = 0; idx < diffArrayLength; idx++)
+                                {
+                                    Color spec = new Color(127, 127, 127, 127);
+                                    ColorUtility.TryParseHtmlString(addTerrainEntityMessage.specularValues[idx], out spec);
+                                    layers.Add(new Handlers.Javascript.APIs.Entity.TerrainEntityLayer()
+                                    {
+                                        diffuseTexture = addTerrainEntityMessage.diffuseTextures[idx],
+                                        normalTexture = addTerrainEntityMessage.maskTextures[idx],
+                                        maskTexture = addTerrainEntityMessage.maskTextures[idx],
+                                        specular = new Handlers.Javascript.APIs.WorldTypes.Color(spec.r, spec.g, spec.b, spec.a),
+                                        metallic = addTerrainEntityMessage.metallicValues[idx],
+                                        smoothness = addTerrainEntityMessage.smoothnessValues[idx]
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Received terrain entity layer arrays of unequal length.");
+                            }
+                        }
+
+                        Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(
+                            Handlers.Javascript.APIs.Entity.EntityAPIHelper.GetPublicEntity(parentEntity),
+                            addTerrainEntityMessage.length, addTerrainEntityMessage.width, addTerrainEntityMessage.height,
+                            addTerrainEntityMessage.heights, layers.ToArray(),
+                            Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(addTerrainEntityMessage.layerMask),
+                            new Handlers.Javascript.APIs.WorldTypes.Vector3(addTerrainEntityMessage.position.x,
+                                addTerrainEntityMessage.position.y, addTerrainEntityMessage.position.z),
+                            new Handlers.Javascript.APIs.WorldTypes.Quaternion(addTerrainEntityMessage.rotation.x,
+                                addTerrainEntityMessage.rotation.y, addTerrainEntityMessage.rotation.z, addTerrainEntityMessage.rotation.w),
+                            new Handlers.Javascript.APIs.WorldTypes.Vector3(1, 1, 1), false, addTerrainEntityMessage.id,
+                            addTerrainEntityMessage.tag, null);
+                    }
+                    else
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Invalid createterrainentity message type.");
+                    }
+
                     BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addTerrainEntityMessage.id));
                     if (me == null)
                     {
@@ -2299,10 +2434,103 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "terrain":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(entityInfo.length,
-                        entityInfo.width, entityInfo.height, entityInfo.heights, parentEntity, entityInfo.position.ToVector3(),
-                        entityInfo.rotation.ToQuaternion(), Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = null;
+                    if (entityInfo.subType == "heightmap")
+                    {
+                        List<WorldEngine.Entity.Terrain.TerrainEntityLayer> layers
+                            = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+                        if (entityInfo.normalTextures != null && entityInfo.maskTextures != null &&
+                                entityInfo.specularValues != null && entityInfo.metallicValues != null &&
+                                entityInfo.smoothnessValues != null)
+                        {
+                            int diffArrayLength = entityInfo.diffuseTextures.Length;
+                            if (entityInfo.normalTextures.Length == diffArrayLength &&
+                                entityInfo.maskTextures.Length == diffArrayLength &&
+                                entityInfo.specularValues.Length == diffArrayLength &&
+                                entityInfo.metallicValues.Length == diffArrayLength &&
+                                entityInfo.smoothnessValues.Length == diffArrayLength)
+                            {
+                                for (int idx = 0; idx < diffArrayLength; idx++)
+                                {
+                                    Color spec = new Color(127, 127, 127, 127);
+                                    ColorUtility.TryParseHtmlString(entityInfo.specularValues[idx], out spec);
+                                    layers.Add(new WorldEngine.Entity.Terrain.TerrainEntityLayer()
+                                    {
+                                        diffusePath = entityInfo.diffuseTextures[idx],
+                                        normalPath = entityInfo.maskTextures[idx],
+                                        maskPath = entityInfo.maskTextures[idx],
+                                        specular = spec,
+                                        metallic = entityInfo.metallicValues[idx],
+                                        smoothness = entityInfo.smoothnessValues[idx]
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Received terrain entity layer arrays of unequal length.");
+                            }
+                        }
+
+                        newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(entityInfo.length,
+                        entityInfo.width, entityInfo.height, entityInfo.heights, layers.ToArray(),
+                            Handlers.VEML.VEMLUtilities.ParseCSVLayerMasksToInternalFormat(entityInfo.layerMask), parentEntity,
+                            entityInfo.position.ToVector3(), entityInfo.rotation.ToQuaternion(), Guid.Parse(entityInfo.id), null);
+                        ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    }
+                    else if (entityInfo.subType == "voxel")
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Voxel terrain entities not yet supported.");
+                    }
+                    else if (entityInfo.subType == "hybrid")
+                    {
+                        List<Handlers.Javascript.APIs.Entity.TerrainEntityLayer> layers
+                            = new List<Handlers.Javascript.APIs.Entity.TerrainEntityLayer>();
+                        if (entityInfo.normalTextures != null && entityInfo.maskTextures != null &&
+                                entityInfo.specularValues != null && entityInfo.metallicValues != null &&
+                                entityInfo.smoothnessValues != null)
+                        {
+                            int diffArrayLength = entityInfo.diffuseTextures.Length;
+                            if (entityInfo.normalTextures.Length == diffArrayLength &&
+                                entityInfo.maskTextures.Length == diffArrayLength &&
+                                entityInfo.specularValues.Length == diffArrayLength &&
+                                entityInfo.metallicValues.Length == diffArrayLength &&
+                                entityInfo.smoothnessValues.Length == diffArrayLength)
+                            {
+                                for (int idx = 0; idx < diffArrayLength; idx++)
+                                {
+                                    Color spec = new Color(127, 127, 127, 127);
+                                    ColorUtility.TryParseHtmlString(entityInfo.specularValues[idx], out spec);
+                                    layers.Add(new Handlers.Javascript.APIs.Entity.TerrainEntityLayer()
+                                    {
+                                        diffuseTexture = entityInfo.diffuseTextures[idx],
+                                        normalTexture = entityInfo.maskTextures[idx],
+                                        maskTexture = entityInfo.maskTextures[idx],
+                                        specular = new Handlers.Javascript.APIs.WorldTypes.Color(spec.r, spec.g, spec.b, spec.a),
+                                        metallic = entityInfo.metallicValues[idx],
+                                        smoothness = entityInfo.smoothnessValues[idx]
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Received terrain entity layer arrays of unequal length.");
+                            }
+                        }
+
+                        Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(
+                            Handlers.Javascript.APIs.Entity.EntityAPIHelper.GetPublicEntity(parentEntity),
+                            entityInfo.length, entityInfo.width, entityInfo.height,
+                            entityInfo.heights, layers.ToArray(),
+                            Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(entityInfo.layerMask),
+                            new Handlers.Javascript.APIs.WorldTypes.Vector3(entityInfo.position.x,
+                                entityInfo.position.y, entityInfo.position.z),
+                            new Handlers.Javascript.APIs.WorldTypes.Quaternion(entityInfo.rotation.x,
+                                entityInfo.rotation.y, entityInfo.rotation.z, entityInfo.rotation.w),
+                            new Handlers.Javascript.APIs.WorldTypes.Vector3(1, 1, 1), false, entityInfo.id,
+                            entityInfo.tag, null);
+                        ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    }
+
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
