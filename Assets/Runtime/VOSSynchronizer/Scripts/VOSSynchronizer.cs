@@ -11,6 +11,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
+using FiveSQD.WebVerse.WorldEngine.Entity.Terrain;
 
 namespace FiveSQD.WebVerse.VOSSynchronization
 {
@@ -583,11 +584,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     .AddTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
-                    entityToSynchronize.GetScale(), false, size.x, size.y, size.z,
-                    ((TerrainEntity) entityToSynchronize).GetHeights(),
-                    ((TerrainEntity) entityToSynchronize).GetLayers(),
-                    Handlers.VEML.VEMLUtilities.ToCSVLayerMasks(lmc),
-                    "heightmap", deleteWithClient);
+                    size.x, size.y, size.z, ((TerrainEntity) entityToSynchronize).GetHeights(),
+                    ((TerrainEntity) entityToSynchronize).GetLayers(), Handlers.VEML.VEMLUtilities.ToCSVLayerMasks(lmc),
+                    "heightmap", null, deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createterrainentity",
                     JsonConvert.SerializeObject(addTerrainEntityMessage));
             }
@@ -610,10 +609,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     .AddTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
-                    entityToSynchronize.GetScale(), false, size.x, size.y, size.z,
-                    ((HybridTerrainEntity) entityToSynchronize).GetBaseHeights(),
+                    size.x, size.y, size.z, ((HybridTerrainEntity) entityToSynchronize).GetBaseHeights(),
                     ((HybridTerrainEntity) entityToSynchronize).GetLayers(),
-                    Handlers.VEML.VEMLUtilities.ToCSVLayerMasks(lmc), "hybrid", deleteWithClient);
+                    Handlers.VEML.VEMLUtilities.ToCSVLayerMasks(lmc), "hybrid",
+                    ((HybridTerrainEntity) entityToSynchronize).GetTerrainModifications(), deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createterrainentity",
                     JsonConvert.SerializeObject(addTerrainEntityMessage));
             }
@@ -1228,6 +1227,74 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             return StatusCode.SUCCESS;
         }
 
+        public override StatusCode ModifyTerrainEntity(BaseEntity entityToSet,
+            HybridTerrainEntity.TerrainOperation modification, Vector3 position,
+            TerrainEntityBrushType brushType, int layer)
+        {
+            if (mqttClient == null)
+            {
+                LogSystem.LogError("[VOSSynchronizer->ModifyTerrainEntity] Not initialized.");
+                return StatusCode.FAILED;
+            }
+
+            if (currentSessionID == null)
+            {
+                LogSystem.LogError("[VOSSynchronizer->ModifyTerrainEntity] Not in session.");
+                return StatusCode.FAILED;
+            }
+
+            if (currentClientID == null)
+            {
+                LogSystem.LogError("[VOSSynchronizer->ModifyTerrainEntity] No client ID.");
+                return StatusCode.FAILED;
+            }
+
+            if (entityToSet == null)
+            {
+                LogSystem.LogError("[VOSSynchronizer->ModifyTerrainEntity] Invalid entity.");
+                return StatusCode.FAILED;
+            }
+
+            string mod;
+            switch (modification)
+            {
+                case HybridTerrainEntity.TerrainOperation.Build:
+                    mod = "build";
+                    break;
+
+                case HybridTerrainEntity.TerrainOperation.Dig:
+                    mod = "dig";
+                    break;
+
+                case HybridTerrainEntity.TerrainOperation.Unset:
+                default:
+                    LogSystem.LogError("[VOSSynchronizer->ModifyTerrainEntity] Invalid modification.");
+                    return StatusCode.FAILED;
+            }
+
+            string bt;
+            switch (brushType)
+            {
+                case TerrainEntityBrushType.sphere:
+                    bt = "sphere";
+                    break;
+
+                case TerrainEntityBrushType.roundedCube:
+                default:
+                    bt = "rounded-cube";
+                    break;
+            }
+            Guid messageID = Guid.NewGuid();
+            VOSSynchronizationMessages.RequestMessages.ModifyTerrainEntityMessage
+                modifyTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                .ModifyTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                entityToSet.id, mod, position, bt, layer);
+            mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
+                + "/entity/" + entityToSet.id.ToString() + "/terrain-mod",
+                JsonConvert.SerializeObject(modifyTerrainEntityMessage));
+            return StatusCode.SUCCESS;
+        }
+
         /// <summary>
         /// Set the visibility of an entity.
         /// </summary>
@@ -1767,31 +1834,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     VOSSynchronizationMessages.StatusMessages.AddTerrainEntityMessage
                         addTerrainEntityMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.StatusMessages.AddTerrainEntityMessage>(message);
-                    bool isSize = false;
-                    Vector3 scaleSize = Vector3.zero;
-                    if (addTerrainEntityMessage.scale != null)
-                    {
-                        isSize = false;
-                        scaleSize = addTerrainEntityMessage.scale.ToVector3();
-                    }
-                    else if (addTerrainEntityMessage.size != null)
-                    {
-                        isSize = true;
-                        scaleSize = addTerrainEntityMessage.size.ToVector3();
-                    }
-                    else
-                    {
-                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Invalid " +
-                            "createterrainentity message.");
-                    }
 
                     BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addTerrainEntityMessage.parentID));
 
                     if (addTerrainEntityMessage.type == "heightmap")
                     {
-                        List<WorldEngine.Entity.Terrain.TerrainEntityLayer> layers
-                            = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+                        List<TerrainEntityLayer> layers = new List<TerrainEntityLayer>();
                         if (addTerrainEntityMessage.normalTextures != null && addTerrainEntityMessage.maskTextures != null &&
                                 addTerrainEntityMessage.specularValues != null && addTerrainEntityMessage.metallicValues != null &&
                                 addTerrainEntityMessage.smoothnessValues != null)
@@ -1807,7 +1856,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                                 {
                                     Color spec = new Color(127, 127, 127, 127);
                                     ColorUtility.TryParseHtmlString(addTerrainEntityMessage.specularValues[idx], out spec);
-                                    layers.Add(new WorldEngine.Entity.Terrain.TerrainEntityLayer()
+                                    layers.Add(new TerrainEntityLayer()
                                     {
                                         diffusePath = addTerrainEntityMessage.diffuseTextures[idx],
                                         normalPath = addTerrainEntityMessage.maskTextures[idx],
@@ -1870,17 +1919,51 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             }
                         }
 
+                        List<Handlers.Javascript.APIs.Entity.TerrainEntityModification> formattedMods
+                            = new List<Handlers.Javascript.APIs.Entity.TerrainEntityModification>();
+                        foreach (VOSSynchronizationMessages.TerrainModification mod in addTerrainEntityMessage.modifications)
+                        {
+                            Handlers.Javascript.APIs.Entity.TerrainEntityBrushType bt
+                                = Handlers.Javascript.APIs.Entity.TerrainEntityBrushType.sphere;
+                            if (mod.brushType == "sphere")
+                            {
+                                bt = Handlers.Javascript.APIs.Entity.TerrainEntityBrushType.sphere;
+                            }
+                            else if (mod.brushType == "rounded-cube")
+                            {
+                                bt = Handlers.Javascript.APIs.Entity.TerrainEntityBrushType.roundedCube;
+                            }
+                            else
+                            {
+                                LogSystem.LogError("[VOSSynchronizer->OnMessage] Invalid Terrain Modification brush type.");
+                            }
+
+                            Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation op
+                                = Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation.Unset;
+                            if (mod.modification == "build")
+                            {
+                                op = Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation.Build;
+                            }
+                            else if (mod.modification == "dig")
+                            {
+                                op = Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation.Dig;
+                            }
+                            formattedMods.Add(new Handlers.Javascript.APIs.Entity.TerrainEntityModification(op,
+                                new Handlers.Javascript.APIs.WorldTypes.Vector3(mod.position.x, mod.position.y, mod.position.z),
+                                bt, mod.layer));
+                        }
+
                         Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(
                             Handlers.Javascript.APIs.Entity.EntityAPIHelper.GetPublicEntity(parentEntity),
                             addTerrainEntityMessage.length, addTerrainEntityMessage.width, addTerrainEntityMessage.height,
                             addTerrainEntityMessage.heights, layers.ToArray(),
                             Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(addTerrainEntityMessage.layerMask),
+                            formattedMods.ToArray(),
                             new Handlers.Javascript.APIs.WorldTypes.Vector3(addTerrainEntityMessage.position.x,
                                 addTerrainEntityMessage.position.y, addTerrainEntityMessage.position.z),
                             new Handlers.Javascript.APIs.WorldTypes.Quaternion(addTerrainEntityMessage.rotation.x,
                                 addTerrainEntityMessage.rotation.y, addTerrainEntityMessage.rotation.z, addTerrainEntityMessage.rotation.w),
-                            new Handlers.Javascript.APIs.WorldTypes.Vector3(1, 1, 1), false, addTerrainEntityMessage.id,
-                            addTerrainEntityMessage.tag, null);
+                            addTerrainEntityMessage.id, addTerrainEntityMessage.tag, null);
                     }
                     else
                     {
@@ -2114,6 +2197,54 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         else
                         {
                             se.SetSize(updateEntitySizeMessage.size.ToVector3(), false);
+                        }
+                    }
+                    else if (topic.EndsWith("/terrain-mod"))
+                    {
+                        VOSSynchronizationMessages.StatusMessages.ModifyTerrainEntityMessage
+                            modifyTerrainEntityMessage = JsonConvert.DeserializeObject<
+                                VOSSynchronizationMessages.StatusMessages.ModifyTerrainEntityMessage>(message);
+                        if (modifyTerrainEntityMessage.clientID == currentClientID.ToString())
+                        {
+                            return;
+                        }
+                        BaseEntity te = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(modifyTerrainEntityMessage.id));
+                        if (te == null)
+                        {
+                            LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
+                        }
+                        else
+                        {
+                            if (te is not HybridTerrainEntity)
+                            {
+                                LogSystem.LogError("[VOSSynchronizer->OnMessage] Terrain Modification only valid on HybridTerrainEntity.");
+                                return;
+                            }
+
+                            TerrainEntityBrushType bt = TerrainEntityBrushType.sphere;
+                            if (modifyTerrainEntityMessage.brushType == "sphere")
+                            {
+                                bt = TerrainEntityBrushType.sphere;
+                            }
+                            else if (modifyTerrainEntityMessage.brushType == "rounded-cube")
+                            {
+                                bt = TerrainEntityBrushType.roundedCube;
+                            }
+                            else
+                            {
+                                LogSystem.LogError("[VOSSynchronizer->OnMessage] Invalid Terrain Modification brush type.");
+                            }
+
+                            if (modifyTerrainEntityMessage.modification == "build")
+                            {
+                                ((HybridTerrainEntity) te).Build(modifyTerrainEntityMessage.position.ToVector3(), bt,
+                                    modifyTerrainEntityMessage.layer, false);
+                            }
+                            else if (modifyTerrainEntityMessage.modification == "dig")
+                            {
+                                ((HybridTerrainEntity) te).Dig(modifyTerrainEntityMessage.position.ToVector3(), bt,
+                                    modifyTerrainEntityMessage.layer, false);
+                            }
                         }
                     }
                     else if (topic.EndsWith("/canvastype"))
@@ -2467,7 +2598,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             }
                             else
                             {
-                                LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Received terrain entity layer arrays of unequal length.");
+                                LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Received terrain entity layer arrays of unequal length.");
                             }
                         }
 
@@ -2479,7 +2610,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else if (entityInfo.subType == "voxel")
                     {
-                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Voxel terrain entities not yet supported.");
+                        LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Voxel terrain entities not yet supported.");
                     }
                     else if (entityInfo.subType == "hybrid")
                     {
@@ -2513,8 +2644,42 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             }
                             else
                             {
-                                LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Received terrain entity layer arrays of unequal length.");
+                                LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Received terrain entity layer arrays of unequal length.");
                             }
+                        }
+
+                        List<Handlers.Javascript.APIs.Entity.TerrainEntityModification> formattedMods
+                            = new List<Handlers.Javascript.APIs.Entity.TerrainEntityModification>();
+                        foreach (VOSSynchronizationMessages.TerrainModification mod in entityInfo.modifications)
+                        {
+                            Handlers.Javascript.APIs.Entity.TerrainEntityBrushType bt
+                                = Handlers.Javascript.APIs.Entity.TerrainEntityBrushType.sphere;
+                            if (mod.brushType == "sphere")
+                            {
+                                bt = Handlers.Javascript.APIs.Entity.TerrainEntityBrushType.sphere;
+                            }
+                            else if (mod.brushType == "rounded-cube")
+                            {
+                                bt = Handlers.Javascript.APIs.Entity.TerrainEntityBrushType.roundedCube;
+                            }
+                            else
+                            {
+                                LogSystem.LogError("[VOSSynchronizer->OnMessage] Invalid Terrain Modification brush type.");
+                            }
+
+                            Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation op
+                                = Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation.Unset;
+                            if (mod.modification == "build")
+                            {
+                                op = Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation.Build;
+                            }
+                            else if (mod.modification == "dig")
+                            {
+                                op = Handlers.Javascript.APIs.Entity.TerrainEntityModification.TerrainEntityOperation.Dig;
+                            }
+                            formattedMods.Add(new Handlers.Javascript.APIs.Entity.TerrainEntityModification(op,
+                                new Handlers.Javascript.APIs.WorldTypes.Vector3(mod.position.x, mod.position.y, mod.position.z),
+                                bt, mod.layer));
                         }
 
                         Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(
@@ -2522,12 +2687,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             entityInfo.length, entityInfo.width, entityInfo.height,
                             entityInfo.heights, layers.ToArray(),
                             Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(entityInfo.layerMask),
+                            formattedMods.ToArray(),
                             new Handlers.Javascript.APIs.WorldTypes.Vector3(entityInfo.position.x,
                                 entityInfo.position.y, entityInfo.position.z),
                             new Handlers.Javascript.APIs.WorldTypes.Quaternion(entityInfo.rotation.x,
                                 entityInfo.rotation.y, entityInfo.rotation.z, entityInfo.rotation.w),
-                            new Handlers.Javascript.APIs.WorldTypes.Vector3(1, 1, 1), false, entityInfo.id,
-                            entityInfo.tag, null);
+                            entityInfo.id, entityInfo.tag, null);
                         ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     }
 

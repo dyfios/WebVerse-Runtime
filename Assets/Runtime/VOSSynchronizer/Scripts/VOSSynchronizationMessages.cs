@@ -3,6 +3,7 @@
 using System;
 using UnityEngine;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace FiveSQD.WebVerse.VOSSynchronization
 {
@@ -155,6 +156,45 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     z = z,
                     w = w
                 };
+            }
+        }
+
+        /// <summary>
+        /// Class for a JSON-serializable Terrain Modification.
+        /// </summary>
+        public class TerrainModification
+        {
+            /// <summary>
+            /// Modification to be made to the terrain.
+            /// </summary>
+            [JsonProperty(PropertyName = "modification")]
+            public string modification;
+
+            /// <summary>
+            /// Size (Vector3 representation).
+            /// </summary>
+            [JsonProperty(PropertyName = "position")]
+            public SerializableVector3 position;
+
+            /// <summary>
+            /// Brush type to be used for the terrain modification.
+            /// </summary>
+            [JsonProperty(PropertyName = "brush-type")]
+            public string brushType;
+
+            /// <summary>
+            /// Layer on which modification is to be made to the terrain.
+            /// </summary>
+            [JsonProperty(PropertyName = "layer")]
+            public int layer;
+
+            public TerrainModification(string _modification,
+                Vector3 _position, string _brushType, int _layer)
+            {
+                modification = _modification;
+                position = new SerializableVector3(_position);
+                brushType = _brushType;
+                layer = _layer;
             }
         }
 
@@ -363,7 +403,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             /// <summary>
             /// The layer mask (VEML CSV-formatted) for the terrain entity.
             /// </summary>
+            [JsonProperty(PropertyName = "layer-mask")]
             public string layerMask;
+
+            /// <summary>
+            /// Terrain modifications for the terrain entity.
+            /// </summary>
+            [JsonProperty(PropertyName = "terrain-modification")]
+            public TerrainModification[] modifications;
 
             /// <summary>
             /// Guid representation of the ID.
@@ -398,6 +445,15 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             /// <param name="_heights">2D array of height values for the terrain.</param>
             /// <param name="_text">Text to display in the text field.</param>
             /// <param name="_fontSize">Font size for the text in the text field.</param>
+            /// <param name="_diffuseTextures">Diffuse textures to use for the terrain.</param>
+            /// <param name="_normalTextures">Normal textures to use for the terrain.</param>
+            /// <param name="_maskTextures">Mask textures to use for the terrain.</param>
+            /// <param name="_specularValues">Specular values to use for the terrain.</param>
+            /// <param name="_metallicValues">Metallic values to use for the terrain.</param>
+            /// <param name="_smoothnessValues">Smoothness values to use for the terrain.</param>
+            /// <param name="_layerMask">Layer mask to use for the terrain.</param>
+            /// <param name="_subType">Entity subtype.</param>
+            /// <param name="_modifications">Modifications to use for the terrain.</param>
             public EntityInfo(Guid _id, string _tag, string _type, string _path,
                 string[] _resources, Guid? _parentID, Vector3 _position,
                 Quaternion _rotation, Vector3 _scaleSize, bool isSize,
@@ -406,7 +462,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 string _text, int _fontSize, string[] _diffuseTextures,
                 string[] _normalTextures, string[] _maskTextures,
                 string[] _specularValues, float[] _metallicValues,
-                float[] _smoothnessValues, string _layerMask, string _subType)
+                float[] _smoothnessValues, string _layerMask, string _subType,
+                Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
+                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> _modifications)
             {
                 id = _id.ToString();
                 tag = _tag;
@@ -441,6 +499,53 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 smoothnessValues = _smoothnessValues;
                 layerMask = _layerMask;
                 subType = _subType;
+                System.Collections.Generic.List<TerrainModification> mods
+                        = new System.Collections.Generic.List<TerrainModification>();
+                if (_modifications != null)
+                {
+                    foreach (System.Collections.Generic.KeyValuePair<
+                        Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
+                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod
+                        in _modifications)
+                    {
+                        if (mod.Key == null)
+                        {
+                            continue;
+                        }
+
+                        string modName = "";
+                        switch (mod.Value.Item1)
+                        {
+                            case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Dig:
+                                modName = "dig";
+                                break;
+
+                            case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Build:
+                                modName = "build";
+                                break;
+
+                            case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Unset:
+                            default:
+                                modName = "unset";
+                                break;
+                        }
+
+                        string bt = "";
+                        switch (mod.Value.Item3)
+                        {
+                            case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                                bt = "sphere";
+                                break;
+
+                            case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                            default:
+                                bt = "roundedcube";
+                                break;
+                        }
+                        mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2));
+                    }
+                }
+                modifications = mods.ToArray();
             }
         }
 
@@ -1561,18 +1666,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public SerializableQuaternion rotation;
 
                 /// <summary>
-                /// Scale (Vector3 representation). One of (scale, size) must be provided.
-                /// </summary>
-                [JsonProperty(PropertyName = "scale", Required = Required.AllowNull)]
-                public SerializableVector3 scale;
-
-                /// <summary>
-                /// Size (Vector3 representation). One of (scale, size) must be provided.
-                /// </summary>
-                [JsonProperty(PropertyName = "size", Required = Required.AllowNull)]
-                public SerializableVector3 size;
-
-                /// <summary>
                 /// Length of the terrain in meters.
                 /// </summary>
                 [JsonProperty(PropertyName = "length")]
@@ -1635,6 +1728,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 /// <summary>
                 /// The layer mask (VEML CSV-formatted) for the terrain entity.
                 /// </summary>
+                [JsonProperty(PropertyName = "layer-mask")]
                 public string layerMask;
 
                 /// <summary>
@@ -1642,6 +1736,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 /// </summary>
                 [JsonProperty(PropertyName = "type")]
                 public string type;
+
+                /// <summary>
+                /// Terrain modifications for the terrain entity.
+                /// </summary>
+                [JsonProperty(PropertyName = "terrain-modification")]
+                public TerrainModification[] modifications;
 
                 /// <summary>
                 /// Whether or not to delete the entity when the client leaves the session.
@@ -1652,10 +1752,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public AddTerrainEntityMessage(Guid _messageID, Guid _clientID,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
-                    Vector3 _scaleSize, bool isSize, float _length,
-                    float _width, float _height, float[,] _heights,
+                    float _length, float _width, float _height, float[,] _heights,
                     WorldEngine.Entity.Terrain.TerrainEntityLayer[] layers,
                     string _layerMask, string _type,
+                    Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
+                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> _modifications,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
@@ -1666,14 +1767,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     parentID = _parentID.HasValue ? _parentID.Value.ToString() : null;
                     position = new SerializableVector3(_position);
                     rotation = new SerializableQuaternion(_rotation);
-                    if (isSize)
-                    {
-                        size = new SerializableVector3(_scaleSize);
-                    }
-                    else
-                    {
-                        scale = new SerializableVector3(_scaleSize);
-                    }
                     length = _length;
                     width = _width;
                     height = _height;
@@ -1706,6 +1799,53 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     layerMask = _layerMask;
                     type = _type;
+                    System.Collections.Generic.List<TerrainModification> mods
+                        = new System.Collections.Generic.List<TerrainModification>();
+                    if (_modifications != null)
+                    {
+                        foreach (System.Collections.Generic.KeyValuePair<
+                            Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
+                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod
+                            in _modifications)
+                        {
+                            if (mod.Key == null)
+                            {
+                                continue;
+                            }
+
+                            string modName = "";
+                            switch (mod.Value.Item1)
+                            {
+                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Dig:
+                                    modName = "dig";
+                                    break;
+
+                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Build:
+                                    modName = "build";
+                                    break;
+
+                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Unset:
+                                default:
+                                    modName = "unset";
+                                    break;
+                            }
+
+                            string bt = "";
+                            switch (mod.Value.Item3)
+                            {
+                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                                    bt = "sphere";
+                                    break;
+
+                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                                default:
+                                    bt = "roundedcube";
+                                    break;
+                            }
+                            mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2));
+                        }
+                    }
+                    modifications = mods.ToArray();
                     deleteWithClient = _deleteWithClient;
                 }
             }
@@ -2502,6 +2642,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             /// </summary>
             public class UpdateEntitySizeMessage
             {
+                /// <summary>
+                /// ID of the message (string representation of UUID).
+                /// </summary>
                 [JsonProperty(PropertyName = "message-id")]
                 public string messageID;
 
@@ -2539,6 +2682,76 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
                     size = new SerializableVector3(_size);
+                }
+            }
+
+            /// <summary>
+            /// Modify Terrain Entity Message
+            /// </summary>
+            public class ModifyTerrainEntityMessage
+            {
+                /// <summary>
+                /// ID of the message (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "message-id")]
+                public string messageID;
+
+                /// <summary>
+                /// ID of the client sending the message
+                /// (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "client-id")]
+                public string clientID;
+
+                /// <summary>
+                /// ID of the session the message pertains to
+                /// (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "session-id")]
+                public string sessionID;
+
+                /// <summary>
+                /// ID of the entity (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "entity-id")]
+                public string id;
+
+                /// <summary>
+                /// Modification to be made to the terrain.
+                /// </summary>
+                [JsonProperty(PropertyName = "modification")]
+                public string modification;
+
+                /// <summary>
+                /// Size (Vector3 representation).
+                /// </summary>
+                [JsonProperty(PropertyName = "position")]
+                public SerializableVector3 position;
+
+                /// <summary>
+                /// Brush type to be used for the terrain modification.
+                /// </summary>
+                [JsonProperty(PropertyName = "brush-type")]
+                public string brushType;
+
+                /// <summary>
+                /// Layer on which modification is to be made to the terrain.
+                /// </summary>
+                [JsonProperty(PropertyName = "layer")]
+                public int layer;
+
+                public ModifyTerrainEntityMessage(Guid _messageID, Guid _clientID,
+                Guid _sessionID, Guid _entityID, string _modification,
+                Vector3 _position, string _brushType, int _layer)
+                {
+                    messageID = _messageID.ToString();
+                    clientID = _clientID.ToString();
+                    sessionID = _sessionID.ToString();
+                    id = _entityID.ToString();
+                    modification = _modification;
+                    position = new SerializableVector3(_position);
+                    brushType = _brushType;
+                    layer = _layer;
                 }
             }
 
@@ -3259,18 +3472,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public SerializableQuaternion rotation;
 
                 /// <summary>
-                /// Scale (Vector3 representation). One of (scale, size) must be provided.
-                /// </summary>
-                [JsonProperty(PropertyName = "scale", Required = Required.AllowNull)]
-                public SerializableVector3 scale;
-
-                /// <summary>
-                /// Size (Vector3 representation). One of (scale, size) must be provided.
-                /// </summary>
-                [JsonProperty(PropertyName = "size", Required = Required.AllowNull)]
-                public SerializableVector3 size;
-
-                /// <summary>
                 /// Length of the terrain in meters.
                 /// </summary>
                 [JsonProperty(PropertyName = "length")]
@@ -3333,6 +3534,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 /// <summary>
                 /// The layer mask (VEML CSV-formatted) for the terrain entity.
                 /// </summary>
+                [JsonProperty(PropertyName = "layer-mask")]
                 public string layerMask;
 
                 /// <summary>
@@ -3341,15 +3543,22 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "type")]
                 public string type;
 
+                /// <summary>
+                /// Terrain modifications for the terrain entity.
+                /// </summary>
+                [JsonProperty(PropertyName = "terrain-modification")]
+                public TerrainModification[] modifications;
+
                 public AddTerrainEntityMessage(Guid _messageID, Guid _clientID,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
-                    Vector3 _scaleSize, bool isSize, float _length,
-                    float _width, float _height, float[,] _heights,
+                    float _length, float _width, float _height, float[,] _heights,
                     string[] _diffuseTextures, string[] _normalTextures,
                     string[] _maskTextures, string[] _specularValues,
                     float[] _metallicValues, float[] _smoothnessValues,
-                    string _layerMask, string _type)
+                    string _layerMask, string _type,
+                    Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
+                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> _modifications)
                 {
                     messageID = _messageID.ToString();
                     clientID = _clientID.ToString();
@@ -3359,14 +3568,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     parentID = _parentID.HasValue ? _parentID.Value.ToString() : null;
                     position = new SerializableVector3(_position);
                     rotation = new SerializableQuaternion(_rotation);
-                    if (isSize)
-                    {
-                        size = new SerializableVector3(_scaleSize);
-                    }
-                    else
-                    {
-                        scale = new SerializableVector3(_scaleSize);
-                    }
                     length = _length;
                     width = _width;
                     height = _height;
@@ -3379,6 +3580,53 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     smoothnessValues = _smoothnessValues;
                     layerMask = _layerMask;
                     type = _type;
+                    System.Collections.Generic.List<TerrainModification> mods
+                        = new System.Collections.Generic.List<TerrainModification>();
+                    if (_modifications != null)
+                    {
+                        foreach (System.Collections.Generic.KeyValuePair<
+                            Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
+                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod
+                            in _modifications)
+                        {
+                            if (mod.Key == null)
+                            {
+                                continue;
+                            }
+
+                            string modName = "";
+                            switch (mod.Value.Item1)
+                            {
+                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Dig:
+                                    modName = "dig";
+                                    break;
+
+                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Build:
+                                    modName = "build";
+                                    break;
+
+                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Unset:
+                                default:
+                                    modName = "unset";
+                                    break;
+                            }
+
+                            string bt = "";
+                            switch (mod.Value.Item3)
+                            {
+                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                                    bt = "sphere";
+                                    break;
+
+                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                                default:
+                                    bt = "roundedcube";
+                                    break;
+                            }
+                            mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2));
+                        }
+                    }
+                    modifications = mods.ToArray();
                 }
             }
 
@@ -4201,6 +4449,75 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
                     size = new SerializableVector3(_size);
+                }
+            }
+
+            /// <summary>
+            /// Modify Terrain Entity Message
+            /// </summary>
+            public class ModifyTerrainEntityMessage
+            {
+                /// <summary>
+                /// ID of the message (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "message-id")]
+                public string messageID;
+
+                /// <summary>
+                /// ID of the client sending the message
+                /// (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "client-id")]
+                public string clientID;
+
+                /// <summary>
+                /// ID of the session the message pertains to
+                /// (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "session-id")]
+                public string sessionID;
+
+                /// <summary>
+                /// ID of the entity (string representation of UUID).
+                /// </summary>
+                [JsonProperty(PropertyName = "entity-id")]
+                public string id;
+
+                /// <summary>
+                /// Modification to be made to the terrain.
+                /// </summary>
+                [JsonProperty(PropertyName = "modification")]
+                public string modification;
+
+                /// <summary>
+                /// Size (Vector3 representation).
+                /// </summary>
+                [JsonProperty(PropertyName = "position")]
+                public SerializableVector3 position;
+
+                /// <summary>
+                /// Brush type to be used for the terrain modification.
+                /// </summary>
+                [JsonProperty(PropertyName = "brush-type")]
+                public string brushType;
+
+                /// <summary>
+                /// Layer on which modification is to be made to the terrain.
+                /// </summary>
+                [JsonProperty(PropertyName = "layer")]
+                public int layer;
+
+                public ModifyTerrainEntityMessage(Guid _messageID, Guid _clientID,
+                Guid _sessionID, Guid _entityID, string _modification,
+                Vector3 _position, string _brushType, int _layer)
+                {
+                    messageID = _messageID.ToString();
+                    clientID = _clientID.ToString();
+                    sessionID = _sessionID.ToString();
+                    id = _entityID.ToString();
+                    position = new SerializableVector3(_position);
+                    brushType = _brushType;
+                    layer = _layer;
                 }
             }
 

@@ -131,10 +131,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="heights">2D array of heights for the terrain.</param>
         /// <param name="layers">Layers for the terrain.</param>
         /// <param name="layerMasks">Layer masks for the terrain.</param>
+        /// <param name="modifications">Modifications to be made to the terrain.</param>
         /// <param name="position">Position of the entity relative to its parent.</param>
         /// <param name="rotation">Rotation of the entity relative to its parent.</param>
-        /// <param name="scale">Scale of the entity relative to its parent.</param>
-        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
         /// <param name="id">ID of the entity. One will be created if not provided.</param>
         /// <param name="tag">Tag of the entity.</param>
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
@@ -143,8 +142,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The hybrid terrain entity object.</returns>
         public static TerrainEntity LoadHybridTerrainEntityAsync(BaseEntity parent, float length, float width,
             float height, float[,] heights, TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks,
-            WorldTypes.Vector3 position, WorldTypes.Quaternion rotation, WorldTypes.Vector3 scale, bool isSize = false,
-            string id = null, string tag = null, string onLoaded = null, float timeout = 10)
+            TerrainEntityModification[] modifications, WorldTypes.Vector3 position, WorldTypes.Quaternion rotation,
+            string id = null, string tag = null, string onLoaded = null,
+            float timeout = 10)
         {
             List<float[]> processedHeights = new List<float[]>();
             for (int i = 0; i < heights.GetLength(0); i++)
@@ -156,7 +156,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             return LoadHybridTerrainEntityAsync(parent, length, width, height, processedHeights.ToArray(),
-                layers, layerMasks, position, rotation, scale, isSize, id, tag, onLoaded, timeout);
+                layers, layerMasks, modifications, position, rotation, id, tag, onLoaded, timeout);
         }
 
         /// <summary>
@@ -169,10 +169,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="heights">2D array of heights for the terrain.</param>
         /// <param name="layers">Layers for the terrain.</param>
         /// <param name="layerMasks">Layer masks for the terrain.</param>
+        /// <param name="modifications">Modifications to be made to the terrain.</param>
         /// <param name="position">Position of the entity relative to its parent.</param>
         /// <param name="rotation">Rotation of the entity relative to its parent.</param>
-        /// <param name="scale">Scale of the entity relative to its parent.</param>
-        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
         /// <param name="id">ID of the entity. One will be created if not provided.</param>
         /// <param name="tag">Tag of the entity.</param>
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
@@ -181,7 +180,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The hybrid terrain entity object.</returns>
         public static TerrainEntity LoadHybridTerrainEntityAsync(BaseEntity parent, float length, float width,
             float height, float[][] heights, TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks,
-            WorldTypes.Vector3 position, WorldTypes.Quaternion rotation, WorldTypes.Vector3 scale, bool isSize = false,
+            TerrainEntityModification[] modifications, WorldTypes.Vector3 position, WorldTypes.Quaternion rotation,
             string id = null, string tag = null, string onLoaded = null, float timeout = 10)
         {
             TerrainEntity te = new TerrainEntity();
@@ -199,7 +198,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             Vector3 pos = new Vector3(position.x, position.y, position.z);
             Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-            Vector3 scl = new Vector3(scale.x, scale.y, scale.z);
 
             if (heights == null || heights[0] == null)
             {
@@ -233,6 +231,21 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 te.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
                 AddEntityMapping(te.internalEntity, te);
+                foreach (TerrainEntityModification mod in modifications)
+                {
+                    if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Build)
+                    {
+                        te.Build(mod.position, mod.brushType, mod.layer, false);
+                    }
+                    else if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Dig)
+                    {
+                        te.Dig(mod.position, mod.brushType, mod.layer, false);
+                    }
+                    else
+                    {
+                        Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Unsupported modification. Skipping.");
+                    }
+                }
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
                     WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "te"));
@@ -240,7 +253,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             };
 
             instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, processedHeights, layers,
-                layerMasks.ToFloatArrays(), pos, rot, scl, isSize, tag, onLoadAction, timeout));
+                layerMasks.ToFloatArrays(), pos, rot, tag, onLoadAction, timeout));
 
             return te;
         }
@@ -255,10 +268,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="heights">2D array of heights for the terrain.</param>
         /// <param name="layers">Layers for the terrain.</param>
         /// <param name="layerMasks">Layer masks for the terrain.</param>
+        /// <param name="modifications">Modifications to be made to the terrain.</param>
         /// <param name="position">Position of the entity relative to its parent.</param>
         /// <param name="rotation">Rotation of the entity relative to its parent.</param>
-        /// <param name="scale">Scale of the entity relative to its parent.</param>
-        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
         /// <param name="id">ID of the entity. One will be created if not provided.</param>
         /// <param name="tag">Tag of the entity.</param>
         /// <param name="onLoaded">Action to perform on load.</param>
@@ -266,8 +278,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The hybrid terrain entity object.</returns>
         public static TerrainEntity LoadHybridTerrainEntityAsync(BaseEntity parent, float length, float width,
         float height, float[][] heights, TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks,
-        WorldTypes.Vector3 position, WorldTypes.Quaternion rotation, WorldTypes.Vector3 scale, bool isSize = false,
-        string id = null, string tag = null, Action onLoaded = null, float timeout = 10)
+        TerrainEntityModification[] modifications, WorldTypes.Vector3 position, WorldTypes.Quaternion rotation,
+        string id = null, string tag = null, Action onLoaded = null,
+        float timeout = 10)
         {
             TerrainEntity te = new TerrainEntity();
 
@@ -284,7 +297,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             Vector3 pos = new Vector3(position.x, position.y, position.z);
             Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-            Vector3 scl = new Vector3(scale.x, scale.y, scale.z);
 
             if (heights == null || heights[0] == null)
             {
@@ -314,7 +326,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, processedHeights, layers,
-                layerMasks.ToFloatArrays(), pos, rot, scl, isSize, tag, onLoaded, timeout));
+                layerMasks.ToFloatArrays(), pos, rot, tag, onLoaded, timeout));
 
             return te;
         }
@@ -514,8 +526,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="layerMasks">Layer masks for the terrain.</param>
         /// <param name="pos">Position of the entity relative to its parent.</param>
         /// <param name="rot">Rotation of the entity relative to its parent.</param>
-        /// <param name="scl">Scale of the entity relative to its parent.</param>
-        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
         /// <param name="tag">Tag of the entity.</param>
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// terrain entity object.</param>
@@ -523,8 +533,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Coroutine.</returns>
         private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, WorldEngine.Entity.BaseEntity pBE, Guid guid,
             float length, float width, float height, float[,] heights, TerrainEntityLayer[] layers, float[][,] layerMasks,
-            Vector3 pos, Quaternion rot, Vector3 scl, bool isSize = false,
-            string tag = null, Action onLoaded = null, float timeout = 10)
+            Vector3 pos, Quaternion rot, string tag = null, Action onLoaded = null, float timeout = 10)
         {
             Dictionary<int, float[,]> formattedMasks = new Dictionary<int, float[,]>();
             if (layerMasks != null)
@@ -608,7 +617,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, heights,
-                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, scl, guid, isSize, tag, onLoaded);
+                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, guid, tag, onLoaded);
         }
     }
 }

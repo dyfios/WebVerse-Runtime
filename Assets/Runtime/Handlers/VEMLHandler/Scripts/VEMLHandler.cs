@@ -1446,14 +1446,14 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     return false;
                 }
 
-                float[][] heights = Handlers.VEML.VEMLUtilities.ParseCSVHeightsArrayOfArray(entity.heights);
+                float[][] heights = VEMLUtilities.ParseCSVHeightsArrayOfArray(entity.heights);
 
                 Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(
                     null, (float) entity.length, (float) entity.width, (float) entity.height, heights,
-                    layers.ToArray(), Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(entity.layermasks),
+                    layers.ToArray(), VEMLUtilities.ParseCSVLayerMasks(entity.layermasks), null,
                     new Javascript.APIs.WorldTypes.Vector3(positionValue.x, positionValue.y, positionValue.z),
                     new Javascript.APIs.WorldTypes.Quaternion(rotationValue.x, rotationValue.y, rotationValue.z, rotationValue.w),
-                    new Javascript.APIs.WorldTypes.Vector3(1, 1, 1), false, entity.id, entity.tag, onLoadEvent);
+                    entity.id, entity.tag, onLoadEvent);
             }
 
             return true;
