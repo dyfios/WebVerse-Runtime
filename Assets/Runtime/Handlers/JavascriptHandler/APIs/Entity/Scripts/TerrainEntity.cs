@@ -26,8 +26,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="layerMasks">Layer masks for the terrain.</param>
         /// <param name="position">Position of the entity relative to its parent.</param>
         /// <param name="rotation">Rotation of the entity relative to its parent.</param>
-        /// <param name="scale">Scale of the entity relative to its parent.</param>
-        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
         /// <param name="id">ID of the entity. One will be created if not provided.</param>
         /// <param name="tag">Tag of the entity.</param>
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
@@ -35,7 +33,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The heightmap terrain entity object.</returns>
         public static TerrainEntity CreateHeightmap(BaseEntity parent, float length, float width, float height, float[,] heights,
             TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, Vector3 position, Quaternion rotation,
-            Vector3 scale, bool isSize = false, string id = null, string tag = null, string onLoaded = null)
+            string id = null, string tag = null, string onLoaded = null)
         {
             Guid guid;
             if (string.IsNullOrEmpty(id))
@@ -50,7 +48,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
-            UnityEngine.Vector3 scl = new UnityEngine.Vector3(scale.x, scale.y, scale.z);
 
             List<WorldEngine.Entity.Terrain.TerrainEntityLayer> convertedLayers
                             = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
@@ -103,21 +100,20 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="heights">2D array of heights for the terrain.</param>
         /// <param name="layers">Layers for the terrain.</param>
         /// <param name="layerMasks">Layer masks for the terrain.</param>
+        /// <param name="modifications">Modifications for the terrain.</param>
         /// <param name="position">Position of the entity relative to its parent.</param>
         /// <param name="rotation">Rotation of the entity relative to its parent.</param>
-        /// <param name="scale">Scale of the entity relative to its parent.</param>
-        /// <param name="isSize">Whether or not the scale parameter is a size.</param>
         /// <param name="id">ID of the entity. One will be created if not provided.</param>
         /// <param name="tag">Tag of the entity.</param>
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// terrain entity object.</param>
         /// <returns>The hybrid terrain entity object.</returns>
         public static TerrainEntity CreateHybrid(BaseEntity parent, float length, float width, float height, float[][] heights,
-            TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, Vector3 position, Quaternion rotation,
-            Vector3 scale, bool isSize = false, string id = null, string tag = null, string onLoaded = null)
+            TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, TerrainEntityModification[] modifications,
+            Vector3 position, Quaternion rotation, string id = null, string tag = null, string onLoaded = null)
         {
             return EntityAPIHelper.LoadHybridTerrainEntityAsync(parent, length, width, height, heights,
-                layers, layerMasks, position, rotation, scale, isSize, id, tag, onLoaded);
+                layers, layerMasks, modifications, position, rotation, id, tag, onLoaded);
         }
 
         public static void Test()
@@ -131,8 +127,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="position">Position at which to build.</param>
         /// <param name="brushType">Type of brush to use.</param>
         /// <param name="layer">Layer to build on.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
         /// <returns>Whether or not the operation was successful.</returns>
-        public bool Build(Vector3 position, TerrainEntityBrushType brushType, int layer)
+        public bool Build(Vector3 position, TerrainEntityBrushType brushType,
+            int layer, bool synchronizeChange = true)
         {
             if (IsValid() == false)
             {
@@ -159,7 +157,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     break;
             }
             return ((HybridTerrainEntity) internalEntity).Build(
-                new UnityEngine.Vector3(position.x, position.y, position.z), internalBrushType, layer);
+                new UnityEngine.Vector3(position.x, position.y, position.z),
+                internalBrushType, layer, synchronizeChange);
         }
 
         /// <summary>
@@ -168,8 +167,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="position">Position at which to dig.</param>
         /// <param name="brushType">Type of brush to use.</param>
         /// <param name="layer">Layer to dig on.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
         /// <returns>Whether or not the operation was successful.</returns>
-        public bool Dig(Vector3 position, TerrainEntityBrushType brushType, int layer)
+        public bool Dig(Vector3 position, TerrainEntityBrushType brushType,
+            int layer, bool synchronizeChange = true)
         {
             if (IsValid() == false)
             {
@@ -196,7 +197,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     break;
             }
             return ((HybridTerrainEntity) internalEntity).Dig(
-                new UnityEngine.Vector3(position.x, position.y, position.z), internalBrushType, layer);
+                new UnityEngine.Vector3(position.x, position.y, position.z),
+                internalBrushType, layer, synchronizeChange);
         }
 
         /// <summary>
@@ -277,7 +279,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            Tuple<HybridTerrainEntity.VoxelOperation, int> block = ((HybridTerrainEntity) internalEntity).GetBlockAtPosition(
+            Tuple<HybridTerrainEntity.TerrainOperation, int, WorldEngine.Entity.Terrain.TerrainEntityBrushType> block
+                = ((HybridTerrainEntity) internalEntity).GetBlockAtPosition(
                 new UnityEngine.Vector3(position.x, position.y, position.z));
 
             if (block == null)
@@ -286,10 +289,82 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             return new object[] {
-                (block.Item1 == HybridTerrainEntity.VoxelOperation.Build ? "build"
-                : block.Item1 == HybridTerrainEntity.VoxelOperation.Dig ? "dig" : "unset"),
-                block.Item2
+                (block.Item1 == HybridTerrainEntity.TerrainOperation.Build ? "build"
+                : block.Item1 == HybridTerrainEntity.TerrainOperation.Dig ? "dig" : "unset"),
+                block.Item2,
+                (block.Item3 == WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere ? "sphere"
+                : "roundedcube")
             };
+        }
+
+        /// <summary>
+        /// Get all modifications for the terrain.
+        /// </summary>
+        /// <returns>All modifications for the terrain.</returns>
+        public TerrainEntityModification[] GetModifications()
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[TerrainEntity:GetModifications] Unknown entity.");
+                return null;
+            }
+
+            if (internalEntity is not HybridTerrainEntity)
+            {
+                Logging.LogWarning("[TerrainEntity:GetModifications] Operation only valid on hybrid terrain entities.");
+                return null;
+            }
+
+            Dictionary<UnityEngine.Vector3Int, Tuple<HybridTerrainEntity.TerrainOperation,
+                int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mods
+                = ((HybridTerrainEntity) internalEntity).GetTerrainModifications();
+
+            List<TerrainEntityModification> outputMods = new List<TerrainEntityModification>();
+            if (mods != null)
+            {
+                foreach (KeyValuePair<UnityEngine.Vector3Int, Tuple<HybridTerrainEntity.TerrainOperation,
+                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod in mods)
+                {
+                    if (mod.Key == null)
+                    {
+                        continue;
+                    }
+
+                    TerrainEntityModification.TerrainEntityOperation modName;
+                    switch (mod.Value.Item1)
+                    {
+                        case HybridTerrainEntity.TerrainOperation.Dig:
+                            modName = TerrainEntityModification.TerrainEntityOperation.Dig;
+                            break;
+
+                        case HybridTerrainEntity.TerrainOperation.Build:
+                            modName = TerrainEntityModification.TerrainEntityOperation.Build;
+                            break;
+
+                        case HybridTerrainEntity.TerrainOperation.Unset:
+                        default:
+                            modName = TerrainEntityModification.TerrainEntityOperation.Unset;
+                            break;
+                    }
+
+                    TerrainEntityBrushType bt;
+                    switch (mod.Value.Item3)
+                    {
+                        case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                            bt = TerrainEntityBrushType.sphere;
+                            break;
+
+                        case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                        default:
+                            bt = TerrainEntityBrushType.roundedCube;
+                            break;
+                    }
+                    outputMods.Add(new TerrainEntityModification(modName,
+                        new Vector3(mod.Key.x, mod.Key.y, mod.Key.z), bt, mod.Value.Item2));
+                }
+            }
+
+            return outputMods.ToArray();
         }
 
         internal TerrainEntity()
