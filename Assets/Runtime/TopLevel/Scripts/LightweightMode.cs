@@ -3,6 +3,7 @@
 using System;
 using UnityEngine;
 using FiveSQD.WebVerse.Utilities;
+using System.IO;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -28,6 +29,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("Maximum local storage key length to use in Unity Editor tests.")]
         public string testMaxKeyLength = "512";
+
+        /// <summary>
+        /// Directory to use for files in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Directory to use for files in Unity Editory Tests")]
+        public string testFilesDirectory = System.IO.Path.Combine(Application.dataPath, "Files");
 
         /// <summary>
         /// Daemon port to use in Unity Editor tests.
@@ -77,7 +84,7 @@ namespace FiveSQD.WebVerse.Runtime
                 return;
             }
 
-            runtime.LoadWorld(uri);
+            runtime.LoadURL(uri);
         }
 
         /// <summary>
@@ -126,6 +133,13 @@ namespace FiveSQD.WebVerse.Runtime
                 return;
             }
 
+            string filesDirectory = GetFilesDirectory();
+            if (string.IsNullOrEmpty(filesDirectory))
+            {
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid files directory value.");
+                return;
+            }
+
             uint daemonPort = GetDaemonPort();
             if (daemonPort <= 0 || daemonPort >= 65535)
             {
@@ -158,7 +172,7 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             runtime.Initialize(LocalStorage.LocalStorageManager.LocalStorageMode.Cache,
-                maxEntries, maxEntryLength, maxKeyLength, daemonPort, mainAppID, tabID, worldLoadTimeout);
+                maxEntries, maxEntryLength, maxKeyLength, filesDirectory, daemonPort, mainAppID, tabID, worldLoadTimeout);
 
             if (!string.IsNullOrEmpty(worldURL))
             {
@@ -278,6 +292,44 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return int.Parse(maxKeyLength);
+        }
+
+        /// <summary>
+        /// Get the Files Directory, provided by command line in built app, and by 'testFilesDirectory'
+        /// variable in Editor mode.
+        /// </summary>
+        /// <returns>Files Directory.</returns>
+        private string GetFilesDirectory()
+        {
+            string filesDirectory = "";
+
+#if UNITY_EDITOR
+            filesDirectory = Path.Combine(Application.dataPath, testFilesDirectory);
+#elif UNITY_WEBGL
+            int queryStart = Application.absoluteURL.IndexOf("?") + 1;
+            if (queryStart > 1 && queryStart < Application.absoluteURL.Length - 1)
+            {
+                string query = Application.absoluteURL.Substring(queryStart);
+
+                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string section in sections)
+                {
+                    int valueStart = section.IndexOf("=") + 1;
+                    string[] keyValue = section.Split('=');
+                    if (keyValue.Length >= 2)
+                    {
+                        string key = keyValue[0];
+                        string value = section.Substring(valueStart);
+                        if (key.ToLower() == "files_directory")
+                        {
+                            filesDirectory = value;
+                            break;
+                        }
+                    }
+                }
+            }
+#endif
+            return filesDirectory;
         }
 
         private uint GetDaemonPort()

@@ -67,7 +67,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal ContainerEntity()
         {
-            internalEntityType = typeof(CharacterEntity);
+            internalEntityType = typeof(WorldEngine.Entity.ContainerEntity);
         }
     }
 }

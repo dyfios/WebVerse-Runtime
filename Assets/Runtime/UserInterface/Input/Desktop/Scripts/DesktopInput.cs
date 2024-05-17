@@ -386,7 +386,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
             if (pointerIndex == 0)
             {
                 RaycastHit hit;
-                Ray ray = GetComponent<Camera>().ScreenPointToRay(Mouse.current.position.ReadValue());
+                Ray ray = WorldEngine.WorldEngine.ActiveWorld.cameraManager.cam.ScreenPointToRay(Mouse.current.position.ReadValue());
 
                 if (Physics.Raycast(ray, out hit))
                 {

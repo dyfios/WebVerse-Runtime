@@ -674,13 +674,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string messageID;
 
                 /// <summary>
-                /// ID of the client sending the message
-                /// (string representation of UUID).
-                /// </summary>
-                [JsonProperty(PropertyName = "client-id")]
-                public string clientID;
-
-                /// <summary>
                 /// ID of the session the message pertains to
                 /// (string representation of UUID).
                 /// </summary>

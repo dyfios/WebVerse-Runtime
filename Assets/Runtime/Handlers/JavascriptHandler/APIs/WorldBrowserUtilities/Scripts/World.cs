@@ -18,5 +18,31 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         {
             return WebVerseRuntime.Instance.worldEngine.GetParam(key);
         }
+
+        /// <summary>
+        /// Get the current World Load State.
+        /// </summary>
+        /// <returns>One of: unloaded, loadingworld, loadedworld, webpage, error.</returns>
+        public static string GetWorldLoadState()
+        {
+            switch (WebVerseRuntime.Instance.state)
+            {
+                case WebVerseRuntime.RuntimeState.Unloaded:
+                    return "unloaded";
+
+                case WebVerseRuntime.RuntimeState.LoadingWorld:
+                    return "loadingworld";
+
+                case WebVerseRuntime.RuntimeState.LoadedWorld:
+                    return "loadedworld";
+
+                case WebVerseRuntime.RuntimeState.WebPage:
+                    return "webpage";
+
+                case WebVerseRuntime.RuntimeState.Error:
+                default:
+                    return "error";
+            }
+        }
     }
 }

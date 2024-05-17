@@ -12,7 +12,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// </summary>
         /// <param name="key">Entry key.</param>
         /// <param name="value">Entry value.</param>
-        public void SetItem(string key, string value)
+        public static void SetItem(string key, string value)
         {
             WorldEngine.WorldEngine.ActiveWorld.storageManager.SetItem(key, value);
         }
@@ -22,7 +22,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// </summary>
         /// <param name="key">Entry key.</param>
         /// <returns>The entry corresponding to the key, or null if none exist.</returns>
-        public string GetItem(string key)
+        public static string GetItem(string key)
         {
             return WorldEngine.WorldEngine.ActiveWorld.storageManager.GetItem(key);
         }

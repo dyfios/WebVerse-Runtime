@@ -93,7 +93,7 @@ namespace FiveSQD.WebVerse.Utilities
                 intervalFunction.currentElapsed += elapsedTime;
                 if (intervalFunction.currentElapsed > intervalFunction.interval)
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(intervalFunction.name);
+                    WebVerseRuntime.Instance.javascriptHandler.RunScript(intervalFunction.name);
                     intervalFunction.currentElapsed = 0;
                 }
             }

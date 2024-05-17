@@ -75,7 +75,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal MeshEntity()
         {
-            internalEntityType = typeof(MeshEntity);
+            internalEntityType = typeof(WorldEngine.Entity.MeshEntity);
         }
     }
 }

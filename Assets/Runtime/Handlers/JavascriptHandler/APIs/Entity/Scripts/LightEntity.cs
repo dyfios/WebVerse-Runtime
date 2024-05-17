@@ -61,7 +61,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal LightEntity()
         {
-            internalEntityType = typeof(LightEntity);
+            internalEntityType = typeof(WorldEngine.Entity.LightEntity);
         }
 
         /// <summary>

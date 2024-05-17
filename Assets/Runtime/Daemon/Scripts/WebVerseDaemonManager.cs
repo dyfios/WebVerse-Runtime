@@ -322,7 +322,7 @@ namespace FiveSQD.WebVerse.Daemon
                 return;
             }
 
-            WebVerseRuntime.Instance.LoadWorld(loadWorldCommandMessage.url);
+            WebVerseRuntime.Instance.LoadURL(loadWorldCommandMessage.url);
 #endif
         }
 
