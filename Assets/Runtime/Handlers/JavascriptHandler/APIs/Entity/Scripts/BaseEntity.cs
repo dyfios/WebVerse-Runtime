@@ -134,6 +134,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 {
                     return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
+                else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+                {
+                    return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
+                else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+                {
+                    return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
                 else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
                 {
                     return ((WorldEngine.Entity.InputEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
@@ -149,6 +157,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
                 {
                     return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
+                else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+                {
+                    return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
                 else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
                 {
@@ -544,6 +556,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetMotion(eMotion);
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            {
+                return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetMotion(eMotion);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            {
+                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetMotion(eMotion);
+            }
             else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
             {
                 return ((WorldEngine.Entity.InputEntity) internalEntity).SetMotion(eMotion);
@@ -559,6 +579,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
             {
                 return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetMotion(eMotion);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            {
+                return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetMotion(eMotion);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
             {
@@ -600,6 +624,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 eMotion = ((WorldEngine.Entity.CharacterEntity) internalEntity).GetMotion();
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            {
+                eMotion = ((WorldEngine.Entity.HTMLEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            {
+                eMotion = ((WorldEngine.Entity.HTMLUIElementEntity)internalEntity).GetMotion();
+            }
             else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
             {
                 eMotion = ((WorldEngine.Entity.InputEntity) internalEntity).GetMotion();
@@ -615,6 +647,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
             {
                 eMotion = ((WorldEngine.Entity.TerrainEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            {
+                eMotion = ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).GetMotion();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
             {
@@ -690,6 +726,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetPhysicalProperties(props);
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            {
+                return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetPhysicalProperties(props);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            {
+                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetPhysicalProperties(props);
+            }
             else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
             {
                 return ((WorldEngine.Entity.InputEntity) internalEntity).SetPhysicalProperties(props);
@@ -705,6 +749,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
             {
                 return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetPhysicalProperties(props);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            {
+                return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetPhysicalProperties(props);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
             {
@@ -747,6 +795,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 props = ((WorldEngine.Entity.CharacterEntity) internalEntity).GetPhysicalProperties();
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            {
+                props = ((WorldEngine.Entity.HTMLEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            {
+                props = ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).GetPhysicalProperties();
+            }
             else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
             {
                 props = ((WorldEngine.Entity.InputEntity) internalEntity).GetPhysicalProperties();
@@ -762,6 +818,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
             {
                 props = ((WorldEngine.Entity.TerrainEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            {
+                props = ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).GetPhysicalProperties();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
             {
@@ -854,6 +914,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetInteractionState(iState);
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            {
+                return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetInteractionState(iState);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            {
+                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetInteractionState(iState);
+            }
             else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
             {
                 return ((WorldEngine.Entity.InputEntity) internalEntity).SetInteractionState(iState);
@@ -870,6 +938,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetInteractionState(iState);
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            {
+                return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetInteractionState(iState);
+            }
             else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
             {
                 return ((WorldEngine.Entity.TextEntity) internalEntity).SetInteractionState(iState);
@@ -880,7 +952,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
             else
             {
-                Logging.LogError("[BaseEntity:SetPhysicalProperties] Unknown entity type.");
+                Logging.LogError("[BaseEntity:SetInteractionState] Unknown entity type.");
                 return false;
             }
         }
@@ -911,6 +983,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 iState = ((WorldEngine.Entity.CharacterEntity) internalEntity).GetInteractionState();
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            {
+                iState = ((WorldEngine.Entity.HTMLEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            {
+                iState = ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).GetInteractionState();
+            }
             else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
             {
                 iState = ((WorldEngine.Entity.InputEntity) internalEntity).GetInteractionState();
@@ -926,6 +1006,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
             {
                 iState = ((WorldEngine.Entity.TerrainEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            {
+                iState = ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).GetInteractionState();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
             {

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -23,7 +23,7 @@ namespace FiveSQD.WebVerse.Building
                 options = BuildOptions.None,
                 scenes = new string[]
                 {
-                    "Assets/Runtime/TopLevel/Scenes/Lightweight.unity"
+                    "Assets/Runtime/TopLevel/Scenes/LightweightMode.unity"
                 },
                 target = BuildTarget.WebGL
             };

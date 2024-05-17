@@ -5,6 +5,7 @@ using FiveSQD.WebVerse.Utilities;
 using System;
 using UnityEngine;
 using FiveSQD.WebVerse.Runtime;
+using System.Collections.Generic;
 #if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.HTTP;
 #endif
@@ -73,7 +74,8 @@ namespace FiveSQD.WebVerse.Handlers.PNG
                 }
             }
 
-            Action<int, Texture2D> onDownloadedAction = new Action<int, Texture2D>((code, data) =>
+            Action<int, Dictionary<string, string>, Texture2D> onDownloadedAction
+                = new Action<int, Dictionary<string, string>, Texture2D>((code, headers, data) =>
             {
                 FinishImageDownload(uri, code, data);
                 onDownloaded.Invoke();

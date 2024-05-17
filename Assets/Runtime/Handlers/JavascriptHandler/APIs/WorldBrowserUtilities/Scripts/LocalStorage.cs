@@ -14,7 +14,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// </summary>
         /// <param name="key">Entry key.</param>
         /// <param name="value">Entry value.</param>
-        public void SetItem(string key, string value)
+        public static void SetItem(string key, string value)
         {
             WebVerseRuntime.Instance.localStorageManager.SetItem(
                 WorldEngine.WorldEngine.ActiveWorld.siteName, key, value);
@@ -25,7 +25,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// </summary>
         /// <param name="key">Entry key.</param>
         /// <returns>The entry corresponding to the key, or null if none exist.</returns>
-        public string GetItem(string key)
+        public static string GetItem(string key)
         {
             return WebVerseRuntime.Instance.localStorageManager.GetItem(
                 WorldEngine.WorldEngine.ActiveWorld.siteName, key);
@@ -35,7 +35,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// Remove an item from local storage.
         /// </summary>
         /// <param name="key">Key of the item to remove.</param>
-        public void RemoveItem(string key)
+        public static void RemoveItem(string key)
         {
             WebVerseRuntime.Instance.localStorageManager.RemoveItem(
                 WorldEngine.WorldEngine.ActiveWorld.siteName, key);

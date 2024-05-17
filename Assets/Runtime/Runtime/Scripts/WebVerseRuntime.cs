@@ -17,6 +17,8 @@ using FiveSQD.WebVerse.Input;
 using FiveSQD.WebVerse.Daemon;
 using FiveSQD.WebVerse.WebInterface.HTTP;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
+using System.Collections.Generic;
+using FiveSQD.WebVerse.WebView;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -25,6 +27,37 @@ namespace FiveSQD.WebVerse.Runtime
     /// </summary>
     public class WebVerseRuntime : MonoBehaviour
     {
+        /// <summary>
+        /// Enumeration for runtime states.
+        /// </summary>
+        public enum RuntimeState
+        {
+            /// <summary>
+            /// Nothing is loaded.
+            /// </summary>
+            Unloaded = 0,
+
+            /// <summary>
+            /// World is being loaded.
+            /// </summary>
+            LoadingWorld = 1,
+
+            /// <summary>
+            /// World has been loaded.
+            /// </summary>
+            LoadedWorld = 2,
+
+            /// <summary>
+            /// WebPage has been loaded.
+            /// </summary>
+            WebPage = 3,
+
+            /// <summary>
+            /// A fatal error has been encountered.
+            /// </summary>
+            Error = 7
+        }
+
         /// <summary>
         /// WebVerse Runtime settings.
         /// </summary>
@@ -51,6 +84,11 @@ namespace FiveSQD.WebVerse.Runtime
             public int maxKeyLength;
 
             /// <summary>
+            /// Directory to use for files.
+            /// </summary>
+            public string filesDirectory;
+
+            /// <summary>
             /// Daemon Port.
             /// </summary>
             public uint? daemonPort;
@@ -75,6 +113,11 @@ namespace FiveSQD.WebVerse.Runtime
         /// Static reference to the WebVerse runtime.
         /// </summary>
         public static WebVerseRuntime Instance;
+
+        /// <summary>
+        /// Current state of the WebVerse Runtime.
+        /// </summary>
+        public RuntimeState state { get; private set; }
 
         /// <summary>
         /// The World Engine.
@@ -151,6 +194,12 @@ namespace FiveSQD.WebVerse.Runtime
         public HTTPRequestManager httpRequestManager { get; private set; }
 
         /// <summary>
+        /// The WebVerse WebView.
+        /// </summary>
+        [Tooltip("The WebVerse WebView.")]
+        public WebVerseWebView webverseWebView { get; private set; }
+
+        /// <summary>
         /// Material to use for highlighting.
         /// </summary>
         [Tooltip("Material to use for highlighting.")]
@@ -181,6 +230,24 @@ namespace FiveSQD.WebVerse.Runtime
         public GameObject voxelPrefab;
 
         /// <summary>
+        /// Prefab for a WebView.
+        /// </summary>
+        [Tooltip("Prefab for a WebView.")]
+        public GameObject webViewPrefab;
+
+        /// <summary>
+        /// Prefab for a Canvas WebView.
+        /// </summary>
+        [Tooltip("Prefab for a Canvas WebView.")]
+        public GameObject canvasWebViewPrefab;
+
+        /// <summary>
+        /// Prefab for the WebVerse WebView.
+        /// </summary>
+        [Tooltip("Prefab for the WebVerse WebView.")]
+        public GameObject webVerseWebViewPrefab;
+
+        /// <summary>
         /// Camera offset.
         /// </summary>
         [Tooltip("Camera offset.")]
@@ -197,6 +264,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("Platform Input.")]
         public BasePlatformInput platformInput;
+
+        /// <summary>
+        /// The base path of the current world.
+        /// </summary>
+        [Tooltip("The base path of the current world.")]
+        public string currentBasePath { get; private set; }
 
         /// <summary>
         /// Initialize the WebVerse Runtime.
@@ -237,8 +310,8 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             Initialize(mode, settings.maxEntries, settings.maxEntryLength,
-                settings.maxKeyLength, settings.daemonPort, settings.mainAppID, settings.tabID,
-                settings.timeout);
+                settings.maxKeyLength, settings.filesDirectory, settings.daemonPort,
+                settings.mainAppID, settings.tabID, settings.timeout);
         }
 
         /// <summary>
@@ -248,12 +321,13 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntries">Maximum number of storage entries.</param>
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
+        /// <param name="filesDirectory">Directory to use for files.</param>
         /// <param name="daemonPort">Daemon Port.</param>
         /// <param name="mainAppID">Main App ID.</param>
         /// <param name="tabID">Tab ID.</param>
         /// <param name="timeout">World Load Timeout.</param>
         public void Initialize(LocalStorageManager.LocalStorageMode storageMode,
-            int maxEntries, int maxEntryLength, int maxKeyLength,
+            int maxEntries, int maxEntryLength, int maxKeyLength, string filesDirectory,
             uint? daemonPort = null, Guid? mainAppID = null, int? tabID = null, float timeout = 120)
         {
             if (Instance != null)
@@ -265,7 +339,9 @@ namespace FiveSQD.WebVerse.Runtime
             Instance = this;
 
             InitializeComponents(storageMode, maxEntries, maxEntryLength,
-                maxKeyLength, daemonPort, mainAppID, tabID, timeout);
+                maxKeyLength, filesDirectory, daemonPort, mainAppID, tabID, timeout);
+
+            state = RuntimeState.Unloaded;
         }
 
         /// <summary>
@@ -280,6 +356,51 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             TerminateComponents();
+        }
+
+        /// <summary>
+        /// Load a URL.
+        /// </summary>
+        /// <param name="url">URL containing the world or HTML page to load.</param>
+        public void LoadURL(string url)
+        {
+            if (url.StartsWith("file://") || url.StartsWith("/") || url.StartsWith(".") || url[1] == ':')
+            {
+                UnloadWebPage();
+                LoadWorld(url);
+            }
+            else
+            {
+                Action<int, Dictionary<string, string>, byte[]> onRespAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+                {
+                    if (code > 399)
+                    {
+                        Logging.LogWarning("[WebVerseRuntime->LoadURL] URL " + url + " returned code " + code);
+                        return;
+                    }
+
+                    // Check if possibly web page.
+                    if (headers.ContainsKey("Content-Type"))
+                    {
+                        string contentType = headers["Content-Type"];
+                        if (contentType.Contains("text/html") || contentType.Contains("application/binary") || contentType.Contains("text/plain"))
+                        {
+                            Logging.Log("[WebVerseRuntime->LoadURL] Identified webpage. Loading.");
+                            UnloadWorld();
+                            LoadWebPage(url);
+                            return;
+                        }
+                    }
+
+                    // Otherwise, treat as world.
+                    Logging.Log("[WebVerseRuntime->LoadURL] Identified world. Loading.");
+                    UnloadWebPage();
+                    LoadWorld(url);
+                });
+                
+                HTTPRequest headerReq = new HTTPRequest(url, HTTPRequest.HTTPMethod.Head, onRespAction);
+                headerReq.Send();
+            }
         }
 
         /// <summary>
@@ -307,10 +428,24 @@ namespace FiveSQD.WebVerse.Runtime
                 queryParams = url.Substring(url.IndexOf('?') + 1);
             }
 
+            Action<bool> onLoadComplete = ((result) =>
+            {
+                if (result == true)
+                {
+                    state = RuntimeState.LoadedWorld;
+                }
+                else
+                {
+                    state = RuntimeState.Error;
+                }
+            });
+
             Action<string> onFound = (title) =>
             {
+                state = RuntimeState.LoadingWorld;
+                currentBasePath = VEMLUtilities.FormatURI(Path.GetDirectoryName(baseURL));
                 WorldEngine.WorldEngine.LoadWorld(title, queryParams);
-                vemlHandler.LoadVEMLDocumentIntoWorld(baseURL);
+                vemlHandler.LoadVEMLDocumentIntoWorld(baseURL, onLoadComplete);
             };
             
             vemlHandler.GetWorldName(baseURL, onFound);
@@ -330,6 +465,21 @@ namespace FiveSQD.WebVerse.Runtime
             Logging.Log("[WebVerseRuntime->UnloadWorld] Unloading world: "
                 + WorldEngine.WorldEngine.ActiveWorld.siteName + ".");
             WorldEngine.WorldEngine.UnloadWorld();
+            state = RuntimeState.Unloaded;
+        }
+
+        public void LoadWebPage(string url)
+        {
+            state = RuntimeState.WebPage;
+            webverseWebView.Show();
+            webverseWebView.LoadURL(url);
+        }
+
+        public void UnloadWebPage()
+        {
+            state = RuntimeState.Unloaded;
+            webverseWebView.Unload();
+            webverseWebView.Hide();
         }
 
         /// <summary>
@@ -339,13 +489,14 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntries">Maximum number of storage entries.</param>
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
+        /// <param name="filesDirectory">Directory to use as the files directory.</param>
         /// <param name="daemonPort">Daemon Port.</param>
         /// <param name="mainAppID">Main App ID.</param>
         /// <param name="tabID">Tab ID.</param>
         /// <param name="timeout">World Load Timeout.</param>
         private void InitializeComponents(LocalStorageManager.LocalStorageMode storageMode,
-            int maxEntries, int maxEntryLength, int maxKeyLength, uint? daemonPort = null,
-            Guid? mainAppID = null, int? tabID = null, float timeout = 120)
+            int maxEntries, int maxEntryLength, int maxKeyLength, string filesDirectory,
+            uint? daemonPort = null, Guid? mainAppID = null, int? tabID = null, float timeout = 120)
         {
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
@@ -356,6 +507,8 @@ namespace FiveSQD.WebVerse.Runtime
             worldEngine.inputEntityPrefab = inputEntityPrefab;
             worldEngine.characterControllerPrefab = characterControllerPrefab;
             worldEngine.voxelPrefab = voxelPrefab;
+            worldEngine.webViewPrefab = webViewPrefab;
+            worldEngine.canvasWebViewPrefab = canvasWebViewPrefab;
             worldEngine.cameraOffset = cameraOffset;
             worldEngine.vr = vr;
 
@@ -365,7 +518,7 @@ namespace FiveSQD.WebVerse.Runtime
             GameObject fileHandlerGO = new GameObject("File");
             fileHandlerGO.transform.SetParent(handlersGO.transform);
             fileHandler = fileHandlerGO.AddComponent<FileHandler>();
-            fileHandler.Initialize(Path.Combine(Application.dataPath, "Files"));
+            fileHandler.Initialize(filesDirectory);
             GameObject pngHandlerGO = new GameObject("PNG");
             pngHandlerGO.transform.SetParent(handlersGO.transform);
             pngHandler = pngHandlerGO.AddComponent<PNGHandler>();
@@ -435,6 +588,12 @@ namespace FiveSQD.WebVerse.Runtime
             httpRequestManagerGO.transform.SetParent(transform);
             httpRequestManager = httpRequestManagerGO.AddComponent<HTTPRequestManager>();
             httpRequestManager.Initialize();
+
+            // Set up WebVerse WebView.
+            GameObject webVerseWebViewGO = new GameObject("WebVerseWebView");
+            webVerseWebViewGO.transform.SetParent(transform);
+            webverseWebView = webVerseWebViewGO.AddComponent<WebVerseWebView>();
+            webverseWebView.Initialize();
         }
 
         /// <summary>
@@ -442,6 +601,10 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         private void TerminateComponents()
         {
+            // Terminate WebVerse WebView.
+            webverseWebView.Terminate();
+            Destroy(webverseWebView.gameObject);
+
             // Terminate HTTP Request Manager.
             httpRequestManager.Terminate();
             Destroy(httpRequestManager.gameObject);

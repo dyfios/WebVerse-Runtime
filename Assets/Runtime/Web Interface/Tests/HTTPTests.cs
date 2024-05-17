@@ -2,6 +2,7 @@
 
 #if USE_BESTHTTP
 using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -21,7 +22,7 @@ public class HTTPTests
         // Valid URL.
         int receivedResponse = -1;
         byte[] receivedData = null;
-        Action<int, byte[]> onGetResponse = new Action<int, byte[]>((resp, data) =>
+        Action<int, Dictionary<string, string>, byte[]> onGetResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -38,7 +39,7 @@ public class HTTPTests
         // Invalid URL.
         receivedResponse = -1;
         receivedData = null;
-        onGetResponse = new Action<int, byte[]>((resp, data) =>
+        onGetResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -56,7 +57,7 @@ public class HTTPTests
         // Valid URL.
         int receivedResponse = -1;
         byte[] receivedData = null;
-        Action<int, byte[]> onHeadResponse = new Action<int, byte[]>((resp, data) =>
+        Action<int, Dictionary<string, string>, byte[]> onHeadResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -73,7 +74,7 @@ public class HTTPTests
         // Invalid URL.
         receivedResponse = -1;
         receivedData = null;
-        onHeadResponse = new Action<int, byte[]>((resp, data) =>
+        onHeadResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -92,7 +93,7 @@ public class HTTPTests
         // Valid URL.
         int receivedResponse = -1;
         byte[] receivedData = null;
-        Action<int, byte[]> onPostResponse = new Action<int, byte[]>((resp, data) =>
+        Action<int, Dictionary<string, string>, byte[]> onPostResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -109,7 +110,7 @@ public class HTTPTests
         // Invalid URL.
         receivedResponse = -1;
         receivedData = null;
-        onPostResponse = new Action<int, byte[]>((resp, data) =>
+        onPostResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -127,7 +128,7 @@ public class HTTPTests
         // Valid URL.
         int receivedResponse = -1;
         byte[] receivedData = null;
-        Action<int, byte[]> onPutResponse = new Action<int, byte[]>((resp, data) =>
+        Action<int, Dictionary<string, string>, byte[]> onPutResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -144,7 +145,7 @@ public class HTTPTests
         // Invalid URL.
         receivedResponse = -1;
         receivedData = null;
-        onPutResponse = new Action<int, byte[]>((resp, data) =>
+        onPutResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -162,7 +163,7 @@ public class HTTPTests
         // Valid URL.
         int receivedResponse = -1;
         byte[] receivedData = null;
-        Action<int, byte[]> onDeleteResponse = new Action<int, byte[]>((resp, data) =>
+        Action<int, Dictionary<string, string>, byte[]> onDeleteResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -179,7 +180,7 @@ public class HTTPTests
         // Invalid URL.
         receivedResponse = -1;
         receivedData = null;
-        onDeleteResponse = new Action<int, byte[]>((resp, data) =>
+        onDeleteResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -197,7 +198,7 @@ public class HTTPTests
         // Valid URL.
         int receivedResponse = -1;
         byte[] receivedData = null;
-        Action<int, byte[]> onPatchResponse = new Action<int, byte[]>((resp, data) =>
+        Action<int, Dictionary<string, string>, byte[]> onPatchResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;
@@ -214,7 +215,7 @@ public class HTTPTests
         // Invalid URL.
         receivedResponse = -1;
         receivedData = null;
-        onPatchResponse = new Action<int, byte[]>((resp, data) =>
+        onPatchResponse = new Action<int, Dictionary<string, string>, byte[]>((resp, headers, data) =>
         {
             receivedResponse = resp;
             receivedData = data;

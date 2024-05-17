@@ -3,6 +3,7 @@
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System;
+using System.Collections.Generic;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
 {
@@ -306,16 +307,25 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
                     break;
             }
 
-            Action<int, byte[]> onFinishedAction = new Action<int, byte[]>((code, data) =>
+            Action<int, Dictionary<string, string>, byte[]> onFinishedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
             {
                 Response resp = new Response(code, "", data);
                 if (!string.IsNullOrEmpty(onFinished))
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onFinished.Replace("?", "resp"));
+                    string dataToReturn = "";
+                    if (resp != null)
+                    {
+                        if (resp.data != null)
+                        {
+                            dataToReturn = System.Text.Encoding.UTF8.GetString(resp.data);
+                        }
+                    }
+                    WebVerseRuntime.Instance.javascriptHandler.Run(onFinished.Replace("?", "'" + dataToReturn + "'"));
                 }
             });
 
             WebInterface.HTTP.HTTPRequest httpReq = new WebInterface.HTTP.HTTPRequest(request.resourceURI, method, onFinishedAction);
+            httpReq.Send();
 #endif
         }
     }

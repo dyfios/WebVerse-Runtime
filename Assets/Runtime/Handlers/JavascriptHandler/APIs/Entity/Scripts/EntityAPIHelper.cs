@@ -183,7 +183,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             TerrainEntityModification[] modifications, WorldTypes.Vector3 position, WorldTypes.Quaternion rotation,
             string id = null, string tag = null, string onLoaded = null, float timeout = 10)
         {
-            TerrainEntity te = new TerrainEntity();
+            TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
 
             Guid guid;
             if (string.IsNullOrEmpty(id))
@@ -231,24 +231,27 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 te.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
                 AddEntityMapping(te.internalEntity, te);
-                foreach (TerrainEntityModification mod in modifications)
+                if (modifications != null)
                 {
-                    if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Build)
+                    foreach (TerrainEntityModification mod in modifications)
                     {
-                        te.Build(mod.position, mod.brushType, mod.layer, false);
-                    }
-                    else if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Dig)
-                    {
-                        te.Dig(mod.position, mod.brushType, mod.layer, false);
-                    }
-                    else
-                    {
-                        Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Unsupported modification. Skipping.");
+                        if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Build)
+                        {
+                            te.Build(mod.position, mod.brushType, mod.layer, false);
+                        }
+                        else if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Dig)
+                        {
+                            te.Dig(mod.position, mod.brushType, mod.layer, false);
+                        }
+                        else
+                        {
+                            Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Unsupported modification. Skipping.");
+                        }
                     }
                 }
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "te"));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { te });
                 }
             };
 
@@ -282,7 +285,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         string id = null, string tag = null, Action onLoaded = null,
         float timeout = 10)
         {
-            TerrainEntity te = new TerrainEntity();
+            TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
 
             Guid guid;
             if (string.IsNullOrEmpty(id))
@@ -337,7 +340,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 ButtonEntity be = new ButtonEntity();
                 be.internalEntity = entityToRegister;
-                be.internalEntityType = typeof(ButtonEntity);
+                be.internalEntityType = typeof(WorldEngine.Entity.ButtonEntity);
                 AddEntityMapping(entityToRegister, be);
                 return true;
             }
@@ -345,7 +348,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 CanvasEntity ce = new CanvasEntity();
                 ce.internalEntity = entityToRegister;
-                ce.internalEntityType = typeof(CanvasEntity);
+                ce.internalEntityType = typeof(WorldEngine.Entity.CanvasEntity);
                 AddEntityMapping(entityToRegister, ce);
                 return true;
             }
@@ -353,7 +356,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 CharacterEntity ce = new CharacterEntity();
                 ce.internalEntity = entityToRegister;
-                ce.internalEntityType = typeof(CanvasEntity);
+                ce.internalEntityType = typeof(WorldEngine.Entity.CanvasEntity);
                 AddEntityMapping(entityToRegister, ce);
                 return true;
             }
@@ -361,15 +364,31 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 ContainerEntity ce = new ContainerEntity();
                 ce.internalEntity = entityToRegister;
-                ce.internalEntityType = typeof(ContainerEntity);
+                ce.internalEntityType = typeof(WorldEngine.Entity.ContainerEntity);
                 AddEntityMapping(entityToRegister, ce);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.HTMLEntity)
+            {
+                HTMLEntity he = new HTMLEntity(false);
+                he.internalEntity = entityToRegister;
+                he.internalEntityType = typeof(WorldEngine.Entity.HTMLEntity);
+                AddEntityMapping(entityToRegister, he);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.HTMLUIElementEntity)
+            {
+                HTMLEntity he = new HTMLEntity(false);
+                he.internalEntity = entityToRegister;
+                he.internalEntityType = typeof(WorldEngine.Entity.HTMLUIElementEntity);
+                AddEntityMapping(entityToRegister, he);
                 return true;
             }
             else if (entityToRegister is WorldEngine.Entity.InputEntity)
             {
                 InputEntity ie = new InputEntity();
                 ie.internalEntity = entityToRegister;
-                ie.internalEntityType = typeof(InputEntity);
+                ie.internalEntityType = typeof(WorldEngine.Entity.InputEntity);
                 AddEntityMapping(entityToRegister, ie);
                 return true;
             }
@@ -377,7 +396,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 LightEntity le = new LightEntity();
                 le.internalEntity = entityToRegister;
-                le.internalEntityType = typeof(LightEntity);
+                le.internalEntityType = typeof(WorldEngine.Entity.LightEntity);
                 AddEntityMapping(entityToRegister, le);
                 return true;
             }
@@ -385,15 +404,23 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 MeshEntity me = new MeshEntity();
                 me.internalEntity = entityToRegister;
-                me.internalEntityType = typeof(MeshEntity);
+                me.internalEntityType = typeof(WorldEngine.Entity.MeshEntity);
                 AddEntityMapping(entityToRegister, me);
                 return true;
             }
             else if (entityToRegister is WorldEngine.Entity.TerrainEntity)
             {
-                TerrainEntity te = new TerrainEntity();
+                TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.heightmap);
                 te.internalEntity = entityToRegister;
-                te.internalEntityType = typeof(TerrainEntity);
+                te.internalEntityType = typeof(WorldEngine.Entity.TerrainEntity);
+                AddEntityMapping(entityToRegister, te);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.HybridTerrainEntity)
+            {
+                TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
+                te.internalEntity = entityToRegister;
+                te.internalEntityType = typeof(WorldEngine.Entity.HybridTerrainEntity);
                 AddEntityMapping(entityToRegister, te);
                 return true;
             }
@@ -401,7 +428,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 TextEntity te = new TextEntity();
                 te.internalEntity = entityToRegister;
-                te.internalEntityType = typeof(TextEntity);
+                te.internalEntityType = typeof(WorldEngine.Entity.TextEntity);
                 AddEntityMapping(entityToRegister, te);
                 return true;
             }
@@ -409,7 +436,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 VoxelEntity ve = new VoxelEntity();
                 ve.internalEntity = entityToRegister;
-                ve.internalEntityType = typeof(VoxelEntity);
+                ve.internalEntityType = typeof(WorldEngine.Entity.VoxelEntity);
                 AddEntityMapping(entityToRegister, ve);
                 return true;
             }
@@ -461,42 +488,48 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     leftTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].leftTex, lOnDownloaded);
+                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].leftTex, WebVerseRuntime.Instance.currentBasePath), lOnDownloaded);
 
                 Action<Texture2D> rOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     rightTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].rightTex, rOnDownloaded);
+                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].rightTex, WebVerseRuntime.Instance.currentBasePath), rOnDownloaded);
 
                 Action<Texture2D> fOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     frontTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].frontTex, fOnDownloaded);
+                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].frontTex, WebVerseRuntime.Instance.currentBasePath), fOnDownloaded);
 
                 Action<Texture2D> bOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     backTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].backTex, bOnDownloaded);
+                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].backTex, WebVerseRuntime.Instance.currentBasePath), bOnDownloaded);
 
                 Action<Texture2D> tOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     topTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].topTex, tOnDownloaded);
+                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].topTex, WebVerseRuntime.Instance.currentBasePath), tOnDownloaded);
 
                 Action<Texture2D> boOnDownloaded = new Action<Texture2D>((tex) =>
                 {
                     bottomTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(info.subTypes[key].bottomTex, boOnDownloaded);
+                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].bottomTex, WebVerseRuntime.Instance.currentBasePath), boOnDownloaded);
 
                 float elapsedTime = 0;
                 do
@@ -562,7 +595,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                     if (!string.IsNullOrEmpty(layer.diffuseTexture))
                     {
-                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(layer.diffuseTexture,
+                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                            VEML.VEMLUtilities.FullyQualifyURI(layer.diffuseTexture, WebVerseRuntime.Instance.currentBasePath),
                         new Action<Texture2D>((tex) =>
                         {
                             newFormattedLayer.diffuse = tex;
@@ -577,7 +611,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                     if (!string.IsNullOrEmpty(layer.normalTexture))
                     {
-                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(layer.normalTexture,
+                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                            VEML.VEMLUtilities.FullyQualifyURI(layer.normalTexture, WebVerseRuntime.Instance.currentBasePath),
                         new Action<Texture2D>((tex) =>
                         {
                             newFormattedLayer.normal = tex;
@@ -592,7 +627,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                     if (!string.IsNullOrEmpty(layer.maskTexture))
                     {
-                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(layer.maskTexture,
+                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                            VEML.VEMLUtilities.FullyQualifyURI(layer.maskTexture, WebVerseRuntime.Instance.currentBasePath),
                         new Action<Texture2D>((tex) =>
                         {
                             newFormattedLayer.mask = tex;

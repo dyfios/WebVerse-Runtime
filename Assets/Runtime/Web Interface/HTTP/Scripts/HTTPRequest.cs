@@ -5,6 +5,7 @@ using Best.HTTP;
 using FiveSQD.WebVerse.Utilities;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -31,12 +32,12 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <summary>
         /// Action to perform upon completing the request and receiving byte array data.
         /// </summary>
-        private Action<int, byte[]> onFinishedBytes;
+        private Action<int, Dictionary<string, string>, byte[]> onFinishedBytes;
 
         /// <summary>
         /// Action to perform upon completing the request and receiving Texture2D data.
         /// </summary>
-        private Action<int, Texture2D> onFinishedTexture;
+        private Action<int, Dictionary<string, string>, Texture2D> onFinishedTexture;
 
         /// <summary>
         /// Constructor for an HTTP request.
@@ -44,7 +45,7 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <param name="uri">URI to send the request to.</param>
         /// <param name="method">Method to use in the request.</param>
         /// <param name="onFinished">Action to perform upon completing the request.</param>
-        public HTTPRequest(string uri, HTTPMethod method, Action<int, byte[]> onFinished)
+        public HTTPRequest(string uri, HTTPMethod method, Action<int, Dictionary<string, string>, byte[]> onFinished)
         {
             switch (method)
             {
@@ -74,7 +75,7 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <param name="uri">URI to send the request to.</param>
         /// <param name="method">Method to use in the request.</param>
         /// <param name="onFinished">Action to perform upon completing the request.</param>
-        public HTTPRequest(string uri, HTTPMethod method, Action<int, Texture2D> onFinished)
+        public HTTPRequest(string uri, HTTPMethod method, Action<int, Dictionary<string, string>, Texture2D> onFinished)
         {
             switch (method)
             {
@@ -135,19 +136,35 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <param name="uri">URI to send the request to.</param>
         /// <param name="method">Method to use in the request.</param>
         /// <param name="onFinished">Action to perform upon completing the request.</param>
-        public HTTPRequest(string uri, HTTPMethod method, Action<int, byte[]> onFinished)
+        public HTTPRequest(string uri, HTTPMethod method, Action<int, Dictionary<string, string>, byte[]> onFinished)
         {
             request = new Best.HTTP.HTTPRequest(new Uri(uri), (HTTPMethods) method, new OnRequestFinishedDelegate((req, resp) =>
             {
+                Dictionary<string, string> respHeaders = new Dictionary<string, string>();
+                foreach (KeyValuePair<string, List<string>> header in resp.Headers)
+                {
+                    string combinedValue = "";
+                    foreach (string val in header.Value)
+                    {
+                        combinedValue = combinedValue + val;
+                    }
+                    if (combinedValue.EndsWith(','))
+                    {
+                        combinedValue = combinedValue.Substring(0, combinedValue.Length - 1);
+                    }
+
+                    respHeaders.Add(header.Key, combinedValue);
+                }
+
                 if (onFinished != null)
                 {
                     if (resp == null)
                     {
-                        onFinished.Invoke(-1, null);
+                        onFinished.Invoke(-1, respHeaders, null);
                     }
                     else
                     {
-                        onFinished.Invoke(resp.StatusCode, resp.Data);
+                        onFinished.Invoke(resp.StatusCode, respHeaders, resp.Data);
                     }
                 }
             }));
@@ -160,19 +177,35 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <param name="uri">URI to send the request to.</param>
         /// <param name="method">Method to use in the request.</param>
         /// <param name="onFinished">Action to perform upon completing the request.</param>
-        public HTTPRequest(string uri, HTTPMethod method, Action<int, Texture2D> onFinished)
+        public HTTPRequest(string uri, HTTPMethod method, Action<int, Dictionary<string, string>, Texture2D> onFinished)
         {
             request = new Best.HTTP.HTTPRequest(new Uri(uri), (HTTPMethods) method, new OnRequestFinishedDelegate((req, resp) =>
             {
+                Dictionary<string, string> respHeaders = new Dictionary<string, string>();
+                foreach (KeyValuePair<string, List<string>> header in resp.Headers)
+                {
+                    string combinedValue = "";
+                    foreach (string val in header.Value)
+                    {
+                        combinedValue = combinedValue + val + ";";
+                    }
+                    if (combinedValue.EndsWith(';'))
+                    {
+                        combinedValue = combinedValue.Substring(0, combinedValue.Length - 1);
+                    }
+
+                    respHeaders.Add(header.Key, combinedValue);
+                }
+
                 if (onFinished != null)
                 {
                     if (resp == null)
                     {
-                        onFinished.Invoke(-1, null);
+                        onFinished.Invoke(-1, respHeaders, null);
                     }
                     else
                     {
-                        onFinished.Invoke(resp.StatusCode, resp.DataAsTexture2D);
+                        onFinished.Invoke(resp.StatusCode, respHeaders, resp.DataAsTexture2D);
                     }
                 }
             }));

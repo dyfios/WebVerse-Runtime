@@ -14,6 +14,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
     /// </summary>
     public class TerrainEntity : BaseEntity
     {
+        internal enum TerrainEntityType { heightmap = 0, voxel = 1, hybrid = 2 }
+
         /// <summary>
         /// Create a heightmap terrain entity.
         /// </summary>
@@ -31,7 +33,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// terrain entity object.</param>
         /// <returns>The heightmap terrain entity object.</returns>
-        public static TerrainEntity CreateHeightmap(BaseEntity parent, float length, float width, float height, float[,] heights,
+        public static TerrainEntity CreateHeightmap(BaseEntity parent, float length, float width, float height, float[][] heights,
             TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, Vector3 position, Quaternion rotation,
             string id = null, string tag = null, string onLoaded = null)
         {
@@ -71,7 +73,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 convertedLayerMasks.Add(idx++, layerMask);
             }
 
-            TerrainEntity te = new TerrainEntity();
+            TerrainEntity te = new TerrainEntity(TerrainEntityType.heightmap);
 
             Action onLoadAction = null;
             onLoadAction = () =>
@@ -114,11 +116,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             return EntityAPIHelper.LoadHybridTerrainEntityAsync(parent, length, width, height, heights,
                 layers, layerMasks, modifications, position, rotation, id, tag, onLoaded);
-        }
-
-        public static void Test()
-        {
-
         }
 
         /// <summary>
@@ -367,9 +364,26 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return outputMods.ToArray();
         }
 
-        internal TerrainEntity()
+        internal TerrainEntity(TerrainEntityType t)
         {
-            internalEntityType = typeof(TerrainEntity);
+            switch (t)
+            {
+                case TerrainEntityType.heightmap:
+                    internalEntityType = typeof(WorldEngine.Entity.TerrainEntity);
+                    break;
+
+                case TerrainEntityType.voxel:
+                    Logging.LogError("[TerrainEntity] Voxel terrain entity not suppported.");
+                    break;
+
+                case TerrainEntityType.hybrid:
+                    internalEntityType = typeof(WorldEngine.Entity.HybridTerrainEntity);
+                    break;
+
+                default:
+                    Logging.LogError("[TerrainEntity] Unknown terrain entity type.");
+                    break;
+            }
         }
     }
 }

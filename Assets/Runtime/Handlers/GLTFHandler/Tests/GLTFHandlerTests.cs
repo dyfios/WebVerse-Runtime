@@ -11,6 +11,7 @@ using FiveSQD.WebVerse.LocalStorage;
 using UnityEditor;
 using FiveSQD.WebVerse.WorldEngine;
 using FiveSQD.WebVerse.Handlers.File;
+using System.IO;
 
 /// <summary>
 /// Unit tests for the GLTF Handler.
@@ -30,7 +31,7 @@ public class GLTFHandlerTests
         runtime.characterControllerPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/Character/Prefabs/UserAvatar.prefab");
         runtime.inputEntityPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/UI/UIElement/Input/Prefabs/InputEntity.prefab");
         runtime.voxelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/Voxel/Prefabs/Voxel.prefab");
-        runtime.Initialize(LocalStorageManager.LocalStorageMode.Cache, 128, 128, 128);
+        runtime.Initialize(LocalStorageManager.LocalStorageMode.Cache, 128, 128, 128, Path.Combine(Application.dataPath, "Files"));
         WorldEngine.LoadWorld("test");
 
         // Load GLTF Resource as Mesh Entity.
