@@ -63,7 +63,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         public VoxelEntity()
         {
-            internalEntityType = typeof(VoxelEntity);
+            internalEntityType = typeof(WorldEngine.Entity.VoxelEntity);
         }
 
         /// <summary>

@@ -21,6 +21,11 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
     public class GLTFHandler : BaseHandler
     {
         /// <summary>
+        /// The GLTF loader.
+        /// </summary>
+        public GLTFLoader gltfLoader;
+
+        /// <summary>
         /// The WebVerse runtime.
         /// </summary>
         public WebVerseRuntime runtime;
@@ -39,11 +44,6 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// Dictionary of mesh paths and their corresponding prefabs.
         /// </summary>
         private Dictionary<string, GameObject> gltfMeshPrefabs = new Dictionary<string, GameObject>();
-
-        /// <summary>
-        /// The GLTF loader.
-        /// </summary>
-        private GLTFLoader gltfLoader;
 
         public override void Initialize()
         {
@@ -79,7 +79,8 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                             downloadedState[resourceURI] = true;
                         };
 
-                        DownloadGLTFResource(resourceURI, onResouceDownloaded);
+                        DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
+                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded);
                     }
                 }
             }
@@ -121,6 +122,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// exists locally.</param>
         public void DownloadGLTFResource(string uri, Action onDownloaded, bool reDownload = false)
         {
+            uri = VEML.VEMLUtilities.FullyQualifyURI(uri, WebVerseRuntime.Instance.currentBasePath);
 #if USE_WEBINTERFACE
             if (reDownload == false)
             {
@@ -132,7 +134,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 }
             }
 
-            Action<int, byte[]> onDownloadedAction = new Action<int, byte[]>((code, data) =>
+            Action<int, Dictionary<string, string>, byte[]> onDownloadedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
             {
                 FinishGLTFDownload(uri, code, data);
                 onDownloaded.Invoke();
@@ -152,8 +154,9 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// exists locally.</param>
         public void DownloadGLTFDirect(string uri, Action<byte[]> onDownloaded)
         {
+            uri = VEML.VEMLUtilities.FullyQualifyURI(uri, WebVerseRuntime.Instance.currentBasePath);
 #if USE_WEBINTERFACE
-            Action<int, byte[]> onDownloadedAction = new Action<int, byte[]>((code, data) =>
+            Action<int, Dictionary<string, string>, byte[]> onDownloadedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
             {
                 onDownloaded.Invoke(data);
             });
@@ -240,6 +243,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// <param name="rawData">Data received in the response.</param>
         private void FinishGLTFDownload(string uri, int responseCode, byte[] rawData)
         {
+            uri = VEML.VEMLUtilities.FullyQualifyURI(uri, WebVerseRuntime.Instance.currentBasePath);
             Logging.Log("[GLTFHandler->FinishGLTFDownload] Got response " + responseCode + " for request " + uri);
 
             if (responseCode != 200)

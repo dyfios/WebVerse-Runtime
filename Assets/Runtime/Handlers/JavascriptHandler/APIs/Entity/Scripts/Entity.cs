@@ -44,6 +44,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return (ContainerEntity) result;
             }
+            else if (result is HTMLEntity)
+            {
+                return ((HTMLEntity) result);
+            }
             else if (result is InputEntity)
             {
                 return (InputEntity) result;

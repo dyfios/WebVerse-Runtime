@@ -42,6 +42,12 @@ namespace FiveSQD.WebVerse.Runtime
         public string testMaxKeyLength = "512";
 
         /// <summary>
+        /// Directory to use for files in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Directory to use for files in Unity Editory Tests")]
+        public string testFilesDirectory = System.IO.Path.Combine(Application.dataPath, "Files");
+
+        /// <summary>
         /// Daemon port to use in Unity Editor tests.
         /// </summary>
         [Tooltip("Daemon port to use in Unity Editor tests.")]
@@ -117,6 +123,13 @@ namespace FiveSQD.WebVerse.Runtime
                 return;
             }
 
+            string filesDirectory = GetFilesDirectory();
+            if (string.IsNullOrEmpty(filesDirectory))
+            {
+                Logging.LogError("[LightweightMode->LoadRuntime] Invalid files directory value.");
+                return;
+            }
+
             uint daemonPort = GetDaemonPort();
             if (daemonPort <= 0 || daemonPort >= 65535)
             {
@@ -143,8 +156,8 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength,
-                daemonPort, mainAppID, tabID, worldLoadTimeout);
-            runtime.LoadWorld(uri);
+                filesDirectory, daemonPort, mainAppID, tabID, worldLoadTimeout);
+            runtime.LoadURL(uri);
         }
 
         /// <summary>
@@ -270,6 +283,29 @@ namespace FiveSQD.WebVerse.Runtime
             }
 #endif
             return int.Parse(maxKeyLength);
+        }
+
+        /// <summary>
+        /// Get the Files Directory, provided by command line in built app, and by 'testFilesDirectory'
+        /// variable in Editor mode.
+        /// </summary>
+        /// <returns>Files Directory.</returns>
+        private string GetFilesDirectory()
+        {
+            string filesDirectory = "";
+
+#if UNITY_EDITOR
+            filesDirectory = testFilesDirectory;
+#else
+            foreach (string arg in System.Environment.GetCommandLineArgs())
+            {
+                if (arg.StartsWith("filesdirectory="))
+                {
+                    filesDirectory = arg.Substring(15);
+                }
+            }
+#endif
+            return filesDirectory;
         }
 
         /// <summary>

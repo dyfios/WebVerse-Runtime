@@ -80,7 +80,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal ButtonEntity()
         {
-            internalEntityType = typeof(ButtonEntity);
+            internalEntityType = typeof(WorldEngine.Entity.ButtonEntity);
         }
 
         /// <summary>

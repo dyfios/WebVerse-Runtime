@@ -6,6 +6,9 @@ using FiveSQD.WebVerse.WorldEngine.Utilities;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript
 {
@@ -14,6 +17,40 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
     /// </summary>
     public class JavascriptHandler : BaseHandler
     {
+        /// <summary>
+        /// A struct for an execution task.
+        /// </summary>
+        private class ExecutionTask
+        {
+            /// <summary>
+            /// Logic to execute.
+            /// </summary>
+            public string logic;
+
+            /// <summary>
+            /// Milliseconds remaining before executing.
+            /// </summary>
+            public int millisecondsRemaining;
+
+            /// <summary>
+            /// Action to invoke upon completion.
+            /// </summary>
+            public Action<object> onComplete;
+
+            /// <summary>
+            /// Execution task.
+            /// </summary>
+            /// <param name="logic">Logic to execute.</param>
+            /// <param name="millisecondsRemaining">Milliseconds remaining before executing.</param>
+            /// <param name="onComplete">Action to invoke upon completion.</param>
+            public ExecutionTask(string logic, int millisecondsRemaining, Action<object> onComplete = null)
+            {
+                this.logic = logic;
+                this.millisecondsRemaining = millisecondsRemaining;
+                this.onComplete = onComplete;
+            }
+        }
+
         /// <summary>
         /// Tuple of class names and internal types.
         /// </summary>
@@ -41,6 +78,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("CanvasEntity", typeof(CanvasEntity)),
             new System.Tuple<string, System.Type>("CharacterEntity", typeof(CharacterEntity)),
             new System.Tuple<string, System.Type>("ContainerEntity", typeof(ContainerEntity)),
+            new System.Tuple<string, System.Type>("HTMLEntity", typeof(HTMLEntity)),
             new System.Tuple<string, System.Type>("InputEntity", typeof(InputEntity)),
             new System.Tuple<string, System.Type>("LightEntity", typeof(LightEntity)),
             new System.Tuple<string, System.Type>("MeshEntity", typeof(MeshEntity)),
@@ -49,6 +87,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("TerrainEntityLayer", typeof(TerrainEntityLayer)),
             new System.Tuple<string, System.Type>("TerrainEntityLayerMask", typeof(TerrainEntityLayerMask)),
             new System.Tuple<string, System.Type>("TerrainEntityLayerMaskCollection", typeof(TerrainEntityLayerMaskCollection)),
+            new System.Tuple<string, System.Type>("TerrainEntityModification", typeof(TerrainEntityModification)),
+            new System.Tuple<string, System.Type>("TerrainEntityOperation", typeof(TerrainEntityModification.TerrainEntityOperation)),
             new System.Tuple<string, System.Type>("TextEntity", typeof(TextEntity)),
             new System.Tuple<string, System.Type>("VoxelEntity", typeof(VoxelEntity)),
             new System.Tuple<string, System.Type>("InteractionState", typeof(InteractionState)),
@@ -79,6 +119,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             // World Browser Utilities.
             new System.Tuple<string, System.Type>("Camera", typeof(APIs.Utilities.Camera)),
             new System.Tuple<string, System.Type>("Context", typeof(APIs.Utilities.Context)),
+            new System.Tuple<string, System.Type>("Date", typeof(APIs.Utilities.Date)),
             new System.Tuple<string, System.Type>("LocalStorage", typeof(APIs.Utilities.LocalStorage)),
             new System.Tuple<string, System.Type>("Logging", typeof(APIs.Utilities.Logging)),
             new System.Tuple<string, System.Type>("Time", typeof(APIs.Utilities.Time)),
@@ -92,10 +133,23 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
         private Engine engine;
 
         /// <summary>
+        /// Pending scripts to be run and the remaining milliseconds left before running.
+        /// </summary>
+        private List<ExecutionTask> pendingScriptsToRun;
+
+        /// <summary>
+        /// Pending logic to be run and the remaining milliseconds left before running.
+        /// </summary>
+        private List<ExecutionTask> pendingLogicToRun;
+
+        /// <summary>
         /// Initialize the JavascriptHandler.
         /// </summary>
         public override void Initialize()
         {
+            pendingScriptsToRun = new List<ExecutionTask>();
+            pendingLogicToRun = new List<ExecutionTask>();
+
             engine = new Engine();
             RegisterAllAPIs();
 
@@ -134,6 +188,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
         }
 
         /// <summary>
+        /// Run a script after a specified timeout.
+        /// </summary>
+        /// <param name="script">The script to run.</param>
+        /// <param name="timeout">The timeout after which to run the script.</param>
+        public void RunScriptAfterTimeout(string script, int timeout)
+        {
+            pendingScriptsToRun.Add(new ExecutionTask(script, timeout));
+        }
+
+        /// <summary>
         /// Run logic.
         /// </summary>
         /// <param name="logic">The logic to run.</param>
@@ -157,6 +221,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Run logic after a specified timeout.
+        /// </summary>
+        /// <param name="logic">The logic to run.</param>
+        /// <param name="timeout">The timeout after which to run the logic.</param>
+        /// <param name="onComplete">Action to invoke upon completion.</param>
+        public void RunAfterTimeout(string logic, int timeout, Action<object> onComplete)
+        {
+            pendingLogicToRun.Add(new ExecutionTask(logic, timeout, onComplete));
         }
 
         /// <summary>
@@ -320,6 +395,50 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             }
         }
 
+        public void SetValue(string variableName, object value)
+        {
+            if (engine == null)
+            {
+                LogSystem.LogError("[JavascriptManager->SetValue] No engine reference.");
+                return;
+            }
+
+            try
+            {
+                engine.SetValue(variableName, value);
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
+        }
+
+        public void CallWithParams(string functionName, object[] parameters)
+        {
+            if (engine == null)
+            {
+                LogSystem.LogError("[JavascriptManager->CallWithParams] No engine reference.");
+                return;
+            }
+
+            try
+            {
+                System.Collections.Generic.List<Jint.Native.JsValue> values
+                    = new System.Collections.Generic.List<Jint.Native.JsValue>();
+
+                foreach (object parameter in parameters)
+                {
+                    values.Add(Jint.Native.JsValue.FromObject(engine, parameter));
+                }
+                //engine.Call(functionName, values.ToArray());
+                engine.Invoke(functionName, values.ToArray());
+            }
+            catch (System.Exception e)
+            {
+                LogSystem.LogError("[Exception Caught] " + e);
+            }
+        }
+
         /// <summary>
         /// Set the value of a variable
         /// </summary>
@@ -426,6 +545,41 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             catch (System.Exception e)
             {
                 LogSystem.LogError("[Exception Caught] " + e);
+            }
+        }
+
+        private void Update()
+        {
+            int elapsedTime = (int) (UnityEngine.Time.deltaTime * 1000);
+
+            if (pendingScriptsToRun != null)
+            {
+                foreach (ExecutionTask pendingScriptToRun in pendingScriptsToRun.ToList())
+                {
+                    pendingScriptToRun.millisecondsRemaining -= elapsedTime;
+                    if (pendingScriptToRun.millisecondsRemaining <= 0)
+                    {
+                        RunScript(pendingScriptToRun.logic);
+                        pendingScriptsToRun.Remove(pendingScriptToRun);
+                    }
+                }
+            }
+
+            if (pendingLogicToRun != null)
+            {
+                foreach (ExecutionTask pendingLogic in pendingLogicToRun.ToList())
+                {
+                    pendingLogic.millisecondsRemaining -= elapsedTime;
+                    if (pendingLogic.millisecondsRemaining <= 0)
+                    {
+                        object result = Run(pendingLogic.logic);
+                        if (pendingLogic.onComplete != null)
+                        {
+                            pendingLogic.onComplete.Invoke(result);
+                        }
+                        pendingLogicToRun.Remove(pendingLogic);
+                    }
+                }
             }
         }
     }
