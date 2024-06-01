@@ -55,6 +55,9 @@ namespace FiveSQD.WebVerse.Handlers.File
             base.Initialize();
 
             this.fileDirectory = fileDirectory;
+
+            Logging.Log("[FileHandler->Initialize] Using file directory: " + Path.GetFullPath(fileDirectory));
+
             if (Directory.Exists(this.fileDirectory))
             {
                 Logging.Log("[FileHandler->Initialize] File directory exists.");

@@ -121,6 +121,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 he.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(he.internalEntity, he);
+
+                WebVerseRuntime.Instance.outputManager.RegisterScreenSizeChangeAction(new Action<int, int>((width, height) =>
+                {
+                    ((WorldEngine.Entity.HTMLUIElementEntity) he.internalEntity).CorrectSizeAndPosition(width, height);
+                }));
+
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
                     WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));

@@ -19,6 +19,7 @@ using FiveSQD.WebVerse.WebInterface.HTTP;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
+using FiveSQD.WebVerse.Output;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -180,6 +181,11 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The Input Manager.")]
         public InputManager inputManager { get; private set; }
+
+        /// <summary>
+        /// The Output Manager.
+        /// </summary>
+        public OutputManager outputManager { get; private set; }
 
         /// <summary>
         /// The Daemon Manager.
@@ -573,6 +579,12 @@ namespace FiveSQD.WebVerse.Runtime
             inputManager.platformInput = platformInput;
             inputManager.Initialize();
 
+            // Set up Output Manager.
+            GameObject outputManagerGO = new GameObject("OutputManager");
+            outputManagerGO.transform.SetParent(transform);
+            outputManager = outputManagerGO.AddComponent<OutputManager>();
+            outputManager.Initialize();
+
             if (daemonPort != null && mainAppID != null && tabID != null)
             {
                 // Set up Daemon Manager.
@@ -615,6 +627,10 @@ namespace FiveSQD.WebVerse.Runtime
                 webVerseDaemonManager.Terminate();
                 Destroy(webVerseDaemonManager.gameObject);
             }
+
+            // Terminate Output Manager.
+            outputManager.Terminate();
+            Destroy(outputManager.gameObject);
 
             // Terminate Input Manager.
             inputManager.Terminate();
