@@ -55,14 +55,14 @@ public class GLTFHandlerTests
             firstDownloaded = true;
         });
         runtime.gltfHandler.DownloadGLTFResource("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF/Box.gltf",
-            onFirstDownloaded, true);
+            onFirstDownloaded);
         bool secondDownloaded = false;
         Action onSecondDownloaded = new Action(() =>
         {
             secondDownloaded = true;
         });
         runtime.gltfHandler.DownloadGLTFResource("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Box/glTF/Box0.bin",
-            onSecondDownloaded, true);
+            onSecondDownloaded);
 
         yield return new WaitForSeconds(waitTime);
 

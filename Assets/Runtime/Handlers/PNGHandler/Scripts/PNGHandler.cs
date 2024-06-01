@@ -60,29 +60,55 @@ namespace FiveSQD.WebVerse.Handlers.PNG
         /// </summary>
         /// <param name="uri">URI to get the PNG from.</param>
         /// <param name="onDownloaded">Action to perform when downloading is complete.</param>
-        /// <param name="reDownload">Whether or not to redownload the PNG if it already exists.</param>
-        public void DownloadPNG(string uri, Action onDownloaded, bool reDownload = false)
+        public void DownloadPNG(string uri, Action onDownloaded)
         {
 #if USE_WEBINTERFACE
-            if (reDownload == false)
-            {
-                if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
-                {
-                    Logging.Log("[PNGHandler->DownloadPNG] File " + uri + " already exists. Using stored version.");
-                    onDownloaded.Invoke();
-                    return;
-                }
-            }
-
             Action<int, Dictionary<string, string>, Texture2D> onDownloadedAction
-                = new Action<int, Dictionary<string, string>, Texture2D>((code, headers, data) =>
+            = new Action<int, Dictionary<string, string>, Texture2D>((code, headers, data) =>
             {
                 FinishImageDownload(uri, code, data);
                 onDownloaded.Invoke();
             });
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
-            request.Send();
+
+            if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
+            {
+                Logging.Log("[PNGHandler->DownloadPNG] File " + uri + " already exists. Checking for newer version.");
+
+                Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+                {
+                    foreach (KeyValuePair<string, string> header in headers)
+                    {
+                        if (header.Key.ToLower() == "last-modified")
+                        {
+                            DateTime timestamp;
+                            if (DateTime.TryParse(header.Value, out timestamp))
+                            {
+                                if (timestamp > System.IO.File.GetLastWriteTime(System.IO.Path.Combine(
+                                    runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
+                                {
+                                    Logging.Log("[PNGHandler->DownloadPNG] Cached version of file " + uri + " is outdated. Getting new version.");
+                                }
+                                else
+                                {
+                                    Logging.Log("[PNGHandler->DownloadPNG] Cached version of file " + uri + " is current. Using stored version.");
+                                    onDownloaded.Invoke();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    Logging.Log("[PNGHandler->DownloadPNG] Getting " + uri + ".");
+                    request.Send();
+                });
+                HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
+                headRequest.Send();
+            }
+            else
+            {
+                request.Send();
+            }
 #endif
         }
 
