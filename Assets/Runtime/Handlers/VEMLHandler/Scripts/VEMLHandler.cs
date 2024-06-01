@@ -128,20 +128,9 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         /// <param name="uri">URI of the VEML file.</param>
         /// <param name="onDownloaded">Action to invoke when the file has been downloaded.</param>
-        /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
-        public void DownloadVEML(string uri, Action onDownloaded, bool reDownload = false)
+        public void DownloadVEML(string uri, Action onDownloaded)
         {
 #if USE_WEBINTERFACE
-            if (reDownload == false)
-            {
-                if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
-                {
-                    Logging.Log("[VEMLHandler->DownloadVEML] File " + uri + " already exists. Using stored version.");
-                    onDownloaded.Invoke();
-                    return;
-                }
-            }
-
             Action<int, Dictionary<string, string>, byte[]> onDownloadedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
             {
                 FinishVEMLDownload(uri, code, data);
@@ -149,7 +138,44 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             });
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
-            request.Send();
+
+            if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
+            {
+                Logging.Log("[VEMLHandler->DownloadVEML] File " + uri + " already exists. Checking for newer version.");
+
+                Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+                {
+                    foreach (KeyValuePair<string, string> header in headers)
+                    {
+                        if (header.Key.ToLower() == "last-modified")
+                        {
+                            DateTime timestamp;
+                            if (DateTime.TryParse(header.Value, out timestamp))
+                            {
+                                if (timestamp > System.IO.File.GetLastWriteTime(Path.Combine(
+                                    runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
+                                {
+                                    Logging.Log("[VEMLHandler->DownloadVEML] Cached version of file " + uri + " is outdated. Getting new version.");
+                                }
+                                else
+                                {
+                                    Logging.Log("[VEMLHandler->DownloadVEML] Cached version of file " + uri + " is current. Using stored version.");
+                                    onDownloaded.Invoke();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    Logging.Log("[VEMLHandler->DownloadVEML] Getting " + uri + ".");
+                    request.Send();
+                });
+                HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
+                headRequest.Send();
+            }
+            else
+            {
+                request.Send();
+            }
 #endif
         }
 
@@ -243,20 +269,9 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         /// <param name="uri">URI of the script resource.</param>
         /// <param name="onDownloaded">Action to invoke when downloading of the script is complete.</param>
-        /// <param name="reDownload">Whether or not to redownload the script if it already exists.</param>
-        public void DownloadScript(string uri, Action onDownloaded, bool reDownload = false)
+        public void DownloadScript(string uri, Action onDownloaded)
         {
 #if USE_WEBINTERFACE
-            if (reDownload == false)
-            {
-                if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
-                {
-                    Logging.Log("[VEMLHandler->DownloadScript] File " + uri + " already exists. Using stored version.");
-                    onDownloaded.Invoke();
-                    return;
-                }
-            }
-
             Action<int, Dictionary<string, string>, byte[]> onDownloadedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
             {
                 FinishScriptDownload(uri, code, data);
@@ -264,7 +279,44 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             });
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
-            request.Send();
+
+            if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
+            {
+                Logging.Log("[VEMLHandler->DownloadScript] File " + uri + " already exists. Checking for newer version.");
+
+                Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+                {
+                    foreach (KeyValuePair<string, string> header in headers)
+                    {
+                        if (header.Key.ToLower() == "last-modified")
+                        {
+                            DateTime timestamp;
+                            if (DateTime.TryParse(header.Value, out timestamp))
+                            {
+                                if (timestamp > System.IO.File.GetLastWriteTime(Path.Combine(
+                                    runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
+                                {
+                                    Logging.Log("[VEMLHandler->DownloadScript] Cached version of file " + uri + " is outdated. Getting new version.");
+                                }
+                                else
+                                {
+                                    Logging.Log("[VEMLHandler->DownloadScript] Cached version of file " + uri + " is current. Using stored version.");
+                                    onDownloaded.Invoke();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    Logging.Log("[VEMLHandler->DownloadScript] Getting " + uri + ".");
+                    request.Send();
+                });
+                HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
+                headRequest.Send();
+            }
+            else
+            {
+                request.Send();
+            }
 #endif
         }
 
@@ -281,28 +333,17 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         }
 
         /// <summary>
-        /// Download a file.
+        /// Download a file without caching.
         /// </summary>
         /// <param name="uri">URI from which to get the file.</param>
         /// <param name="onDownloaded">Action to invoke when downloading the file is complete. Provides
         /// a byte array containing the file data.</param>
-        /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
-        public void DownloadFile(string uri, Action<byte[]> onDownloaded, bool reDownload = false)
+        public void DownloadFileWithoutCache(string uri, Action<byte[]> onDownloaded)
         {
 #if USE_WEBINTERFACE
-            if (reDownload == false)
-            {
-                if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
-                {
-                    Logging.Log("[VEMLHandler->DownloadFile] File " + uri + " already exists. Using stored version.");
-
-                    onDownloaded.Invoke(runtime.fileHandler.GetFileInFileDirectory(FileHandler.ToFileURI(uri)));
-                    return;
-                }
-            }
-
             Action<int, Dictionary<string, string>, byte[]> onDownloadedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
             {
+                FinishFileDownload(uri, code, data);
                 onDownloaded.Invoke(data);
             });
 
@@ -312,12 +353,92 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         }
 
         /// <summary>
-        /// Finish downloading a script.
+        /// Download a file.
         /// </summary>
         /// <param name="uri">URI from which to get the file.</param>
         /// <param name="onDownloaded">Action to invoke when downloading the file is complete. Provides
         /// a byte array containing the file data.</param>
-        /// <param name="reDownload">Whether or not to redownload the file if it already exists.</param>
+        public void DownloadFile(string uri, Action<byte[]> onDownloaded)
+        {
+#if USE_WEBINTERFACE
+            Action<int, Dictionary<string, string>, byte[]> onDownloadedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+            {
+                FinishFileDownload(uri, code, data);
+                onDownloaded.Invoke(data);
+            });
+
+            HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
+
+            if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
+            {
+                Logging.Log("[VEMLHandler->DownloadFile] File " + uri + " already exists. Checking for newer version.");
+
+                Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+                {
+                    foreach (KeyValuePair<string, string> header in headers)
+                    {
+                        if (header.Key.ToLower() == "last-modified")
+                        {
+                            DateTime timestamp;
+                            if (DateTime.TryParse(header.Value, out timestamp))
+                            {
+                                if (timestamp > System.IO.File.GetLastWriteTime(Path.Combine(
+                                    runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
+                                {
+                                    Logging.Log("[VEMLHandler->DownloadFile] Cached version of file " + uri + " is outdated. Getting new version.");
+                                }
+                                else
+                                {
+                                    Logging.Log("[VEMLHandler->DownloadFile] Cached version of file " + uri + " is current. Using stored version.");
+                                    onDownloaded.Invoke(data);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    Logging.Log("[VEMLHandler->DownloadFile] Getting " + uri + ".");
+                    request.Send();
+                });
+                HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
+                headRequest.Send();
+            }
+            else
+            {
+                request.Send();
+            }
+#endif
+        }
+
+        /// <summary>
+        /// Finish downloading a file.
+        /// </summary>
+        /// <param name="uri">URI which the file is from.</param>
+        /// <param name="responseCode">Response code received.</param>
+        /// <param name="rawData">Raw data received.</param>
+        private void FinishFileDownload(string uri, int responseCode, byte[] rawData)
+        {
+            Logging.Log("[VEMLHandler->FinishFileDownload] Got response " + responseCode + " for request " + uri);
+
+            if (responseCode != 200)
+            {
+                Logging.Log("[VEMLHandler->FinishFileDownload] Error loading file.");
+                return;
+            }
+
+            string filePath = FileHandler.ToFileURI(uri);
+            if (runtime.fileHandler.FileExistsInFileDirectory(filePath))
+            {
+                runtime.fileHandler.DeleteFileInFileDirectory(filePath);
+            }
+            runtime.fileHandler.CreateFileInFileDirectory(filePath, rawData);
+        }
+
+        /// <summary>
+        /// Finish downloading a script.
+        /// </summary>
+        /// <param name="uri">URI which the script is from.</param>
+        /// <param name="responseCode">Response code received.</param>
+        /// <param name="rawData">Raw data received.</param>
         private void FinishScriptDownload(string uri, int responseCode, byte[] rawData)
         {
             Logging.Log("[VEMLHandler->FinishScriptDownload] Got response " + responseCode + " for request " + uri);
@@ -722,7 +843,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                                 WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
                             }
                         });
-                        DownloadFile(VEMLUtilities.FullyQualifyURI(entry, uri), onDownloaded);
+                        DownloadFileWithoutCache(VEMLUtilities.FullyQualifyURI(entry, uri), onDownloaded);
                     }
                     else
                     {
@@ -1947,6 +2068,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 #endif
                 Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
+
+                WebVerseRuntime.Instance.outputManager.RegisterScreenSizeChangeAction(new Action<int, int>((width, height) =>
+                {
+                    ((WorldEngine.Entity.HTMLUIElementEntity) loadedEntity).CorrectSizeAndPosition(width, height);
+                }));
+
                 loadingEntities--;
             });
 

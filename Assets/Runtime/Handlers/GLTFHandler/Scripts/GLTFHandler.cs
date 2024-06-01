@@ -118,22 +118,10 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// </summary>
         /// <param name="uri">URI of the GLTF resource.</param>
         /// <param name="onDownloaded">Action to invoke when downloading is complete.</param>
-        /// <param name="reDownload">Whether or not to redownload the resource if it already
-        /// exists locally.</param>
-        public void DownloadGLTFResource(string uri, Action onDownloaded, bool reDownload = false)
+        public void DownloadGLTFResource(string uri, Action onDownloaded)
         {
             uri = VEML.VEMLUtilities.FullyQualifyURI(uri, WebVerseRuntime.Instance.currentBasePath);
 #if USE_WEBINTERFACE
-            if (reDownload == false)
-            {
-                if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
-                {
-                    Logging.Log("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Using stored version.");
-                    onDownloaded.Invoke();
-                    return;
-                }
-            }
-
             Action<int, Dictionary<string, string>, byte[]> onDownloadedAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
             {
                 FinishGLTFDownload(uri, code, data);
@@ -141,7 +129,44 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             });
 
             HTTPRequest request = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Get, onDownloadedAction);
-            request.Send();
+
+            if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
+            {
+                Logging.Log("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Checking for newer version.");
+
+                Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+                {
+                    foreach (KeyValuePair<string, string> header in headers)
+                    {
+                        if (header.Key.ToLower() == "last-modified")
+                        {
+                            DateTime timestamp;
+                            if (DateTime.TryParse(header.Value, out timestamp))
+                            {
+                                if (timestamp > System.IO.File.GetLastWriteTime(System.IO.Path.Combine(
+                                    runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
+                                {
+                                    Logging.Log("[GLTFHandler->DownloadGLTF] Cached version of file " + uri + " is outdated. Getting new version.");
+                                }
+                                else
+                                {
+                                    Logging.Log("[GLTFHandler->DownloadGLTF] Cached version of file " + uri + " is current. Using stored version.");
+                                    onDownloaded.Invoke();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                    Logging.Log("[GLTFHandler->DownloadGLTF] Getting " + uri + ".");
+                    request.Send();
+                });
+                HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
+                headRequest.Send();
+            }
+            else
+            {
+                request.Send();
+            }
 #endif
         }
 

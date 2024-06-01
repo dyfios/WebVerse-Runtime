@@ -51,7 +51,7 @@ public class PNGHandlerTests
                     runtime.fileHandler.fileDirectory, "https~/invalidurlforthistest.com/invalid.png")));
             });
         };
-        runtime.pngHandler.DownloadPNG("https://invalidurlforthistest.com/invalid.png", onDownloaded, true);
+        runtime.pngHandler.DownloadPNG("https://invalidurlforthistest.com/invalid.png", onDownloaded);
         yield return new WaitForSeconds(waitTime);
         Assert.IsTrue(downloadComplete);
 
@@ -64,7 +64,7 @@ public class PNGHandlerTests
                     runtime.fileHandler.fileDirectory,
                     "https~/www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png")));
         };
-        runtime.pngHandler.DownloadPNG("https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png", onDownloaded, true);
+        runtime.pngHandler.DownloadPNG("https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png", onDownloaded);
         yield return new WaitForSeconds(waitTime);
         Assert.IsTrue(downloadComplete);
 
