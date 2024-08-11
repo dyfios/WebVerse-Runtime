@@ -157,6 +157,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             EntityAPIHelper.InitializeEntityMapping();
         }
 
+        public void Reset()
+        {
+            engine.ResetCallStack();
+            engine = new Engine();
+            RegisterAllAPIs();
+            EntityAPIHelper.InitializeEntityMapping();
+        }
+
         /// <summary>
         /// Terminate the JavascriptHandler.
         /// </summary>
@@ -430,7 +438,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
                 {
                     values.Add(Jint.Native.JsValue.FromObject(engine, parameter));
                 }
-                //engine.Call(functionName, values.ToArray());
                 engine.Invoke(functionName, values.ToArray());
             }
             catch (System.Exception e)

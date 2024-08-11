@@ -58,6 +58,14 @@ namespace FiveSQD.WebVerse.Utilities
         }
 
         /// <summary>
+        /// Reset the time handler.
+        /// </summary>
+        public void Reset()
+        {
+            intervalFunctions.Clear();
+        }
+
+        /// <summary>
         /// Start invoking a function.
         /// </summary>
         /// <param name="function">Function.</param>

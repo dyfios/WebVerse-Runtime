@@ -112,5 +112,60 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
 
             return null;
         }
+
+        public static bool EnableControllerLocomotion(bool invert)
+        {
+            return false;
+        }
+
+        public static bool DisableControllerLocomotion()
+        {
+            return false;
+        }
+
+        public static bool EnableTeleportLocomotion()
+        {
+            return false;
+        }
+
+        public static bool DisableTeleportLocomotion()
+        {
+            return false;
+        }
+
+        public static bool EnableArmswingLocomotion()
+        {
+            return false;
+        }
+
+        public static bool DisableArmswingLocomotion()
+        {
+            return false;
+        }
+
+        public static bool EnableSnapTurnLocomotion()
+        {
+            return false;
+        }
+
+        public static bool EnableSmoothTurnLocomotion()
+        {
+            return false;
+        }
+
+        public static bool DisableTurnLocomotion()
+        {
+            return false;
+        }
+
+        public static bool EnableDragLocomotion(bool invert)
+        {
+            return false;
+        }
+
+        public static bool DisableDragLocomotion()
+        {
+            return false;
+        }
     }
 }

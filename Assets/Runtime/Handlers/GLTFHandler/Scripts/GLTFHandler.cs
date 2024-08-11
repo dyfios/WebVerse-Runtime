@@ -78,7 +78,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                         {
                             downloadedState[resourceURI] = true;
                         };
-
+                        
                         DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
                             WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded);
                     }
@@ -88,7 +88,9 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             Action onDownloaded = () =>
             {
                 LoadGLTF(
-                    System.IO.Path.Combine(runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(gltfResourceURI)),
+                    System.IO.Path.Combine(runtime.fileHandler.fileDirectory,
+                    FileHandler.ToFileURI(VEML.VEMLUtilities.FullyQualifyURI(
+                        gltfResourceURI, WebVerseRuntime.Instance.currentBasePath))),
                     new Action<GameObject>((meshObject) =>
                     {
                         SetUpLoadedGLTFMeshAsMeshEntity(meshObject, guid, onLoaded);
@@ -105,6 +107,74 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     new Action<GameObject>((meshObject) =>
                     {
                         SetUpLoadedGLTFMeshAsMeshEntity(meshObject, guid, onLoaded);
+                    }));
+            };
+
+            DownloadGLTFDirect(gltfResourceURI, onDownloaded);
+            return guid;
+#endif
+        }
+
+        /// <summary>
+        /// Load a GLTF resource as a character entity.
+        /// </summary>
+        /// <param name="gltfResourceURI">URI of the top-level GLTF resource.</param>
+        /// <param name="resourceURIs">URIs of resources needed by the top-level GLTF.</param>
+        /// <param name="meshOffset">Offset for the mesh character entity object.</param>
+        /// <param name="meshRotation">Rotation for the mesh character entity object.</param>
+        /// <param name="avatarLabelOffset">Offset for the avatar label.</param>
+        /// <param name="id">ID of the character entity.</param>
+        /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
+        /// to the loaded character entity.</param>
+        /// <param name="timeout">Timeout period after which loading will be aborted.</param>
+        /// <returns>ID of the character entity being loaded.</returns>
+        public Guid LoadGLTFResourceAsCharacterEntity(string gltfResourceURI, string[] resourceURIs,
+            Vector3 meshOffset, Quaternion meshRotation, Vector3 avatarLabelOffset, Guid? id = null,
+            Action<CharacterEntity> onLoaded = null, float timeout = 10)
+        {
+#if !UNITY_WEBGL
+            Dictionary<string, bool> downloadedState = new Dictionary<string, bool>();
+
+            if (resourceURIs != null)
+            {
+                foreach (string resourceURI in resourceURIs)
+                {
+                    if (!string.IsNullOrEmpty(resourceURI))
+                    {
+                        downloadedState.Add(resourceURI, false);
+                        Action onResouceDownloaded = () =>
+                        {
+                            downloadedState[resourceURI] = true;
+                        };
+
+                        DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
+                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded);
+                    }
+                }
+            }
+            Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
+            Action onDownloaded = () =>
+            {
+                LoadGLTF(
+                    System.IO.Path.Combine(runtime.fileHandler.fileDirectory,
+                    FileHandler.ToFileURI(VEML.VEMLUtilities.FullyQualifyURI(
+                        gltfResourceURI, WebVerseRuntime.Instance.currentBasePath))),
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        SetUpLoadedGLTFMeshAsCharacterEntity(meshObject, meshOffset, meshRotation, avatarLabelOffset, guid, onLoaded);
+                    }));
+            };
+
+            DownloadGLTFResource(gltfResourceURI, onDownloaded);
+            return guid;
+#else
+            Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
+            Action<byte[]> onDownloaded = (data) =>
+            {
+                LoadGLTF(gltfResourceURI.Substring(gltfResourceURI.LastIndexOf("/")), data,
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        SetUpLoadedGLTFMeshAsCharacterEntity(meshObject, guid, onLoaded);
                     }));
             };
 
@@ -132,6 +202,12 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
 
             if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
             {
+                if (uri.StartsWith("file:/") || uri.StartsWith("/") || uri.StartsWith(".") || uri[1] == ':')
+                {
+                    Logging.Log("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Using stored version.");
+                    onDownloaded.Invoke();
+                    return;
+                }
                 Logging.Log("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Checking for newer version.");
 
                 Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
@@ -268,6 +344,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// <param name="rawData">Data received in the response.</param>
         private void FinishGLTFDownload(string uri, int responseCode, byte[] rawData)
         {
+            Logging.Log("qwer " + uri);
             uri = VEML.VEMLUtilities.FullyQualifyURI(uri, WebVerseRuntime.Instance.currentBasePath);
             Logging.Log("[GLTFHandler->FinishGLTFDownload] Got response " + responseCode + " for request " + uri);
 
@@ -327,8 +404,8 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             }
             else
             {
-                Logging.LogWarning("[GLTFHandler->SetUpMeshPrefab] Unable to set up mesh.");
-                return;
+                //Logging.LogWarning("[GLTFHandler->SetUpMeshPrefab] Unable to set up mesh.");
+                //return;
             }
 
             Bounds bounds = new Bounds(prefab.transform.position, Vector3.zero);
@@ -378,6 +455,39 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
 
             WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadMeshEntity(
                 null, loadedMesh, Vector3.zero, Quaternion.identity, guid, null, onLoad);
+        }
+
+        /// <summary>
+        /// Set up a loaded GLTF as a mesh entity.
+        /// </summary>
+        /// <param name="loadedMesh">Loaded gameobject containing mesh.</param>
+        /// <param name="meshOffset">Offset for the mesh character entity object.</param>
+        /// <param name="meshRotation">Rotation for the mesh character entity object.</param>
+        /// <param name="avatarLabelOffset">Offset for the avatar label.</param>
+        /// <param name="guid">ID of the mesh entity.</param>
+        /// <param name="onLoaded">Action to invoke when setup is complete. Takes a reference
+        /// to the set up mesh entity.</param>
+        private void SetUpLoadedGLTFMeshAsCharacterEntity(GameObject loadedMesh, Vector3 meshOffset,
+            Quaternion meshRotation, Vector3 avatarLabelOffset, Guid guid, Action<CharacterEntity> onLoaded)
+        {
+            Action onLoad = () =>
+            {
+                BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                if (entity == null)
+                {
+                    Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsCharacterEntity] Unable to find loaded entity.");
+                    return;
+                }
+
+                if (onLoaded != null)
+                {
+                    onLoaded.Invoke((CharacterEntity) entity);
+                }
+            };
+
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(
+                null, loadedMesh, meshOffset, meshRotation, avatarLabelOffset, Vector3.zero, Quaternion.identity,
+                Vector3.one, guid, null, false, onLoad);
         }
 
         /// <summary>

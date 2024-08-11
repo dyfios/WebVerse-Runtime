@@ -12,16 +12,35 @@ using FiveSQD.WebVerse.Runtime;
 
 namespace FiveSQD.WebVerse.Daemon
 {
+    /// <summary>
+    /// Class for the WebVerse Daemon Manager.
+    /// </summary>
     public class WebVerseDaemonManager : BaseManager
     {
+        /// <summary>
+        /// Runtime type.
+        /// </summary>
         public enum RuntimeType { Focused = 0, WebGL = 1 }
 
+        /// <summary>
+        /// Runtime type.
+        /// </summary>
         public RuntimeType runtimeType;
 
         /// <summary>
         /// Interval in seconds between heartbeats.
         /// </summary>
         public float heartbeatInterval = 5;
+
+        /// <summary>
+        /// The port being used.
+        /// </summary>
+        public uint port { get; private set; }
+
+        /// <summary>
+        /// ID for the main app.
+        /// </summary>
+        public Guid? mainAppID { get; private set; }
 
 #if USE_WEBINTERFACE
         /// <summary>
@@ -34,11 +53,6 @@ namespace FiveSQD.WebVerse.Daemon
         /// ID for the connection.
         /// </summary>
         private Guid? connectionID;
-
-        /// <summary>
-        /// ID for the main app.
-        /// </summary>
-        private Guid? mainAppID;
 
         /// <summary>
         /// ID for the tab.
@@ -126,12 +140,16 @@ namespace FiveSQD.WebVerse.Daemon
 
             this.mainAppID = mainAppID;
             this.tabID = tabID;
+            this.port = port;
             webSocket = new WebSocket("wss://localhost:" + port,
                 onOpenedAction, onClosedAction, onBinaryAction, onStringAction, onErrorAction);
             webSocket.Open();
 #endif
         }
 
+        /// <summary>
+        /// Close the Daemon socket connection.
+        /// </summary>
         public void CloseDaemonConnection()
         {
 #if USE_WEBINTERFACE
@@ -142,7 +160,69 @@ namespace FiveSQD.WebVerse.Daemon
             }
 
             webSocket.Close();
+            port = 0;
 #endif
+        }
+
+        /// <summary>
+        /// Send a close request.
+        /// </summary>
+        public void SendCloseRequest()
+        {
+            WebVerseDaemonMessages.CloseRequest closeRequest =
+                new WebVerseDaemonMessages.CloseRequest(connectionID);
+
+            if (webSocket == null)
+            {
+                Logging.LogError("[WebVerseDaemonManager->SendCloseRequest] WebSocket not set up.");
+                return;
+            }
+
+            //Logging.Log("[WebVerseDaemonManager->SendCloseRequest] Sending close request.");
+            webSocket.Send(JsonConvert.SerializeObject(closeRequest));
+        }
+
+        /// <summary>
+        /// Send a focused tab request.
+        /// </summary>
+        /// <param name="url">URL to use.</param>
+        /// <param name="runtimeType">Runtime type to use.</param>
+        public void SendFocusedTabRequest(string url, string runtimeType)
+        {
+            WebVerseDaemonMessages.FocusedTabRequest focusedTabRequest =
+                new WebVerseDaemonMessages.FocusedTabRequest(url, runtimeType, connectionID);
+
+            if (webSocket == null)
+            {
+                Logging.LogError("[WebVerseDaemonManager->SendFocusedTabRequest] WebSocket not set up.");
+                return;
+            }
+
+            //Logging.Log("[WebVerseDaemonManager->SendFocusedTabRequest] Sending focused tab request.");
+            webSocket.Send(JsonConvert.SerializeObject(focusedTabRequest));
+        }
+
+        /// <summary>
+        /// Send a settings update request.
+        /// </summary>
+        /// <param name="storageEntries">Storage entries to use.</param>
+        /// <param name="storageKeyLength">Storage key length to use.</param>
+        /// <param name="storageEntriesLength">Storage entries length to use.</param>
+        public void SendSettingsUpdateRequest(int storageEntries, int storageKeyLength,
+            int storageEntriesLength)
+        {
+            WebVerseDaemonMessages.UpdateSettingsRequest updateSettingsRequest =
+                new WebVerseDaemonMessages.UpdateSettingsRequest(
+                    storageEntries, storageKeyLength, storageEntriesLength, connectionID);
+
+            if (webSocket == null)
+            {
+                Logging.LogError("[WebVerseDaemonManager->SendSettingsUpdateRequest] WebSocket not set up.");
+                return;
+            }
+
+            //Logging.Log("[WebVerseDaemonManager->SendSettingsUpdareRequest] Sending update settings request.");
+            webSocket.Send(JsonConvert.SerializeObject(updateSettingsRequest));
         }
 
         /// <summary>
@@ -189,6 +269,11 @@ namespace FiveSQD.WebVerse.Daemon
                 case "LOAD-WORLD-CMD":
                     Logging.Log("[WebVerseDaemonManager->OnString] Received load world command.");
                     HandleLoadWorldCommand(data);
+                    break;
+
+                case "UPDATE-HIST-CMD":
+                    Logging.Log("[WebVerseDaemonManager->OnString] Received update history command.");
+                    HandleUpdateHistoryCommand(data);
                     break;
 
                 default:
@@ -298,6 +383,10 @@ namespace FiveSQD.WebVerse.Daemon
 #endif
         }
 
+        /// <summary>
+        /// Handle a Load World command.
+        /// </summary>
+        /// <param name="request">The request.</param>
         private void HandleLoadWorldCommand(string request)
         {
             WebVerseDaemonMessages.LoadWorldCommand loadWorldCommandMessage =
@@ -323,6 +412,38 @@ namespace FiveSQD.WebVerse.Daemon
             }
 
             WebVerseRuntime.Instance.LoadURL(loadWorldCommandMessage.url);
+#endif
+        }
+
+        /// <summary>
+        /// Handle an Update History command.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        private void HandleUpdateHistoryCommand(string request)
+        {
+            WebVerseDaemonMessages.UpdateHistoryCommand updateHistoryCommandMessage =
+                JsonConvert.DeserializeObject<WebVerseDaemonMessages.UpdateHistoryCommand>(request);
+
+            if (updateHistoryCommandMessage == null)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleUpdateHistoryCommand] Error deserializing message.");
+                return;
+            }
+
+            if (mainAppID.HasValue == false)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleUpdateHistoryCommand] No Main App ID.");
+                return;
+            }
+
+#if USE_WEBINTERFACE
+            if (webSocket == null)
+            {
+                Logging.LogError("[WebVerseDaemonManager->HandleUpdateHistoryCommand] WebSocket not set up.");
+                return;
+            }
+
+            WebVerseRuntime.Instance.handMenuController.UpdateHistory(updateHistoryCommandMessage.history);
 #endif
         }
 

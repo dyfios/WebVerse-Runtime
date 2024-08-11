@@ -602,7 +602,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                             newFormattedLayer.diffuse = tex;
                             newFormattedLayer.diffusePath = layer.diffuseTexture;
                             completedRequests++;
-                        }));
+                        }), TextureFormat.RGB24);
                     }
                     else
                     {
