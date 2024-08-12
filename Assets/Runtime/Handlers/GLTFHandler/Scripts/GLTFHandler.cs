@@ -174,7 +174,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 LoadGLTF(gltfResourceURI.Substring(gltfResourceURI.LastIndexOf("/")), data,
                     new Action<GameObject>((meshObject) =>
                     {
-                        SetUpLoadedGLTFMeshAsCharacterEntity(meshObject, guid, onLoaded);
+                        SetUpLoadedGLTFMeshAsCharacterEntity(meshObject, meshOffset, meshRotation, avatarLabelOffset, guid, onLoaded);
                     }));
             };
 
