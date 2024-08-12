@@ -176,7 +176,7 @@ namespace FiveSQD.WebVerse.Daemon
             /// <summary>
             /// Runtime Type.
             /// </summary>
-            [JsonProperty(PropertyName = "runtimeType")]
+            [JsonProperty(PropertyName = "type")]
             public string runtimeType;
 
             /// <summary>
