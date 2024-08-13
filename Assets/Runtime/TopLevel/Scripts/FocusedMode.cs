@@ -402,6 +402,10 @@ namespace FiveSQD.WebVerse.Runtime
                 }
             }
 #endif
+            if (string.IsNullOrEmpty(timeout))
+            {
+                timeout = "10";
+            }
             return float.Parse(timeout);
         }
 

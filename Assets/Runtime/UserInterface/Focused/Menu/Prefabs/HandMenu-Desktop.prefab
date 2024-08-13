@@ -358,7 +358,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4955925917539223901
 RectTransform:
   m_ObjectHideFlags: 0
@@ -830,7 +830,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6255959256937289573}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5921985666744445042}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.MultiBarController,
+          FiveSQD.WebVerse
+        m_MethodName: GoNext
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1048324926295212775
 GameObject:
   m_ObjectHideFlags: 0
@@ -912,7 +925,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6702796654770561650
 RectTransform:
   m_ObjectHideFlags: 0
@@ -928,10 +941,10 @@ RectTransform:
   - {fileID: 1114071991531495950}
   m_Father: {fileID: 4672564473255725292}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 14.5, y: -14.5}
+  m_SizeDelta: {x: 29, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2379325639963109913
 CanvasRenderer:
@@ -1014,7 +1027,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4862303798832607396}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: OpenHistoryMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1483696588811288750
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,10 +1284,10 @@ RectTransform:
   - {fileID: 1861360358561070823}
   m_Father: {fileID: 4672564473255725292}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -14.5}
+  m_SizeDelta: {x: 29, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5609210042874036434
 CanvasRenderer:
@@ -1344,7 +1370,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1884433795274877013}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: OpenAboutMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1867122076540987167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1379,10 +1418,10 @@ RectTransform:
   - {fileID: 4282424760557687548}
   m_Father: {fileID: 7654829804451128063}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -43.5}
+  m_SizeDelta: {x: 79, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9163739490011090790
 CanvasRenderer:
@@ -1461,7 +1500,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1431178644131576616}
   m_OnClick:
     m_PersistentCalls:
@@ -1478,6 +1517,7 @@ GameObject:
   - component: {fileID: 517396602746677457}
   - component: {fileID: 455672143935409130}
   - component: {fileID: 7447851326769781320}
+  - component: {fileID: 5921985666744445042}
   m_Layer: 0
   m_Name: MultiBar
   m_TagString: Untagged
@@ -1613,10 +1653,36 @@ MonoBehaviour:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5921985666744445042}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.MultiBarController,
+          FiveSQD.WebVerse
+        m_MethodName: Selected
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5921985666744445042}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.MultiBarController,
+          FiveSQD.WebVerse
+        m_MethodName: Deselected
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTextSelection:
     m_PersistentCalls:
       m_Calls: []
@@ -1644,6 +1710,21 @@ MonoBehaviour:
   m_isRichTextEditingAllowed: 0
   m_LineLimit: 0
   m_InputValidator: {fileID: 0}
+--- !u!114 &5921985666744445042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2407221298820075355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a3c39186b5408045ad1090ff0d1cf97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputField: {fileID: 7447851326769781320}
+  prevButton: {fileID: 3478529064974729861}
+  nextButton: {fileID: 1267637918885315962}
 --- !u!1 &2896983237342842072
 GameObject:
   m_ObjectHideFlags: 0
@@ -1659,7 +1740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3442939664123623802
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1768,13 +1849,14 @@ GameObject:
   - component: {fileID: 4884229359795396011}
   - component: {fileID: 4439809139351476589}
   - component: {fileID: 2053548977121620939}
+  - component: {fileID: 3272738499497201872}
   m_Layer: 0
   m_Name: HandMenu-Desktop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4884229359795396011
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1841,12 +1923,30 @@ MonoBehaviour:
   historyMenuHTMLPath: HTML/history.html
   settingsMenuHTMLPath: HTML/settings.html
   aboutMenuHTMLPath: HTML/about.html
-  menuGrid: {fileID: 5736876719851736042}
+  menuGrid: {fileID: 5300275691488914501}
   modeMenu: {fileID: 744146917318587251}
   exitMenu: {fileID: 2896983237342842072}
   webViewObject: {fileID: 2995200958565214598}
   backButtonObject: {fileID: 8018398115202665994}
   webView: {fileID: 4401197102023169155}
+  multiBarController: {fileID: 5921985666744445042}
+--- !u!114 &3272738499497201872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3206900791128274451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &3358374702670044799
 GameObject:
   m_ObjectHideFlags: 0
@@ -1956,10 +2056,10 @@ RectTransform:
   - {fileID: 4896879167872183018}
   m_Father: {fileID: 4672564473255725292}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 14.5, y: -14.5}
+  m_SizeDelta: {x: 29, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2711138062949392170
 CanvasRenderer:
@@ -2042,7 +2142,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7313105074799385921}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: OpenModeMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3662210843635674153
 GameObject:
   m_ObjectHideFlags: 0
@@ -2407,10 +2520,10 @@ RectTransform:
   - {fileID: 6165676100956687256}
   m_Father: {fileID: 1467988777982240772}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -74}
+  m_SizeDelta: {x: 79, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5110305520353496161
 CanvasRenderer:
@@ -2489,11 +2602,24 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 7699054974306257502}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: CloseWebVerse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &3942214165214590823
 GameObject:
   m_ObjectHideFlags: 0
@@ -2674,7 +2800,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 857181729528055367}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 5921985666744445042}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.MultiBarController,
+          FiveSQD.WebVerse
+        m_MethodName: GoBack
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4863110211641529777
 GameObject:
   m_ObjectHideFlags: 0
@@ -2709,10 +2848,10 @@ RectTransform:
   - {fileID: 3328010700320761231}
   m_Father: {fileID: 7654829804451128063}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -72.5}
+  m_SizeDelta: {x: 79, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5192971124065545559
 CanvasRenderer:
@@ -2791,11 +2930,24 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 2487636243664543811}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: ChangeTabMode
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: steamvr
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5042166309666719711
 GameObject:
   m_ObjectHideFlags: 0
@@ -3079,7 +3231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3140255847376813468
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3220,7 +3372,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7687500995887138847}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: ToggleMenuGrid
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5443187397988889444
 GameObject:
   m_ObjectHideFlags: 0
@@ -3255,10 +3420,10 @@ RectTransform:
   - {fileID: 11353370844616604}
   m_Father: {fileID: 1467988777982240772}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -38}
+  m_SizeDelta: {x: 79, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3794393997758396766
 CanvasRenderer:
@@ -3341,7 +3506,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2662145392681627249}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: OpenMenuGrid
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5736876719851736042
 GameObject:
   m_ObjectHideFlags: 0
@@ -3553,7 +3731,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3438302147350877673
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3569,10 +3747,10 @@ RectTransform:
   - {fileID: 8330275982679406093}
   m_Father: {fileID: 4672564473255725292}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -14.5}
+  m_SizeDelta: {x: 29, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5666531176022193968
 CanvasRenderer:
@@ -3655,7 +3833,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7652898571085282950}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: OpenSettingsMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6778963887621657899
 GameObject:
   m_ObjectHideFlags: 0
@@ -3915,10 +4106,10 @@ RectTransform:
   - {fileID: 5749256727571320459}
   m_Father: {fileID: 4531543109047363582}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 10, y: -9}
+  m_SizeDelta: {x: 18, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3848365114668957035
 CanvasRenderer:
@@ -4163,7 +4354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5030281158449005451
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4218,10 +4409,10 @@ RectTransform:
   - {fileID: 5799105149660953450}
   m_Father: {fileID: 4672564473255725292}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 72.5, y: -14.5}
+  m_SizeDelta: {x: 29, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &88502102215318391
 CanvasRenderer:
@@ -4304,7 +4495,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6461368334314095464}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: OpenExitMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8302146810526101306
 GameObject:
   m_ObjectHideFlags: 0
@@ -4339,10 +4543,10 @@ RectTransform:
   - {fileID: 4027405313026989208}
   m_Father: {fileID: 1467988777982240772}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -56}
+  m_SizeDelta: {x: 79, y: 18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2849776809619537436
 CanvasRenderer:
@@ -4425,7 +4629,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8930241168498454629}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: ChangeTabMode
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: teardown
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8425407289506220674
 GameObject:
   m_ObjectHideFlags: 0
@@ -4535,10 +4752,10 @@ RectTransform:
   - {fileID: 3367044636691787983}
   m_Father: {fileID: 7654829804451128063}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 43.5, y: -14.5}
+  m_SizeDelta: {x: 79, y: 29}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1769274084195039277
 CanvasRenderer:
@@ -4621,7 +4838,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3612278944233258621}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2053548977121620939}
+        m_TargetAssemblyTypeName: FiveSQD.WebVerse.Input.Focused.HandMenuController,
+          FiveSQD.WebVerse
+        m_MethodName: ChangeTabMode
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: teardown
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &8617477429548703579
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4640,19 +4870,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_SizeDelta.x
@@ -4704,11 +4934,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 785.6
+      value: 210
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 142
+      value: -179
       objectReference: {fileID: 0}
     - target: {fileID: 1443081707664823632, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4725,6 +4955,70 @@ PrefabInstance:
     - target: {fileID: 2294563418031339706, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_PresetInfoIsWorld
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189409814999640650, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189409814999640650, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189409814999640650, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189409814999640650, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189409814999640650, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189409814999640650, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189578881684776410, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189578881684776410, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189578881684776410, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189578881684776410, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189578881684776410, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5189578881684776410, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5190204176007292910, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5190204176007292910, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5190204176007292910, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5190204176007292910, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5190204176007292910, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_SizeDelta.x
@@ -4764,7 +5058,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5369240057492507608, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: InitialUrl
-      value: https://www.google.com
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5369240057492507608, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: Resolution
@@ -4781,6 +5075,10 @@ PrefabInstance:
     - target: {fileID: 6775236243950286557, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
       propertyPath: m_Name
       value: WebViewPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 6775236243950286557, guid: f04603dd8ca66a74abbf0f1b3388304a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311918, g: 0.3807398, b: 0.35872716, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -202,7 +202,7 @@ MonoBehaviour:
   skyMaterial: {fileID: 2100000, guid: 0aade801f5d375245b8bd2843b11a686, type: 2}
   inputEntityPrefab: {fileID: 3404910423723151847, guid: 44921bfd791608f478a50f319f8e7008, type: 3}
   characterControllerPrefab: {fileID: 7832346899718387135, guid: 4c694a909b9513f48bbbf3cfacf4e43f, type: 3}
-  characterControllerLabelPrefab: {fileID: 2030243796561691045, guid: 913dd9ff86e3f3746a4685c0956003a5, type: 3}
+  characterControllerLabelPrefab: {fileID: 2030243796561691045, guid: e9cf3b9e35e884b4bb9f0b194fd8ab35, type: 3}
   voxelPrefab: {fileID: 6606647278254262707, guid: 3d1ec9bb5b196f549b7423dcf9c31e04, type: 3}
   webViewPrefab: {fileID: 1469133279829300, guid: d704fe1266adf446ebcfa350586e1bc7, type: 3}
   canvasWebViewPrefab: {fileID: 1535822479614194, guid: 3e10f3b6a733e441c8352020cff2f1f6, type: 3}
@@ -243,7 +243,7 @@ MonoBehaviour:
   testMaxEntries: 512
   testMaxEntryLength: 2048
   testMaxKeyLength: 128
-  testFilesDirectory: D:/WebVerse/WebVerse/WebVerse/Assets\Files
+  testFilesDirectory: C:/Users/dbake/WebVerse/Development/WebVerse-Runtime/Assets/Files
   testDaemonPort: 9089
   testMainAppID: dde5923e-37b1-428d-8808-3872987650f8
   testTabID: 10
@@ -2263,6 +2263,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handMenu: {fileID: 8823050053135243570}
+  worldSpaceMenu: 0
 --- !u!1001 &1964044637156569418
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2362,6 +2363,10 @@ PrefabInstance:
     - target: {fileID: 850861819301620074, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1056310160086924975, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1267637918885315962, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -2549,7 +2554,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3438302147350877673, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 72.5
+      value: 43.5
       objectReference: {fileID: 0}
     - target: {fileID: 3438302147350877673, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2877,11 +2882,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5011960449326006481, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 43.5
+      value: 72.5
       objectReference: {fileID: 0}
     - target: {fileID: 5011960449326006481, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -43.5
+      value: -14.5
       objectReference: {fileID: 0}
     - target: {fileID: 5300275691488914501, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_IsActive
@@ -2905,11 +2910,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5449250057031958194, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 14.5
+      value: 43.5
       objectReference: {fileID: 0}
     - target: {fileID: 5449250057031958194, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -43.5
+      value: -14.5
       objectReference: {fileID: 0}
     - target: {fileID: 5607243590942659563, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
@@ -2970,6 +2975,10 @@ PrefabInstance:
     - target: {fileID: 5843047848580827536, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6089470849371207350, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6171882923718448138, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchorMax.y
@@ -3117,7 +3126,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7959565717305322946, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 43.5
+      value: 14.5
       objectReference: {fileID: 0}
     - target: {fileID: 7959565717305322946, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -3157,7 +3166,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8837272346242804086, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_Interactable
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8837272346242804086, guid: 09fcf01406ad8d54eaf2247f333327b7, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size

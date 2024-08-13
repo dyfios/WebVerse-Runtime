@@ -27,12 +27,6 @@ namespace FiveSQD.WebVerse.Input.Focused
         public GameObject menuObject;
 
         /// <summary>
-        /// Menu distance in meters.
-        /// </summary>
-        [Tooltip("Menu distance in meters.")]
-        public float menuDistance;
-
-        /// <summary>
         /// Path to the History Menu HTML.
         /// </summary>
         [Tooltip("Path to the History Menu HTML.")]
@@ -136,7 +130,6 @@ namespace FiveSQD.WebVerse.Input.Focused
 
             if (menuObject.activeSelf)
             {
-                //menuObject.transform.position = mainCamera.transform.TransformPoint(Vector3.forward * menuDistance);
                 OpenMenuGrid();
             }
         }
@@ -282,8 +275,11 @@ namespace FiveSQD.WebVerse.Input.Focused
         ///                           - steamvr:  Open in SteamVR mode.</param>
         public void ChangeTabMode(string runtimeType)
         {
-            WebVerseRuntime.Instance.webVerseDaemonManager.SendFocusedTabRequest(
-                WebVerseRuntime.Instance.currentURL, runtimeType);
+            if (WebVerseRuntime.Instance.webVerseDaemonManager != null)
+            {
+                WebVerseRuntime.Instance.webVerseDaemonManager.SendFocusedTabRequest(
+                    WebVerseRuntime.Instance.currentURL, runtimeType);
+            }
         }
 
         private void Update()
@@ -313,7 +309,7 @@ namespace FiveSQD.WebVerse.Input.Focused
                     };
                 }
 
-                if (urlsToLoad.Count > 0)
+                if (urlsToLoad != null && urlsToLoad.Count > 0)
                 {
                     webView.WebView.LoadUrl(urlsToLoad.Dequeue());
                 }
