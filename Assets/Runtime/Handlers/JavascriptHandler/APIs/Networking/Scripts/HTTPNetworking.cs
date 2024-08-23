@@ -320,7 +320,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
                             dataToReturn = System.Text.Encoding.UTF8.GetString(resp.data);
                         }
                     }
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onFinished.Replace("?", "'" + dataToReturn + "'"));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onFinished, new object[] { dataToReturn });
                 }
             });
 

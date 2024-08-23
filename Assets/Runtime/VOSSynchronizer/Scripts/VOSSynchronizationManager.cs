@@ -42,12 +42,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         }
 
         /// <summary>
-        /// Terminate the synchronization manager.
+        /// Reset the synchronization manager.
         /// </summary>
-        public override void Terminate()
+        public void Reset()
         {
-            base.Terminate();
-
             if (vosSynchronizers != null)
             {
                 foreach (VOSSynchronizer synchronizer in vosSynchronizers)
@@ -57,6 +55,16 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             }
             vosSynchronizers = new List<VOSSynchronizer>();
             vosSynchronizersAndSessions = new Dictionary<string, Tuple<VOSSynchronizer, Guid>>();
+        }
+
+        /// <summary>
+        /// Terminate the synchronization manager.
+        /// </summary>
+        public override void Terminate()
+        {
+            base.Terminate();
+
+            Reset();
         }
 
         /// <summary>

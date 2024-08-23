@@ -44,12 +44,13 @@ namespace FiveSQD.WebVerse.Handlers.PNG
         /// <param name="resourceURI">URI to get the resource from.</param>
         /// <param name="onLoaded">Action to perform when loading is complete. Provides the loaded
         /// resource as a Texture2D.</param>
-        public void LoadImageResourceAsTexture2D(string resourceURI, Action<Texture2D> onLoaded)
+        /// <param name="format">Format to use.</param>
+        public void LoadImageResourceAsTexture2D(string resourceURI, Action<Texture2D> onLoaded, TextureFormat? format = null)
         {
             Action onDownloaded = () =>
             {
                 Texture2D img = LoadImage(System.IO.Path.Combine(runtime.fileHandler.fileDirectory,
-                    FileHandler.ToFileURI(resourceURI)));
+                    FileHandler.ToFileURI(resourceURI)), format);
                 onLoaded.Invoke(img);
             };
             DownloadPNG(resourceURI, onDownloaded);
@@ -74,6 +75,12 @@ namespace FiveSQD.WebVerse.Handlers.PNG
 
             if (runtime.fileHandler.FileExistsInFileDirectory(FileHandler.ToFileURI(uri)))
             {
+                if (uri.StartsWith("file:/") || uri.StartsWith("/") || uri.StartsWith(".") || uri[1] == ':')
+                {
+                    Logging.Log("[PNGHandler->DownloadPNG] File " + uri + " already exists. Using stored version.");
+                    onDownloaded.Invoke();
+                    return;
+                }
                 Logging.Log("[PNGHandler->DownloadPNG] File " + uri + " already exists. Checking for newer version.");
 
                 Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
@@ -116,12 +123,23 @@ namespace FiveSQD.WebVerse.Handlers.PNG
         /// Load an image from a path.
         /// </summary>
         /// <param name="path">Path to load the image from.</param>
+        /// <param name="format">Format to use.</param>
         /// <returns>A loaded Texture2D, or null.</returns>
-        public Texture2D LoadImage(string path)
+        public Texture2D LoadImage(string path, TextureFormat? format = null)
         {
             byte[] rawData = System.IO.File.ReadAllBytes(path);
-            Texture2D texture = new Texture2D(2, 2);
-            texture.LoadImage(rawData);
+            Texture2D texture;
+            if (format.HasValue)
+            {
+                texture = new Texture2D(2, 2, format.Value, true);
+                texture.LoadImage(rawData);
+            }
+            else
+            {
+                texture = new Texture2D(2, 2);
+                texture.LoadImage(rawData);
+            }
+            
             return texture;
         }
 

@@ -3,11 +3,10 @@
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities;
 using Newtonsoft.Json;
 using System;
-using UnityEngine;
 
 namespace FiveSQD.WebVerse.Daemon
 {
-    public class WebVerseDaemonMessages : MonoBehaviour
+    public class WebVerseDaemonMessages
     {
         /// <summary>
         /// Class for a JSON-serializable identification request.
@@ -117,15 +116,173 @@ namespace FiveSQD.WebVerse.Daemon
             public string connectionID;
 
             /// <summary>
-            /// Constructor for a JSON-serializable identification request.
+            /// Constructor for a JSON-serializable load world command.
             /// </summary>
-            /// <param name="topic">Topic.</param>
             /// <param name="url">World URL.</param>
             /// <param name="connectionID">Connection ID.</param>
             public LoadWorldCommand(string url, Guid? connectionID)
             {
                 topic = "LOAD-WORLD-CMD";
                 this.url = url;
+                this.connectionID = connectionID.HasValue ? connectionID.Value.ToString() : "";
+            }
+        }
+
+        /// <summary>
+        /// Class for a JSON-serializable close request.
+        /// </summary>
+        public class CloseRequest
+        {
+            /// <summary>
+            /// Topic.
+            /// </summary>
+            [JsonProperty(PropertyName = "topic")]
+            public string topic;
+
+            /// <summary>
+            /// Connection ID.
+            /// </summary>
+            [JsonProperty(PropertyName = "connectionID")]
+            public string connectionID;
+
+            /// <summary>
+            /// Constructor for a JSON-serializable close request.
+            /// </summary>
+            /// <param name="connectionID">Connection ID.</param>
+            public CloseRequest(Guid? connectionID)
+            {
+                topic = "CLOSE-REQ";
+                this.connectionID = connectionID.HasValue ? connectionID.Value.ToString() : "";
+            }
+        }
+
+        /// <summary>
+        /// Class for a JSON-serializable focused tab request.
+        /// </summary>
+        public class FocusedTabRequest
+        {
+            /// <summary>
+            /// Topic.
+            /// </summary>
+            [JsonProperty(PropertyName = "topic")]
+            public string topic;
+
+            /// <summary>
+            /// World URL.
+            /// </summary>
+            [JsonProperty(PropertyName = "url")]
+            public string url;
+
+            /// <summary>
+            /// Runtime Type.
+            /// </summary>
+            [JsonProperty(PropertyName = "type")]
+            public string runtimeType;
+
+            /// <summary>
+            /// Connection ID.
+            /// </summary>
+            [JsonProperty(PropertyName = "connectionID")]
+            public string connectionID;
+
+            /// <summary>
+            /// Constructor for a JSON-serializable focused tab request.
+            /// </summary>
+            /// <param name="url">World URL.</param>
+            /// <param name="connectionID">Connection ID.</param>
+            public FocusedTabRequest(string url, string runtimeType, Guid? connectionID)
+            {
+                topic = "FOCUSED-TAB-REQ";
+                this.url = url;
+                this.runtimeType = runtimeType;
+                this.connectionID = connectionID.HasValue ? connectionID.Value.ToString() : "";
+            }
+        }
+
+        /// <summary>
+        /// Class for a JSON-serializable update history command.
+        /// </summary>
+        public class UpdateHistoryCommand
+        {
+            /// <summary>
+            /// Topic.
+            /// </summary>
+            [JsonProperty(PropertyName = "topic")]
+            public string topic;
+
+            /// <summary>
+            /// History.
+            /// </summary>
+            [JsonProperty(PropertyName = "history")]
+            public string history;
+
+            /// <summary>
+            /// Connection ID.
+            /// </summary>
+            [JsonProperty(PropertyName = "connectionID")]
+            public string connectionID;
+
+            /// <summary>
+            /// Constructor for a JSON-serializable update history command.
+            /// </summary>
+            /// <param name="history">History.</param>
+            /// <param name="connectionID">Connection ID.</param>
+            public UpdateHistoryCommand(string history, Guid? connectionID)
+            {
+                topic = "UPDATE_HIST-CMD";
+                this.history = history;
+                this.connectionID = connectionID.HasValue ? connectionID.Value.ToString() : "";
+            }
+        }
+
+        /// <summary>
+        /// Class for a JSON-serializable update settings request.
+        /// </summary>
+        public class UpdateSettingsRequest
+        {
+            /// <summary>
+            /// Topic.
+            /// </summary>
+            [JsonProperty(PropertyName = "topic")]
+            public string topic;
+
+            /// <summary>
+            /// Storage Entries.
+            /// </summary>
+            [JsonProperty(PropertyName = "storageEntries")]
+            public int storageEntries;
+
+            /// <summary>
+            /// Storage Key Length.
+            /// </summary>
+            [JsonProperty(PropertyName = "storageKeyLength")]
+            public int storageKeyLength;
+
+            /// <summary>
+            /// Storage Entry Length.
+            /// </summary>
+            [JsonProperty(PropertyName = "storageEntryLength")]
+            public int storageEntryLength;
+
+            /// <summary>
+            /// Connection ID.
+            /// </summary>
+            [JsonProperty(PropertyName = "connectionID")]
+            public string connectionID;
+
+            /// <summary>
+            /// Constructor for a JSON-serializable update history command.
+            /// </summary>
+            /// <param name="storageEntries">Storage Entries.</param>
+            /// <param name="storageKeyLength">Storage Key Length.</param>
+            /// <param name="storageEntryLength">Storage Entry Length.</param>
+            /// <param name="connectionID">Connection ID.</param>
+            public UpdateSettingsRequest(int storageEntries, int storageKeyLength, int storageEntryLength, Guid? connectionID)
+            {
+                topic = "UPDATE_HIST-CMD";
+                this.storageEntries = storageEntries;
+                this.storageKeyLength = storageKeyLength;
+                this.storageEntryLength = storageEntryLength;
                 this.connectionID = connectionID.HasValue ? connectionID.Value.ToString() : "";
             }
         }

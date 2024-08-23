@@ -72,6 +72,12 @@ namespace FiveSQD.WebVerse.Runtime
         public string testWorldLoadTimeout;
 
         /// <summary>
+        /// History to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("History to use in Unity Editor tests.")]
+        public string testHistory;
+
+        /// <summary>
         /// WebVerse Runtime.
         /// </summary>
         [Tooltip("WebVerse Runtime.")]
@@ -155,8 +161,11 @@ namespace FiveSQD.WebVerse.Runtime
                 worldLoadTimeout = 120;
             }
 
+            string history = GetHistory();
+
             runtime.Initialize(storageMode, maxEntries, maxEntryLength, maxKeyLength,
                 filesDirectory, daemonPort, mainAppID, tabID, worldLoadTimeout);
+            runtime.handMenuController.UpdateHistory(history);
             runtime.LoadURL(uri);
         }
 
@@ -393,7 +402,33 @@ namespace FiveSQD.WebVerse.Runtime
                 }
             }
 #endif
+            if (string.IsNullOrEmpty(timeout))
+            {
+                timeout = "10";
+            }
             return float.Parse(timeout);
+        }
+
+        /// <summary>
+        /// Get the History, provided by command line in built app, and by 'testHistory'
+        /// variable in Editor mode.
+        /// </summary>
+        /// <returns>History.</returns>
+        private string GetHistory()
+        {
+            string history = "";
+#if UNITY_EDITOR
+            history = testHistory;
+#else
+            foreach (string arg in System.Environment.GetCommandLineArgs())
+            {
+                if (arg.StartsWith("history="))
+                {
+                    history = arg.Substring(8);
+                }
+            }
+#endif
+            return history;
         }
     }
 }

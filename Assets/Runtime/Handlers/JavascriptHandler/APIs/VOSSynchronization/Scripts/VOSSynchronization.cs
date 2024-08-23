@@ -299,8 +299,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             if (!string.IsNullOrEmpty(callback))
             {
                 onMessageAction = (string topic, string senderID, string message) => {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(callback.Replace("?",
-                        "\"" + topic + "\", \"" + senderID + "\", \"" + message + "\""));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(callback, new object[] { topic, senderID, message });
                 };
             }
             synchronizerToRegisterMessageCallbackOn.AddMessageListener(onMessageAction);

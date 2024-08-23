@@ -17,6 +17,21 @@ namespace FiveSQD.WebVerse.LocalStorage
         public enum LocalStorageMode { Uninitialized, Cache, Persistent }
 
         /// <summary>
+        /// Maximum number of entries.
+        /// </summary>
+        public int maxEntries { get; private set; }
+
+        /// <summary>
+        /// Maximum length of an entry.
+        /// </summary>
+        public int maxEntryLength { get; private set; }
+
+        /// <summary>
+        /// Maximum length of a key.
+        /// </summary>
+        public int maxKeyLength { get; private set; }
+
+        /// <summary>
         /// The current mode that storage is in.
         /// </summary>
         private LocalStorageMode storageMode = LocalStorageMode.Uninitialized;
@@ -30,21 +45,6 @@ namespace FiveSQD.WebVerse.LocalStorage
         /// Root gameobject for the storage controllers.
         /// </summary>
         private GameObject storageControllersGO;
-
-        /// <summary>
-        /// Maximum number of entries.
-        /// </summary>
-        private int maxEntries;
-
-        /// <summary>
-        /// Maximum length of an entry.
-        /// </summary>
-        private int maxEntryLength;
-
-        /// <summary>
-        /// Maximum length of a key.
-        /// </summary>
-        private int maxKeyLength;
 
         /// <summary>
         /// Initialize the local storage manager.

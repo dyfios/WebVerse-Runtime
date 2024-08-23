@@ -53,7 +53,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { ce });
                 }
             };
 
