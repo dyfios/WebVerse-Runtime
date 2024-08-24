@@ -274,10 +274,28 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             public string path;
 
             /// <summary>
-            /// Paths to additional entity resources
+            /// Paths to additional entity resources.
             /// </summary>
             [JsonProperty(PropertyName = "resources")]
             public string[] resources;
+
+            /// <summary>
+            /// Offset for the character entity model.
+            /// </summary>
+            [JsonProperty(PropertyName = "model-offset")]
+            public SerializableVector3 modelOffset;
+
+            /// <summary>
+            /// Rotation for the character entity model.
+            /// </summary>
+            [JsonProperty(PropertyName = "model-rotation")]
+            public SerializableQuaternion modelRotation;
+
+            /// <summary>
+            /// Offset for entity label.
+            /// </summary>
+            [JsonProperty(PropertyName = "label-offset")]
+            public SerializableVector3 labelOffset;
 
             /// <summary>
             /// ID of the entity's parent.
@@ -431,6 +449,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             /// <param name="_type">Type of the entity.</param>
             /// <param name="_path">Path to a resource for the entity.</param>
             /// <param name="_resources">Paths to resources for the entity.</param>
+            /// <param name="_modelOffset">Offset for the entity model.</param>
+            /// <param name="_modelRotation">Rotation for the entity model.</param>
+            /// <param name="_labelOffset">Offset for the entity label.</param>
             /// <param name="_parentID">ID of the entity's parent.</param>
             /// <param name="_position">Position of the entity.</param>
             /// <param name="_rotation">Rotation of the entity.</param>
@@ -455,7 +476,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             /// <param name="_subType">Entity subtype.</param>
             /// <param name="_modifications">Modifications to use for the terrain.</param>
             public EntityInfo(Guid _id, string _tag, string _type, string _path,
-                string[] _resources, Guid? _parentID, Vector3 _position,
+                string[] _resources, Vector3 _modelOffset, Quaternion _modelRotation,
+                Vector3 _labelOffset, Guid? _parentID, Vector3 _position,
                 Quaternion _rotation, Vector3 _scaleSize, bool isSize,
                 Vector2 _positionPercent, Vector2 _sizePercent, string _onClick,
                 float _length, float _width, float _height, float[,] _heights,
@@ -471,6 +493,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 type = _type;
                 path = _path;
                 resources = _resources;
+                modelOffset = new SerializableVector3(_modelOffset);
+                modelRotation = new SerializableQuaternion(_modelRotation);
+                labelOffset = new SerializableVector3(_labelOffset);
                 parentID = _parentID.HasValue ? _parentID.Value.ToString() : null;
                 position = new SerializableVector3(_position);
                 rotation = new SerializableQuaternion(_rotation);
@@ -1081,10 +1106,28 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string path;
 
                 /// <summary>
-                /// Paths to mesh entity resources
+                /// Paths to character entity resources
                 /// </summary>
                 [JsonProperty(PropertyName = "resources")]
                 public string[] resources;
+
+                /// <summary>
+                /// Offset for the character entity model.
+                /// </summary>
+                [JsonProperty(PropertyName = "model-offset")]
+                public SerializableVector3 modelOffset;
+
+                /// <summary>
+                /// Rotation for the character entity model.
+                /// </summary>
+                [JsonProperty(PropertyName = "model-rotation")]
+                public SerializableQuaternion modelRotation;
+
+                /// <summary>
+                /// Offset for the character entity label.
+                /// </summary>
+                [JsonProperty(PropertyName = "label-offset")]
+                public SerializableVector3 labelOffset;
 
                 /// <summary>
                 /// ID of the entity's parent
@@ -1125,9 +1168,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 public AddCharacterEntityMessage(Guid _messageID, Guid _clientID,
                     Guid _sessionID, Guid _entityID, string _tag, Guid? _parentID,
-                    string _path, string[] _resources, Vector3 _position,
-                    Quaternion _rotation, Vector3 _scaleSize, bool isSize,
-                    bool _deleteWithClient)
+                    string _path, string[] _resources, Vector3 _modelOffset,
+                    Quaternion _modelRotation, Vector3 _labelOffset,
+                    Vector3 _position, Quaternion _rotation, Vector3 _scaleSize,
+                    bool isSize, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
                     clientID = _clientID.ToString();
@@ -1136,6 +1180,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     tag = _tag;
                     path = _path;
                     resources = _resources;
+                    modelOffset = new SerializableVector3(_modelOffset);
+                    modelRotation = new SerializableQuaternion(_modelRotation);
+                    labelOffset = new SerializableVector3(_labelOffset);
                     parentID = _parentID.HasValue ? _parentID.Value.ToString() : null;
                     position = new SerializableVector3(_position);
                     rotation = new SerializableQuaternion(_rotation);
@@ -2932,6 +2979,30 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string path;
 
                 /// <summary>
+                /// Paths to character entity resources.
+                /// </summary>
+                [JsonProperty(PropertyName = "resources")]
+                public string[] resources;
+
+                /// <summary>
+                /// Offset for the character entity model.
+                /// </summary>
+                [JsonProperty(PropertyName = "model-offset")]
+                public SerializableVector3 modelOffset;
+
+                /// <summary>
+                /// Rotation for the character entity model.
+                /// </summary>
+                [JsonProperty(PropertyName = "model-rotation")]
+                public SerializableQuaternion modelRotation;
+
+                /// <summary>
+                /// Offset for the character entity label.
+                /// </summary>
+                [JsonProperty(PropertyName = "label-offset")]
+                public SerializableVector3 labelOffset;
+
+                /// <summary>
                 /// ID of the entity's parent
                 /// (string representation of UUID).
                 /// </summary>
@@ -2964,8 +3035,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 public AddCharacterEntityMessage(Guid _messageID, Guid _clientID,
                     Guid _sessionID, Guid _entityID, string _tag, string _path,
-                    Guid? _parentID, Vector3 _position, Quaternion _rotation,
-                    Vector3 _scaleSize, bool isSize)
+                    string[] _resources, Vector3 _modelOffset, Quaternion _modelRotation,
+                    Vector3 _labelOffset, Guid? _parentID, Vector3 _position,
+                    Quaternion _rotation, Vector3 _scaleSize, bool isSize)
                 {
                     messageID = _messageID.ToString();
                     clientID = _clientID.ToString();
@@ -2973,6 +3045,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     id = _entityID.ToString();
                     tag = _tag;
                     path = _path;
+                    resources = _resources;
+                    modelOffset = new SerializableVector3(_modelOffset);
+                    modelRotation = new SerializableQuaternion(_modelRotation);
+                    labelOffset = new SerializableVector3(_labelOffset);
                     parentID = _parentID.HasValue ? _parentID.Value.ToString() : null;
                     position = new SerializableVector3(_position);
                     rotation = new SerializableQuaternion(_rotation);
@@ -3031,7 +3107,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string path;
 
                 /// <summary>
-                /// Paths to mesh entity resources
+                /// Paths to mesh entity resources.
                 /// </summary>
                 [JsonProperty(PropertyName = "resources")]
                 public string[] resources;

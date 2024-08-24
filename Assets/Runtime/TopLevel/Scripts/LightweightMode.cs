@@ -149,7 +149,7 @@ namespace FiveSQD.WebVerse.Runtime
             Guid mainAppID = GetMainAppID();
             if (mainAppID == Guid.Empty)
             {
-                Logging.LogError("[LightweightMode->LoadRuntime] Invalid main app ID value.");
+                Logging.Log("[LightweightMode->LoadRuntime] Main app ID not set.");
             }
 
             int tabID = GetTabID();

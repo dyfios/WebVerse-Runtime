@@ -49,7 +49,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 onMessageAction = (msg) =>
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onMessage.Replace("?", "'" + msg + "'"));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onMessage, new object[] { msg });
                 };
             }
 
@@ -60,7 +60,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 EntityAPIHelper.AddEntityMapping(he.internalEntity, he);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { he });
                 }
             };
 
@@ -112,7 +112,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 onMessageAction = (msg) =>
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onMessage.Replace("?", "'" + msg + "'"));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onMessage, new object[] { msg });
                 };
             }
 
@@ -129,7 +129,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { he });
                 }
             };
             
@@ -258,7 +258,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 {
                     if (WebVerseRuntime.Instance.inputManager.inputEnabled)
                     {
-                        WebVerseRuntime.Instance.javascriptHandler.Run(onComplete.Replace("?", result));
+                        WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onComplete, new object[] { result });
                     }
                 };
             }

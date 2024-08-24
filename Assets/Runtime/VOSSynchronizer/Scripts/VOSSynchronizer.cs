@@ -433,10 +433,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="entityToSynchronize">Entity to start synchronizing.</param>
         /// <param name="deleteWithClient">Whether or not to delete the entity when the client disconnects.</param>
         /// <param name="filePath">Path to a resource for the entity.</param>
-        /// <param name="resourcesPaths">Paths to additional resources</param>
+        /// <param name="resourcesPaths">Paths to additional resources.</param>
+        /// <param name="modelOffset">Offset for a model.</param>
+        /// <param name="modelRotation">Rotation for a model.</param>
+        /// <param name="labelOffset">Offset for a label.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public override StatusCode AddSynchronizedEntity(BaseEntity entityToSynchronize,
-            bool deleteWithClient, string filePath = null, string[] resourcesPaths = null)
+            bool deleteWithClient, string filePath = null, string[] resourcesPaths = null,
+            Vector3? modelOffset = null, Quaternion? modelRotation = null, Vector3? labelOffset = null)
         {
             if (mqttClient == null)
             {
@@ -505,8 +509,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     addCharacterEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddCharacterEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID, filePath, resourcesPaths,
-                    entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
-                    entityToSynchronize.GetScale(), false, deleteWithClient);
+                    modelOffset.HasValue ? modelOffset.Value : Vector3.zero,
+                    modelRotation.HasValue ? modelRotation.Value : Quaternion.identity,
+                    labelOffset.HasValue ? labelOffset.Value : Vector3.zero, entityToSynchronize.GetPosition(true),
+                    entityToSynchronize.GetRotation(true), entityToSynchronize.GetScale(), false, deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createcharacterentity",
                     JsonConvert.SerializeObject(addCharacterEntityMessage));
             }
@@ -1626,9 +1632,20 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             "already exists.");
                         return;
                     }
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parent, addCharacterEntityMessage.position.ToVector3(),
+                    if (addCharacterEntityMessage.path == null)
+                    {
+                        WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parent,
+                            null, Vector3.zero, Quaternion.identity, Vector3.zero, addCharacterEntityMessage.position.ToVector3(),
                         addCharacterEntityMessage.rotation.ToQuaternion(), scaleSize,
                         Guid.Parse(addCharacterEntityMessage.id), addCharacterEntityMessage.tag, isSize);
+                    }
+                    else
+                    {
+                        WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsCharacterEntity(addCharacterEntityMessage.path,
+                            addCharacterEntityMessage.resources, addCharacterEntityMessage.modelOffset.ToVector3(),
+                            addCharacterEntityMessage.modelRotation.ToQuaternion(), addCharacterEntityMessage.labelOffset.ToVector3(),
+                            Guid.Parse(addCharacterEntityMessage.id));
+                    }
                     BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addCharacterEntityMessage.id));
                     if (ce == null)
                     {
@@ -1637,6 +1654,17 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         ce.SetVisibility(true);
+                        ce.SetPosition(addCharacterEntityMessage.position.ToVector3(), false, false);
+                        ce.SetRotation(addCharacterEntityMessage.rotation.ToQuaternion(), false, false);
+                        if (isSize)
+                        {
+                            ce.SetSize(scaleSize, false);
+                        }
+                        else
+                        {
+                            ce.SetScale(scaleSize, false);
+                        }
+                        ce.entityTag = addCharacterEntityMessage.tag;
                     }
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createmeshentity")
@@ -2462,11 +2490,24 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "character":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parentEntity,
-                        new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z),
-                        new Quaternion(entityInfo.rotation.x, entityInfo.rotation.y,
-                        entityInfo.rotation.z, entityInfo.rotation.w), scaleSize, Guid.Parse(entityInfo.id),
-                        entityInfo.tag, isSize, null);
+                    if (entityInfo.path == null)
+                    {
+                        newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parentEntity,
+                            null, Vector3.zero, Quaternion.identity, Vector3.zero,
+                            new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z),
+                            new Quaternion(entityInfo.rotation.x, entityInfo.rotation.y,
+                            entityInfo.rotation.z, entityInfo.rotation.w), scaleSize, Guid.Parse(entityInfo.id),
+                            entityInfo.tag, isSize, null);
+                    }
+                    else
+                    {
+                        WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsCharacterEntity(entityInfo.path,
+                            entityInfo.resources, entityInfo.modelOffset == null ? Vector3.zero : entityInfo.modelOffset.ToVector3(),
+                            entityInfo.modelRotation == null ? Quaternion.identity : entityInfo.modelRotation.ToQuaternion(),
+                            entityInfo.labelOffset == null ? Vector3.zero : entityInfo.labelOffset.ToVector3(),
+                            Guid.Parse(entityInfo.id));
+                    }
+
                     ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
@@ -2474,7 +2515,19 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
+                        ne.SetParent(parentEntity);
                         ne.SetVisibility(true);
+                        ne.SetPosition(entityInfo.position.ToVector3(), false, false);
+                        ne.SetRotation(entityInfo.rotation.ToQuaternion(), false, false);
+                        if (isSize)
+                        {
+                            ne.SetSize(scaleSize, false);
+                        }
+                        else
+                        {
+                            ne.SetScale(scaleSize, false);
+                        }
+                        ne.entityTag = entityInfo.tag;
                     }
                     return ne;
 

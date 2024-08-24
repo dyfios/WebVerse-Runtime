@@ -202,6 +202,7 @@ MonoBehaviour:
   skyMaterial: {fileID: 2100000, guid: 0aade801f5d375245b8bd2843b11a686, type: 2}
   inputEntityPrefab: {fileID: 3404910423723151847, guid: 44921bfd791608f478a50f319f8e7008, type: 3}
   characterControllerPrefab: {fileID: 7832346899718387135, guid: 4c694a909b9513f48bbbf3cfacf4e43f, type: 3}
+  characterControllerLabelPrefab: {fileID: 2030243796561691045, guid: 913dd9ff86e3f3746a4685c0956003a5, type: 3}
   voxelPrefab: {fileID: 6606647278254262707, guid: 3d1ec9bb5b196f549b7423dcf9c31e04, type: 3}
   webViewPrefab: {fileID: 1469133279829300, guid: d704fe1266adf446ebcfa350586e1bc7, type: 3}
   canvasWebViewPrefab: {fileID: 1535822479614194, guid: 3e10f3b6a733e441c8352020cff2f1f6, type: 3}
@@ -1969,8 +1970,8 @@ MonoBehaviour:
   testDaemonPort: 1025
   testMainAppID: 00000000-0000-0000-0000-000000000000
   testTabID: 100
-  testWorldURL: 
-  testWorldLoadTimeout: 10
+  testWorldURL: file://D:/MetaWorld/MetaWorld-Client/metaworld.veml?world_uri=C:/Users/dbake/Desktop/world%26AVATAR_MODEL=file://C:/Users/dbake/Desktop/world/character.glb%26AVATAR_OFFSET_X=0%26AVATAR_OFFSET_Y=0.45%26AVATAR_OFFSET_Z=0
+  testWorldLoadTimeout: 120
   runtime: {fileID: 472491403}
 --- !u!1 &1240903272
 GameObject:

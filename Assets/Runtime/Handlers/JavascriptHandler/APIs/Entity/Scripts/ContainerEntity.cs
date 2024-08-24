@@ -56,7 +56,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     }
                     if (!string.IsNullOrEmpty(onLoaded))
                     {
-                        WebVerseRuntime.Instance.javascriptHandler.Run(onLoaded.Replace("?", "ce"));
+                        WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { ce });
                     }
                 };
 

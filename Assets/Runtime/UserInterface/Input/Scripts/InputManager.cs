@@ -693,6 +693,16 @@ namespace FiveSQD.WebVerse.Input
         /// </summary>
         public override void Initialize()
         {
+            Reset();
+
+            base.Initialize();
+        }
+
+        /// <summary>
+        /// Reset the Input Manager.
+        /// </summary>
+        public void Reset()
+        {
             inputEnabled = false;
 
             moveFunctions = new List<string>();
@@ -777,8 +787,6 @@ namespace FiveSQD.WebVerse.Input
             endLeftStickFunctions = new List<string>();
             rightStickFunctions = new List<string>();
             endRightStickFunctions = new List<string>();
-
-            base.Initialize();
         }
 
         /// <summary>

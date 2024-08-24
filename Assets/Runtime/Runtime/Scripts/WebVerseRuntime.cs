@@ -20,6 +20,7 @@ using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
+using FiveSQD.WebVerse.Input.Focused;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -230,6 +231,12 @@ namespace FiveSQD.WebVerse.Runtime
         public GameObject characterControllerPrefab;
 
         /// <summary>
+        /// Character controller label prefab.
+        /// </summary>
+        [Tooltip("Character controller label prefab.")]
+        public GameObject characterControllerLabelPrefab;
+
+        /// <summary>
         /// Prefab for a Voxel.
         /// </summary>
         [Tooltip("Prefab for a Voxel.")]
@@ -272,10 +279,22 @@ namespace FiveSQD.WebVerse.Runtime
         public BasePlatformInput platformInput;
 
         /// <summary>
+        /// Hand Menu Controller.
+        /// </summary>
+        [Tooltip("Hand Menu Controller.")]
+        public HandMenuController handMenuController;
+
+        /// <summary>
         /// The base path of the current world.
         /// </summary>
         [Tooltip("The base path of the current world.")]
         public string currentBasePath { get; private set; }
+
+        /// <summary>
+        /// The URL of the current world/site.
+        /// </summary>
+        [Tooltip("The URL of the current world/site.")]
+        public string currentURL { get; private set; }
 
         /// <summary>
         /// Initialize the WebVerse Runtime.
@@ -370,6 +389,8 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="url">URL containing the world or HTML page to load.</param>
         public void LoadURL(string url)
         {
+            currentURL = url;
+
             if (url.StartsWith("file://") || url.StartsWith("/") || url.StartsWith(".") || url[1] == ':')
             {
                 UnloadWebPage();
@@ -470,6 +491,27 @@ namespace FiveSQD.WebVerse.Runtime
 
             Logging.Log("[WebVerseRuntime->UnloadWorld] Unloading world: "
                 + WorldEngine.WorldEngine.ActiveWorld.siteName + ".");
+            
+            if (javascriptHandler != null)
+            {
+                javascriptHandler.Reset();
+            }
+
+            if (timeHandler != null)
+            {
+                timeHandler.Reset();
+            }
+
+            if (inputManager != null)
+            {
+                inputManager.Reset();
+            }
+
+            if (vosSynchronizationManager != null)
+            {
+                vosSynchronizationManager.Reset();
+            }
+
             WorldEngine.WorldEngine.UnloadWorld();
             state = RuntimeState.Unloaded;
         }
@@ -512,6 +554,7 @@ namespace FiveSQD.WebVerse.Runtime
             worldEngine.skyMaterial = skyMaterial;
             worldEngine.inputEntityPrefab = inputEntityPrefab;
             worldEngine.characterControllerPrefab = characterControllerPrefab;
+            worldEngine.characterControllerLabelPrefab = characterControllerLabelPrefab;
             worldEngine.voxelPrefab = voxelPrefab;
             worldEngine.webViewPrefab = webViewPrefab;
             worldEngine.canvasWebViewPrefab = canvasWebViewPrefab;
@@ -585,7 +628,7 @@ namespace FiveSQD.WebVerse.Runtime
             outputManager = outputManagerGO.AddComponent<OutputManager>();
             outputManager.Initialize();
 
-            if (daemonPort != null && mainAppID != null && tabID != null)
+            if (daemonPort != null && mainAppID != null && mainAppID != Guid.Empty && tabID != null)
             {
                 // Set up Daemon Manager.
                 GameObject daemonManagerGO = new GameObject("DaemonManager");
@@ -606,6 +649,12 @@ namespace FiveSQD.WebVerse.Runtime
             webVerseWebViewGO.transform.SetParent(transform);
             webverseWebView = webVerseWebViewGO.AddComponent<WebVerseWebView>();
             webverseWebView.Initialize();
+
+            // Set up Hand Menu.
+            if (handMenuController != null)
+            {
+                handMenuController.Initialize();
+            }
         }
 
         /// <summary>
