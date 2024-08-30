@@ -7,6 +7,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 {
@@ -15,6 +16,60 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
     /// </summary>
     public class EntityAPIHelper : MonoBehaviour
     {
+        /// <summary>
+        /// Prefab for a cube mesh.
+        /// </summary>
+        public static GameObject cubeMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a sphere mesh.
+        /// </summary>
+        public static GameObject sphereMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a capsule mesh.
+        /// </summary>
+        public static GameObject capsuleMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a cylinder mesh.
+        /// </summary>
+        public static GameObject cylinderMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a plane mesh.
+        /// </summary>
+        public static GameObject planeMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a torus mesh.
+        /// </summary>
+        public static GameObject torusMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a cone mesh.
+        /// </summary>
+        public static GameObject coneMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a rectangular pyramid.
+        /// </summary>
+        public static GameObject rectangularPyramidMeshPrefab;
+
+        /// <summary>
+        /// Prefab for a tetrahedron.
+        /// </summary>
+        public static GameObject tetrahedronMeshPrefab;
+        /// <summary>
+        /// Prefab for a prism.
+        /// </summary>
+        public static GameObject prismMeshPrefab;
+
+        /// <summary>
+        /// Prefab for an arch.
+        /// </summary>
+        public static GameObject archMeshPrefab;
+
         /// <summary>
         /// Dictionary of Entity API references and internal entity references.
         /// </summary>
@@ -334,9 +389,85 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return te;
         }
 
+        /// <summary>
+        /// Load an image entity asynchronously.
+        /// </summary>
+        /// <param name="parent">Parent entity.</param>
+        /// <param name="imageFile">Image file.</param>
+        /// <param name="positionPercent">Position.</param>
+        /// <param name="sizePercent">Size.</param>
+        /// <param name="id">ID.</param>
+        /// <param name="tag">Tag.</param>
+        /// <param name="onLoaded">Action to perform on load.</param>
+        /// <returns></returns>
+        public static ImageEntity LoadImageEntityAsync(CanvasEntity parent, string imageFile,
+            WorldTypes.Vector2 positionPercent, WorldTypes.Vector2 sizePercent,
+            string id = null, string tag = null, string onLoaded = null)
+        {
+            Guid guid;
+            if (string.IsNullOrEmpty(id))
+            {
+                guid = Guid.NewGuid();
+            }
+            else
+            {
+                guid = Guid.Parse(id);
+            }
+
+            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            if (pCE == null)
+            {
+                Logging.LogWarning("[ImageEntity->Create] Invalid parent entity.");
+                return null;
+            }
+
+            UnityEngine.Vector2 pos = new UnityEngine.Vector2(positionPercent.x, positionPercent.y);
+            UnityEngine.Vector2 size = new UnityEngine.Vector2(sizePercent.x, sizePercent.y);
+
+            ImageEntity ie = new ImageEntity();
+
+            System.Action onLoadAction = null;
+            onLoadAction = () =>
+            {
+                ie.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                EntityAPIHelper.AddEntityMapping(ie.internalEntity, ie);
+                if (!string.IsNullOrEmpty(onLoaded))
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { ie });
+                }
+            };
+
+            instance.StartCoroutine(instance.LoadImageEntityAsync(ie, pCE, guid, imageFile, pos, size, tag, onLoadAction));
+
+            return ie;
+        }
+
+        /// <summary>
+        /// Load audio from a file asynchronously.
+        /// </summary>
+        /// <param name="file">Audio file.</param>
+        /// <param name="audioEntity">Audio entity to play audio in.</param>
+        public static void LoadAudioFromFileAsync(string file, WorldEngine.Entity.AudioEntity audioEntity)
+        {
+            instance.StartCoroutine(instance.LoadAudioFromFile(file, audioEntity));
+        }
+
+        /// <summary>
+        /// Register a private entity.
+        /// </summary>
+        /// <param name="entityToRegister">Entity to register.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
         public static bool RegisterPrivateEntity(WorldEngine.Entity.BaseEntity entityToRegister)
         {
-            if (entityToRegister is WorldEngine.Entity.ButtonEntity)
+            if (entityToRegister is WorldEngine.Entity.AudioEntity)
+            {
+                AudioEntity ae = new AudioEntity();
+                ae.internalEntity = entityToRegister;
+                ae.internalEntityType = typeof(WorldEngine.Entity.AudioEntity);
+                AddEntityMapping(entityToRegister, ae);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.ButtonEntity)
             {
                 ButtonEntity be = new ButtonEntity();
                 be.internalEntity = entityToRegister;
@@ -382,6 +513,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 he.internalEntity = entityToRegister;
                 he.internalEntityType = typeof(WorldEngine.Entity.HTMLUIElementEntity);
                 AddEntityMapping(entityToRegister, he);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.ImageEntity)
+            {
+                ImageEntity ie = new ImageEntity();
+                ie.internalEntity = entityToRegister;
+                ie.internalEntityType = typeof(WorldEngine.Entity.ImageEntity);
+                AddEntityMapping(entityToRegister, ie);
                 return true;
             }
             else if (entityToRegister is WorldEngine.Entity.InputEntity)
@@ -654,6 +793,56 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, heights,
                 formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, guid, tag, onLoaded);
+        }
+
+        /// <summary>
+        /// Load an image entity asynchronously.
+        /// </summary>
+        /// <param name="ie">Image entity to load on.</param>
+        /// <param name="pCE">Parent entity.</param>
+        /// <param name="imageFile">Image file.</param>
+        /// <param name="positionPercent">Position.</param>
+        /// <param name="sizePercent">Size.</param>
+        /// <param name="id">ID.</param>
+        /// <param name="tag">Tag.</param>
+        /// <param name="onLoaded">Action to perform on load.</param>
+        /// <returns></returns>
+        private IEnumerator LoadImageEntityAsync(ImageEntity ie, WorldEngine.Entity.CanvasEntity pCE, Guid id, string imageFile,
+            Vector2 positionPercent, Vector2 sizePercent, string tag = null, Action onLoaded = null)
+        {
+            if (!string.IsNullOrEmpty(imageFile))
+            {
+                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(imageFile, WebVerseRuntime.Instance.currentBasePath),
+                new Action<Texture2D>((tex) =>
+                {
+                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadImageEntity(
+                        tex, pCE, positionPercent, sizePercent, id, tag, onLoaded);
+                }));
+            }
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Load audio from a file in a coroutine.
+        /// </summary>
+        /// <param name="file">Audio file to load.</param>
+        /// <param name="audioEntity">Audio entity to load audio in.</param>
+        /// <returns>Coroutine.</returns>
+        private IEnumerator LoadAudioFromFile(string file, WorldEngine.Entity.AudioEntity audioEntity)
+        {
+            UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(file, AudioType.UNKNOWN);
+            yield return request.SendWebRequest();
+            if (request.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Logging.LogWarning("[EntityAPIHelper->LoadAudioFromFile] Invalid audio file.");
+            }
+            else
+            {
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(request);
+                audioEntity.audioClip = clip;
+            }
         }
     }
 }

@@ -14,13 +14,11 @@ using System.IO;
 using FiveSQD.WebVerse.Handlers.VEML;
 using System;
 using FiveSQD.WebVerse.Input;
-using FiveSQD.WebVerse.Daemon;
 using FiveSQD.WebVerse.WebInterface.HTTP;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
-using FiveSQD.WebVerse.Input.Focused;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -91,25 +89,15 @@ namespace FiveSQD.WebVerse.Runtime
             public string filesDirectory;
 
             /// <summary>
-            /// Daemon Port.
-            /// </summary>
-            public uint? daemonPort;
-
-            /// <summary>
-            /// Main App ID.
-            /// </summary>
-            public Guid? mainAppID;
-
-            /// <summary>
-            /// Tab ID.
-            /// </summary>
-            public int tabID;
-
-            /// <summary>
             /// World Load Timeout.
             /// </summary>
             public float timeout;
         }
+
+        /// <summary>
+        /// WebVerse version.
+        /// </summary>
+        public static readonly string versionString = "v2.0.0";
 
         /// <summary>
         /// Static reference to the WebVerse runtime.
@@ -189,12 +177,6 @@ namespace FiveSQD.WebVerse.Runtime
         public OutputManager outputManager { get; private set; }
 
         /// <summary>
-        /// The Daemon Manager.
-        /// </summary>
-        [Tooltip("The Daemon Manager.")]
-        public WebVerseDaemonManager webVerseDaemonManager { get; private set; }
-
-        /// <summary>
         /// The HTTP Request Manager. This is a part of a stopgap solution while BestHTTP is broken.
         /// </summary>
         [Tooltip("The HTTP Request Manager. This is a part of a stopgap solution while BestHTTP is broken.")]
@@ -205,6 +187,17 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The WebVerse WebView.")]
         public WebVerseWebView webverseWebView { get; private set; }
+
+        /// <summary>
+        /// The Console.
+        /// </summary>
+        [Tooltip("The Console.")]
+        public List<Interface.Console.Console> consoles;
+
+        /// <summary>
+        /// Callback for a log message to be logged to a console.
+        /// </summary>
+        private List<Action<string, Logging.Type>> consoleCallbacks;
 
         /// <summary>
         /// Material to use for highlighting.
@@ -279,12 +272,6 @@ namespace FiveSQD.WebVerse.Runtime
         public BasePlatformInput platformInput;
 
         /// <summary>
-        /// Hand Menu Controller.
-        /// </summary>
-        [Tooltip("Hand Menu Controller.")]
-        public HandMenuController handMenuController;
-
-        /// <summary>
         /// The base path of the current world.
         /// </summary>
         [Tooltip("The base path of the current world.")]
@@ -295,6 +282,72 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The URL of the current world/site.")]
         public string currentURL { get; private set; }
+
+        /// <summary>
+        /// The prefab to use for cube mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for cube mesh entities.")]
+        public GameObject cubeMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for capsule mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for capsule mesh entities.")]
+        public GameObject capsuleMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for cone mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for cone mesh entities.")]
+        public GameObject coneMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for cylinder mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for cylinder mesh entities.")]
+        public GameObject cylinderMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for plane mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for plane mesh entities.")]
+        public GameObject planeMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for rectangular pyramid mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for rectangular pyramid mesh entities.")]
+        public GameObject rectangularPyramidMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for sphere mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for sphere mesh entities.")]
+        public GameObject sphereMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for tetrahedron mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for tetrahedron mesh entities.")]
+        public GameObject tetrahedronMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for torus mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for torus mesh entities.")]
+        public GameObject torusMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for prism mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for prism mesh entities.")]
+        public GameObject prismMeshPrefab;
+
+        /// <summary>
+        /// The prefab to use for arch mesh entities.
+        /// </summary>
+        [Tooltip("The prefab to use for arch mesh entities.")]
+        public GameObject archMeshPrefab;
 
         /// <summary>
         /// Initialize the WebVerse Runtime.
@@ -335,8 +388,7 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             Initialize(mode, settings.maxEntries, settings.maxEntryLength,
-                settings.maxKeyLength, settings.filesDirectory, settings.daemonPort,
-                settings.mainAppID, settings.tabID, settings.timeout);
+                settings.maxKeyLength, settings.filesDirectory, settings.timeout);
         }
 
         /// <summary>
@@ -347,13 +399,10 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
         /// <param name="filesDirectory">Directory to use for files.</param>
-        /// <param name="daemonPort">Daemon Port.</param>
-        /// <param name="mainAppID">Main App ID.</param>
-        /// <param name="tabID">Tab ID.</param>
         /// <param name="timeout">World Load Timeout.</param>
         public void Initialize(LocalStorageManager.LocalStorageMode storageMode,
             int maxEntries, int maxEntryLength, int maxKeyLength, string filesDirectory,
-            uint? daemonPort = null, Guid? mainAppID = null, int? tabID = null, float timeout = 120)
+            float timeout = 120)
         {
             if (Instance != null)
             {
@@ -364,7 +413,7 @@ namespace FiveSQD.WebVerse.Runtime
             Instance = this;
 
             InitializeComponents(storageMode, maxEntries, maxEntryLength,
-                maxKeyLength, filesDirectory, daemonPort, mainAppID, tabID, timeout);
+                maxKeyLength, filesDirectory, timeout);
 
             state = RuntimeState.Unloaded;
         }
@@ -387,14 +436,15 @@ namespace FiveSQD.WebVerse.Runtime
         /// Load a URL.
         /// </summary>
         /// <param name="url">URL containing the world or HTML page to load.</param>
-        public void LoadURL(string url)
+        /// <param name="onLoaded">Action to perform on load. Provides string containing loaded world name.</param>
+        public void LoadURL(string url, Action<string> onLoaded = null)
         {
             currentURL = url;
 
             if (url.StartsWith("file://") || url.StartsWith("/") || url.StartsWith(".") || url[1] == ':')
             {
                 UnloadWebPage();
-                LoadWorld(url);
+                LoadWorld(url, onLoaded);
             }
             else
             {
@@ -414,7 +464,7 @@ namespace FiveSQD.WebVerse.Runtime
                         {
                             Logging.Log("[WebVerseRuntime->LoadURL] Identified webpage. Loading.");
                             UnloadWorld();
-                            LoadWebPage(url);
+                            LoadWebPage(url, onLoaded);
                             return;
                         }
                     }
@@ -422,7 +472,7 @@ namespace FiveSQD.WebVerse.Runtime
                     // Otherwise, treat as world.
                     Logging.Log("[WebVerseRuntime->LoadURL] Identified world. Loading.");
                     UnloadWebPage();
-                    LoadWorld(url);
+                    LoadWorld(url, onLoaded);
                 });
                 
                 HTTPRequest headerReq = new HTTPRequest(url, HTTPRequest.HTTPMethod.Head, onRespAction);
@@ -434,7 +484,8 @@ namespace FiveSQD.WebVerse.Runtime
         /// Load a world.
         /// </summary>
         /// <param name="url">URL containing the world to load.</param>
-        public void LoadWorld(string url)
+        /// <param name="onLoaded">Action to perform on load. Provides string containing loaded world name.</param>
+        public void LoadWorld(string url, Action<string> onLoaded)
         {
             if (worldEngine == null)
             {
@@ -464,6 +515,11 @@ namespace FiveSQD.WebVerse.Runtime
                 else
                 {
                     state = RuntimeState.Error;
+                }
+
+                if (onLoaded != null)
+                {
+                    onLoaded.Invoke(WorldEngine.WorldEngine.ActiveWorld.siteName);
                 }
             });
 
@@ -516,13 +572,25 @@ namespace FiveSQD.WebVerse.Runtime
             state = RuntimeState.Unloaded;
         }
 
-        public void LoadWebPage(string url)
+        /// <summary>
+        /// Load a webpage.
+        /// </summary>
+        /// <param name="url">URL containing the webpage to load.</param>
+        /// <param name="onLoaded">Action to perform on load. Provides string indicating web page.</param>
+        public void LoadWebPage(string url, Action<string> onLoaded)
         {
             state = RuntimeState.WebPage;
             webverseWebView.Show();
             webverseWebView.LoadURL(url);
+            if (onLoaded != null)
+            {
+                onLoaded.Invoke("Web Page");
+            }
         }
 
+        /// <summary>
+        /// Unload a webpage.
+        /// </summary>
         public void UnloadWebPage()
         {
             state = RuntimeState.Unloaded;
@@ -538,13 +606,10 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxEntryLength">Maximum length of a storage entry.</param>
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
         /// <param name="filesDirectory">Directory to use as the files directory.</param>
-        /// <param name="daemonPort">Daemon Port.</param>
-        /// <param name="mainAppID">Main App ID.</param>
-        /// <param name="tabID">Tab ID.</param>
         /// <param name="timeout">World Load Timeout.</param>
         private void InitializeComponents(LocalStorageManager.LocalStorageMode storageMode,
             int maxEntries, int maxEntryLength, int maxKeyLength, string filesDirectory,
-            uint? daemonPort = null, Guid? mainAppID = null, int? tabID = null, float timeout = 120)
+            float timeout = 120)
         {
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
@@ -628,16 +693,6 @@ namespace FiveSQD.WebVerse.Runtime
             outputManager = outputManagerGO.AddComponent<OutputManager>();
             outputManager.Initialize();
 
-            if (daemonPort != null && mainAppID != null && mainAppID != Guid.Empty && tabID != null)
-            {
-                // Set up Daemon Manager.
-                GameObject daemonManagerGO = new GameObject("DaemonManager");
-                daemonManagerGO.transform.SetParent(transform);
-                webVerseDaemonManager = daemonManagerGO.AddComponent<WebVerseDaemonManager>();
-                webVerseDaemonManager.Initialize();
-                webVerseDaemonManager.ConnectToDaemon(daemonPort.Value, mainAppID.Value, tabID.Value);
-            }
-
             // Set up HTTP Request Manager.
             GameObject httpRequestManagerGO = new GameObject("HTTPRequestManager");
             httpRequestManagerGO.transform.SetParent(transform);
@@ -649,11 +704,21 @@ namespace FiveSQD.WebVerse.Runtime
             webVerseWebViewGO.transform.SetParent(transform);
             webverseWebView = webVerseWebViewGO.AddComponent<WebVerseWebView>();
             webverseWebView.Initialize();
-
-            // Set up Hand Menu.
-            if (handMenuController != null)
+            
+            // Set up Console.
+            if (consoles != null)
             {
-                handMenuController.Initialize();
+                consoleCallbacks = new List<Action<string, Logging.Type>>();
+                foreach (Interface.Console.Console console in consoles)
+                {
+                    console.Initialize();
+                    Action<string, Logging.Type> consoleCallback = new Action<string, Logging.Type>((msg, type) =>
+                    {
+                        console.LogConsoleMessage(msg, type);
+                    });
+                    Logging.RegisterCallback(consoleCallback);
+                    consoleCallbacks.Add(consoleCallback);
+                }
             }
         }
 
@@ -669,13 +734,6 @@ namespace FiveSQD.WebVerse.Runtime
             // Terminate HTTP Request Manager.
             httpRequestManager.Terminate();
             Destroy(httpRequestManager.gameObject);
-
-            if (webVerseDaemonManager != null)
-            {
-                // Terminate Daemon Manager.
-                webVerseDaemonManager.Terminate();
-                Destroy(webVerseDaemonManager.gameObject);
-            }
 
             // Terminate Output Manager.
             outputManager.Terminate();
@@ -710,6 +768,22 @@ namespace FiveSQD.WebVerse.Runtime
                 WorldEngine.WorldEngine.UnloadWorld();
             }
             Destroy(worldEngine.gameObject);
+
+            if (consoles != null)
+            {
+                foreach (Interface.Console.Console console in consoles)
+                {
+                    if (consoleCallbacks != null)
+                    {
+                        foreach (Action<string, Logging.Type> consoleCallback in consoleCallbacks.ToArray())
+                        {
+                            Logging.RemoveCallback(consoleCallback);
+                            consoleCallbacks.Remove(consoleCallback);
+                        }
+                    }
+                    console.Terminate();
+                }
+            }
         }
     }
 }
