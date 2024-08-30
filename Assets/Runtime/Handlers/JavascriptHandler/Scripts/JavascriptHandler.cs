@@ -155,6 +155,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
 
             base.Initialize();
             EntityAPIHelper.InitializeEntityMapping();
+            EntityAPIHelper.cubeMeshPrefab = Runtime.WebVerseRuntime.Instance.cubeMeshPrefab;
+            EntityAPIHelper.capsuleMeshPrefab = Runtime.WebVerseRuntime.Instance.capsuleMeshPrefab;
+            EntityAPIHelper.coneMeshPrefab = Runtime.WebVerseRuntime.Instance.coneMeshPrefab;
+            EntityAPIHelper.cylinderMeshPrefab = Runtime.WebVerseRuntime.Instance.cylinderMeshPrefab;
+            EntityAPIHelper.planeMeshPrefab = Runtime.WebVerseRuntime.Instance.planeMeshPrefab;
+            EntityAPIHelper.rectangularPyramidMeshPrefab = Runtime.WebVerseRuntime.Instance.rectangularPyramidMeshPrefab;
+            EntityAPIHelper.sphereMeshPrefab = Runtime.WebVerseRuntime.Instance.sphereMeshPrefab;
+            EntityAPIHelper.tetrahedronMeshPrefab = Runtime.WebVerseRuntime.Instance.tetrahedronMeshPrefab;
+            EntityAPIHelper.torusMeshPrefab = Runtime.WebVerseRuntime.Instance.torusMeshPrefab;
+            EntityAPIHelper.prismMeshPrefab = Runtime.WebVerseRuntime.Instance.prismMeshPrefab;
+            EntityAPIHelper.archMeshPrefab = Runtime.WebVerseRuntime.Instance.archMeshPrefab;
         }
 
         public void Reset()
