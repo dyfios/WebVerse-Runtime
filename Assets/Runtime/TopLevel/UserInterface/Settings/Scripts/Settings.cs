@@ -100,7 +100,10 @@ namespace FiveSQD.WebVerse.Interface.Settings
         /// <param name="home">New home to use.</param>
         public void UpdateHome(string home)
         {
-            desktopMode.desktopSettings.SetHomeURL(home);
+            if (!string.IsNullOrEmpty(home))
+            {
+                desktopMode.desktopSettings.SetHomeURL(home);
+            }
         }
 
         /// <summary>
@@ -132,8 +135,11 @@ namespace FiveSQD.WebVerse.Interface.Settings
         /// <param name="maxEntries">New max entries to use.</param>
         public void UpdateMaxEntries(string maxEntries)
         {
-            uint maxEntriesVal = uint.Parse(maxEntries);
-            desktopMode.desktopSettings.SetMaxStorageEntries(maxEntriesVal);
+            if (!string.IsNullOrEmpty(maxEntries))
+            {
+                uint maxEntriesVal = uint.Parse(maxEntries);
+                desktopMode.desktopSettings.SetMaxStorageEntries(maxEntriesVal);
+            }
         }
 
         /// <summary>
@@ -142,8 +148,11 @@ namespace FiveSQD.WebVerse.Interface.Settings
         /// <param name="maxKeyLen">New max key length to use.</param>
         public void UpdateMaxKeyLen(string maxKeyLen)
         {
-            uint maxKeyLenVal = uint.Parse(maxKeyLen);
-            desktopMode.desktopSettings.SetMaxStorageKeyLength(maxKeyLenVal);
+            if (!string.IsNullOrEmpty(maxKeyLen))
+            {
+                uint maxKeyLenVal = uint.Parse(maxKeyLen);
+                desktopMode.desktopSettings.SetMaxStorageKeyLength(maxKeyLenVal);
+            }
         }
 
         /// <summary>
@@ -152,8 +161,11 @@ namespace FiveSQD.WebVerse.Interface.Settings
         /// <param name="maxEntryLen">New max entry length to use.</param>
         public void UpdateMaxEntryLen(string maxEntryLen)
         {
-            uint maxEntryLenVal = uint.Parse(maxEntryLen);
-            desktopMode.desktopSettings.SetMaxStorageEntryLength(maxEntryLenVal);
+            if (!string.IsNullOrEmpty(maxEntryLen))
+            {
+                uint maxEntryLenVal = uint.Parse(maxEntryLen);
+                desktopMode.desktopSettings.SetMaxStorageEntryLength(maxEntryLenVal);
+            }
         }
 
         /// <summary>
@@ -162,7 +174,10 @@ namespace FiveSQD.WebVerse.Interface.Settings
         /// <param name="cacheDirectory">New cache directory to use.</param>
         public void UpdateCacheDirectory(string cacheDirectory)
         {
-            desktopMode.desktopSettings.SetCacheDirectory(cacheDirectory);
+            if (!string.IsNullOrEmpty(cacheDirectory))
+            {
+                desktopMode.desktopSettings.SetCacheDirectory(cacheDirectory);
+            }
         }
 
         /// <summary>
@@ -171,8 +186,11 @@ namespace FiveSQD.WebVerse.Interface.Settings
         /// <param name="worldLoadTimeout">New world load timeout to use.</param>
         public void UpdateWorldLoadTimeout(string worldLoadTimeout)
         {
-            uint worldLoadTimeoutVal = uint.Parse(worldLoadTimeout);
-            desktopMode.desktopSettings.SetWorldLoadTimeout(worldLoadTimeoutVal);
+            if (!string.IsNullOrEmpty(worldLoadTimeout))
+            {
+                uint worldLoadTimeoutVal = uint.Parse(worldLoadTimeout);
+                desktopMode.desktopSettings.SetWorldLoadTimeout(worldLoadTimeoutVal);
+            }
         }
     }
 }

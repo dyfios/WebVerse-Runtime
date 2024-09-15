@@ -138,7 +138,7 @@ namespace FiveSQD.WebVerse.Runtime
             desktopInput.SetActive(false);
             steamVRInput.SetActive(true);
             runtime.vr = true;
-            vrMultibar.VR();
+            vrMultibar.SetUpVRMultibarVRButton();
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace FiveSQD.WebVerse.Runtime
                 UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.DeinitializeLoader();
             }
             
-            //Logging.Log("[FocusedMode->EnableVRCoroutine] Initializing XR...");
+            Logging.Log("[FocusedMode->EnableVRCoroutine] Initializing XR...");
             yield return UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.InitializeLoader();
 
             if (UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.activeLoader == null)
@@ -263,7 +263,7 @@ namespace FiveSQD.WebVerse.Runtime
             }
             else
             {
-                //Logging.Log("[FocusedMode->EnableVRCoroutine] Starting XR...");
+                Logging.Log("[FocusedMode->EnableVRCoroutine] Starting XR...");
                 UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.StartSubsystems();
             }
         }

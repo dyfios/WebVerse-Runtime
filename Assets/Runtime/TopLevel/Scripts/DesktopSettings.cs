@@ -2,7 +2,9 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+#if !UNITY_WEBGL
 using Mono.Data.Sqlite;
+#endif
 using FiveSQD.WebVerse.Utilities;
 
 namespace FiveSQD.WebVerse.Runtime
@@ -405,6 +407,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="value">Entry value.</param>
         private void SetItem(string key, object value)
         {
+#if !UNITY_WEBGL
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -421,6 +424,7 @@ namespace FiveSQD.WebVerse.Runtime
             cmd.ExecuteNonQuery();
 
             dbConn.Close();
+#endif
         }
 
         /// <summary>
@@ -430,6 +434,9 @@ namespace FiveSQD.WebVerse.Runtime
         /// <returns>The entry corresponding to the key, or null if none exist.</returns>
         private object GetItem(string key)
         {
+#if UNITY_WEBGL
+            return null;
+#else
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -457,6 +464,7 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogWarning("[DesktopSettings->GetItem] More than 1 result found.");
                 return readResults[0];
             }
+#endif
         }
 
         /// <summary>
@@ -465,6 +473,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="key">Entry key.</param>
         private void RemoveItem(string key)
         {
+#if !UNITY_WEBGL
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -475,6 +484,7 @@ namespace FiveSQD.WebVerse.Runtime
             cmd.ExecuteNonQuery();
 
             dbConn.Close();
+#endif
         }
 
         /// <summary>
@@ -482,6 +492,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         private void InitializeSettingsTable()
         {
+#if !UNITY_WEBGL
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -498,6 +509,7 @@ namespace FiveSQD.WebVerse.Runtime
             GetCacheDirectory();
             GetWorldLoadTimeout();
             GetTutorialState();
+#endif
         }
 
         /// <summary>

@@ -566,6 +566,16 @@ namespace FiveSQD.WebVerse.Interface.MultibarMenu
             noVRButtonObject.SetActive(false);
             desktopMode.DisableVR();
         }
+        
+        /// <summary>
+        /// Set up VR/No VR buttons for VR multibar. Will set to VR state
+        /// (as VR multibar will be disabled when in Non VR state).
+        /// </summary>
+        public void SetUpVRMultibarVRButton()
+        {
+            vrButtonObject.SetActive(true);
+            noVRButtonObject.SetActive(false);
+        }
 
         /// <summary>
         /// Handle settings press.

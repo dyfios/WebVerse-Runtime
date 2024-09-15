@@ -1,6 +1,8 @@
 // Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
+#if !UNITY_WEBGL
 using Mono.Data.Sqlite;
+#endif
 using System.Collections.Generic;
 using UnityEngine;
 using FiveSQD.WebVerse.Utilities;
@@ -72,7 +74,7 @@ namespace FiveSQD.WebVerse.Runtime
 
             if (items == null)
             {
-                return null;
+                return new Tuple<DateTime, string, string>[0];
             }
 
             List<Tuple<DateTime, string, string>> returnList = new List<Tuple<DateTime, string, string>>();
@@ -96,6 +98,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="siteURL">Entry site URL.</param>
         private void SetItem(long timestamp, string siteName, string siteURL)
         {
+#if !UNITY_WEBGL
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -113,6 +116,7 @@ namespace FiveSQD.WebVerse.Runtime
             cmd.ExecuteNonQuery();
 
             dbConn.Close();
+#endif
         }
 
         /// <summary>
@@ -122,6 +126,9 @@ namespace FiveSQD.WebVerse.Runtime
         /// <returns>The entry corresponding to the timestamp, or null if none exist.</returns>
         private object GetItem(long timestamp)
         {
+#if UNITY_WEBGL
+            return null;
+#else
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -149,6 +156,7 @@ namespace FiveSQD.WebVerse.Runtime
                 Logging.LogWarning("[DesktopHistory->GetItem] More than 1 result found.");
                 return readResults[0];
             }
+#endif
         }
 
         /// <summary>
@@ -157,6 +165,9 @@ namespace FiveSQD.WebVerse.Runtime
         /// <returns>All entries, or null if none exist.</returns>
         private Tuple<long, string, string>[] GetAllItems()
         {
+#if UNITY_WEBGL
+            return null;
+#else
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -179,6 +190,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 return readResults.ToArray();
             }
+#endif
         }
 
         /// <summary>
@@ -187,6 +199,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="timestamp">Entry timestamp.</param>
         private void RemoveItem(long timestamp)
         {
+#if !UNITY_WEBGL
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -197,6 +210,7 @@ namespace FiveSQD.WebVerse.Runtime
             cmd.ExecuteNonQuery();
 
             dbConn.Close();
+#endif
         }
 
         /// <summary>
@@ -204,6 +218,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         private void RemoveAllItems()
         {
+#if !UNITY_WEBGL
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -213,6 +228,7 @@ namespace FiveSQD.WebVerse.Runtime
             cmd.ExecuteNonQuery();
 
             dbConn.Close();
+#endif
         }
         
         /// <summary>
@@ -220,6 +236,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         private void InitializeHistoryTable()
         {
+#if !UNITY_WEBGL
             SqliteConnection dbConn = new SqliteConnection(GetConnectionString(dbPath));
             dbConn.Open();
 
@@ -228,6 +245,7 @@ namespace FiveSQD.WebVerse.Runtime
             cmd.ExecuteNonQuery();
 
             dbConn.Close();
+#endif
         }
 
         /// <summary>

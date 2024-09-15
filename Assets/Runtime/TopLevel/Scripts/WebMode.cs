@@ -160,7 +160,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 string query = Application.absoluteURL.Substring(queryStart);
 
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sections = query.Split(new char[] { '&' }, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string section in sections)
                 {
                     int valueStart = section.IndexOf("=") + 1;
@@ -198,7 +198,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 string query = Application.absoluteURL.Substring(queryStart);
 
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sections = query.Split(new char[] { '&' }, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string section in sections)
                 {
                     int valueStart = section.IndexOf("=") + 1;
@@ -236,7 +236,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 string query = Application.absoluteURL.Substring(queryStart);
 
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sections = query.Split(new char[] { '&' }, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string section in sections)
                 {
                     int valueStart = section.IndexOf("=") + 1;
@@ -274,7 +274,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 string query = Application.absoluteURL.Substring(queryStart);
 
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sections = query.Split(new char[] { '&' }, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string section in sections)
                 {
                     int valueStart = section.IndexOf("=") + 1;
@@ -311,7 +311,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 string query = Application.absoluteURL.Substring(queryStart);
                 
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sections = query.Split(new char[] { '&' }, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string section in sections)
                 {
                     int valueStart = section.IndexOf("=") + 1;
@@ -349,7 +349,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 string query = Application.absoluteURL.Substring(queryStart);
                 
-                string[] sections = query.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] sections = query.Split(new char[] { '&' }, System.StringSplitOptions.RemoveEmptyEntries);
                 foreach (string section in sections)
                 {
                     int valueStart = section.IndexOf("=") + 1;
