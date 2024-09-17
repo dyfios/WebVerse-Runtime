@@ -433,6 +433,11 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 return;
             }
 
+            if (mqttClient.State != ClientStates.Connected)
+            {
+                Logging.LogWarning("[MQTTClient->Publish] Not connected");
+            }
+
             mqttClient.CreateApplicationMessageBuilder(topic)
                 .WithPayload(message)
                 .WithQoS(Best.MQTT.Packets.QoSLevels.ExactlyOnceDelivery)

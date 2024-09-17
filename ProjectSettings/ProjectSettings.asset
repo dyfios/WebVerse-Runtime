@@ -42,8 +42,8 @@ PlayerSettings:
   m_SplashScreenLogos: []
   m_VirtualRealitySplashScreen: {fileID: 0}
   m_HolographicTrackingLossScreen: {fileID: 0}
-  defaultScreenWidth: 1920
-  defaultScreenHeight: 1080
+  defaultScreenWidth: 720
+  defaultScreenHeight: 480
   defaultScreenWidthWeb: 960
   defaultScreenHeightWeb: 600
   m_StereoRenderingPath: 0
@@ -92,7 +92,7 @@ PlayerSettings:
   bakeCollisionMeshes: 0
   forceSingleInstance: 0
   useFlipModelSwapchain: 1
-  resizableWindow: 0
+  resizableWindow: 1
   useMacAppStoreValidation: 0
   macAppStoreCategory: public.app-category.games
   gpuSkinning: 1
@@ -103,7 +103,7 @@ PlayerSettings:
   xboxEnableFitness: 0
   visibleInBackground: 1
   allowFullscreenSwitch: 1
-  fullscreenMode: 1
+  fullscreenMode: 3
   xboxSpeechDB: 0
   xboxEnableHeadOrientation: 0
   xboxEnableGuest: 0
@@ -139,7 +139,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1.2.1
+  bundleVersion: 2.0.0
   preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
@@ -366,6 +366,7 @@ PlayerSettings:
   openGLRequireES32: 0
   m_TemplateCustomTags:
     HIDE_FULL_SCREEN_BUTTON: 1
+    PRODUCT_DESCRIPTION: 
   mobileMTRendering:
     Android: 1
     iPhone: 1
@@ -651,7 +652,7 @@ PlayerSettings:
   webGLPowerPreference: 2
   scriptingDefineSymbols:
     Android: USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL
-    Standalone: USE_INPUT_SYSTEM_POSE_CONTROL;USE_WEBINTERFACE;USE_BESTHTTP;BESTHTTP_ENABLE_BUFFERPOOL_BORROWED_BUFFERS_COLLECTION;__DIGGER__;__DIGGER_RUNTIME__;USE_DIGGER;TEST_HYBRID_TERRAIN;VUPLEX_OPENXR_META_QUEST;VUPLEX_XR_INTERACTION_TOOLKIT;VUPLEX_STANDALONE;VUPLEX_INCLUDED
+    Standalone: USE_INPUT_SYSTEM_POSE_CONTROL;USE_WEBINTERFACE;USE_BESTHTTP;BESTHTTP_ENABLE_BUFFERPOOL_BORROWED_BUFFERS_COLLECTION;__DIGGER__;__DIGGER_RUNTIME__;USE_DIGGER;TEST_HYBRID_TERRAIN;VUPLEX_INCLUDED;VUPLEX_OPENXR_META_QUEST;VUPLEX_XR_INTERACTION_TOOLKIT;VUPLEX_STANDALONE
     WebGL: USE_WEBINTERFACE;USE_BESTHTTP;BESTHTTP_ENABLE_BUFFERPOOL_BORROWED_BUFFERS_COLLECTION;__DIGGER__;__DIGGER_RUNTIME__;USE_DIGGER;TEST_HYBRID_TERRAIN;VUPLEX_INCLUDED;VUPLEX_OPENXR_META_QUEST;VUPLEX_STANDALONE;VUPLEX_XR_INTERACTION_TOOLKIT
     Windows Store Apps: USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL
   additionalCompilerArguments: {}

@@ -1,5 +1,7 @@
 // Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
 
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace FiveSQD.WebVerse.Utilities
@@ -13,6 +15,11 @@ namespace FiveSQD.WebVerse.Utilities
         /// Type for a log message.
         /// </summary>
         public enum Type { Default, Debug, Warning, Error };
+
+        /// <summary>
+        /// Log callbacks being maintained.
+        /// </summary>
+        private static List<Action<string, Type>> callbacks = new List<Action<string, Type>>();
 
         /// <summary>
         /// Log a message.
@@ -43,8 +50,14 @@ namespace FiveSQD.WebVerse.Utilities
                     break;
             }
 
-            // Log to consoles.
-            //Parallels.Infrastructure.ConsoleCommandParser.LogMessage(message, type);
+            // Forward to callbacks.
+            foreach (Action<string, Type> callback in callbacks)
+            {
+                if (callback != null)
+                {
+                    callback.Invoke(message, type);
+                }
+            }
         }
 
         /// <summary>
@@ -72,6 +85,27 @@ namespace FiveSQD.WebVerse.Utilities
         public static void LogError(string message)
         {
             Log(message, Type.Error);
+        }
+
+        /// <summary>
+        /// Register a log callback.
+        /// </summary>
+        /// <param name="callback">Callback to register.</param>
+        public static void RegisterCallback(Action<string, Type> callback)
+        {
+            callbacks.Add(callback);
+        }
+
+        /// <summary>
+        /// Remove a log callback.
+        /// </summary>
+        /// <param name="callback">Callback to remove.</param>
+        public static void RemoveCallback(Action<string, Type> callback)
+        {
+            if (callbacks.Contains(callback))
+            {
+                callbacks.Remove(callback);
+            }
         }
     }
 }
