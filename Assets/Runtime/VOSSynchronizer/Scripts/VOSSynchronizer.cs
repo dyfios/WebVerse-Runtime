@@ -509,9 +509,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     addCharacterEntityMessage = new VOSSynchronizationMessages.RequestMessages
                     .AddCharacterEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID, filePath, resourcesPaths,
-                    modelOffset.HasValue ? modelOffset.Value : Vector3.zero,
-                    modelRotation.HasValue ? modelRotation.Value : Quaternion.identity,
-                    labelOffset.HasValue ? labelOffset.Value : Vector3.zero, entityToSynchronize.GetPosition(true),
+                    ((CharacterEntity) entityToSynchronize).characterObjectOffset,
+                    ((CharacterEntity) entityToSynchronize).characterObjectRotation,
+                    ((CharacterEntity) entityToSynchronize).characterLabelOffset, entityToSynchronize.GetPosition(true),
                     entityToSynchronize.GetRotation(true), entityToSynchronize.GetScale(), false, deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createcharacterentity",
                     JsonConvert.SerializeObject(addCharacterEntityMessage));

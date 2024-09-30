@@ -97,7 +97,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// <summary>
         /// WebVerse version.
         /// </summary>
-        public static readonly string versionString = "v2.0.0";
+        public static readonly string versionString = "v2.0.1";
+
+        /// <summary>
+        /// WebVerse codename.
+        /// </summary>
+        public static readonly string codenameString = "Terra Firma";
 
         /// <summary>
         /// Static reference to the WebVerse runtime.

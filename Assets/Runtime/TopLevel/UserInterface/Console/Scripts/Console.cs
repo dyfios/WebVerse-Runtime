@@ -68,6 +68,11 @@ namespace FiveSQD.WebVerse.Interface.Console
         public Toggle debugToggle;
 
         /// <summary>
+        /// The internal toggle.
+        /// </summary>
+        public Toggle internalToggle;
+
+        /// <summary>
         /// The font size slider.
         /// </summary>
         public Slider fontSizeSlider;
@@ -160,26 +165,36 @@ namespace FiveSQD.WebVerse.Interface.Console
         {
             switch (message.type)
             {
-                case Logging.Type.Error:
+                case Logging.Type.ScriptError:
                     AppendConsoleWithMessage(message);
                     break;
 
-                case Logging.Type.Warning:
+                case Logging.Type.ScriptWarning:
                     if (warningToggle.isOn)
                     {
                         AppendConsoleWithMessage(message);
                     }
                     break;
 
-                case Logging.Type.Default:
+                case Logging.Type.ScriptDefault:
                     if (normalToggle.isOn)
                     {
                         AppendConsoleWithMessage(message);
                     }
                     break;
 
-                case Logging.Type.Debug:
+                case Logging.Type.ScriptDebug:
                     if (debugToggle.isOn)
+                    {
+                        AppendConsoleWithMessage(message);
+                    }
+                    break;
+
+                case Logging.Type.Error:
+                case Logging.Type.Warning:
+                case Logging.Type.Default:
+                case Logging.Type.Debug:
+                    if (internalToggle.isOn)
                     {
                         AppendConsoleWithMessage(message);
                     }
@@ -199,9 +214,14 @@ namespace FiveSQD.WebVerse.Interface.Console
         {
             consoleText.text = consoleText.text + "\n" + message.timestamp.ToString()
                 + ": [" +
-                (message.type == Logging.Type.Error ? "Err" :
-                message.type == Logging.Type.Warning ? "Warn" :
-                message.type == Logging.Type.Default ? "Msg" : "Deb") + "] " + message.message;
+                (message.type == Logging.Type.ScriptError ? "Err" :
+                message.type == Logging.Type.ScriptWarning ? "Warn" :
+                message.type == Logging.Type.ScriptDefault ? "Msg" :
+                message.type == Logging.Type.ScriptDebug ? "Deb" :
+                message.type == Logging.Type.Error ? "IErr" :
+                message.type == Logging.Type.Warning ? "IWarn" :
+                message.type == Logging.Type.Default ? "IMsg" :
+                "IDeb") + "] " + message.message;
         }
     }
 }

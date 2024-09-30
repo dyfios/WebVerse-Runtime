@@ -345,6 +345,7 @@ namespace FiveSQD.WebVerse.Interface.MultibarMenu
             {
                 otherMultibar.UpdateNavButtonsFromOtherMultibar(prevURLs, nextURLs, multibarInputField.text);
             }
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         /// <summary>
@@ -483,6 +484,7 @@ namespace FiveSQD.WebVerse.Interface.MultibarMenu
                 {
                     otherMultibar.UpdateNavButtonsFromOtherMultibar(prevURLs, nextURLs, multibarInputField.text);
                 }
+                EventSystem.current.SetSelectedGameObject(null);
             }
         }
 
@@ -500,6 +502,7 @@ namespace FiveSQD.WebVerse.Interface.MultibarMenu
                 {
                     otherMultibar.UpdateNavButtonsFromOtherMultibar(prevURLs, nextURLs, multibarInputField.text);
                 }
+                EventSystem.current.SetSelectedGameObject(null);
             }
         }
 
@@ -509,6 +512,7 @@ namespace FiveSQD.WebVerse.Interface.MultibarMenu
         public void URLReload()
         {
             LoadURL(WebVerseRuntime.Instance.currentURL);
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         /// <summary>
