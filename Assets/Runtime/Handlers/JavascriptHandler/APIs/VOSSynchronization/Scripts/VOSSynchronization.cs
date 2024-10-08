@@ -190,10 +190,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
         /// <param name="port">Port of the connection of the session to synchronize an entity on.</param>
         /// <param name="entityID">ID of the entity to synchronize.</param>
         /// <param name="deleteWithClient">Whether or not to delete the entity upon disconnection of the client.</param>
+        /// <param name="filePath">Path to a file to load with the entity.</param>
         /// <param name="resources">Resources to include with the entity.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool StartSynchronizingEntity(string host, int port,
-            string entityID, bool deleteWithClient = false, string resources = null)
+            string entityID, bool deleteWithClient = false, string filePath = null, string[] resources = null)
         {
             WebVerse.VOSSynchronization.VOSSynchronizer synchronizerToSynchronizeEntityOn
                 = WebVerseRuntime.Instance.vosSynchronizationManager.GetSynchronizer(host, port);
@@ -216,7 +217,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 LogSystem.LogError("[VOSSynchronizationAPI->StartSynchronizingEntity] Unable to find entity to synchronize.");
                 return false;
             }
-            synchronizerToSynchronizeEntityOn.AddSynchronizedEntity(entityToSynchronize, deleteWithClient, resources);
+            synchronizerToSynchronizeEntityOn.AddSynchronizedEntity(entityToSynchronize, deleteWithClient, filePath, resources);
             return true;
         }
 

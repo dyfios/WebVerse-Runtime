@@ -202,7 +202,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             try
             {
                 XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_0.veml));
-                TextReader reader = new StringReader(System.Text.Encoding.UTF8.GetString(rawData));
+                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_0(System.Text.Encoding.UTF8.GetString(rawData)));
                 XmlReader xmlReader = XmlReader.Create(reader);
 
                 // Attempt deserialization using v2.0 (latest) of the schema. Old XML will be converted
@@ -226,6 +226,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     {
                         version = VEMLVersion.v1_3;
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.3. Upgrading to VEML v2.0.");
+                        reader = new StringReader(VEMLUtilities.FullyNotateVEML1_3(System.Text.Encoding.UTF8.GetString(rawData)));
+                        xmlReader = XmlReader.Create(reader);
                         Schema.V1_3.veml v1_3VEML = (Schema.V1_3.veml) ser.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_3(v1_3VEML);
                     }
@@ -234,6 +236,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     {
                         version = VEMLVersion.v1_2;
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.2. Upgrading to VEML v2.0.");
+                        reader = new StringReader(VEMLUtilities.FullyNotateVEML1_2(System.Text.Encoding.UTF8.GetString(rawData)));
+                        xmlReader = XmlReader.Create(reader);
                         Schema.V1_2.veml v1_2VEML = (Schema.V1_2.veml) ser.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_2(v1_2VEML);
                     }
@@ -242,6 +246,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     {
                         version = VEMLVersion.v1_1;
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.1. Upgrading to VEML v2.0.");
+                        reader = new StringReader(VEMLUtilities.FullyNotateVEML1_1(System.Text.Encoding.UTF8.GetString(rawData)));
+                        xmlReader = XmlReader.Create(reader);
                         Schema.V1_1.veml v1_1VEML = (Schema.V1_1.veml) ser.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_1(v1_1VEML);
                     }
@@ -250,6 +256,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     {
                         version = VEMLVersion.v1_1;
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.0. Upgrading to VEML v2.0.");
+                        reader = new StringReader(VEMLUtilities.FullyNotateVEML1_0(System.Text.Encoding.UTF8.GetString(rawData)));
+                        xmlReader = XmlReader.Create(reader);
                         Schema.V1_0.veml v1_0VEML = (Schema.V1_0.veml) ser1_0.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_0(v1_0VEML);
                     }

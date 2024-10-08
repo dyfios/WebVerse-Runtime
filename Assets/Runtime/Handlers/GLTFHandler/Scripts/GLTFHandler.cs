@@ -280,7 +280,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             }
             else
             {
-                if (!runtime.fileHandler.FileExistsInFileDirectory(path))
+                if (!runtime.fileHandler.FileExistsInFileDirectory(path) && !System.IO.File.Exists(path))
                 {
                     Logging.LogWarning("[GLTFHandler->LoadGLTF] File not found: " + path);
                     return;

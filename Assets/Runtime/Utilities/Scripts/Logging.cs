@@ -14,7 +14,7 @@ namespace FiveSQD.WebVerse.Utilities
         /// <summary>
         /// Type for a log message.
         /// </summary>
-        public enum Type { Default, Debug, Warning, Error };
+        public enum Type { Default, Debug, Warning, Error, ScriptDefault, ScriptDebug, ScriptWarning, ScriptError };
 
         /// <summary>
         /// Log callbacks being maintained.

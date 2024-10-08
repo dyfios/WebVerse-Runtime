@@ -51,7 +51,7 @@ namespace FiveSQD.WebVerse.Interface.About
         /// </summary>
         public void Initialize()
         {
-            versionText.text = "WebVerse Version: " + WebVerseRuntime.versionString;
+            versionText.text = "WebVerse Version: " + WebVerseRuntime.versionString + ": \"" + WebVerseRuntime.codenameString + "\"";
         }
 
         /// <summary>

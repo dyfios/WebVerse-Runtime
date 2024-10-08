@@ -23,15 +23,19 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
             switch (type)
             {
                 case Type.Default:
+                    tp = WebVerse.Utilities.Logging.Type.ScriptDefault;
                     break;
 
                 case Type.Debug:
+                    tp = WebVerse.Utilities.Logging.Type.ScriptDebug;
                     break;
 
                 case Type.Warning:
+                    tp = WebVerse.Utilities.Logging.Type.ScriptWarning;
                     break;
 
                 case Type.Error:
+                    tp = WebVerse.Utilities.Logging.Type.ScriptError;
                     break;
             }
 
@@ -44,7 +48,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <param name="message">Message to log.</param>
         public static void LogDebug(string message)
         {
-            WebVerse.Utilities.Logging.LogDebug(message);
+            WebVerse.Utilities.Logging.Log(message, WebVerse.Utilities.Logging.Type.ScriptDefault);
         }
 
         /// <summary>
@@ -53,7 +57,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <param name="message">Message to log.</param>
         public static void LogWarning(string message)
         {
-            WebVerse.Utilities.Logging.LogWarning(message);
+            WebVerse.Utilities.Logging.Log(message, WebVerse.Utilities.Logging.Type.ScriptWarning);
         }
 
         /// <summary>
@@ -62,7 +66,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <param name="message">Message to log.</param>
         public static void LogError(string message)
         {
-            WebVerse.Utilities.Logging.LogError(message);
+            WebVerse.Utilities.Logging.Log(message, WebVerse.Utilities.Logging.Type.ScriptError);
         }
     }
 }
