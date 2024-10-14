@@ -10,12 +10,12 @@ using System.Collections.Generic;
 using FiveSQD.WebVerse.WebInterface.HTTP;
 #endif
 
-namespace FiveSQD.WebVerse.Handlers.PNG
+namespace FiveSQD.WebVerse.Handlers.Image
 {
     /// <summary>
-    /// Class for the PNG Handler.
+    /// Class for the Image Handler.
     /// </summary>
-    public class PNGHandler : BaseHandler
+    public class ImageHandler : BaseHandler
     {
         /// <summary>
         /// Reference to the WebVerse Runtime.
@@ -23,7 +23,7 @@ namespace FiveSQD.WebVerse.Handlers.PNG
         public WebVerseRuntime runtime;
 
         /// <summary>
-        /// Initialize the PNG Handler.
+        /// Initialize the Image Handler.
         /// </summary>
         public override void Initialize()
         {
@@ -31,7 +31,7 @@ namespace FiveSQD.WebVerse.Handlers.PNG
         }
 
         /// <summary>
-        /// Terminate the PNG Handler.
+        /// Terminate the Image Handler.
         /// </summary>
         public override void Terminate()
         {
@@ -53,15 +53,15 @@ namespace FiveSQD.WebVerse.Handlers.PNG
                     FileHandler.ToFileURI(resourceURI)), format);
                 onLoaded.Invoke(img);
             };
-            DownloadPNG(resourceURI, onDownloaded);
+            DownloadImage(resourceURI, onDownloaded);
         }
 
         /// <summary>
-        /// Download a PNG.
+        /// Download an image.
         /// </summary>
-        /// <param name="uri">URI to get the PNG from.</param>
+        /// <param name="uri">URI to get the image from.</param>
         /// <param name="onDownloaded">Action to perform when downloading is complete.</param>
-        public void DownloadPNG(string uri, Action onDownloaded)
+        public void DownloadImage(string uri, Action onDownloaded)
         {
 #if USE_WEBINTERFACE
             Action<int, Dictionary<string, string>, Texture2D> onDownloadedAction
@@ -77,11 +77,11 @@ namespace FiveSQD.WebVerse.Handlers.PNG
             {
                 if (uri.StartsWith("file:/") || uri.StartsWith("/") || uri.StartsWith(".") || uri[1] == ':')
                 {
-                    Logging.Log("[PNGHandler->DownloadPNG] File " + uri + " already exists. Using stored version.");
+                    Logging.Log("[ImageHandler->DownloadImage] File " + uri + " already exists. Using stored version.");
                     onDownloaded.Invoke();
                     return;
                 }
-                Logging.Log("[PNGHandler->DownloadPNG] File " + uri + " already exists. Checking for newer version.");
+                Logging.Log("[ImageHandler->DownloadImage] File " + uri + " already exists. Checking for newer version.");
 
                 Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
                 {
@@ -95,18 +95,18 @@ namespace FiveSQD.WebVerse.Handlers.PNG
                                 if (timestamp > System.IO.File.GetLastWriteTime(System.IO.Path.Combine(
                                     runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
                                 {
-                                    Logging.Log("[PNGHandler->DownloadPNG] Cached version of file " + uri + " is outdated. Getting new version.");
+                                    Logging.Log("[ImageHandler->DownloadImage] Cached version of file " + uri + " is outdated. Getting new version.");
                                 }
                                 else
                                 {
-                                    Logging.Log("[PNGHandler->DownloadPNG] Cached version of file " + uri + " is current. Using stored version.");
+                                    Logging.Log("[ImageHandler->DownloadImage] Cached version of file " + uri + " is current. Using stored version.");
                                     onDownloaded.Invoke();
                                     return;
                                 }
                             }
                         }
                     }
-                    Logging.Log("[PNGHandler->DownloadPNG] Getting " + uri + ".");
+                    Logging.Log("[ImageHandler->DownloadImage] Getting " + uri + ".");
                     request.Send();
                 });
                 HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
@@ -133,6 +133,17 @@ namespace FiveSQD.WebVerse.Handlers.PNG
             {
                 texture = new Texture2D(2, 2, format.Value, true);
                 texture.LoadImage(rawData);
+
+                // It seems that the texture needs to be copied to actually set the texture format.
+                if (format.Value != TextureFormat.ARGB32 && format.Value != TextureFormat.RGBA32)
+                {
+                    Color[] pixels = texture.GetPixels();
+                    texture.SetPixels(pixels);
+                    Texture2D copyTexture = new Texture2D(texture.width, texture.height, format.Value, true);
+                    copyTexture.SetPixels(pixels);
+                    copyTexture.Apply();
+                    texture = copyTexture;
+                }
             }
             else
             {
@@ -146,7 +157,7 @@ namespace FiveSQD.WebVerse.Handlers.PNG
         /// <summary>
         /// Finish the downloading of an image.
         /// </summary>
-        /// <param name="uri">URI of the PNG.</param>
+        /// <param name="uri">URI of the Image.</param>
         /// <param name="responseCode">Response code from the download.</param>
         /// <param name="rawImage">The raw image that was downloaded.</param>
         private void FinishImageDownload(string uri, int responseCode, Texture2D rawImage)

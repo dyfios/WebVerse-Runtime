@@ -1,6 +1,7 @@
 // Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
+using FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Runtime;
 
@@ -11,6 +12,27 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
     /// </summary>
     public class Input
     {
+        /// <summary>
+        /// Pointer modes enum.
+        /// </summary>
+        public enum VRPointerMode { None = 0, Teleport = 1, UI = 2 }
+
+        /// <summary>
+        /// Turn locomotion modes enum.
+        /// </summary>
+        public enum VRTurnLocomotionMode { None = 0, Smooth = 1, Snap = 2 }
+
+        /// <summary>
+        /// Whether or not VR is active.
+        /// </summary>
+        public static bool IsVR
+        {
+            get
+            {
+                return WebVerseRuntime.Instance.vr;
+            }
+        }
+
         /// <summary>
         /// Get the current move value.
         /// </summary>
@@ -113,59 +135,390 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
             return null;
         }
 
-        public static bool EnableControllerLocomotion(bool invert)
+        /// <summary>
+        /// The pointer mode for the left hand.
+        /// </summary>
+        public static VRPointerMode leftVRPointerMode
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.leftPointerMode =
+                        value == VRPointerMode.None ? WebVerse.Input.SteamVR.VRRig.PointerMode.None :
+                        value == VRPointerMode.Teleport ? WebVerse.Input.SteamVR.VRRig.PointerMode.Teleport :
+                        WebVerse.Input.SteamVR.VRRig.PointerMode.UI;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return VRPointerMode.None;
+                }
+                else
+                {
+                    switch (WebVerseRuntime.Instance.vrRig.leftPointerMode)
+                    {
+                        case WebVerse.Input.SteamVR.VRRig.PointerMode.Teleport:
+                            return VRPointerMode.Teleport;
+
+                        case WebVerse.Input.SteamVR.VRRig.PointerMode.UI:
+                            return VRPointerMode.UI;
+
+                        case WebVerse.Input.SteamVR.VRRig.PointerMode.None:
+                        default:
+                            return VRPointerMode.None;
+                    }
+                }
+            }
         }
 
-        public static bool DisableControllerLocomotion()
+        /// <summary>
+        /// The pointer mode for the right hand.
+        /// </summary>
+        public static VRPointerMode rightVRPointerMode
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.rightPointerMode =
+                        value == VRPointerMode.None ? WebVerse.Input.SteamVR.VRRig.PointerMode.None :
+                        value == VRPointerMode.Teleport ? WebVerse.Input.SteamVR.VRRig.PointerMode.Teleport :
+                        WebVerse.Input.SteamVR.VRRig.PointerMode.UI;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return VRPointerMode.None;
+                }
+                else
+                {
+                    switch (WebVerseRuntime.Instance.vrRig.rightPointerMode)
+                    {
+                        case WebVerse.Input.SteamVR.VRRig.PointerMode.Teleport:
+                            return VRPointerMode.Teleport;
+
+                        case WebVerse.Input.SteamVR.VRRig.PointerMode.UI:
+                            return VRPointerMode.UI;
+
+                        case WebVerse.Input.SteamVR.VRRig.PointerMode.None:
+                        default:
+                            return VRPointerMode.None;
+                    }
+                }
+            }
         }
 
-        public static bool EnableTeleportLocomotion()
+        /// <summary>
+        /// The poker mode for the left hand.
+        /// </summary>
+        public static bool leftVRPokerEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.leftPokerEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.leftPokerEnabled;
+                }
+            }
         }
 
-        public static bool DisableTeleportLocomotion()
+        /// <summary>
+        /// The poker mode for the right hand.
+        /// </summary>
+        public static bool rightVRPokerEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.rightPokerEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.rightPokerEnabled;
+                }
+            }
         }
 
-        public static bool EnableArmswingLocomotion()
+        /// <summary>
+        /// The interaction mode for the left hand.
+        /// </summary>
+        public static bool leftInteractionEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.leftInteractionEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.leftInteractionEnabled;
+                }
+            }
         }
 
-        public static bool DisableArmswingLocomotion()
+        /// <summary>
+        /// The interaction mode for the right hand.
+        /// </summary>
+        public static bool rightInteractionEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.rightInteractionEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.rightInteractionEnabled;
+                }
+            }
         }
 
-        public static bool EnableSnapTurnLocomotion()
+        /// <summary>
+        /// The turn locomotion mode.
+        /// </summary>
+        public static VRTurnLocomotionMode turnLocomotionMode
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.turnLocomotionMode =
+                        value == VRTurnLocomotionMode.None ? WebVerse.Input.SteamVR.VRRig.TurnLocomotionMode.None :
+                        value == VRTurnLocomotionMode.Smooth ? WebVerse.Input.SteamVR.VRRig.TurnLocomotionMode.Smooth :
+                        WebVerse.Input.SteamVR.VRRig.TurnLocomotionMode.Snap;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return VRTurnLocomotionMode.None;
+                }
+                else
+                {
+                    switch (WebVerseRuntime.Instance.vrRig.turnLocomotionMode)
+                    {
+                        case WebVerse.Input.SteamVR.VRRig.TurnLocomotionMode.Smooth:
+                            return VRTurnLocomotionMode.Smooth;
+
+                        case WebVerse.Input.SteamVR.VRRig.TurnLocomotionMode.Snap:
+                            return VRTurnLocomotionMode.Snap;
+
+                        case WebVerse.Input.SteamVR.VRRig.TurnLocomotionMode.None:
+                        default:
+                            return VRTurnLocomotionMode.None;
+                    }
+                }
+            }
         }
 
-        public static bool EnableSmoothTurnLocomotion()
+        /// <summary>
+        /// The joystick motion mode.
+        /// </summary>
+        public static bool joystickMotionEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.joystickMotionEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.joystickMotionEnabled;
+                }
+            }
         }
 
-        public static bool DisableTurnLocomotion()
+        /// <summary>
+        /// The grab move mode for the left hand.
+        /// </summary>
+        public static bool leftGrabMoveEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.leftGrabMoveEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.leftGrabMoveEnabled;
+                }
+            }
         }
 
-        public static bool EnableDragLocomotion(bool invert)
+        /// <summary>
+        /// The grab move mode for the right hand.
+        /// </summary>
+        public static bool rightGrabMoveEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.rightGrabMoveEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.rightGrabMoveEnabled;
+                }
+            }
         }
 
-        public static bool DisableDragLocomotion()
+        /// <summary>
+        /// The two-handed grab move mode.
+        /// </summary>
+        public static bool twoHandedGrabMoveEnabled
         {
-            return false;
+            set
+            {
+                if (WebVerseRuntime.Instance.vrRig != null)
+                {
+                    WebVerseRuntime.Instance.vrRig.twoHandedGrabMoveEnabled = value;
+                }
+            }
+
+            get
+            {
+                if (WebVerseRuntime.Instance.vrRig == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return WebVerseRuntime.Instance.vrRig.twoHandedGrabMoveEnabled;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Add a rig follwer (an entity that follows the rig).
+        /// </summary>
+        /// <param name="entityToFollowRig">Entity to follow the rig.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool AddRigFollower(BaseEntity entityToFollowRig)
+        {
+            if (entityToFollowRig == null)
+            {
+                Logging.LogWarning("[Input->AddRigFollower] Invalid entityToFollowRig.");
+                return false;
+            }
+
+            if (entityToFollowRig.internalEntity == null)
+            {
+                Logging.LogError("[Input->AddRigFollower] Invalid entityToFollowRig.");
+                return false;
+            }
+
+            if (WebVerseRuntime.Instance.vrRig != null && WebVerseRuntime.Instance.vrRig.rigFollowers != null)
+            {
+                if (!WebVerseRuntime.Instance.vrRig.rigFollowers.Contains(entityToFollowRig.internalEntity))
+                {
+                    WebVerseRuntime.Instance.vrRig.rigFollowers.Add(entityToFollowRig.internalEntity);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Remove a rig follwer (an entity that follows the rig).
+        /// </summary>
+        /// <param name="entityToFollowRig">Entity that follow the rig to remove.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool RemoveRigFollower(BaseEntity entityToFollowRig)
+        {
+            if (entityToFollowRig == null)
+            {
+                Logging.LogWarning("[Input->RemoveRigFollower] Invalid entityToFollowRig.");
+                return false;
+            }
+
+            if (entityToFollowRig.internalEntity == null)
+            {
+                Logging.LogError("[Input->RemoveRigFollower] Invalid entityToFollowRig.");
+                return false;
+            }
+
+            if (WebVerseRuntime.Instance.vrRig != null && WebVerseRuntime.Instance.vrRig.rigFollowers != null)
+            {
+                if (WebVerseRuntime.Instance.vrRig.rigFollowers.Contains(entityToFollowRig.internalEntity))
+                {
+                    WebVerseRuntime.Instance.vrRig.rigFollowers.Remove(entityToFollowRig.internalEntity);
+                }
+            }
+            return true;
         }
     }
 }

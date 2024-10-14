@@ -12,14 +12,14 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 /// <summary>
-/// Unit tests for the PNG Handler.
+/// Unit tests for the Image Handler.
 /// </summary>
-public class PNGHandlerTests
+public class ImageHandlerTests
 {
     private float waitTime = 10;
 
     [UnityTest]
-    public IEnumerator PNGHandlerTests_General()
+    public IEnumerator ImageHandlerTests_General()
     {
         GameObject runtimeGO = new GameObject("runtime");
         WebVerseRuntime runtime = runtimeGO.AddComponent<WebVerseRuntime>();
@@ -32,39 +32,39 @@ public class PNGHandlerTests
         WorldEngine.LoadWorld("test");
 
         // Load Image that does not exist.
-        string pngURI = System.IO.Path.Combine(runtime.fileHandler.fileDirectory, "test/test.png");
-        Texture2D loadedPNG = null;
+        string imageURI = System.IO.Path.Combine(runtime.fileHandler.fileDirectory, "test/test.png");
+        Texture2D loadedImage = null;
         Assert.Throws<System.IO.DirectoryNotFoundException>(() =>
         {
-            loadedPNG = runtime.pngHandler.LoadImage(pngURI);
+            loadedImage = runtime.imageHandler.LoadImage(imageURI);
         });
-        Assert.IsNull(loadedPNG);
+        Assert.IsNull(loadedImage);
 
-        // Download PNG that does not exist.
+        // Download image that does not exist.
         bool downloadComplete = false;
         System.Action onDownloaded = () =>
         {
             downloadComplete = true;
             Assert.Throws<System.IO.DirectoryNotFoundException>(() =>
             {
-                Assert.IsNull(runtime.pngHandler.LoadImage(System.IO.Path.Combine(
+                Assert.IsNull(runtime.imageHandler.LoadImage(System.IO.Path.Combine(
                     runtime.fileHandler.fileDirectory, "https~/invalidurlforthistest.com/invalid.png")));
             });
         };
-        runtime.pngHandler.DownloadPNG("https://invalidurlforthistest.com/invalid.png", onDownloaded);
+        runtime.imageHandler.DownloadImage("https://invalidurlforthistest.com/invalid.png", onDownloaded);
         yield return new WaitForSeconds(waitTime);
         Assert.IsTrue(downloadComplete);
 
-        // Download PNG that does exist.
+        // Download image that does exist.
         downloadComplete = false;
         onDownloaded = () =>
         {
             downloadComplete = true;
-            Assert.IsNotNull(runtime.pngHandler.LoadImage(System.IO.Path.Combine(
+            Assert.IsNotNull(runtime.imageHandler.LoadImage(System.IO.Path.Combine(
                     runtime.fileHandler.fileDirectory,
                     "https~/www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png")));
         };
-        runtime.pngHandler.DownloadPNG("https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png", onDownloaded);
+        runtime.imageHandler.DownloadImage("https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png", onDownloaded);
         yield return new WaitForSeconds(waitTime);
         Assert.IsTrue(downloadComplete);
 
@@ -74,7 +74,7 @@ public class PNGHandlerTests
             downloadComplete = true;
             Assert.IsNotNull(tex);
         });
-        runtime.pngHandler.LoadImageResourceAsTexture2D(
+        runtime.imageHandler.LoadImageResourceAsTexture2D(
             "https://file-examples.com/storage/fe3b4f721f64dfeffa49f02/2017/10/file_example_PNG_500kB.png", onLoaded);
         yield return new WaitForSeconds(waitTime);
         Assert.IsTrue(downloadComplete);

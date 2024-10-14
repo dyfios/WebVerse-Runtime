@@ -178,6 +178,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 {
                     return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
+                else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+                {
+                    return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
+                else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+                {
+                    return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
                 else
                 {
                     Logging.LogError("[BaseEntity:SetParent] Unknown entity type.");
@@ -608,6 +616,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetMotion(eMotion);
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            {
+                return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetMotion(eMotion);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            {
+                return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetMotion(eMotion);
+            }
             else
             {
                 Logging.LogError("[BaseEntity:SetMotion] Unknown entity type.");
@@ -683,6 +699,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
             {
                 eMotion = ((WorldEngine.Entity.VoxelEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            {
+                eMotion = ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            {
+                eMotion = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetMotion();
             }
             else
             {
@@ -794,6 +818,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetPhysicalProperties(props);
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            {
+                return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetPhysicalProperties(props);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            {
+                return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetPhysicalProperties(props);
+            }
             else
             {
                 Logging.LogError("[BaseEntity:SetPhysicalProperties] Unknown entity type.");
@@ -870,6 +902,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
             {
                 props = ((WorldEngine.Entity.VoxelEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            {
+                props = ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            {
+                props = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetPhysicalProperties();
             }
             else
             {
@@ -998,6 +1038,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetInteractionState(iState);
             }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            {
+                return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetInteractionState(iState);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            {
+                return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetInteractionState(iState);
+            }
             else
             {
                 Logging.LogError("[BaseEntity:SetInteractionState] Unknown entity type.");
@@ -1074,6 +1122,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
             {
                 iState = ((WorldEngine.Entity.VoxelEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            {
+                iState = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            {
+                iState = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetInteractionState();
             }
             else
             {

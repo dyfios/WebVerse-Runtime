@@ -292,11 +292,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     {
                         if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Build)
                         {
-                            te.Build(mod.position, mod.brushType, mod.layer, false);
+                            te.Build(mod.position, mod.brushType, mod.layer, mod.size, false);
                         }
                         else if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Dig)
                         {
-                            te.Dig(mod.position, mod.brushType, mod.layer, false);
+                            te.Dig(mod.position, mod.brushType, mod.layer, mod.size, false);
                         }
                         else
                         {
@@ -579,6 +579,22 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 AddEntityMapping(entityToRegister, ve);
                 return true;
             }
+            else if (entityToRegister is WorldEngine.Entity.WaterBlockerEntity)
+            {
+                WaterBlockerEntity we = new WaterBlockerEntity();
+                we.internalEntity = entityToRegister;
+                we.internalEntityType = typeof(WorldEngine.Entity.WaterBlockerEntity);
+                AddEntityMapping(entityToRegister, we);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.WaterBodyEntity)
+            {
+                WaterEntity we = new WaterEntity();
+                we.internalEntity = entityToRegister;
+                we.internalEntityType = typeof(WorldEngine.Entity.WaterBodyEntity);
+                AddEntityMapping(entityToRegister, we);
+                return true;
+            }
             else
             {
                 Logging.LogError("[EntityAPIHelper->RegisterPrivateEntity] Invalid entity type.");
@@ -627,7 +643,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     leftTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                     VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].leftTex, WebVerseRuntime.Instance.currentBasePath), lOnDownloaded);
 
                 Action<Texture2D> rOnDownloaded = new Action<Texture2D>((tex) =>
@@ -635,7 +651,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     rightTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                     VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].rightTex, WebVerseRuntime.Instance.currentBasePath), rOnDownloaded);
 
                 Action<Texture2D> fOnDownloaded = new Action<Texture2D>((tex) =>
@@ -643,7 +659,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     frontTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                     VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].frontTex, WebVerseRuntime.Instance.currentBasePath), fOnDownloaded);
 
                 Action<Texture2D> bOnDownloaded = new Action<Texture2D>((tex) =>
@@ -651,7 +667,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     backTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                     VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].backTex, WebVerseRuntime.Instance.currentBasePath), bOnDownloaded);
 
                 Action<Texture2D> tOnDownloaded = new Action<Texture2D>((tex) =>
@@ -659,7 +675,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     topTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                     VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].topTex, WebVerseRuntime.Instance.currentBasePath), tOnDownloaded);
 
                 Action<Texture2D> boOnDownloaded = new Action<Texture2D>((tex) =>
@@ -667,7 +683,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     bottomTex = tex;
                     completedRequests++;
                 });
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                     VEML.VEMLUtilities.FullyQualifyURI(info.subTypes[key].bottomTex, WebVerseRuntime.Instance.currentBasePath), boOnDownloaded);
 
                 float elapsedTime = 0;
@@ -734,7 +750,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                     if (!string.IsNullOrEmpty(layer.diffuseTexture))
                     {
-                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                        WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                             VEML.VEMLUtilities.FullyQualifyURI(layer.diffuseTexture, WebVerseRuntime.Instance.currentBasePath),
                         new Action<Texture2D>((tex) =>
                         {
@@ -750,14 +766,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                     if (!string.IsNullOrEmpty(layer.normalTexture))
                     {
-                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                        WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                             VEML.VEMLUtilities.FullyQualifyURI(layer.normalTexture, WebVerseRuntime.Instance.currentBasePath),
                         new Action<Texture2D>((tex) =>
                         {
                             newFormattedLayer.normal = tex;
                             newFormattedLayer.normalPath = layer.normalTexture;
                             completedRequests++;
-                        }));
+                        }), TextureFormat.RGB24);
                     }
                     else
                     {
@@ -766,18 +782,24 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                     if (!string.IsNullOrEmpty(layer.maskTexture))
                     {
-                        WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                        WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                             VEML.VEMLUtilities.FullyQualifyURI(layer.maskTexture, WebVerseRuntime.Instance.currentBasePath),
                         new Action<Texture2D>((tex) =>
                         {
                             newFormattedLayer.mask = tex;
                             newFormattedLayer.maskPath = layer.maskTexture;
                             completedRequests++;
-                        }));
+                        }), TextureFormat.RGB24);
                     }
                     else
                     {
                         completedRequests++;
+                    }
+
+                    newFormattedLayer.sizeFactor = layer.sizeFactor;
+                    if (layer.sizeFactor < 1)
+                    {
+                        newFormattedLayer.sizeFactor = 1;
                     }
 
                     float elapsedTime = 0;
@@ -812,7 +834,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             if (!string.IsNullOrEmpty(imageFile))
             {
-                WebVerseRuntime.Instance.pngHandler.LoadImageResourceAsTexture2D(
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
                     VEML.VEMLUtilities.FullyQualifyURI(imageFile, WebVerseRuntime.Instance.currentBasePath),
                 new Action<Texture2D>((tex) =>
                 {

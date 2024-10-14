@@ -1978,7 +1978,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             }
                             formattedMods.Add(new Handlers.Javascript.APIs.Entity.TerrainEntityModification(op,
                                 new Handlers.Javascript.APIs.WorldTypes.Vector3(mod.position.x, mod.position.y, mod.position.z),
-                                bt, mod.layer));
+                                bt, mod.layer, mod.size));
                         }
 
                         Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(
@@ -2266,12 +2266,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             if (modifyTerrainEntityMessage.modification == "build")
                             {
                                 ((HybridTerrainEntity) te).Build(modifyTerrainEntityMessage.position.ToVector3(), bt,
-                                    modifyTerrainEntityMessage.layer, false);
+                                    modifyTerrainEntityMessage.layer, modifyTerrainEntityMessage.size, false);
                             }
                             else if (modifyTerrainEntityMessage.modification == "dig")
                             {
                                 ((HybridTerrainEntity) te).Dig(modifyTerrainEntityMessage.position.ToVector3(), bt,
-                                    modifyTerrainEntityMessage.layer, false);
+                                    modifyTerrainEntityMessage.layer, modifyTerrainEntityMessage.size, false);
                             }
                         }
                     }
@@ -2732,7 +2732,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             }
                             formattedMods.Add(new Handlers.Javascript.APIs.Entity.TerrainEntityModification(op,
                                 new Handlers.Javascript.APIs.WorldTypes.Vector3(mod.position.x, mod.position.y, mod.position.z),
-                                bt, mod.layer));
+                                bt, mod.layer, mod.size));
                         }
 
                         Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadHybridTerrainEntityAsync(

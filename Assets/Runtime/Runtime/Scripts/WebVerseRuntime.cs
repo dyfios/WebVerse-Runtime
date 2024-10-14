@@ -5,7 +5,7 @@ using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.LocalStorage;
 using FiveSQD.WebVerse.Handlers.File;
 using FiveSQD.WebVerse.Handlers.GLTF;
-using FiveSQD.WebVerse.Handlers.PNG;
+using FiveSQD.WebVerse.Handlers.Image;
 using FiveSQD.WebVerse.Handlers.Javascript;
 #if USE_WEBINTERFACE
 using FiveSQD.WebVerse.VOSSynchronization;
@@ -19,6 +19,7 @@ using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
+using FiveSQD.WebVerse.Input.SteamVR;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -127,10 +128,10 @@ namespace FiveSQD.WebVerse.Runtime
         public FileHandler fileHandler { get; private set; }
 
         /// <summary>
-        /// The PNG Handler.
+        /// The Image Handler.
         /// </summary>
-        [Tooltip("The PNG Handler.")]
-        public PNGHandler pngHandler { get; private set; }
+        [Tooltip("The Image Handler.")]
+        public ImageHandler imageHandler { get; private set; }
 
         /// <summary>
         /// The Javascript Handler.
@@ -241,6 +242,18 @@ namespace FiveSQD.WebVerse.Runtime
         public GameObject voxelPrefab;
 
         /// <summary>
+        /// Prefab for a water body.
+        /// </summary>
+        [Tooltip("Prefab for a water body.")]
+        public GameObject waterBodyPrefab;
+
+        /// <summary>
+        /// Prefab for a water blocker.
+        /// </summary>
+        [Tooltip("Prefab for a water blocker.")]
+        public GameObject waterBlockerPrefab;
+
+        /// <summary>
         /// Prefab for a WebView.
         /// </summary>
         [Tooltip("Prefab for a WebView.")]
@@ -275,6 +288,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("Platform Input.")]
         public BasePlatformInput platformInput;
+
+        /// <summary>
+        /// The VR Rig.
+        /// </summary>
+        [Tooltip("The VR Rig.")]
+        public VRRig vrRig;
 
         /// <summary>
         /// The base path of the current world.
@@ -626,6 +645,8 @@ namespace FiveSQD.WebVerse.Runtime
             worldEngine.characterControllerPrefab = characterControllerPrefab;
             worldEngine.characterControllerLabelPrefab = characterControllerLabelPrefab;
             worldEngine.voxelPrefab = voxelPrefab;
+            worldEngine.waterBodyPrefab = waterBodyPrefab;
+            worldEngine.waterBlockerPrefab = waterBlockerPrefab;
             worldEngine.webViewPrefab = webViewPrefab;
             worldEngine.canvasWebViewPrefab = canvasWebViewPrefab;
             worldEngine.cameraOffset = cameraOffset;
@@ -638,11 +659,11 @@ namespace FiveSQD.WebVerse.Runtime
             fileHandlerGO.transform.SetParent(handlersGO.transform);
             fileHandler = fileHandlerGO.AddComponent<FileHandler>();
             fileHandler.Initialize(filesDirectory);
-            GameObject pngHandlerGO = new GameObject("PNG");
-            pngHandlerGO.transform.SetParent(handlersGO.transform);
-            pngHandler = pngHandlerGO.AddComponent<PNGHandler>();
-            pngHandler.runtime = this;
-            pngHandler.Initialize();
+            GameObject imageHandlerGO = new GameObject("Image");
+            imageHandlerGO.transform.SetParent(handlersGO.transform);
+            imageHandler = imageHandlerGO.AddComponent<ImageHandler>();
+            imageHandler.runtime = this;
+            imageHandler.Initialize();
             GameObject javascriptHandlerGO = new GameObject("Javascript");
             javascriptHandlerGO.transform.SetParent(handlersGO.transform);
             javascriptHandler = javascriptHandlerGO.AddComponent<JavascriptHandler>();
@@ -690,6 +711,7 @@ namespace FiveSQD.WebVerse.Runtime
             inputManagerGO.transform.SetParent(transform);
             inputManager = inputManagerGO.AddComponent<InputManager>();
             inputManager.platformInput = platformInput;
+            inputManager.vRRig = vrRig;
             inputManager.Initialize();
 
             // Set up Output Manager.
@@ -763,7 +785,7 @@ namespace FiveSQD.WebVerse.Runtime
             vemlHandler.Terminate();
             gltfHandler.Terminate();
             javascriptHandler.Terminate();
-            pngHandler.Terminate();
+            imageHandler.Terminate();
             fileHandler.Terminate();
             Destroy(fileHandler.transform.parent.gameObject);
 

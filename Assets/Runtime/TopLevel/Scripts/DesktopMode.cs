@@ -1,7 +1,8 @@
 // Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
 
 using System.Collections;
-using FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities;
+using FiveSQD.WebVerse.Utilities;
+using FiveSQD.WebVerse.Input;
 using FiveSQD.WebVerse.Interface.MultibarMenu;
 using UnityEngine;
 
@@ -109,6 +110,12 @@ namespace FiveSQD.WebVerse.Runtime
         public GameObject vrRig;
 
         /// <summary>
+        /// The top-level VR rig.
+        /// </summary>
+        [Tooltip("The top-level VR rig.")]
+        public GameObject topLevelVRRig;
+
+        /// <summary>
         /// The Desktop Input.
         /// </summary>
         [Tooltip("The Desktop Input.")]
@@ -119,6 +126,18 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The SteamVR Input.")]
         public GameObject steamVRInput;
+
+        /// <summary>
+        /// The Desktop Platform Input.
+        /// </summary>
+        [Tooltip("The Desktop Platform Input.")]
+        public BasePlatformInput desktopPlatformInput;
+
+        /// <summary>
+        /// The VR Platform Input.
+        /// </summary>
+        [Tooltip("The VR Platform Input.")]
+        public BasePlatformInput vrPlatformInput;
 
         /// <summary>
         /// Whether or not VR is enabled.
@@ -134,9 +153,13 @@ namespace FiveSQD.WebVerse.Runtime
             vrMultibar.gameObject.SetActive(true);
             StartCoroutine(EnableVRCoroutine());
             desktopRig.SetActive(false);
+            vrRig.transform.position = desktopRig.transform.position;
             vrRig.SetActive(true);
+            topLevelVRRig.SetActive(true);
             desktopInput.SetActive(false);
             steamVRInput.SetActive(true);
+            runtime.platformInput = vrPlatformInput;
+            runtime.inputManager.platformInput = vrPlatformInput;
             runtime.vr = true;
             vrMultibar.SetUpVRMultibarVRButton();
         }
@@ -155,10 +178,17 @@ namespace FiveSQD.WebVerse.Runtime
             }
             vrEnabled = false;
             vrMultibar.gameObject.SetActive(false);
-            desktopRig.SetActive(true);
             vrRig.SetActive(false);
+            desktopRig.transform.position = vrRig.transform.position;
+            desktopRig.SetActive(true);
+            topLevelVRRig.SetActive(false);
             desktopInput.SetActive(true);
             steamVRInput.SetActive(false);
+            runtime.platformInput = desktopPlatformInput;
+            if (runtime.inputManager != null)
+            {
+                runtime.inputManager.platformInput = desktopPlatformInput;
+            }
             runtime.vr = false;
         }
 

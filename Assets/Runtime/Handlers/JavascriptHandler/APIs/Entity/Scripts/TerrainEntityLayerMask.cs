@@ -26,7 +26,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return;
             }
 
-            float[,] list = new float[heights.Length,heights[0].Length];
+            float[,] list = new float[heights.Length, heights[0].Length];
             for (int i = 0; i < heights.Length; i++)
             {
                 for (int j = 0; j < heights[0].Length; j++)
@@ -50,6 +50,24 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             this.heights = heights;
+        }
+
+        /// <summary>
+        /// Set the height at a given coordinate.
+        /// </summary>
+        /// <param name="x">X coordinate.</param>
+        /// <param name="y">Y coordinate.</param>
+        /// <param name="height">Height.</param>
+        public void SetHeight(int x, int y, float height)
+        {
+            if (heights.GetLength(0) > x && heights.GetLength(1) > y && x > -1 && y > -1)
+            {
+                heights[x, y] = height;
+            }
+            else
+            {
+                Logging.LogWarning("[TerrainEntityLayerMask->SetHeight] Invalid coordinate.");
+            }
         }
     }
 }

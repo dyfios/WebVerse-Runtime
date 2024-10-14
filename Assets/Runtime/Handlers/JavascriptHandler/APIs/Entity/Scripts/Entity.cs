@@ -28,6 +28,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return null;
             }
+            else if (result is AudioEntity)
+            {
+                return (AudioEntity) result;
+            }
             else if (result is ButtonEntity)
             {
                 return (ButtonEntity) result;
@@ -47,6 +51,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (result is HTMLEntity)
             {
                 return ((HTMLEntity) result);
+            }
+            else if (result is ImageEntity)
+            {
+                return ((ImageEntity) result);
             }
             else if (result is InputEntity)
             {
@@ -71,6 +79,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else if (result is VoxelEntity)
             {
                 return (VoxelEntity) result;
+            }
+            else if (result is WaterBlockerEntity)
+            {
+                return (WaterBlockerEntity) result;
+            }
+            else if (result is WaterEntity)
+            {
+                return (WaterEntity) result;
             }
             else
             {

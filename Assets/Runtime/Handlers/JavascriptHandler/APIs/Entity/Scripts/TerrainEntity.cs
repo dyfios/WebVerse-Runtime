@@ -124,10 +124,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="position">Position at which to build.</param>
         /// <param name="brushType">Type of brush to use.</param>
         /// <param name="layer">Layer to build on.</param>
+        /// <param name="size">Size of the addition, in meters.</param>
         /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public bool Build(Vector3 position, TerrainEntityBrushType brushType,
-            int layer, bool synchronizeChange = true)
+            int layer, float size = 1, bool synchronizeChange = true)
         {
             if (IsValid() == false)
             {
@@ -155,7 +156,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
             return ((HybridTerrainEntity) internalEntity).Build(
                 new UnityEngine.Vector3(position.x, position.y, position.z),
-                internalBrushType, layer, synchronizeChange);
+                internalBrushType, layer, size, synchronizeChange);
         }
 
         /// <summary>
@@ -164,10 +165,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="position">Position at which to dig.</param>
         /// <param name="brushType">Type of brush to use.</param>
         /// <param name="layer">Layer to dig on.</param>
+        /// <param name="size">Size of the hole, in meters.</param>
         /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public bool Dig(Vector3 position, TerrainEntityBrushType brushType,
-            int layer, bool synchronizeChange = true)
+            int layer, float size, bool synchronizeChange = true)
         {
             if (IsValid() == false)
             {
@@ -195,7 +197,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
             return ((HybridTerrainEntity) internalEntity).Dig(
                 new UnityEngine.Vector3(position.x, position.y, position.z),
-                internalBrushType, layer, synchronizeChange);
+                internalBrushType, layer, size, synchronizeChange);
         }
 
         /// <summary>
@@ -276,7 +278,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            Tuple<HybridTerrainEntity.TerrainOperation, int, WorldEngine.Entity.Terrain.TerrainEntityBrushType> block
+            Tuple<HybridTerrainEntity.TerrainOperation, int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float> block
                 = ((HybridTerrainEntity) internalEntity).GetBlockAtPosition(
                 new UnityEngine.Vector3(position.x, position.y, position.z));
 
@@ -313,14 +315,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             Dictionary<UnityEngine.Vector3Int, Tuple<HybridTerrainEntity.TerrainOperation,
-                int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mods
+                int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mods
                 = ((HybridTerrainEntity) internalEntity).GetTerrainModifications();
 
             List<TerrainEntityModification> outputMods = new List<TerrainEntityModification>();
             if (mods != null)
             {
                 foreach (KeyValuePair<UnityEngine.Vector3Int, Tuple<HybridTerrainEntity.TerrainOperation,
-                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod in mods)
+                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod in mods)
                 {
                     if (mod.Key == null)
                     {
@@ -357,7 +359,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                             break;
                     }
                     outputMods.Add(new TerrainEntityModification(modName,
-                        new Vector3(mod.Key.x, mod.Key.y, mod.Key.z), bt, mod.Value.Item2));
+                        new Vector3(mod.Key.x, mod.Key.y, mod.Key.z), bt, mod.Value.Item2, mod.Value.Item4));
                 }
             }
 
