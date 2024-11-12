@@ -188,13 +188,20 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             [JsonProperty(PropertyName = "layer")]
             public int layer;
 
+            /// <summary>
+            /// Size of the modification.
+            /// </summary>
+            [JsonProperty(PropertyName = "size")]
+            public float size;
+
             public TerrainModification(string _modification,
-                Vector3 _position, string _brushType, int _layer)
+                Vector3 _position, string _brushType, int _layer, float _size)
             {
                 modification = _modification;
                 position = new SerializableVector3(_position);
                 brushType = _brushType;
                 layer = _layer;
+                size = _size;
             }
         }
 
@@ -486,7 +493,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 string[] _specularValues, float[] _metallicValues,
                 float[] _smoothnessValues, string _layerMask, string _subType,
                 Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> _modifications)
+                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> _modifications)
             {
                 id = _id.ToString();
                 tag = _tag;
@@ -530,7 +537,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 {
                     foreach (System.Collections.Generic.KeyValuePair<
                         Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod
+                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod
                         in _modifications)
                     {
                         if (mod.Key == null)
@@ -567,7 +574,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                                 bt = "roundedcube";
                                 break;
                         }
-                        mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2));
+                        mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2, mod.Value.Item4));
                     }
                 }
                 modifications = mods.ToArray();
@@ -1796,7 +1803,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     WorldEngine.Entity.Terrain.TerrainEntityLayer[] layers,
                     string _layerMask, string _type,
                     Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> _modifications,
+                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> _modifications,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
@@ -1845,7 +1852,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     {
                         foreach (System.Collections.Generic.KeyValuePair<
                             Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod
+                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod
                             in _modifications)
                         {
                             if (mod.Key == null)
@@ -1882,7 +1889,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                                     bt = "roundedcube";
                                     break;
                             }
-                            mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2));
+                            mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2, mod.Value.Item4));
                         }
                     }
                     modifications = mods.ToArray();
@@ -3627,7 +3634,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     float[] _metallicValues, float[] _smoothnessValues,
                     string _layerMask, string _type,
                     Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> _modifications)
+                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> _modifications)
                 {
                     messageID = _messageID.ToString();
                     clientID = _clientID.ToString();
@@ -3655,7 +3662,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     {
                         foreach (System.Collections.Generic.KeyValuePair<
                             Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType>> mod
+                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod
                             in _modifications)
                         {
                             if (mod.Key == null)
@@ -3692,7 +3699,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                                     bt = "roundedcube";
                                     break;
                             }
-                            mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2));
+                            mods.Add(new TerrainModification(modName, mod.Key, bt, mod.Value.Item2, mod.Value.Item4));
                         }
                     }
                     modifications = mods.ToArray();
@@ -4575,6 +4582,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 /// </summary>
                 [JsonProperty(PropertyName = "layer")]
                 public int layer;
+
+                /// <summary>
+                /// Size of the modification.
+                /// </summary>
+                [JsonProperty(PropertyName = "size")]
+                public float size;
 
                 public ModifyTerrainEntityMessage(Guid _messageID, Guid _clientID,
                 Guid _sessionID, Guid _entityID, string _modification,

@@ -344,7 +344,6 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// <param name="rawData">Data received in the response.</param>
         private void FinishGLTFDownload(string uri, int responseCode, byte[] rawData)
         {
-            Logging.Log("qwer " + uri);
             uri = VEML.VEMLUtilities.FullyQualifyURI(uri, WebVerseRuntime.Instance.currentBasePath);
             Logging.Log("[GLTFHandler->FinishGLTFDownload] Got response " + responseCode + " for request " + uri);
 

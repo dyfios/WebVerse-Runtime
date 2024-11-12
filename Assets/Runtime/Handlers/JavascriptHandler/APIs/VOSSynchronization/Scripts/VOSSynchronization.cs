@@ -4,6 +4,7 @@
 using FiveSQD.WebVerse.WorldEngine.Utilities;
 using System;
 using FiveSQD.WebVerse.Runtime;
+using FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
 {
@@ -271,6 +272,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             if (synchronizerToSendMessageOn == null)
             {
                 LogSystem.LogError("[VOSSynchronization:SendMessage] Can't find service to send message on.");
+                return false;
+            }
+            
+            if (!synchronizerToSendMessageOn.isConnected)
+            {
+                Logging.LogWarning("[VOSSynchronization:SendMessage] Not connected.");
                 return false;
             }
 

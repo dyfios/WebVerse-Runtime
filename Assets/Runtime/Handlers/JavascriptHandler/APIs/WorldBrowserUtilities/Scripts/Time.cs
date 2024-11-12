@@ -29,6 +29,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
             return new UUID(id.ToString());
         }
 
+        public static bool CallAsynchronously(string function)
+        {
+            WebVerseRuntime.Instance.timeHandler.CallAsynchronously(function);
+
+            return true;
+        }
+
         /// <summary>
         /// Stop running a registered function.
         /// </summary>

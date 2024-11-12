@@ -74,11 +74,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
 
             // Entity.
             new System.Tuple<string, System.Type>("Entity", typeof(Entity)),
+            new System.Tuple<string, System.Type>("AudioEntity", typeof(AudioEntity)),
             new System.Tuple<string, System.Type>("ButtonEntity", typeof(ButtonEntity)),
             new System.Tuple<string, System.Type>("CanvasEntity", typeof(CanvasEntity)),
             new System.Tuple<string, System.Type>("CharacterEntity", typeof(CharacterEntity)),
             new System.Tuple<string, System.Type>("ContainerEntity", typeof(ContainerEntity)),
             new System.Tuple<string, System.Type>("HTMLEntity", typeof(HTMLEntity)),
+            new System.Tuple<string, System.Type>("ImageEntity", typeof(ImageEntity)),
             new System.Tuple<string, System.Type>("InputEntity", typeof(InputEntity)),
             new System.Tuple<string, System.Type>("LightEntity", typeof(LightEntity)),
             new System.Tuple<string, System.Type>("MeshEntity", typeof(MeshEntity)),
@@ -91,6 +93,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("TerrainEntityOperation", typeof(TerrainEntityModification.TerrainEntityOperation)),
             new System.Tuple<string, System.Type>("TextEntity", typeof(TextEntity)),
             new System.Tuple<string, System.Type>("VoxelEntity", typeof(VoxelEntity)),
+            new System.Tuple<string, System.Type>("WaterBlockerEntity", typeof(WaterBlockerEntity)),
+            new System.Tuple<string, System.Type>("WaterEntity", typeof(WaterEntity)),
             new System.Tuple<string, System.Type>("InteractionState", typeof(InteractionState)),
             new System.Tuple<string, System.Type>("EntityMotion", typeof(EntityMotion)),
             new System.Tuple<string, System.Type>("EntityPhysicalProperties", typeof(EntityPhysicalProperties)),
@@ -115,6 +119,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("VSSTransport",
                 typeof(APIs.VOSSynchronization.VOSSynchronization.Transport)),
 #endif
+
+            // Environment.
+            new System.Tuple<string, System.Type>("Environment", typeof(APIs.Environment.Environment)),
 
             // World Browser Utilities.
             new System.Tuple<string, System.Type>("Camera", typeof(APIs.Utilities.Camera)),

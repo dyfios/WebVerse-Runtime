@@ -2,6 +2,7 @@
 
 using FiveSQD.WebVerse.Runtime;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace FiveSQD.WebVerse.Utilities
@@ -91,6 +92,30 @@ namespace FiveSQD.WebVerse.Utilities
             }
 
             intervalFunctions.Remove(id);
+        }
+
+        public void CallAsynchronously(string function)
+        {
+            StartCoroutine(RunJavascriptInCoroutine(function));
+        }
+
+        public void CallAsynchronously(string function, object[] data)
+        {
+            StartCoroutine(RunJavascriptInCoroutine(function, data));
+        }
+
+        private IEnumerator RunJavascriptInCoroutine(string function)
+        {
+            yield return null;
+
+            WebVerseRuntime.Instance.javascriptHandler.RunScript(function);
+        }
+
+        private IEnumerator RunJavascriptInCoroutine(string function, object[] data)
+        {
+            yield return null;
+
+            WebVerseRuntime.Instance.javascriptHandler.CallWithParams(function, data);
         }
 
         private void Update()

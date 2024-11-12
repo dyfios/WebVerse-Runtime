@@ -1,5 +1,5 @@
 {
-    "name": "FiveSQD.WebVerse.Handlers.PNG.Tests",
+    "name": "FiveSQD.WebVerse.Handlers.Image.Tests",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",

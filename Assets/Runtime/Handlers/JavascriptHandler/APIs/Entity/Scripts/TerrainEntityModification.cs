@@ -41,19 +41,26 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         public int layer;
 
         /// <summary>
+        /// Size of the modification.
+        /// </summary>
+        public float size;
+
+        /// <summary>
         /// Constructor for a Terrain Entity Operation.
         /// </summary>
         /// <param name="operation">Operation to be performed on the terrain.</param>
         /// <param name="position">Position of the operation.</param>
         /// <param name="brushType">Brush type to be used for the terrain modification.</param>
         /// <param name="layer">Layer on which modification is to be made to the terrain.</param>
+        /// <param name="size">Size of the hole, in meters.</param>
         public TerrainEntityModification(TerrainEntityOperation operation,
-            Vector3 position, TerrainEntityBrushType brushType, int layer)
+            Vector3 position, TerrainEntityBrushType brushType, int layer, float size)
         {
             this.operation = operation;
             this.position = position;
             this.brushType = brushType;
             this.layer = layer;
+            this.size = size;
         }
     }
 }

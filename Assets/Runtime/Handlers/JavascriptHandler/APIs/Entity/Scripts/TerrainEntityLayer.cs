@@ -36,5 +36,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// Smoothness factor. Must be between 0 and 1.
         /// </summary>
         public float smoothness;
+
+        /// <summary>
+        /// Size factor to apply to terrain textures.
+        /// </summary>
+        public int sizeFactor;
     }
 }
