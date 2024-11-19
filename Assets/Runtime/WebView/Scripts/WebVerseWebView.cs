@@ -46,7 +46,7 @@ namespace FiveSQD.WebVerse.WebView
             cwvPrefab = webViewObject.GetComponentInChildren<CanvasWebViewPrefab>();
             if (cwvPrefab != null)
             {
-                cwvPrefab.KeyboardEnabled = false;
+                //cwvPrefab.KeyboardEnabled = false;
             }
 #endif
             Hide();

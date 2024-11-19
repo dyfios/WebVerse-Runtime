@@ -63,6 +63,7 @@ namespace FiveSQD.WebVerse.Handlers.Image
         /// <param name="onDownloaded">Action to perform when downloading is complete.</param>
         public void DownloadImage(string uri, Action onDownloaded)
         {
+            uri = uri.Replace("\\", "/");
 #if USE_WEBINTERFACE
             Action<int, Dictionary<string, string>, Texture2D> onDownloadedAction
             = new Action<int, Dictionary<string, string>, Texture2D>((code, headers, data) =>

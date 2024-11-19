@@ -719,6 +719,16 @@ namespace FiveSQD.WebVerse.Interface.MultibarMenu
             WebVerseRuntime.Instance.LoadURL(url, new Action<string>((name) =>
             {
                 AddToHistory(DateTime.Now, name, url);
+                ToggleMultibar();
+                ToggleMultibar();
+                if (tutorialMenu != null)
+                {
+                    if (tutorialMenu.activeSelf)
+                    {
+                        tutorialMenu.SetActive(false);
+                        tutorialMenu.SetActive(true);
+                    }
+                }
             }));
         }
 

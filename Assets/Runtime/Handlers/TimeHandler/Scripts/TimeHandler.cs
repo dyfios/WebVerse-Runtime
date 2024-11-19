@@ -4,6 +4,7 @@ using FiveSQD.WebVerse.Runtime;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FiveSQD.WebVerse.Utilities
 {
@@ -121,7 +122,7 @@ namespace FiveSQD.WebVerse.Utilities
         private void Update()
         {
             float elapsedTime = UnityEngine.Time.deltaTime;
-            foreach (IntervalFunction intervalFunction in intervalFunctions.Values)
+            foreach (IntervalFunction intervalFunction in intervalFunctions.Values.ToList())
             {
                 intervalFunction.currentElapsed += elapsedTime;
                 if (intervalFunction.currentElapsed > intervalFunction.interval)
