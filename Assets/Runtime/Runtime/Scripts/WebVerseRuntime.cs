@@ -374,6 +374,12 @@ namespace FiveSQD.WebVerse.Runtime
         public GameObject archMeshPrefab;
 
         /// <summary>
+        /// The reflection probe.
+        /// </summary>
+        [Tooltip("The reflection probe.")]
+        public ReflectionProbe reflectionProbe;
+
+        /// <summary>
         /// Initialize the WebVerse Runtime.
         /// </summary>
         /// <param name="settings">The runtime settings to use.</param>
@@ -534,6 +540,8 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 if (result == true)
                 {
+                    reflectionProbe.enabled = false;
+                    reflectionProbe.enabled = true;
                     state = RuntimeState.LoadedWorld;
                 }
                 else

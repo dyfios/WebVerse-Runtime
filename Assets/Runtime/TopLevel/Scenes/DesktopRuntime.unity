@@ -2242,6 +2242,7 @@ MonoBehaviour:
   torusMeshPrefab: {fileID: 2913660694678671017, guid: 2aee65fd59d7ec7499070109eab23e54, type: 3}
   prismMeshPrefab: {fileID: 7480807262433990556, guid: e4ea5490454ef8a4c9f704fccd459975, type: 3}
   archMeshPrefab: {fileID: 2347241635205284074, guid: 4965664f8d365f146b2afbe321a24139, type: 3}
+  reflectionProbe: {fileID: 839982476}
 --- !u!4 &472491404
 Transform:
   m_ObjectHideFlags: 0

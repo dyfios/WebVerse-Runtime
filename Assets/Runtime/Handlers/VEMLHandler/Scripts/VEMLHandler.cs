@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using FiveSQD.WebVerse.Handlers.VEML.Schema.V2_1;
+using FiveSQD.WebVerse.Handlers.VEML.Schema.V2_2;
 using FiveSQD.WebVerse.VOSSynchronization;
 using FiveSQD.WebVerse.WorldEngine.Utilities;
 using FiveSQD.WebVerse.WorldEngine.Entity;
@@ -28,7 +28,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <summary>
         /// Enumeration for a VEML version number.
         /// </summary>
-        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1 }
+        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1, V2_2 }
 
         /// <summary>
         /// Reference to the WebVerse runtime.
@@ -71,7 +71,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V2_1.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V2_2.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -107,7 +107,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V2_1.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V2_2.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -193,31 +193,33 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         /// <param name="path">Path to load the document from.</param>
         /// <returns>A loaded VEML class, or null.</returns>
-        public Schema.V2_1.veml LoadVEML(string path)
+        public Schema.V2_2.veml LoadVEML(string path)
         {
             byte[] rawData = System.IO.File.ReadAllBytes(path);
 
-            //VEMLVersion version = VEMLVersion.v2_1;
-            Schema.V2_1.veml veml = null;
+            //VEMLVersion version = VEMLVersion.V2_2;
+            Schema.V2_2.veml veml = null;
             try
             {
-                XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_1.veml));
+                XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_2.veml));
                 TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_1(System.Text.Encoding.UTF8.GetString(rawData)));
                 XmlReader xmlReader = XmlReader.Create(reader);
 
-                // Attempt deserialization using v2.1 (latest) of the schema. Old XML will be converted
+                // Attempt deserialization using v2.2 (latest) of the schema. Old XML will be converted
                 // to current version before being deserialized.
                 if (ser.CanDeserialize(xmlReader))
                 {
-                    //version = VEMLVersion.v2_1;
-                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.3");
-                    veml = (Schema.V2_1.veml) ser.Deserialize(xmlReader);
+                    //version = VEMLVersion.V2_2;
+                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.2");
+                    veml = (Schema.V2_2.veml) ser.Deserialize(xmlReader);
                 }
 
-                // Attempt deserialization using v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to latest if deserialization succeeds.
+                // Attempt deserialization using v2.1, v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to latest if deserialization succeeds.
                 else
                 {
-                    ser = new XmlSerializer(typeof(Schema.V2_0.veml));
+                    ser = new XmlSerializer(typeof(Schema.V2_1.veml));
+                    XmlSerializer ser2_0 = new XmlSerializer(typeof(Schema.V2_0.veml));
+                    XmlSerializer ser1_3 = new XmlSerializer(typeof(Schema.V1_3.veml));
                     XmlSerializer ser1_2 = new XmlSerializer(typeof(Schema.V1_2.veml));
                     XmlSerializer ser1_1 = new XmlSerializer(typeof(Schema.V1_1.veml));
                     XmlSerializer ser1_0 = new XmlSerializer(typeof(Schema.V1_0.veml));
@@ -225,10 +227,20 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     if (ser.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v2_0;
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.1. Upgrading to VEML v2.2.");
+                        reader = new StringReader(VEMLUtilities.FullyNotateVEML2_1(System.Text.Encoding.UTF8.GetString(rawData)));
+                        xmlReader = XmlReader.Create(reader);
+                        Schema.V2_1.veml v2_1VEML = (Schema.V2_1.veml) ser.Deserialize(xmlReader);
+                        veml = VEMLUtilities.ConvertFromV2_1(v2_1VEML);
+                    }
+
+                    else if (ser.CanDeserialize(xmlReader))
+                    {
+                        //version = VEMLVersion.v2_0;
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.0. Upgrading to VEML v2.1.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML2_0(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
-                        Schema.V2_0.veml v2_0VEML = (Schema.V2_0.veml) ser.Deserialize(xmlReader);
+                        Schema.V2_0.veml v2_0VEML = (Schema.V2_0.veml) ser2_0.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV2_0(v2_0VEML);
                     }
 
@@ -238,7 +250,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.3. Upgrading to VEML v2.1.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_3(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
-                        Schema.V1_3.veml v1_3VEML = (Schema.V1_3.veml) ser.Deserialize(xmlReader);
+                        Schema.V1_3.veml v1_3VEML = (Schema.V1_3.veml) ser1_3.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_3(v1_3VEML);
                     }
 
@@ -248,7 +260,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.2. Upgrading to VEML v2.1.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_2(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
-                        Schema.V1_2.veml v1_2VEML = (Schema.V1_2.veml) ser.Deserialize(xmlReader);
+                        Schema.V1_2.veml v1_2VEML = (Schema.V1_2.veml) ser1_2.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_2(v1_2VEML);
                     }
 
@@ -258,7 +270,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.1. Upgrading to VEML v2.1.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_1(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
-                        Schema.V1_1.veml v1_1VEML = (Schema.V1_1.veml) ser.Deserialize(xmlReader);
+                        Schema.V1_1.veml v1_1VEML = (Schema.V1_1.veml) ser1_1.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_1(v1_1VEML);
                     }
 
@@ -545,7 +557,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <param name="onComplete">Action to invoke upon completion of world loading.
         /// Provides a success/fail indication.</param>
-        private IEnumerator ApplyVEMLDocument(Schema.V2_1.veml vemlDocument, string baseURI, Action<bool> onComplete)
+        private IEnumerator ApplyVEMLDocument(Schema.V2_2.veml vemlDocument, string baseURI, Action<bool> onComplete)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -610,7 +622,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="onScriptsProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessMetadata(Schema.V2_1.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
+        private bool ProcessMetadata(Schema.V2_2.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -667,7 +679,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEnvironment(Schema.V2_1.veml vemlDocument, string baseURI)
+        private bool ProcessEnvironment(Schema.V2_2.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -707,7 +719,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <param name="onProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
-        private IEnumerator ProcessScripts(Schema.V2_1.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
+        private IEnumerator ProcessScripts(Schema.V2_2.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -773,7 +785,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessCapabilities(Schema.V2_1.veml vemlDocument, string baseURI)
+        private bool ProcessCapabilities(Schema.V2_2.veml vemlDocument, string baseURI)
         {
             // Check capabilities.
             if (vemlDocument.metadata.capability != null)
@@ -815,7 +827,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessInputEvents(Schema.V2_1.veml vemlDocument, string baseURI)
+        private bool ProcessInputEvents(Schema.V2_2.veml vemlDocument, string baseURI)
         {
             // Set up input events.
             if (vemlDocument.metadata.inputevent != null)
@@ -835,7 +847,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessControlFlags(Schema.V2_1.veml vemlDocument, string baseURI)
+        private bool ProcessControlFlags(Schema.V2_2.veml vemlDocument, string baseURI)
         {
             // Set up control flags.
             if (vemlDocument.metadata.controlflags != null)
@@ -946,7 +958,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessSynchronizers(Schema.V2_1.veml vemlDocument, string baseURI)
+        private bool ProcessSynchronizers(Schema.V2_2.veml vemlDocument, string baseURI)
         {
             // Set up synchronizers.
             if (vemlDocument.metadata.synchronizationservice != null)
@@ -1082,7 +1094,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEntities(Schema.V2_1.veml vemlDocument, string baseURI)
+        private bool ProcessEntities(Schema.V2_2.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -2984,8 +2996,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadWaterBodyEntity(
                 ProcessColor(entity.shallowcolor), ProcessColor(entity.deepcolor), ProcessColor(entity.specularcolor),
                 ProcessColor(entity.scatteringcolor), entity.deepstart, entity.deepend, entity.distortion, entity.smoothness,
-                entity.numwaves, entity.waveamplitude, entity.wavesteepness, entity.wavespeed, entity.wavelength, null,
-                positionValue, rotationValue, Guid.Parse(entity.id), entity.tag, onLoadEvent);
+                entity.numwaves, entity.waveamplitude, entity.wavesteepness, entity.wavespeed, entity.wavelength, entity.wavescale,
+                entity.waveintensity, null, positionValue, rotationValue, Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
         }

@@ -453,6 +453,26 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         }
 
         /// <summary>
+        /// Apply image to button asynchronously.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="buttonEntity">Button entity to apply image to.</param>
+        public static void ApplyImageToButtonAsync(string file, WorldEngine.Entity.ButtonEntity buttonEntity)
+        {
+            instance.StartCoroutine(instance.ApplyImageToButton(file, buttonEntity));
+        }
+
+        /// <summary>
+        /// Apply image to dropdown asynchronously.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="buttonEntity">Dropdown entity to apply image to.</param>
+        public static void ApplyImageToDropdownAsync(string file, WorldEngine.Entity.DropdownEntity dropdownEntity)
+        {
+            instance.StartCoroutine(instance.ApplyImageToDropdown(file, dropdownEntity));
+        }
+
+        /// <summary>
         /// Register a private entity.
         /// </summary>
         /// <param name="entityToRegister">Entity to register.</param>
@@ -865,6 +885,50 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 AudioClip clip = DownloadHandlerAudioClip.GetContent(request);
                 audioEntity.audioClip = clip;
             }
+        }
+
+        /// <summary>
+        /// Apply image to button entity in a coroutine.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="buttonEntity">Button entity to apply image to.</param>
+        /// <returns>Coroutine.</returns>
+        private IEnumerator ApplyImageToButton(string file, WorldEngine.Entity.ButtonEntity buttonEntity)
+        {
+            if (!string.IsNullOrEmpty(file))
+            {
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(file, WebVerseRuntime.Instance.currentBasePath),
+                new Action<Texture2D>((tex) =>
+                {
+                    buttonEntity.SetBackground(Sprite.Create(
+                        tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f)));
+                }));
+            }
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Apply image to dropdown entity in a coroutine.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="dropdownEntity">Dropdown entity to apply image to.</param>
+        /// <returns>Coroutine.</returns>
+        private IEnumerator ApplyImageToDropdown(string file, WorldEngine.Entity.DropdownEntity dropdownEntity)
+        {
+            if (!string.IsNullOrEmpty(file))
+            {
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(file, WebVerseRuntime.Instance.currentBasePath),
+                new Action<Texture2D>((tex) =>
+                {
+                    dropdownEntity.SetBackground(Sprite.Create(
+                        tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f)));
+                }));
+            }
+
+            yield return null;
         }
     }
 }
