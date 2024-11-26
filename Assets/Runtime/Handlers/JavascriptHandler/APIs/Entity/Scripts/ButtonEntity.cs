@@ -112,5 +112,66 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             return true;
         }
+
+        /// <summary>
+        /// Set the background image for the button entity.
+        /// </summary>
+        /// <param name="imagePath">Path to the image to set the background to.</param>
+        /// <returns>Whether or not the setting was successful.</returns>
+        public bool SetBackground(string imagePath)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[ButtonEntity:SetBackground] Unknown entity.");
+                return false;
+            }
+
+            EntityAPIHelper.ApplyImageToButtonAsync(imagePath, (WorldEngine.Entity.ButtonEntity) internalEntity);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Set the base color for the button entity.
+        /// </summary>
+        /// <param name="color">Color to set the button entity to.</param>
+        /// <returns>Whether or not the setting was successful.</returns>
+        public bool SetBaseColor(Color color)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[ButtonEntity:SetBaseColor] Unknown entity.");
+                return false;
+            }
+
+            ((WorldEngine.Entity.ButtonEntity) internalEntity).SetBaseColor(
+                new UnityEngine.Color(color.r, color.g, color.b, color.a));
+
+            return true;
+        }
+
+        /// <summary>
+        /// Set the colors for the button entity.
+        /// </summary>
+        /// <param name="defaultColor">Color to set the default color for the button entity to.</param>
+        /// <param name="hoverColor">Color to set the hover color for the button entity to.</param>
+        /// <param name="clickColor">Color to set the click color for the button entity to.</param>
+        /// <param name="inactiveColor">Color to set the inactive color for the button entity to.</param>
+        public bool SetColors(Color defaultColor, Color hoverColor, Color clickColor, Color inactiveColor)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[ButtonEntity:SetColors] Unknown entity.");
+                return false;
+            }
+
+            ((WorldEngine.Entity.ButtonEntity) internalEntity).SetColors(
+                new UnityEngine.Color(defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a),
+                new UnityEngine.Color(hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a),
+                new UnityEngine.Color(clickColor.r, clickColor.g, clickColor.b, clickColor.a),
+                new UnityEngine.Color(inactiveColor.r, inactiveColor.g, inactiveColor.b, inactiveColor.a));
+
+            return true;
+        }
     }
 }

@@ -123,6 +123,16 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         private bool requestedState = false;
 
         /// <summary>
+        /// Whether or not to attempt reconnection.
+        /// </summary>
+        private bool attemptReconnect = false;
+
+        /// <summary>
+        /// Whether or not disconnection has been initiated.
+        /// </summary>
+        private bool initiatedDisconnect = false;
+
+        /// <summary>
         /// Initialize the synchronizer.
         /// </summary>
         /// <param name="host">Host to use.</param>
@@ -214,7 +224,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// Connect the synchronizer to the bus.
         /// </summary>
         /// <param name="onConnected">Action to perform upon connection.</param>
-        public void Connect(Action onConnected = null)
+        /// <param name="autoRecconect">Whether or not to automatically attempt reconnection.</param>
+        public void Connect(Action onConnected = null, bool autoRecconect = true)
         {
             if (mqttClient == null)
             {
@@ -223,6 +234,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             }
 
             this.onConnected = onConnected;
+            this.attemptReconnect = autoRecconect;
             mqttClient.Connect();
         }
 
@@ -236,6 +248,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 LogSystem.LogError("[VOSSynchronizer->Disconnect] Not initialized.");
                 return;
             }
+
+            initiatedDisconnect = true;
 
             mqttClient.Disconnect("Ending connection.");
         }
@@ -311,6 +325,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             }
 
             currentSessionID = sessionID;
+            currentClientTag = clientTag;
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.JoinSessionMessage
                 createSessionMessage = new VOSSynchronizationMessages.SessionMessages
@@ -1428,6 +1443,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 + mqttClient.host + ":" + mqttClient.port
                 + " - " + reason);
             isConnected = false;
+
+            // If disconnection unexpected, and so configured, attempt reconnection.
+            if (!initiatedDisconnect && attemptReconnect)
+            {
+                AttemptReconnection();
+            }
+
+            initiatedDisconnect = false;
         }
 
         /// <summary>
@@ -2791,6 +2814,33 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Attempt to reconnect to the active synchronizer and session.
+        /// </summary>
+        private void AttemptReconnection()
+        {
+            Disconnect();
+            string host = mqttClient.host;
+            int port = mqttClient.port;
+            bool useTLS = mqttClient.useTLS;
+            Guid? sessionID = currentSessionID;
+            string clientTag = currentClientTag;
+            MQTTClient.Transports transport =
+#if !UNITY_WEBGL
+                (mqttClient.transport == Best.MQTT.SupportedTransports.TCP) ? 
+                MQTTClient.Transports.TCP :
+#endif
+                MQTTClient.Transports.WebSockets;
+                mqttClient = null;
+            Initialize(host, port, useTLS, transport);
+            Connect(new Action(() => {
+                if (sessionID.HasValue)
+                {
+                    JoinSession(sessionID.Value, clientTag);
+                }
+            }));
         }
     }
 }
