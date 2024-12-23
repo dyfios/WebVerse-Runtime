@@ -16,6 +16,7 @@ using System;
 using FiveSQD.WebVerse.Input;
 using FiveSQD.WebVerse.WebInterface.HTTP;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
+using FiveSQD.WebVerse.Handlers.Javascript.APIs.Data;
 using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
@@ -542,6 +543,7 @@ namespace FiveSQD.WebVerse.Runtime
                 {
                     reflectionProbe.enabled = false;
                     reflectionProbe.enabled = true;
+                    reflectionProbe.refreshMode = UnityEngine.Rendering.ReflectionProbeRefreshMode.EveryFrame;
                     state = RuntimeState.LoadedWorld;
                 }
                 else
@@ -680,6 +682,10 @@ namespace FiveSQD.WebVerse.Runtime
             entityAPIHelperGO.transform.SetParent(javascriptHandlerGO.transform);
             EntityAPIHelper entityAPIHelper = entityAPIHelperGO.AddComponent<EntityAPIHelper>();
             entityAPIHelper.Initialize();
+            GameObject dataAPIHelperGO = new GameObject("DataAPIHelper");
+            dataAPIHelperGO.transform.SetParent(javascriptHandlerGO.transform);
+            DataAPIHelper dataAPIHelper = dataAPIHelperGO.AddComponent<DataAPIHelper>();
+            dataAPIHelper.Initialize();
 
             GameObject gltfHandlerGO = new GameObject("GLTF");
             gltfHandlerGO.transform.SetParent(handlersGO.transform);

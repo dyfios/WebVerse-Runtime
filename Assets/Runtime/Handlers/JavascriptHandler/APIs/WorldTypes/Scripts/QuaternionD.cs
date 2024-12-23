@@ -397,7 +397,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes
         /// <param name="quaternion1">First quaternion.</param>
         /// <param name="quaternion2">Second quaternion.</param>
         /// <returns>The combination of the two Quaternions.</returns>
-        private static QuaternionD Combine(QuaternionD quaternion1, QuaternionD quaternion2)
+        public static QuaternionD Combine(QuaternionD quaternion1, QuaternionD quaternion2)
         {
             UnityEngine.Quaternion first = new UnityEngine.Quaternion((float) quaternion1.x,
                 (float) quaternion1.y, (float) quaternion1.z, (float) quaternion1.w);

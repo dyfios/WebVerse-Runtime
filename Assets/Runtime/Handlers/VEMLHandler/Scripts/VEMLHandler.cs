@@ -202,7 +202,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             try
             {
                 XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_2.veml));
-                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_1(System.Text.Encoding.UTF8.GetString(rawData)));
+                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_2(System.Text.Encoding.UTF8.GetString(rawData)));
                 XmlReader xmlReader = XmlReader.Create(reader);
 
                 // Attempt deserialization using v2.2 (latest) of the schema. Old XML will be converted
@@ -1460,7 +1460,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     else
                     {
-                        Logging.LogWarning("[VEMLHandler->ApplyVEMLDocument] Unknown kind of entity: " + entity.tag);
+                        Logging.LogWarning("[VEMLHandler->ApplyVEMLDocument] Unknown kind of entity: " + typeof(entity).ToString());
                     }
                 }
 
@@ -2672,6 +2672,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessAudioEntity(audioentity entity, string baseURI)
         {
+            string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
+
             if (string.IsNullOrEmpty(entity.tag))
             {
                 Logging.LogWarning("[VEMLHandler->ProcessAudioEntity] VEML document environment audio entity missing required field: tag.");
@@ -2721,8 +2723,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 loadedEntity.SetVisibility(true);
+
+                string fullAudioFilePath = VEML.VEMLUtilities.FullyQualifyURI(entity.audiofile, formattedBaseURI);
+
                 Javascript.APIs.Entity.EntityAPIHelper.LoadAudioFromFileAsync(
-                    entity.audiofile, (AudioEntity) loadedEntity);
+                    fullAudioFilePath, (AudioEntity) loadedEntity);
                 ((AudioEntity) loadedEntity).loop = entity.loop;
                 ((AudioEntity) loadedEntity).priority = entity.priority;
                 ((AudioEntity) loadedEntity).volume = entity.volume;
@@ -2763,6 +2768,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <returns>Whether or not the operation succeeded.</returns>
         private bool ProcessImageEntity(imageentity entity, string baseURI)
         {
+            string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
+
             if (string.IsNullOrEmpty(entity.tag))
             {
                 Logging.LogWarning("[VEMLHandler->ProcessImageEntity] VEML document environment audio image missing required field: tag.");
@@ -2829,7 +2836,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             });
 
             WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
-                    VEML.VEMLUtilities.FullyQualifyURI(entity.imagefile, baseURI),
+                    VEML.VEMLUtilities.FullyQualifyURI(entity.imagefile, formattedBaseURI),
                 new Action<Texture2D>((tex) =>
                 {
                     WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadImageEntity(

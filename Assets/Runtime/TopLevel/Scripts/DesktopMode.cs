@@ -110,6 +110,18 @@ namespace FiveSQD.WebVerse.Runtime
         public GameObject vrRig;
 
         /// <summary>
+        /// The VR Camera.
+        /// </summary>
+        [Tooltip("The VR Camera.")]
+        public Camera desktopCamera;
+
+        /// <summary>
+        /// The Desktop Camera.
+        /// </summary>
+        [Tooltip("The Desktop Camera.")]
+        public Camera vrCamera;
+
+        /// <summary>
         /// The top-level VR rig.
         /// </summary>
         [Tooltip("The top-level VR rig.")]
@@ -162,6 +174,7 @@ namespace FiveSQD.WebVerse.Runtime
             runtime.inputManager.platformInput = vrPlatformInput;
             runtime.vr = true;
             vrMultibar.SetUpVRMultibarVRButton();
+            SetCanvasEventCamera(vrCamera);
         }
 
         /// <summary>
@@ -190,6 +203,7 @@ namespace FiveSQD.WebVerse.Runtime
                 runtime.inputManager.platformInput = desktopPlatformInput;
             }
             runtime.vr = false;
+            SetCanvasEventCamera(desktopCamera);
         }
 
         private void Awake()
@@ -295,6 +309,24 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 Logging.Log("[FocusedMode->EnableVRCoroutine] Starting XR...");
                 UnityEngine.XR.Management.XRGeneralSettings.Instance.Manager.StartSubsystems();
+            }
+        }
+
+        /// <summary>
+        /// Sets the event camera for all canvas entities.
+        /// </summary>
+        /// <param name="eventCamera">Event camera to set all canvas entities' event camera to.</param>
+        private void SetCanvasEventCamera(Camera eventCamera)
+        {
+            if (WorldEngine.WorldEngine.ActiveWorld != null)
+            {
+                foreach (WorldEngine.Entity.BaseEntity entity in WorldEngine.WorldEngine.ActiveWorld.entityManager.GetAllEntities())
+                {
+                    if (entity is WorldEngine.Entity.CanvasEntity)
+                    {
+                        ((WorldEngine.Entity.CanvasEntity) entity).canvasObject.worldCamera = eventCamera;
+                    }
+                }
             }
         }
 

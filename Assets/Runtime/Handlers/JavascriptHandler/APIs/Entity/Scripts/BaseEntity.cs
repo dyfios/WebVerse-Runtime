@@ -512,8 +512,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <summary>
         /// Delete the entity.
         /// </summary>
+        /// <param name="synchronizeChange">Whether or not to synchronize the setting.</param>
         /// <returns>Whether or not the operation was successful.</returns>
-        public bool Delete()
+        public bool Delete(bool synchronizeChange = true)
         {
             if (IsValid() == false)
             {
@@ -521,7 +522,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return internalEntity.Delete();
+            return internalEntity.Delete(synchronizeChange);
         }
 
         /// <summary>
@@ -752,11 +753,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 Logging.LogError("[BaseEntity:SetPhysicalProperties] Unknown entity.");
                 return false;
             }
-
             WorldEngine.Entity.BaseEntity.EntityPhysicalProperties props = new WorldEngine.Entity.BaseEntity.EntityPhysicalProperties()
             {
                 angularDrag = properties.angularDrag,
-                centerOfMass = new UnityEngine.Vector3(properties.centerOfMass.x, properties.centerOfMass.y, properties.centerOfMass.z),
+                centerOfMass = properties.centerOfMass is null ? null :
+                    new UnityEngine.Vector3(properties.centerOfMass.x, properties.centerOfMass.y, properties.centerOfMass.z),
                 drag = properties.drag,
                 gravitational = properties.gravitational,
                 mass = properties.mass
@@ -842,8 +843,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             if (IsValid() == false)
             {
                 Logging.LogError("[BaseEntity:GetMotion] Unknown entity.");
-                return new EntityPhysicalProperties() { angularDrag = 0,
-                    centerOfMass = Vector3.zero, drag = 0, gravitational = false, mass = 0 };
+                return new EntityPhysicalProperties(0, Vector3.zero, 0, false, 0);
             }
 
             WorldEngine.Entity.BaseEntity.EntityPhysicalProperties? props = null;
@@ -914,37 +914,21 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             else
             {
                 Logging.LogError("[BaseEntity:GetPhysicalProperties] Unknown entity type.");
-                return new EntityPhysicalProperties()
-                {
-                    angularDrag = 0,
-                    centerOfMass = Vector3.zero,
-                    drag = 0,
-                    gravitational = false,
-                    mass = 0
-                };
+                return new EntityPhysicalProperties(0, Vector3.zero, 0, false, 0);
             }
 
             if (props.HasValue == false)
             {
-                return new EntityPhysicalProperties()
-                {
-                    angularDrag = 0,
-                    centerOfMass = Vector3.zero,
-                    drag = 0,
-                    gravitational = false,
-                    mass = 0
-                };
+                return new EntityPhysicalProperties(0, Vector3.zero, 0, false, 0);
             }
             else
             {
-                return new EntityPhysicalProperties()
-                {
-                    angularDrag = props.Value.angularDrag.HasValue ? props.Value.angularDrag.Value : 0,
-                    centerOfMass = new Vector3(props.Value.centerOfMass.x, props.Value.centerOfMass.y, props.Value.centerOfMass.z),
-                    drag = props.Value.drag.HasValue ? props.Value.drag.Value : 0,
-                    gravitational = props.Value.gravitational.HasValue ? props.Value.gravitational.Value : false,
-                    mass = props.Value.mass.HasValue ? props.Value.mass.Value : 0
-                };
+                return new EntityPhysicalProperties(props.Value.angularDrag.HasValue ? props.Value.angularDrag.Value : 0,
+                    props.Value.centerOfMass == null ? null :
+                        new Vector3(props.Value.centerOfMass.Value.x, props.Value.centerOfMass.Value.y, props.Value.centerOfMass.Value.z),
+                    props.Value.drag.HasValue ? props.Value.drag.Value : 0,
+                    props.Value.gravitational.HasValue ? props.Value.gravitational.Value : false,
+                    props.Value.mass.HasValue ? props.Value.mass.Value : 0);
             }
         }
 
@@ -1229,6 +1213,55 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 new UnityEngine.Vector3(connectingOffset.x, connectingOffset.y, connectingOffset.z));
 
             return true;
+        }
+
+        /// <summary>
+        /// Play an animation.
+        /// </summary>
+        /// <param name="animationName">Name of animation to play.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public virtual bool PlayAnimation(string animationName)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:PlayAnimation] Unknown entity.");
+                return false;
+            }
+
+            return internalEntity.PlayAnimation(animationName);
+        }
+
+        /// <summary>
+        /// Stop an animation.
+        /// </summary>
+        /// <param name="animationName">Name of animation to stop.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public virtual bool StopAnimation(string animationName)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:StopAnimation] Unknown entity.");
+                return false;
+            }
+
+            return internalEntity.StopAnimation(animationName);
+        }
+
+        /// <summary>
+        /// Set the speed of an animation.
+        /// </summary>
+        /// <param name="animationName">Name of animation to set speed of.</param>
+        /// <param name="speed">Speed to set animation to.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public virtual bool SetAnimationSpeed(string animationName, float speed)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:SetAnimationSpeed] Unknown entity.");
+                return false;
+            }
+
+            return internalEntity.SetAnimationSpeed(animationName, speed);
         }
 
         /// <summary>

@@ -2286,6 +2286,8 @@ MonoBehaviour:
   desktopHistory: {fileID: 472491409}
   desktopRig: {fileID: 1240903272}
   vrRig: {fileID: 1812436706}
+  desktopCamera: {fileID: 1240903274}
+  vrCamera: {fileID: 1181729053}
   topLevelVRRig: {fileID: 1434755351}
   desktopInput: {fileID: 337029770}
   steamVRInput: {fileID: 1229311969}
@@ -2536,6 +2538,11 @@ LightingSettings:
   m_PVRTiledBaking: 0
   m_NumRaysToShootPerTexel: -1
   m_RespectSceneVisibilityWhenBakingGI: 0
+--- !u!20 &1181729053 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 7990873191231833673, guid: 5eccbf4be2c00e94689ee8062e4e7276, type: 3}
+  m_PrefabInstance: {fileID: 1434755350}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1192052129 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5869510517537226714, guid: 3af4ddef22bd54542babd1a38ad56247, type: 3}

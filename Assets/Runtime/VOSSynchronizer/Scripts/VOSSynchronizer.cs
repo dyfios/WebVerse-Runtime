@@ -1057,7 +1057,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             }
 
             float angularDrag = 0;
-            Vector3 centerOfMass = Vector3.zero;
+            Vector3? centerOfMass = Vector3.zero;
             float drag = 0;
             bool gravitational = false;
             float mass = 0;
@@ -1073,7 +1073,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             VOSSynchronizationMessages.RequestMessages.SetPhysicalPropertiesMessage
                 setPhysicalPropertiesMessage = new VOSSynchronizationMessages.RequestMessages
                 .SetPhysicalPropertiesMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                entityToSet.id, angularDrag, centerOfMass, drag, gravitational, mass);
+                entityToSet.id, angularDrag, centerOfMass == null ? Vector3.zero : centerOfMass.Value, drag, gravitational, mass);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/physicalproperties",
                 JsonConvert.SerializeObject(setPhysicalPropertiesMessage));
@@ -1436,12 +1436,16 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         {
             if (mqttClient == null)
             {
-                LogSystem.LogError("[VOSSynchronizer->OnDisconnected] Not initialized.");
-                return;
+                //LogSystem.LogError("[VOSSynchronizer->OnDisconnected] Not initialized.");
+                LogSystem.Log("[VOSSynchronizer] Disconnected - " + reason);
+                //return;
             }
-            LogSystem.Log("[VOSSynchronizer] Disconnected from "
-                + mqttClient.host + ":" + mqttClient.port
-                + " - " + reason);
+            else
+            {
+                LogSystem.Log("[VOSSynchronizer] Disconnected from "
+                    + mqttClient.host + ":" + mqttClient.port
+                    + " - " + reason);
+            }
             isConnected = false;
 
             // If disconnection unexpected, and so configured, attempt reconnection.
@@ -1461,12 +1465,16 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         {
             if (mqttClient == null)
             {
-                LogSystem.LogError("[VOSSynchronizer->OnStateChanged] Not initialized.");
-                return;
+                //LogSystem.LogError("[VOSSynchronizer->OnStateChanged] Not initialized.");
+                LogSystem.Log("[VOSSynchronizer] State changed - " + info);
+                //return;
             }
-            LogSystem.Log("[VOSSynchronizer] " + mqttClient.host
-                + ":" + mqttClient.port + " state changed - "
-                + info);
+            else
+            {
+                LogSystem.Log("[VOSSynchronizer] " + mqttClient.host
+                    + ":" + mqttClient.port + " state changed - "
+                    + info);
+            }
         }
 
         /// <summary>
@@ -1475,11 +1483,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="info">Information about the error.</param>
         private void OnError(string info)
         {
-            if (mqttClient == null)
+            /*if (mqttClient == null)
             {
                 LogSystem.LogError("[VOSSynchronizer->OnError] Not intialized.");
                 return;
-            }
+            }*/
             LogSystem.LogError("[VOSSynchronizer] Error: " + info);
         }
 
@@ -1679,6 +1687,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         ce.SetVisibility(true);
                         ce.SetPosition(addCharacterEntityMessage.position.ToVector3(), false, false);
                         ce.SetRotation(addCharacterEntityMessage.rotation.ToQuaternion(), false, false);
+                        ce.SetPhysicalProperties(new BaseEntity.EntityPhysicalProperties()
+                        {
+                            gravitational = false,
+                            centerOfMass = Vector3.zero,
+                            angularDrag = 0,
+                            drag = 0,
+                            mass = 0
+                        });
                         if (isSize)
                         {
                             ce.SetSize(scaleSize, false);
@@ -2828,8 +2844,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid? sessionID = currentSessionID;
             string clientTag = currentClientTag;
             MQTTClient.Transports transport =
+#if !UNITY_WEBGL
                 (mqttClient.transport == Best.MQTT.SupportedTransports.TCP) ? 
-                MQTTClient.Transports.TCP : MQTTClient.Transports.WebSockets;
+                MQTTClient.Transports.TCP :
+#endif
+                MQTTClient.Transports.WebSockets;
                 mqttClient = null;
             Initialize(host, port, useTLS, transport);
             Connect(new Action(() => {

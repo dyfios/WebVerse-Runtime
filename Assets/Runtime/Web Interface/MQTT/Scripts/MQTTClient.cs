@@ -264,8 +264,8 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
             {
                 if (mqttClient == null || mqttClient.Options == null)
                 {
-                    Logging.LogWarning("[MQTTClient->port] No client.");
-                    return SupportedTransports.TCP;
+                    Logging.LogWarning("[MQTTClient->transport] No client.");
+                    return SupportedTransports.WebSocket;
                 }
 
                 return mqttClient.Options.Transport;
