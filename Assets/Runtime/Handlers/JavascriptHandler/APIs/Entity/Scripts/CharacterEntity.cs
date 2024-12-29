@@ -129,5 +129,54 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             internalEntityType = typeof(WorldEngine.Entity.CharacterEntity);
         }
+
+        /// <summary>
+        /// Apply motion to the character entity with the given vector.
+        /// </summary>
+        /// <param name="amount">Amount to move the character entity.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool Move(Vector3 amount)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:Move] Unknown entity.");
+                return false;
+            }
+
+            return ((WorldEngine.Entity.CharacterEntity) internalEntity).Move(
+                new UnityEngine.Vector3(amount.x, amount.y, amount.z));
+        }
+
+        /// <summary>
+        /// Apply a jump to the character entity by the given amount.
+        /// </summary>
+        /// <param name="amount">Amount to jump the character entity.</param>
+        /// <param name="discardIfFalling">Whether or not to discard jump if currently falling.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool Jump(float amount)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:Jump] Unknown entity.");
+                return false;
+            }
+
+            return ((WorldEngine.Entity.CharacterEntity) internalEntity).Jump(amount);
+        }
+
+        /// <summary>
+        /// Returns whether or not the character entity is on a surface.
+        /// </summary>
+        /// <returns>Whether or not the character entity is on a surface.</returns>
+        public bool IsOnSurface()
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:IsOnSurface] Unknown entity.");
+                return false;
+            }
+
+            return ((WorldEngine.Entity.CharacterEntity) internalEntity).IsOnSurface();
+        }
     }
 }

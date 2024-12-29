@@ -113,5 +113,22 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             return ((WorldEngine.Entity.CanvasEntity) internalEntity).IsScreenCanvas();
         }
+
+        /// <summary>
+        /// Set the size for the screen canvas.
+        /// </summary>
+        /// <param name="size">Size to set the screen canvas to.</param>
+        /// <param name="synchronizeChange">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool SetSize(Vector2 size, bool synchronizeChange = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CanvasEntity:SetSize] Unknown entity.");
+                return false;
+            }
+
+            return ((WorldEngine.Entity.CanvasEntity) internalEntity).SetSize(new UnityEngine.Vector2(size.x, size.y), synchronizeChange);
+        }
     }
 }

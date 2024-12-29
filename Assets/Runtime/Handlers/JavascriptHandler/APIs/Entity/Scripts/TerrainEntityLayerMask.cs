@@ -40,6 +40,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <summary>
         /// Terrain entity layer mask.
         /// </summary>
+        /// <param name="length">Length of the layer mask.</param>
+        /// <param name="width">Width of the layer mask.</param>
+        public TerrainEntityLayerMask(int length, int width)
+        {
+            heights = new float[length, width];
+        }
+
+        /// <summary>
+        /// Terrain entity layer mask.
+        /// </summary>
         /// <param name="heights">Heights for the layer mask.</param>
         public TerrainEntityLayerMask(float[,] heights)
         {

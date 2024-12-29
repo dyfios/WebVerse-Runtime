@@ -239,6 +239,40 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         }
 
         /// <summary>
+        /// Use TLS.
+        /// </summary>
+        public bool useTLS
+        {
+            get
+            {
+                if (mqttClient == null || mqttClient.Options == null)
+                {
+                    Logging.LogWarning("[MQTTClient->useTLS] No client.");
+                    return false;
+                }
+
+                return mqttClient.Options.UseTLS;
+            }
+        }
+
+        /// <summary>
+        /// Transport.
+        /// </summary>
+        public SupportedTransports transport
+        {
+            get
+            {
+                if (mqttClient == null || mqttClient.Options == null)
+                {
+                    Logging.LogWarning("[MQTTClient->transport] No client.");
+                    return SupportedTransports.WebSocket;
+                }
+
+                return mqttClient.Options.Transport;
+            }
+        }
+
+        /// <summary>
         /// Client state.
         /// </summary>
         public ClientState clientState
@@ -409,15 +443,18 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 return;
             }
 
-            mqttClient.CreateUnsubscribePacketBuilder(topic)
-                .WithAcknowledgementCallback((mqttClient, topicFilter, reasonCode) =>
-                {
-                    if (onAcknowledged != null)
+            if (mqttClient.State == ClientStates.Connected)
+            {
+                mqttClient.CreateUnsubscribePacketBuilder(topic)
+                    .WithAcknowledgementCallback((mqttClient, topicFilter, reasonCode) =>
                     {
-                        onAcknowledged.Invoke(reasonCode.ToString());
-                    }
-                })
-                .BeginUnsubscribe();
+                        if (onAcknowledged != null)
+                        {
+                            onAcknowledged.Invoke(reasonCode.ToString());
+                        }
+                    })
+                    .BeginUnsubscribe();
+            }
         }
 
         /// <summary>

@@ -123,6 +123,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             // Environment.
             new System.Tuple<string, System.Type>("Environment", typeof(APIs.Environment.Environment)),
 
+            // Data.
+            new Tuple<string, Type>("AsyncJSON", typeof(APIs.Data.AsyncJSON)),
+
             // World Browser Utilities.
             new System.Tuple<string, System.Type>("Camera", typeof(APIs.Utilities.Camera)),
             new System.Tuple<string, System.Type>("Context", typeof(APIs.Utilities.Context)),

@@ -60,9 +60,10 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
         /// to the loaded mesh entity.</param>
         /// <param name="timeout">Timeout period after which loading will be aborted.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
         /// <returns>ID of the mesh entity being loaded.</returns>
         public Guid LoadGLTFResourceAsMeshEntity(string gltfResourceURI, string[] resourceURIs,
-            Guid? id = null, Action<MeshEntity> onLoaded = null, float timeout = 10)
+            Guid? id = null, Action<MeshEntity> onLoaded = null, float timeout = 10, bool checkForUpdateIfCached = true)
         {
 #if !UNITY_WEBGL
             Dictionary<string, bool> downloadedState = new Dictionary<string, bool>();
@@ -80,7 +81,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                         };
                         
                         DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
-                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded);
+                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded, !checkForUpdateIfCached);
                     }
                 }
             }
@@ -94,10 +95,11 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     new Action<GameObject>((meshObject) =>
                     {
                         SetUpLoadedGLTFMeshAsMeshEntity(meshObject, guid, onLoaded);
+                        CleanUpExtraPrefabs();
                     }));
             };
 
-            DownloadGLTFResource(gltfResourceURI, onDownloaded);
+            DownloadGLTFResource(gltfResourceURI, onDownloaded, !checkForUpdateIfCached);
             return guid;
 #else
             Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
@@ -107,6 +109,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     new Action<GameObject>((meshObject) =>
                     {
                         SetUpLoadedGLTFMeshAsMeshEntity(meshObject, guid, onLoaded);
+                        CleanUpExtraPrefabs();
                     }));
             };
 
@@ -127,10 +130,11 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
         /// to the loaded character entity.</param>
         /// <param name="timeout">Timeout period after which loading will be aborted.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
         /// <returns>ID of the character entity being loaded.</returns>
         public Guid LoadGLTFResourceAsCharacterEntity(string gltfResourceURI, string[] resourceURIs,
             Vector3 meshOffset, Quaternion meshRotation, Vector3 avatarLabelOffset, Guid? id = null,
-            Action<CharacterEntity> onLoaded = null, float timeout = 10)
+            Action<CharacterEntity> onLoaded = null, float timeout = 10, bool checkForUpdateIfCached = true)
         {
 #if !UNITY_WEBGL
             Dictionary<string, bool> downloadedState = new Dictionary<string, bool>();
@@ -148,7 +152,8 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                         };
 
                         DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
-                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded);
+                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded,
+                            !checkForUpdateIfCached);
                     }
                 }
             }
@@ -162,10 +167,11 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     new Action<GameObject>((meshObject) =>
                     {
                         SetUpLoadedGLTFMeshAsCharacterEntity(meshObject, meshOffset, meshRotation, avatarLabelOffset, guid, onLoaded);
+                        CleanUpExtraPrefabs();
                     }));
             };
 
-            DownloadGLTFResource(gltfResourceURI, onDownloaded);
+            DownloadGLTFResource(gltfResourceURI, onDownloaded, !checkForUpdateIfCached);
             return guid;
 #else
             Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
@@ -175,6 +181,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     new Action<GameObject>((meshObject) =>
                     {
                         SetUpLoadedGLTFMeshAsCharacterEntity(meshObject, meshOffset, meshRotation, avatarLabelOffset, guid, onLoaded);
+                        CleanUpExtraPrefabs();
                     }));
             };
 
@@ -188,7 +195,8 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         /// </summary>
         /// <param name="uri">URI of the GLTF resource.</param>
         /// <param name="onDownloaded">Action to invoke when downloading is complete.</param>
-        public void DownloadGLTFResource(string uri, Action onDownloaded)
+        /// <param name="bypassUpdateCheck">Whether or not to bypass check for update.</param>
+        public void DownloadGLTFResource(string uri, Action onDownloaded, bool bypassUpdateCheck)
         {
             uri = VEML.VEMLUtilities.FullyQualifyURI(uri, WebVerseRuntime.Instance.currentBasePath);
 #if USE_WEBINTERFACE
@@ -204,40 +212,51 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             {
                 if (uri.StartsWith("file:/") || uri.StartsWith("/") || uri.StartsWith(".") || uri[1] == ':')
                 {
-                    Logging.Log("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Using stored version.");
+                    Logging.LogDebug("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Using stored version.");
                     onDownloaded.Invoke();
                     return;
                 }
-                Logging.Log("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Checking for newer version.");
 
-                Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>((code, headers, data) =>
+                if (bypassUpdateCheck)
                 {
-                    foreach (KeyValuePair<string, string> header in headers)
+                    onDownloaded.Invoke();
+                }
+                else
+                {
+                    Logging.LogDebug("[GLTFHandler->DownloadGLTF] File " + uri + " already exists. Checking for newer version.");
+
+                    Action<int, Dictionary<string, string>, byte[]> onResponseAction = new Action<int, Dictionary<string, string>, byte[]>(
+                        (code, headers, data) =>
                     {
-                        if (header.Key.ToLower() == "last-modified")
+                        foreach (KeyValuePair<string, string> header in headers)
                         {
-                            DateTime timestamp;
-                            if (DateTime.TryParse(header.Value, out timestamp))
+                            if (header.Key.ToLower() == "last-modified")
                             {
-                                if (timestamp > System.IO.File.GetLastWriteTime(System.IO.Path.Combine(
-                                    runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
+                                DateTime timestamp;
+                                if (DateTime.TryParse(header.Value, out timestamp))
                                 {
-                                    Logging.Log("[GLTFHandler->DownloadGLTF] Cached version of file " + uri + " is outdated. Getting new version.");
-                                }
-                                else
-                                {
-                                    Logging.Log("[GLTFHandler->DownloadGLTF] Cached version of file " + uri + " is current. Using stored version.");
-                                    onDownloaded.Invoke();
-                                    return;
+                                    if (timestamp > System.IO.File.GetLastWriteTime(System.IO.Path.Combine(
+                                        runtime.fileHandler.fileDirectory, FileHandler.ToFileURI(uri))))
+                                    {
+                                        Logging.LogDebug("[GLTFHandler->DownloadGLTF] Cached version of file " + uri +
+                                            " is outdated. Getting new version.");
+                                    }
+                                    else
+                                    {
+                                        Logging.LogDebug("[GLTFHandler->DownloadGLTF] Cached version of file " + uri +
+                                            " is current. Using stored version.");
+                                        onDownloaded.Invoke();
+                                        return;
+                                    }
                                 }
                             }
                         }
-                    }
-                    Logging.Log("[GLTFHandler->DownloadGLTF] Getting " + uri + ".");
-                    request.Send();
-                });
-                HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
-                headRequest.Send();
+                        Logging.LogDebug("[GLTFHandler->DownloadGLTF] Getting " + uri + ".");
+                        request.Send();
+                    });
+                    HTTPRequest headRequest = new HTTPRequest(uri, HTTPRequest.HTTPMethod.Head, onResponseAction);
+                    headRequest.Send();
+                }
             }
             else
             {
@@ -530,6 +549,16 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     }));
 
                 yield return null;
+            }
+        }
+
+        private void CleanUpExtraPrefabs()
+        {
+            GameObject extraObject = GameObject.Find("LoadedGLTF(Clone)");
+            while (extraObject != null)
+            {
+                DestroyImmediate(extraObject);
+                extraObject = GameObject.Find("LoadedGLTF(Clone)");
             }
         }
     }

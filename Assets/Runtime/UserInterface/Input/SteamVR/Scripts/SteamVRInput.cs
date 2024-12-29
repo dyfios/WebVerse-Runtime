@@ -722,7 +722,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
             {
                 RaycastHit hit;
                 if (Physics.Raycast(leftControllerGO.transform.position,
-                    direction, out hit))
+                    rightControllerGO.transform.rotation * direction, out hit))
                 {
                     return new Tuple<RaycastHit, Vector3>(hit, leftControllerGO.transform.position);
                 }
@@ -731,7 +731,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
             {
                 RaycastHit hit;
                 if (Physics.Raycast(rightControllerGO.transform.position,
-                    direction, out hit))
+                    rightControllerGO.transform.rotation * direction, out hit))
                 {
                     return new Tuple<RaycastHit, Vector3>(hit, rightControllerGO.transform.position);
                 }

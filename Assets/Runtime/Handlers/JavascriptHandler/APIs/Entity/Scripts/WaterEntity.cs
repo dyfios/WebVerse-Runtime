@@ -29,6 +29,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="waveSteepness">Wave steepness (range 0-1).</param>
         /// <param name="waveSpeed">Wave speed.</param>
         /// <param name="waveLength">Wave length.</param>
+        /// <param name="waveScale">Scale of the waves.</param>
+        /// <param name="intensity">Intensity factor (range 0-1).</param>
         /// <param name="position">Position of the entity relative to its parent.</param>
         /// <param name="rotation">Rotation of the entity relative to its parent.</param>
         /// <param name="scale">Scale of the entity relative to its parent.</param>
@@ -40,9 +42,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         public static WaterEntity CreateWaterBody(BaseEntity parent,
             Color shallowColor, Color deepColor, Color specularColor, Color scatteringColor,
             float deepStart, float deepEnd, float distortion, float smoothness, float numWaves,
-            float waveAmplitude, float waveSteepness, float waveSpeed, float waveLength,
-            Vector3 position, Quaternion rotation, Vector3 scale, string id = null, string tag = null,
-            string onLoaded = null)
+            float waveAmplitude, float waveSteepness, float waveSpeed, float waveLength, float waveScale,
+            float intensity, Vector3 position, Quaternion rotation, Vector3 scale, string id = null,
+            string tag = null, string onLoaded = null)
         {
             Guid guid;
             if (string.IsNullOrEmpty(id))
@@ -79,7 +81,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 new UnityEngine.Color(specularColor.r, specularColor.g, specularColor.b, specularColor.a),
                 new UnityEngine.Color(scatteringColor.r, scatteringColor.g, scatteringColor.b, scatteringColor.a),
                 deepStart, deepEnd, distortion, smoothness, numWaves, waveAmplitude, waveSteepness, waveSpeed,
-                waveLength, null, pos, rot, guid, tag, onLoadAction);
+                waveLength, waveScale, intensity, null, pos, rot, guid, tag, onLoadAction);
 
             return we;
         }
@@ -105,10 +107,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="waveSteepness">Wave steepness (range 0-1).</param>
         /// <param name="waveSpeed">Wave speed.</param>
         /// <param name="waveLength">Wave length.</param>
+        /// <param name="scale">Scale of the waves.</param>
+        /// <param name="intensity">Intensity factor (range 0-1).</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public bool SetProperties(Color shallowColor, Color deepColor, Color specularColor, Color scatteringColor,
             float deepStart, float deepEnd, float distortion, float smoothness, float numWaves,
-            float waveAmplitude, float waveSteepness, float waveSpeed, float waveLength)
+            float waveAmplitude, float waveSteepness, float waveSpeed, float waveLength, float scale, float intensity)
         {
             if (IsValid() == false)
             {
@@ -122,7 +126,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 new UnityEngine.Color(specularColor.r, specularColor.g, specularColor.b, specularColor.a),
                 new UnityEngine.Color(scatteringColor.r, scatteringColor.g, scatteringColor.b, scatteringColor.a),
                 deepStart, deepEnd, distortion, smoothness, numWaves, waveAmplitude, waveSteepness, waveSpeed,
-                waveLength);
+                waveLength, scale, intensity);
         }
     }
 }

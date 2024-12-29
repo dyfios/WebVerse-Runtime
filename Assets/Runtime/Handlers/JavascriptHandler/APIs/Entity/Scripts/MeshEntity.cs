@@ -23,10 +23,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="id">ID of the entity. One will be created if not provided.</param>
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// mesh entity object.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
         /// <returns>The mesh entity object.</returns>
         public static MeshEntity Create(BaseEntity parent, string meshObject, string[] meshResources,
-            Vector3 position, Quaternion rotation,
-            string id = null, string onLoaded = null)
+            Vector3 position, Quaternion rotation, string id = null, string onLoaded = null,
+            bool checkForUpdateIfCached = true)
         {
             Guid guid;
             if (string.IsNullOrEmpty(id))
@@ -68,9 +69,29 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             });
 
             WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsMeshEntity(
-                meshObject, meshResources, guid, onEntityLoadedAction);
+                meshObject, meshResources, guid, onEntityLoadedAction, 10, checkForUpdateIfCached);
 
             return me;
+        }
+
+        /// <summary>
+        /// Create a mesh entity syncronously.
+        /// </summary>
+        /// <param name="parent">Parent of the entity to create.</param>
+        /// <param name="meshObject">Path to the mesh object to load for this entity.</param>
+        /// <param name="meshResources">Paths to mesh resources for this entity.</param>
+        /// <param name="position">Position of the entity relative to its parent.</param>
+        /// <param name="rotation">Rotation of the entity relative to its parent.</param>
+        /// <param name="id">ID of the entity. One will be created if not provided.</param>
+        /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
+        /// mesh entity object.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
+        public static void QueueCreate(BaseEntity parent, string meshObject, string[] meshResources,
+            Vector3 position, Quaternion rotation, string id = null, string onLoaded = null,
+            bool checkForUpdateIfCached = true)
+        {
+            EntityAPIHelper.AddMeshEntityCreationJob(new EntityAPIHelper.MeshEntityCreationJob(
+                parent, meshObject, meshResources, position, rotation, id, onLoaded, checkForUpdateIfCached));
         }
 
         /// <summary>

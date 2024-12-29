@@ -17,6 +17,78 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
     public class EntityAPIHelper : MonoBehaviour
     {
         /// <summary>
+        /// A job for creating a mesh entity.
+        /// </summary>
+        public class MeshEntityCreationJob
+        {
+            /// <summary>
+            /// Parent of the entity to create.
+            /// </summary>
+            public BaseEntity parent;
+
+            /// <summary>
+            /// Path to the mesh object to load for this entity.
+            /// </summary>
+            public string meshObject;
+
+            /// <summary>
+            /// Paths to mesh resources for this entity.
+            /// </summary>
+            public string[] meshResources;
+
+            /// <summary>
+            /// Position of the entity relative to its parent.
+            /// </summary>
+            public WorldTypes.Vector3 position;
+
+            /// <summary>
+            /// Rotation of the entity relative to its parent.
+            /// </summary>
+            public WorldTypes.Quaternion rotation;
+
+            /// <summary>
+            /// ID of the entity. One will be created if not provided.
+            /// </summary>
+            public string id;
+
+            /// <summary>
+            /// Action to perform on load. This takes a single parameter containing the created mesh entity object.
+            /// </summary>
+            public string onLoaded;
+
+            /// <summary>
+            /// Whether or not to check for model update if in cache.
+            /// </summary>
+            public bool checkForUpdateIfCached;
+
+            /// <summary>
+            /// Create a mesh entity.
+            /// </summary>
+            /// <param name="parent">Parent of the entity to create.</param>
+            /// <param name="meshObject">Path to the mesh object to load for this entity.</param>
+            /// <param name="meshResources">Paths to mesh resources for this entity.</param>
+            /// <param name="position">Position of the entity relative to its parent.</param>
+            /// <param name="rotation">Rotation of the entity relative to its parent.</param>
+            /// <param name="id">ID of the entity. One will be created if not provided.</param>
+            /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
+            /// mesh entity object.</param>
+            /// <returns>The mesh entity creation job.</returns>
+            public MeshEntityCreationJob(BaseEntity parent, string meshObject, string[] meshResources,
+                WorldTypes.Vector3 position, WorldTypes.Quaternion rotation, string id, string onLoaded,
+                bool checkForUpdateIfCached)
+            {
+                this.parent = parent;
+                this.meshObject = meshObject;
+                this.meshResources = meshResources;
+                this.position = position;
+                this.rotation = rotation;
+                this.id = id;
+                this.onLoaded = onLoaded;
+                this.checkForUpdateIfCached = checkForUpdateIfCached;
+            }
+        }
+
+        /// <summary>
         /// Prefab for a cube mesh.
         /// </summary>
         public static GameObject cubeMeshPrefab;
@@ -79,6 +151,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// Instance of the Entity API Helper.
         /// </summary>
         private static EntityAPIHelper instance;
+
+        /// <summary>
+        /// Pending Mesh Entity creation jobs.
+        /// </summary>
+        private Queue<MeshEntityCreationJob> meshEntityCreationJobs;
+
+        /// <summary>
+        /// The current Mesh Entity creation job.
+        /// </summary>
+        private MeshEntityCreationJob currentMeshEntityCreationJob;
 
         /// <summary>
         /// Initialize the entity dictionary.
@@ -201,17 +283,73 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             string id = null, string tag = null, string onLoaded = null,
             float timeout = 10)
         {
-            List<float[]> processedHeights = new List<float[]>();
-            for (int i = 0; i < heights.GetLength(0); i++)
+            TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
+
+            Guid guid;
+            if (string.IsNullOrEmpty(id))
             {
-                for (int j = 0; j < heights.GetLength(1); j++)
-                {
-                    processedHeights[i][j] = heights[i, j];
-                }
+                guid = Guid.NewGuid();
+            }
+            else
+            {
+                guid = Guid.Parse(id);
             }
 
-            return LoadHybridTerrainEntityAsync(parent, length, width, height, processedHeights.ToArray(),
-                layers, layerMasks, modifications, position, rotation, id, tag, onLoaded, timeout);
+            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            Vector3 pos = new Vector3(position.x, position.y, position.z);
+            Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+
+            if (heights == null)
+            {
+                Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid heights array.");
+                return null;
+            }
+
+            if (layers == null || layers.Length < 1)
+            {
+                Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid layers array.");
+                return null;
+            }
+
+            if (layerMasks == null)
+            {
+                Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid layer masks.");
+                return null;
+            }
+
+            Action onLoadAction = null;
+            onLoadAction = () =>
+            {
+                te.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                AddEntityMapping(te.internalEntity, te);
+                if (modifications != null)
+                {
+                    foreach (TerrainEntityModification mod in modifications)
+                    {
+                        if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Build)
+                        {
+                            te.Build(mod.position, mod.brushType, mod.layer, mod.size, false);
+                        }
+                        else if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Dig)
+                        {
+                            te.Dig(mod.position, mod.brushType, mod.layer, mod.size, false);
+                        }
+                        else
+                        {
+                            Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Unsupported modification. Skipping.");
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(onLoaded))
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { te });
+                }
+            };
+
+            instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, heights, layers,
+                layerMasks.ToFloatArrays(), pos, rot, tag, onLoadAction, timeout));
+
+            return te;
         }
 
         /// <summary>
@@ -260,15 +398,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            float[,] processedHeights = new float[heights.Length, heights[0].Length];
-            for (int i = 0; i < heights.Length; i++)
-            {
-                for (int j = 0; j < heights[0].Length; j++)
-                {
-                    processedHeights[i, j] = heights[i][j];
-                }
-            }
-
             if (layers == null || layers.Length < 1)
             {
                 Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid layers array.");
@@ -310,7 +439,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, processedHeights, layers,
+            instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, heights, layers,
                 layerMasks.ToFloatArrays(), pos, rot, tag, onLoadAction, timeout));
 
             return te;
@@ -362,15 +491,6 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            float[,] processedHeights = new float[heights.Length, heights[0].Length];
-            for (int i = 0; i < heights.Length; i++)
-            {
-                for (int j = 0; j < heights[0].Length; j++)
-                {
-                    processedHeights[i, j] = heights[i][j];
-                }
-            }
-
             if (layers == null || layers.Length < 1)
             {
                 Logging.LogWarning("[EntityAPIHelper->LoadHybridTerrainEntityAsync] Invalid layers array.");
@@ -383,7 +503,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, processedHeights, layers,
+            instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, heights, layers,
                 layerMasks.ToFloatArrays(), pos, rot, tag, onLoaded, timeout));
 
             return te;
@@ -450,6 +570,26 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         public static void LoadAudioFromFileAsync(string file, WorldEngine.Entity.AudioEntity audioEntity)
         {
             instance.StartCoroutine(instance.LoadAudioFromFile(file, audioEntity));
+        }
+
+        /// <summary>
+        /// Apply image to button asynchronously.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="buttonEntity">Button entity to apply image to.</param>
+        public static void ApplyImageToButtonAsync(string file, WorldEngine.Entity.ButtonEntity buttonEntity)
+        {
+            instance.StartCoroutine(instance.ApplyImageToButton(file, buttonEntity));
+        }
+
+        /// <summary>
+        /// Apply image to dropdown asynchronously.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="buttonEntity">Dropdown entity to apply image to.</param>
+        public static void ApplyImageToDropdownAsync(string file, WorldEngine.Entity.DropdownEntity dropdownEntity)
+        {
+            instance.StartCoroutine(instance.ApplyImageToDropdown(file, dropdownEntity));
         }
 
         /// <summary>
@@ -608,6 +748,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         public void Initialize()
         {
             instance = this;
+            meshEntityCreationJobs = new Queue<MeshEntityCreationJob>();
+            currentMeshEntityCreationJob = null;
+        }
+
+        /// <summary>
+        /// Add a job for Mesh Entity creation.
+        /// </summary>
+        /// <param name="job">Job to add.</param>
+        public static void AddMeshEntityCreationJob(MeshEntityCreationJob job)
+        {
+            instance.meshEntityCreationJobs.Enqueue(job);
         }
 
         /// <summary>
@@ -818,6 +969,133 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         }
 
         /// <summary>
+        /// Create a hybrid terrain entity in a coroutine.
+        /// </summary>
+        /// <param name="te">Public terrain entity object.</param>
+        /// <param name="pBE">Parent entity.</param>
+        /// <param name="guid">ID for the terrain entity.</param>
+        /// <param name="length">Length of the terrain in terrain units.</param>
+        /// <param name="width">Width of the terrain in terrain units.</param>
+        /// <param name="height">Height of the terrain in terrain units.</param>
+        /// <param name="heights">2D array of heights for the terrain.</param>
+        /// <param name="layers">Layers for the terrain.</param>
+        /// <param name="layerMasks">Layer masks for the terrain.</param>
+        /// <param name="pos">Position of the entity relative to its parent.</param>
+        /// <param name="rot">Rotation of the entity relative to its parent.</param>
+        /// <param name="tag">Tag of the entity.</param>
+        /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
+        /// terrain entity object.</param>
+        /// <param name="timeout">Timeout for PNG loads.</param>
+        /// <returns>Coroutine.</returns>
+        private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, WorldEngine.Entity.BaseEntity pBE, Guid guid,
+            float length, float width, float height, float[][] heights, TerrainEntityLayer[] layers, float[][,] layerMasks,
+            Vector3 pos, Quaternion rot, string tag = null, Action onLoaded = null, float timeout = 10)
+        {
+            Dictionary<int, float[,]> formattedMasks = new Dictionary<int, float[,]>();
+            if (layerMasks != null)
+            {
+                int layerIdx = 0;
+                foreach (float[,] layerMask in layerMasks)
+                {
+                    formattedMasks.Add(layerIdx++, layerMask);
+                }
+            }
+
+            float[,] processedHeights = new float[heights.Length, heights[0].Length];
+            for (int i = 0; i < heights.Length; i++)
+            {
+                for (int j = 0; j < heights[0].Length; j++)
+                {
+                    processedHeights[i, j] = heights[i][j];
+                }
+                yield return null;
+            }
+
+            List<WorldEngine.Entity.Terrain.TerrainEntityLayer> formattedLayers
+                    = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+            if (layers != null)
+            {
+                foreach (TerrainEntityLayer layer in layers)
+                {
+                    uint completedRequests = 0;
+
+                    WorldEngine.Entity.Terrain.TerrainEntityLayer newFormattedLayer
+                        = new WorldEngine.Entity.Terrain.TerrainEntityLayer();
+                    newFormattedLayer.metallic = layer.metallic;
+                    newFormattedLayer.smoothness = layer.smoothness;
+                    newFormattedLayer.specular = new Color(layer.specular.r,
+                        layer.specular.g, layer.specular.b, layer.specular.a);
+
+                    if (!string.IsNullOrEmpty(layer.diffuseTexture))
+                    {
+                        WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
+                            VEML.VEMLUtilities.FullyQualifyURI(layer.diffuseTexture, WebVerseRuntime.Instance.currentBasePath),
+                        new Action<Texture2D>((tex) =>
+                        {
+                            newFormattedLayer.diffuse = tex;
+                            newFormattedLayer.diffusePath = layer.diffuseTexture;
+                            completedRequests++;
+                        }), TextureFormat.RGB24);
+                    }
+                    else
+                    {
+                        completedRequests++;
+                    }
+
+                    if (!string.IsNullOrEmpty(layer.normalTexture))
+                    {
+                        WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
+                            VEML.VEMLUtilities.FullyQualifyURI(layer.normalTexture, WebVerseRuntime.Instance.currentBasePath),
+                        new Action<Texture2D>((tex) =>
+                        {
+                            newFormattedLayer.normal = tex;
+                            newFormattedLayer.normalPath = layer.normalTexture;
+                            completedRequests++;
+                        }), TextureFormat.RGB24);
+                    }
+                    else
+                    {
+                        completedRequests++;
+                    }
+
+                    if (!string.IsNullOrEmpty(layer.maskTexture))
+                    {
+                        WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
+                            VEML.VEMLUtilities.FullyQualifyURI(layer.maskTexture, WebVerseRuntime.Instance.currentBasePath),
+                        new Action<Texture2D>((tex) =>
+                        {
+                            newFormattedLayer.mask = tex;
+                            newFormattedLayer.maskPath = layer.maskTexture;
+                            completedRequests++;
+                        }), TextureFormat.RGB24);
+                    }
+                    else
+                    {
+                        completedRequests++;
+                    }
+
+                    newFormattedLayer.sizeFactor = layer.sizeFactor;
+                    if (layer.sizeFactor < 1)
+                    {
+                        newFormattedLayer.sizeFactor = 1;
+                    }
+
+                    float elapsedTime = 0;
+                    do
+                    {
+                        yield return new WaitForSeconds(0.25f);
+                        elapsedTime += 0.25f;
+                    } while (elapsedTime < timeout && completedRequests < 3);
+
+                    formattedLayers.Add(newFormattedLayer);
+                }
+            }
+
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, processedHeights,
+                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, guid, tag, onLoaded);
+        }
+
+        /// <summary>
         /// Load an image entity asynchronously.
         /// </summary>
         /// <param name="ie">Image entity to load on.</param>
@@ -864,6 +1142,131 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 AudioClip clip = DownloadHandlerAudioClip.GetContent(request);
                 audioEntity.audioClip = clip;
+            }
+        }
+
+        /// <summary>
+        /// Apply image to button entity in a coroutine.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="buttonEntity">Button entity to apply image to.</param>
+        /// <returns>Coroutine.</returns>
+        private IEnumerator ApplyImageToButton(string file, WorldEngine.Entity.ButtonEntity buttonEntity)
+        {
+            if (!string.IsNullOrEmpty(file))
+            {
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(file, WebVerseRuntime.Instance.currentBasePath),
+                new Action<Texture2D>((tex) =>
+                {
+                    buttonEntity.SetBackground(Sprite.Create(
+                        tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f)));
+                }));
+            }
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Apply image to dropdown entity in a coroutine.
+        /// </summary>
+        /// <param name="file">Image file.</param>
+        /// <param name="dropdownEntity">Dropdown entity to apply image to.</param>
+        /// <returns>Coroutine.</returns>
+        private IEnumerator ApplyImageToDropdown(string file, WorldEngine.Entity.DropdownEntity dropdownEntity)
+        {
+            if (!string.IsNullOrEmpty(file))
+            {
+                WebVerseRuntime.Instance.imageHandler.LoadImageResourceAsTexture2D(
+                    VEML.VEMLUtilities.FullyQualifyURI(file, WebVerseRuntime.Instance.currentBasePath),
+                new Action<Texture2D>((tex) =>
+                {
+                    dropdownEntity.SetBackground(Sprite.Create(
+                        tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f)));
+                }));
+            }
+
+            yield return null;
+        }
+
+        /// <summary>
+        /// Create a mesh entity.
+        /// </summary>
+        /// <param name="parent">Parent of the entity to create.</param>
+        /// <param name="meshObject">Path to the mesh object to load for this entity.</param>
+        /// <param name="meshResources">Paths to mesh resources for this entity.</param>
+        /// <param name="position">Position of the entity relative to its parent.</param>
+        /// <param name="rotation">Rotation of the entity relative to its parent.</param>
+        /// <param name="id">ID of the entity. One will be created if not provided.</param>
+        /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
+        /// mesh entity object.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
+        /// <returns>The mesh entity object.</returns>
+        private MeshEntity CreateMeshEntity(BaseEntity parent, string meshObject, string[] meshResources,
+            Vector3 position, Quaternion rotation, string id, Action<MeshEntity> onLoaded, bool checkForUpdateIfCached)
+        {
+            Guid guid;
+            if (string.IsNullOrEmpty(id))
+            {
+                guid = Guid.NewGuid();
+            }
+            else
+            {
+                guid = Guid.Parse(id);
+            }
+
+            WorldEngine.Entity.BaseEntity pBE = GetPrivateEntity(parent);
+            Vector3 pos = new Vector3(position.x, position.y, position.z);
+            Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
+
+            MeshEntity me = new MeshEntity();
+
+            Action<WorldEngine.Entity.MeshEntity> onEntityLoadedAction =
+                new Action<WorldEngine.Entity.MeshEntity>((meshEntity) =>
+            {
+                if (meshEntity == null)
+                {
+                    Logging.LogError("[EntityAPIHelper:Create] Error loading mesh entity.");
+                }
+                else
+                {
+                    meshEntity.SetParent(pBE);
+                    meshEntity.SetPosition(pos, true);
+                    meshEntity.SetRotation(rot, true);
+
+                    me.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                    AddEntityMapping(me.internalEntity, me);
+                    if (onLoaded != null)
+                    {
+                        onLoaded.Invoke(me);
+                    }
+                }
+            });
+
+            WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsMeshEntity(
+                meshObject, meshResources, guid, onEntityLoadedAction, 10, checkForUpdateIfCached);
+
+            return me;
+        }
+
+        private void Update()
+        {
+            if (meshEntityCreationJobs.Count > 0 && currentMeshEntityCreationJob == null)
+            {
+                currentMeshEntityCreationJob = meshEntityCreationJobs.Dequeue();
+                CreateMeshEntity(currentMeshEntityCreationJob.parent, currentMeshEntityCreationJob.meshObject,
+                    currentMeshEntityCreationJob.meshResources, new Vector3(currentMeshEntityCreationJob.position.x,
+                    currentMeshEntityCreationJob.position.y, currentMeshEntityCreationJob.position.z), new Quaternion(
+                        currentMeshEntityCreationJob.rotation.x, currentMeshEntityCreationJob.rotation.y,
+                        currentMeshEntityCreationJob.rotation.z, currentMeshEntityCreationJob.rotation.w),
+                        currentMeshEntityCreationJob.id, new Action<MeshEntity>((me) => {
+                            if (!string.IsNullOrEmpty(currentMeshEntityCreationJob.onLoaded))
+                            {
+                                WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                                    currentMeshEntityCreationJob.onLoaded, new object[] { me });
+                            }
+                            currentMeshEntityCreationJob = null;
+                    }), currentMeshEntityCreationJob.checkForUpdateIfCached);
             }
         }
     }

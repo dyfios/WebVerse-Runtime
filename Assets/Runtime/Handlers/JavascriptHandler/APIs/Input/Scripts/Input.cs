@@ -101,6 +101,90 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
         }
 
         /// <summary>
+        /// Get the current position of the left hand.
+        /// </summary>
+        /// <returns>Current position of the left hand, or Vector3.zero if it does not exist.</returns>
+        public static Vector3 GetLeftHandPosition()
+        {
+            if (WebVerseRuntime.Instance.inputManager.vRRig == null)
+            {
+                return Vector3.zero;
+            }
+
+            if (WebVerseRuntime.Instance.inputManager.vRRig.leftControllerManager == null)
+            {
+                return Vector3.zero;
+            }
+
+            UnityEngine.Vector3 pos = WebVerseRuntime.Instance.inputManager.vRRig.leftControllerManager.transform.position;
+
+            return new Vector3(pos.x, pos.y, pos.z);
+        }
+
+        /// <summary>
+        /// Get the current position of the right hand.
+        /// </summary>
+        /// <returns>Current position of the right hand, or Vector3.zero if it does not exist.</returns>
+        public static Vector3 GetRightHandPosition()
+        {
+            if (WebVerseRuntime.Instance.inputManager.vRRig == null)
+            {
+                return Vector3.zero;
+            }
+
+            if (WebVerseRuntime.Instance.inputManager.vRRig.rightControllerManager == null)
+            {
+                return Vector3.zero;
+            }
+
+            UnityEngine.Vector3 pos = WebVerseRuntime.Instance.inputManager.vRRig.rightControllerManager.transform.position;
+
+            return new Vector3(pos.x, pos.y, pos.z);
+        }
+
+        /// <summary>
+        /// Get the current rotation of the left hand.
+        /// </summary>
+        /// <returns>Current rotation of the left hand, or Quaternion.identity if it does not exist.</returns>
+        public static Quaternion GetLeftHandRotation()
+        {
+            if (WebVerseRuntime.Instance.inputManager.vRRig == null)
+            {
+                return Quaternion.identity;
+            }
+
+            if (WebVerseRuntime.Instance.inputManager.vRRig.leftControllerManager == null)
+            {
+                return Quaternion.identity;
+            }
+
+            UnityEngine.Quaternion rot = WebVerseRuntime.Instance.inputManager.vRRig.leftControllerManager.transform.rotation;
+
+            return new Quaternion(rot.x, rot.y, rot.z, rot.w);
+        }
+
+        /// <summary>
+        /// Get the current rotation of the right hand.
+        /// </summary>
+        /// <returns>Current rotation of the right hand, or Quaternion.identity if it does not exist.</returns>
+        public static Quaternion GetRightHandRotation()
+        {
+            if (WebVerseRuntime.Instance.inputManager.vRRig == null)
+            {
+                return Quaternion.identity;
+            }
+
+            if (WebVerseRuntime.Instance.inputManager.vRRig.rightControllerManager == null)
+            {
+                return Quaternion.identity;
+            }
+
+            UnityEngine.Quaternion rot = WebVerseRuntime.Instance.inputManager.vRRig.rightControllerManager.transform.rotation;
+
+            return new Quaternion(rot.x, rot.y, rot.z, rot.w);
+        }
+
+        /// <summary>
         /// Get a raycast from the pointer.
         /// </summary>
         /// <param name="direction">Direction to cast the ray in.</param>
