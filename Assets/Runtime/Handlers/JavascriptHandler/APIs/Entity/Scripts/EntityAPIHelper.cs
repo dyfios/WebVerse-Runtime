@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
@@ -520,7 +520,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="tag">Tag.</param>
         /// <param name="onLoaded">Action to perform on load.</param>
         /// <returns></returns>
-        public static ImageEntity LoadImageEntityAsync(CanvasEntity parent, string imageFile,
+        public static ImageEntity LoadImageEntityAsync(BaseEntity parent, string imageFile,
             WorldTypes.Vector2 positionPercent, WorldTypes.Vector2 sizePercent,
             string id = null, string tag = null, string onLoaded = null)
         {
@@ -534,10 +534,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            WorldEngine.Entity.BaseEntity pCE = EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
-                Logging.LogWarning("[ImageEntity->Create] Invalid parent entity.");
+                Logging.LogWarning("[ImageEntity->LoadImageEntityAsync] Invalid parent entity.");
+                return null;
+            }
+            if (pCE is not WorldEngine.Entity.UIEntity)
+            {
+                Logging.LogWarning("[ImageEntity->LoadImageEntityAsync] Parent entity not UI element.");
                 return null;
             }
 
@@ -557,7 +562,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            instance.StartCoroutine(instance.LoadImageEntityAsync(ie, pCE, guid, imageFile, pos, size, tag, onLoadAction));
+            instance.StartCoroutine(instance.LoadImageEntityAsync(ie, (WorldEngine.Entity.UIEntity) pCE,
+                guid, imageFile, pos, size, tag, onLoadAction));
 
             return ie;
         }
@@ -1107,7 +1113,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="tag">Tag.</param>
         /// <param name="onLoaded">Action to perform on load.</param>
         /// <returns></returns>
-        private IEnumerator LoadImageEntityAsync(ImageEntity ie, WorldEngine.Entity.CanvasEntity pCE, Guid id, string imageFile,
+        private IEnumerator LoadImageEntityAsync(ImageEntity ie, WorldEngine.Entity.UIEntity pCE, Guid id, string imageFile,
             Vector2 positionPercent, Vector2 sizePercent, string tag = null, Action onLoaded = null)
         {
             if (!string.IsNullOrEmpty(imageFile))

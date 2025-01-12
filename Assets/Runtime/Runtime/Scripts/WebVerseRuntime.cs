@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using UnityEngine;
 using FiveSQD.WebVerse.Utilities;
@@ -99,7 +99,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <summary>
         /// WebVerse version.
         /// </summary>
-        public static readonly string versionString = "v2.0.3";
+        public static readonly string versionString = "v2.0.5";
 
         /// <summary>
         /// WebVerse codename.
@@ -217,6 +217,28 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("Material to use for the sky.")]
         public Material skyMaterial;
+
+        /// <summary>
+        /// Material to use for the lite procedural sky.
+        /// </summary>
+        [Tooltip("Material to use for the lite procedural sky.")]
+        public Material liteProceduralSkyMaterial;
+
+        /// <summary>
+        /// GameObject for the lite procedural sky.
+        /// </summary>
+        [Tooltip("GameObject for the lite procedural sky.")]
+        public GameObject liteProceduralSkyObject;
+
+        /// <summary>
+        /// Environment default sky texture.
+        /// </summary>
+        public Texture2D defaultCloudTexture;
+
+        /// <summary>
+        /// Environment default sky texture.
+        /// </summary>
+        public Texture2D defaultStarTexture;
 
         /// <summary>
         /// Prefab for an Input Entity.
@@ -493,9 +515,12 @@ namespace FiveSQD.WebVerse.Runtime
                         string contentType = headers["Content-Type"];
                         if (contentType.Contains("text/html") || contentType.Contains("application/binary") || contentType.Contains("text/plain"))
                         {
-                            Logging.Log("[WebVerseRuntime->LoadURL] Identified webpage. Loading.");
+                            Logging.Log("[WebVerseRuntime->LoadURL] Identified webpage. Loading...");
+                            Logging.Log("[WebVerseRuntime->LoadURL] Identified webpage. Unloading any world...");
                             UnloadWorld();
+                            Logging.Log("[WebVerseRuntime->LoadURL] Identified webpage. Loading web page...");
                             LoadWebPage(url, onLoaded);
+                            Logging.Log("[WebVerseRuntime->LoadURL] Webpage loaded.");
                             return;
                         }
                     }
@@ -582,28 +607,40 @@ namespace FiveSQD.WebVerse.Runtime
             Logging.Log("[WebVerseRuntime->UnloadWorld] Unloading world: "
                 + WorldEngine.WorldEngine.ActiveWorld.siteName + ".");
             
+            Logging.Log("[WebVerseRuntime->UnloadWorld] Resetting Javascript Handler...");
+
             if (javascriptHandler != null)
             {
                 javascriptHandler.Reset();
             }
+
+            Logging.Log("[WebVerseRuntime->UnloadWorld] Javascript Handler reset. Resetting Time Handler...");
 
             if (timeHandler != null)
             {
                 timeHandler.Reset();
             }
 
+            Logging.Log("[WebVerseRuntime->UnloadWorld] Time Handler reset. Resetting Input Manager...");
+
             if (inputManager != null)
             {
                 inputManager.Reset();
             }
+
+            Logging.Log("[WebVerseRuntime->UnloadWorld] Input Manager reset. Resetting VOS Synchronization Manager...");
 
             if (vosSynchronizationManager != null)
             {
                 vosSynchronizationManager.Reset();
             }
 
+            Logging.Log("[WebVerseRuntime->UnloadWorld] VOS Synchronization Manager reset. Unloading World...");
+
             WorldEngine.WorldEngine.UnloadWorld();
             state = RuntimeState.Unloaded;
+
+            Logging.Log("[WebVerseRuntime->UnloadWorld] World Unloaded.");
         }
 
         /// <summary>
@@ -651,6 +688,10 @@ namespace FiveSQD.WebVerse.Runtime
             worldEngine = worldEngineGO.AddComponent<WorldEngine.WorldEngine>();
             worldEngine.highlightMaterial = highlightMaterial;
             worldEngine.skyMaterial = skyMaterial;
+            worldEngine.liteProceduralSkyMaterial = liteProceduralSkyMaterial;
+            worldEngine.liteProceduralSkyObject = liteProceduralSkyObject;
+            worldEngine.defaultCloudTexture = defaultCloudTexture;
+            worldEngine.defaultStarTexture = defaultStarTexture;
             worldEngine.inputEntityPrefab = inputEntityPrefab;
             worldEngine.characterControllerPrefab = characterControllerPrefab;
             worldEngine.characterControllerLabelPrefab = characterControllerLabelPrefab;

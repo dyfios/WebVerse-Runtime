@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Handlers.File;
 using FiveSQD.WebVerse.Runtime;
@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using FiveSQD.WebVerse.Handlers.VEML.Schema.V2_2;
+using FiveSQD.WebVerse.Handlers.VEML.Schema.V2_3;
 using FiveSQD.WebVerse.VOSSynchronization;
 using FiveSQD.WebVerse.WorldEngine.Utilities;
 using FiveSQD.WebVerse.WorldEngine.Entity;
@@ -28,7 +28,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <summary>
         /// Enumeration for a VEML version number.
         /// </summary>
-        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1, V2_2 }
+        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1, V2_2, V2_3 }
 
         /// <summary>
         /// Reference to the WebVerse runtime.
@@ -44,12 +44,15 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// Number of entities that are being loaded.
         /// </summary>
         private int loadingEntities = 0;
+        
+        private liteproceduralsky liteProceduralSkyToLoadOnLoadCompletion = null;
 
         /// <summary>
         /// Initialize the VEML Handler.
         /// </summary>
         public override void Initialize()
         {
+            liteProceduralSkyToLoadOnLoadCompletion = null;
             base.Initialize();
         }
 
@@ -58,6 +61,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         public override void Terminate()
         {
+            liteProceduralSkyToLoadOnLoadCompletion = null;
             base.Terminate();
         }
 
@@ -71,7 +75,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V2_2.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V2_3.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -107,7 +111,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V2_2.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V2_3.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -193,81 +197,91 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         /// <param name="path">Path to load the document from.</param>
         /// <returns>A loaded VEML class, or null.</returns>
-        public Schema.V2_2.veml LoadVEML(string path)
+        public Schema.V2_3.veml LoadVEML(string path)
         {
             byte[] rawData = System.IO.File.ReadAllBytes(path);
 
-            //VEMLVersion version = VEMLVersion.V2_2;
-            Schema.V2_2.veml veml = null;
+            //VEMLVersion version = VEMLVersion.V2_3;
+            Schema.V2_3.veml veml = null;
             try
             {
-                XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_2.veml));
-                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_2(System.Text.Encoding.UTF8.GetString(rawData)));
+                XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_3.veml));
+                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_3(System.Text.Encoding.UTF8.GetString(rawData)));
                 XmlReader xmlReader = XmlReader.Create(reader);
 
-                // Attempt deserialization using v2.2 (latest) of the schema. Old XML will be converted
+                // Attempt deserialization using v2.3 (latest) of the schema. Old XML will be converted
                 // to current version before being deserialized.
                 if (ser.CanDeserialize(xmlReader))
                 {
-                    //version = VEMLVersion.V2_2;
-                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.2");
-                    veml = (Schema.V2_2.veml) ser.Deserialize(xmlReader);
+                    //version = VEMLVersion.V2_3;
+                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.3");
+                    veml = (Schema.V2_3.veml) ser.Deserialize(xmlReader);
                 }
 
-                // Attempt deserialization using v2.1, v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to latest if deserialization succeeds.
+                // Attempt deserialization using v2.2, v2.1, v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to
+                // latest if deserialization succeeds.
                 else
                 {
-                    ser = new XmlSerializer(typeof(Schema.V2_1.veml));
+                    XmlSerializer ser2_2 = new XmlSerializer(typeof(Schema.V2_2.veml));
+                    XmlSerializer ser2_1 = new XmlSerializer(typeof(Schema.V2_1.veml));
                     XmlSerializer ser2_0 = new XmlSerializer(typeof(Schema.V2_0.veml));
                     XmlSerializer ser1_3 = new XmlSerializer(typeof(Schema.V1_3.veml));
                     XmlSerializer ser1_2 = new XmlSerializer(typeof(Schema.V1_2.veml));
                     XmlSerializer ser1_1 = new XmlSerializer(typeof(Schema.V1_1.veml));
                     XmlSerializer ser1_0 = new XmlSerializer(typeof(Schema.V1_0.veml));
 
-                    if (ser.CanDeserialize(xmlReader))
+                    if (ser2_2.CanDeserialize(xmlReader))
                     {
-                        //version = VEMLVersion.v2_0;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.1. Upgrading to VEML v2.2.");
+                        //version = VEMLVersion.v2_2;
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.2. Upgrading to VEML v2.3.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML2_1(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
-                        Schema.V2_1.veml v2_1VEML = (Schema.V2_1.veml) ser.Deserialize(xmlReader);
+                        Schema.V2_2.veml v2_2VEML = (Schema.V2_2.veml) ser2_2.Deserialize(xmlReader);
+                        veml = VEMLUtilities.ConvertFromV2_2(v2_2VEML);
+                    }
+                    if (ser2_1.CanDeserialize(xmlReader))
+                    {
+                        //version = VEMLVersion.v2_1;
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.1. Upgrading to VEML v2.3.");
+                        reader = new StringReader(VEMLUtilities.FullyNotateVEML2_1(System.Text.Encoding.UTF8.GetString(rawData)));
+                        xmlReader = XmlReader.Create(reader);
+                        Schema.V2_1.veml v2_1VEML = (Schema.V2_1.veml) ser2_1.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV2_1(v2_1VEML);
                     }
-
-                    else if (ser.CanDeserialize(xmlReader))
+                    else if (ser2_0.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v2_0;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.0. Upgrading to VEML v2.1.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.0. Upgrading to VEML v2.3.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML2_0(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V2_0.veml v2_0VEML = (Schema.V2_0.veml) ser2_0.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV2_0(v2_0VEML);
                     }
 
-                    else if (ser.CanDeserialize(xmlReader))
+                    else if (ser1_3.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_3;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.3. Upgrading to VEML v2.1.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.3. Upgrading to VEML v2.3.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_3(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_3.veml v1_3VEML = (Schema.V1_3.veml) ser1_3.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_3(v1_3VEML);
                     }
 
-                    else if (ser.CanDeserialize(xmlReader))
+                    else if (ser1_2.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_2;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.2. Upgrading to VEML v2.1.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.2. Upgrading to VEML v2.3.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_2(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_2.veml v1_2VEML = (Schema.V1_2.veml) ser1_2.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV1_2(v1_2VEML);
                     }
 
-                    else if (ser.CanDeserialize(xmlReader))
+                    else if (ser1_1.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_1;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.1. Upgrading to VEML v2.1.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.1. Upgrading to VEML v2.3.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_1(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_1.veml v1_1VEML = (Schema.V1_1.veml) ser1_1.Deserialize(xmlReader);
@@ -277,7 +291,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     else if (ser1_0.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_1;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.0. Upgrading to VEML v2.1.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.0. Upgrading to VEML v2.3.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_0(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_0.veml v1_0VEML = (Schema.V1_0.veml) ser1_0.Deserialize(xmlReader);
@@ -557,7 +571,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <param name="onComplete">Action to invoke upon completion of world loading.
         /// Provides a success/fail indication.</param>
-        private IEnumerator ApplyVEMLDocument(Schema.V2_2.veml vemlDocument, string baseURI, Action<bool> onComplete)
+        private IEnumerator ApplyVEMLDocument(Schema.V2_3.veml vemlDocument, string baseURI, Action<bool> onComplete)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -583,7 +597,6 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 onComplete.Invoke(false);
                 yield break;
             }
-
 
             // Wait for all scripts to download.
             float elapsedTime = 0f;
@@ -622,7 +635,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="onScriptsProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessMetadata(Schema.V2_2.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
+        private bool ProcessMetadata(Schema.V2_3.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -679,7 +692,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEnvironment(Schema.V2_2.veml vemlDocument, string baseURI)
+        private bool ProcessEnvironment(Schema.V2_3.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -699,13 +712,34 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
                 else
                 {
-                    ProcessBackground(vemlDocument.environment.background.Item, formattedBaseURI);
+                    ProcessBackground(vemlDocument.environment.background.Item,
+                        vemlDocument.environment.background.ItemElementName, formattedBaseURI);
+                }
+
+                if (vemlDocument.environment.effects != null)
+                {
+                    if (ProcessEffects(vemlDocument, baseURI) == false)
+                    {
+                        Logging.LogWarning("[VEMLHandler->ProcessEnvironment] Error processing effects.");
+                        return false;
+                    }
                 }
 
                 if (ProcessEntities(vemlDocument, baseURI) == false)
                 {
                     Logging.LogWarning("[VEMLHandler->ProcessEnvironment] Error processing entities.");
                     return false;
+                }
+
+                if (liteProceduralSkyToLoadOnLoadCompletion != null)
+                {
+                    if (LoadLiteProceduralSky(liteProceduralSkyToLoadOnLoadCompletion) == false)
+                    {
+                        Logging.LogWarning("[VEMLHandler->ProcessEnvironment] Error loading lite procedural sky.");
+                        liteProceduralSkyToLoadOnLoadCompletion = null;
+                        return false;
+                    }
+                    liteProceduralSkyToLoadOnLoadCompletion = null;
                 }
             }
 
@@ -719,7 +753,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <param name="onProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
-        private IEnumerator ProcessScripts(Schema.V2_2.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
+        private IEnumerator ProcessScripts(Schema.V2_3.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -785,7 +819,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessCapabilities(Schema.V2_2.veml vemlDocument, string baseURI)
+        private bool ProcessCapabilities(Schema.V2_3.veml vemlDocument, string baseURI)
         {
             // Check capabilities.
             if (vemlDocument.metadata.capability != null)
@@ -827,7 +861,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessInputEvents(Schema.V2_2.veml vemlDocument, string baseURI)
+        private bool ProcessInputEvents(Schema.V2_3.veml vemlDocument, string baseURI)
         {
             // Set up input events.
             if (vemlDocument.metadata.inputevent != null)
@@ -847,7 +881,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessControlFlags(Schema.V2_2.veml vemlDocument, string baseURI)
+        private bool ProcessControlFlags(Schema.V2_3.veml vemlDocument, string baseURI)
         {
             // Set up control flags.
             if (vemlDocument.metadata.controlflags != null)
@@ -876,15 +910,15 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.leftvrpointer))
                     {
-                        if (vemlDocument.metadata.controlflags.leftvrpointer.ToLower() == "none")
+                        if (vemlDocument.metadata.controlflags.leftvrpointer.ToLower().Replace("\"", "") == "none")
                         {
                             WebVerseRuntime.Instance.vrRig.leftPointerMode = Input.SteamVR.VRRig.PointerMode.None;
                         }
-                        else if (vemlDocument.metadata.controlflags.leftvrpointer.ToLower() == "teleport")
+                        else if (vemlDocument.metadata.controlflags.leftvrpointer.ToLower().Replace("\"", "") == "teleport")
                         {
                             WebVerseRuntime.Instance.vrRig.leftPointerMode = Input.SteamVR.VRRig.PointerMode.Teleport;
                         }
-                        else if (vemlDocument.metadata.controlflags.leftvrpointer.ToLower() == "ui")
+                        else if (vemlDocument.metadata.controlflags.leftvrpointer.ToLower().Replace("\"", "") == "ui")
                         {
                             WebVerseRuntime.Instance.vrRig.leftPointerMode = Input.SteamVR.VRRig.PointerMode.UI;
                         }
@@ -896,15 +930,15 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.rightvrpointer))
                     {
-                        if (vemlDocument.metadata.controlflags.rightvrpointer.ToLower() == "none")
+                        if (vemlDocument.metadata.controlflags.rightvrpointer.ToLower().Replace("\"", "") == "none")
                         {
                             WebVerseRuntime.Instance.vrRig.rightPointerMode = Input.SteamVR.VRRig.PointerMode.None;
                         }
-                        else if (vemlDocument.metadata.controlflags.rightvrpointer.ToLower() == "teleport")
+                        else if (vemlDocument.metadata.controlflags.rightvrpointer.ToLower().Replace("\"", "") == "teleport")
                         {
                             WebVerseRuntime.Instance.vrRig.rightPointerMode = Input.SteamVR.VRRig.PointerMode.Teleport;
                         }
-                        else if (vemlDocument.metadata.controlflags.rightvrpointer.ToLower() == "ui")
+                        else if (vemlDocument.metadata.controlflags.rightvrpointer.ToLower().Replace("\"", "") == "ui")
                         {
                             WebVerseRuntime.Instance.vrRig.rightPointerMode = Input.SteamVR.VRRig.PointerMode.UI;
                         }
@@ -924,15 +958,15 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
                     if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.turnlocomotion))
                     {
-                        if (vemlDocument.metadata.controlflags.turnlocomotion.ToLower() == "none")
+                        if (vemlDocument.metadata.controlflags.turnlocomotion.ToLower().Replace("\"", "") == "none")
                         {
                             WebVerseRuntime.Instance.vrRig.turnLocomotionMode = Input.SteamVR.VRRig.TurnLocomotionMode.None;
                         }
-                        else if (vemlDocument.metadata.controlflags.turnlocomotion.ToLower() == "smooth")
+                        else if (vemlDocument.metadata.controlflags.turnlocomotion.ToLower().Replace("\"", "") == "smooth")
                         {
                             WebVerseRuntime.Instance.vrRig.turnLocomotionMode = Input.SteamVR.VRRig.TurnLocomotionMode.Smooth;
                         }
-                        else if (vemlDocument.metadata.controlflags.turnlocomotion.ToLower() == "snap")
+                        else if (vemlDocument.metadata.controlflags.turnlocomotion.ToLower().Replace("\"", "") == "snap")
                         {
                             WebVerseRuntime.Instance.vrRig.turnLocomotionMode = Input.SteamVR.VRRig.TurnLocomotionMode.Snap;
                         }
@@ -958,7 +992,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessSynchronizers(Schema.V2_2.veml vemlDocument, string baseURI)
+        private bool ProcessSynchronizers(Schema.V2_3.veml vemlDocument, string baseURI)
         {
             // Set up synchronizers.
             if (vemlDocument.metadata.synchronizationservice != null)
@@ -1013,79 +1047,203 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// Process background.
         /// </summary>
         /// <param name="entry">The entry for the background setting.</param>
+        /// <param name="choiceType">Type that the background setting is</param>
         /// <param name="uri">Base URI of the VEML document.</param>
-        private void ProcessBackground(string entry, string uri)
+        private void ProcessBackground(object backgroundInfo, ItemChoiceType choiceType, string uri)
         {
-            switch (entry.ToLower())
+            if (choiceType == ItemChoiceType.liteproceduralsky)
             {
-                case "white":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.white);
-                    break;
-
-                case "black":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.black);
-                    break;
-
-                case "grey":
-                case "gray":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.gray);
-                    break;
-
-                case "red":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.red);
-                    break;
-
-                case "yellow":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.yellow);
-                    break;
-
-                case "blue":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.blue);
-                    break;
-
-                case "cyan":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.cyan);
-                    break;
-
-                case "magenta":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.magenta);
-                    break;
-
-                case "green":
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.green);
-                    break;
-
-                default:
-                    uri = uri.Replace("http:\\", "http://").Replace("https:\\", "https://");
-                    if (uri.Contains("http:/") && !uri.Contains("http://"))
-                    {
-                        uri = uri.Replace("http:/", "http://");
-                    }
-                    if (uri.Contains("https:/") && !uri.Contains("https://"))
-                    {
-                        uri = uri.Replace("https:/", "https://");
-                    }
-                    if (entry[0] != '#')
-                    {
-                        // Assume texture.
-                        Action<byte[]> onDownloaded = new Action<byte[]>((rawData) =>
-                        {
-                            if (rawData != null)
-                            {
-                                Texture2D texture = new Texture2D(2, 2);
-                                texture.LoadImage(rawData);
-                                WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
-                            }
-                        });
-                        DownloadFileWithoutCache(VEMLUtilities.FullyQualifyURI(entry, uri), onDownloaded);
-                    }
-                    else
-                    {
-                        // Assume color code.
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(FromHex(entry));
-                    }
-                    break;
+                if (backgroundInfo is not liteproceduralsky)
+                {
+                    Logging.LogError("[VEMLHandler->ProcessBackground] Expected lite procedural sky, not a lite procedural sky.");
+                    return;
+                }
+                liteProceduralSkyToLoadOnLoadCompletion = (liteproceduralsky) backgroundInfo;
             }
+            else if (choiceType == ItemChoiceType.color || choiceType == ItemChoiceType.panorama)
+            {
+                if (backgroundInfo is not string)
+                {
+                    Logging.LogError("[VEMLHandler->ProcessBackground] Expected string type, not a string.");
+                    return;
+                }
+
+                string entry = (string) backgroundInfo;
+                switch (entry.ToLower())
+                {
+                    case "white":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.white);
+                        break;
+
+                    case "black":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.black);
+                        break;
+
+                    case "grey":
+                    case "gray":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.gray);
+                        break;
+
+                    case "red":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.red);
+                        break;
+
+                    case "yellow":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.yellow);
+                        break;
+
+                    case "blue":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.blue);
+                        break;
+
+                    case "cyan":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.cyan);
+                        break;
+
+                    case "magenta":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.magenta);
+                        break;
+
+                    case "green":
+                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.green);
+                        break;
+
+                    default:
+                        uri = uri.Replace("http:\\", "http://").Replace("https:\\", "https://");
+                        if (uri.Contains("http:/") && !uri.Contains("http://"))
+                        {
+                            uri = uri.Replace("http:/", "http://");
+                        }
+                        if (uri.Contains("https:/") && !uri.Contains("https://"))
+                        {
+                            uri = uri.Replace("https:/", "https://");
+                        }
+                        if (entry[0] != '#')
+                        {
+                            // Assume texture.
+                            Action<byte[]> onDownloaded = new Action<byte[]>((rawData) =>
+                            {
+                                if (rawData != null)
+                                {
+                                    Texture2D texture = new Texture2D(2, 2);
+                                    texture.LoadImage(rawData);
+                                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
+                                }
+                            });
+                            DownloadFileWithoutCache(VEMLUtilities.FullyQualifyURI(entry, uri), onDownloaded);
+                        }
+                        else
+                        {
+                            // Assume color code.
+                            WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(FromHex(entry));
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                Logging.LogError("[VEMLHandler->ProcessBackground] Unknown background type detected.");
+            }
+        }
+        
+        /// <summary>
+        /// Load a lite procedural sky.
+        /// </summary>
+        /// <param name="proceduralSky">Lite procedural sky to load.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        private bool LoadLiteProceduralSky(liteproceduralsky proceduralSky)
+        {
+            if (string.IsNullOrEmpty(proceduralSky.sunentitytag))
+                {
+                    Logging.LogWarning("[VEMLHandler->LoadLiteProceduralSky] Sun light entity required for lite procedural sky.");
+                    return false;
+                }
+
+                object sunEntity = Javascript.APIs.Entity.Entity.GetByTag(proceduralSky.sunentitytag);
+                if (sunEntity == null)
+                {
+                    Logging.LogWarning("[VEMLHandler->LoadLiteProceduralSky] Sun light entity with tag " + proceduralSky.sunentitytag
+                        + " not found.");
+                    return false;
+                }
+
+                if (sunEntity is not Javascript.APIs.Entity.LightEntity)
+                {
+                    Logging.LogWarning("[VEMLHandler->LoadLiteProceduralSky] Sun light entity with tag " + proceduralSky.sunentitytag
+                        + " not a light entity.");
+                    return false;
+                }
+
+                if (proceduralSky.daynightcycleenabled == true)
+                {
+                    return Javascript.APIs.Environment.Environment.SetLiteDayNightSky((Javascript.APIs.Entity.LightEntity) sunEntity,
+                        proceduralSky.groundenabled, ProcessColorIntoJSAPIColor(proceduralSky.groundcolor), proceduralSky.groundheight,
+                        proceduralSky.groundfadeamount, proceduralSky.horizonskyblend,
+                        ProcessColorIntoJSAPIColor(proceduralSky.dayhorizoncolor), ProcessColorIntoJSAPIColor(proceduralSky.dayskycolor),
+                        ProcessColorIntoJSAPIColor(proceduralSky.nighthorizoncolor), ProcessColorIntoJSAPIColor(proceduralSky.nightskycolor),
+                        proceduralSky.horizonsaturationamount, proceduralSky.horizonsaturationfalloff, proceduralSky.sunenabled,
+                        proceduralSky.sundiameter, ProcessColorIntoJSAPIColor(proceduralSky.sunhorizoncolor),
+                        ProcessColorIntoJSAPIColor(proceduralSky.sunzenithcolor), proceduralSky.sunskylightingenabled,
+                        proceduralSky.skylightingfalloffamount, proceduralSky.skylightingfalloffintensity, proceduralSky.sunsetintensity,
+                        proceduralSky.sunsetradialfalloff, proceduralSky.sunsethorizontalfalloff, proceduralSky.sunsetverticalfalloff,
+                        proceduralSky.moonenabled, proceduralSky.moondiameter, ProcessColorIntoJSAPIColor(proceduralSky.mooncolor),
+                        proceduralSky.moonfalloffamount, proceduralSky.starsenabled, proceduralSky.starsbrightness,
+                        proceduralSky.starsdaytimebrightness, proceduralSky.starshorizonfalloff, proceduralSky.starssaturation,
+                        proceduralSky.proceduralstarsenabled, proceduralSky.proceduralstarssharpness, proceduralSky.proceduralstarsamount,
+                        proceduralSky.starstextureenabled, proceduralSky.startextureuri, ProcessColorIntoJSAPIColor(proceduralSky.startint),
+                        proceduralSky.starscale, proceduralSky.starrotationspeed, proceduralSky.cloudsenabled, proceduralSky.cloudstextureuri,
+                        new Javascript.APIs.WorldTypes.Vector2(proceduralSky.cloudsscalex, proceduralSky.cloudsscaley),
+                        new Javascript.APIs.WorldTypes.Vector2(proceduralSky.cloudsspeedx, proceduralSky.cloudsspeedy), proceduralSky.cloudiness,
+                        proceduralSky.cloudsopacity, proceduralSky.cloudssharpness, proceduralSky.cloudsshadingintensity,
+                        proceduralSky.cloudszenithfalloff, proceduralSky.cloudsiterations, proceduralSky.cloudsgain, proceduralSky.cloudslacunarity,
+                        ProcessColorIntoJSAPIColor(proceduralSky.cloudsdaycolor), ProcessColorIntoJSAPIColor(proceduralSky.cloudsnightcolor));
+                }
+                else
+                {
+                    return Javascript.APIs.Environment.Environment.SetLiteConstantColorSky((Javascript.APIs.Entity.LightEntity) sunEntity,
+                        proceduralSky.groundenabled, ProcessColorIntoJSAPIColor(proceduralSky.groundcolor), proceduralSky.groundheight,
+                        proceduralSky.groundfadeamount, proceduralSky.horizonskyblend,
+                        ProcessColorIntoJSAPIColor(proceduralSky.dayhorizoncolor), ProcessColorIntoJSAPIColor(proceduralSky.dayskycolor),
+                        proceduralSky.horizonsaturationamount, proceduralSky.horizonsaturationfalloff, proceduralSky.sunenabled,
+                        proceduralSky.sundiameter, ProcessColorIntoJSAPIColor(proceduralSky.sunhorizoncolor),
+                        ProcessColorIntoJSAPIColor(proceduralSky.sunzenithcolor), proceduralSky.sunskylightingenabled,
+                        proceduralSky.skylightingfalloffamount, proceduralSky.skylightingfalloffintensity, proceduralSky.sunsetintensity,
+                        proceduralSky.sunsetradialfalloff, proceduralSky.sunsethorizontalfalloff, proceduralSky.sunsetverticalfalloff,
+                        proceduralSky.moonenabled, proceduralSky.moondiameter, ProcessColorIntoJSAPIColor(proceduralSky.mooncolor),
+                        proceduralSky.moonfalloffamount, proceduralSky.starsenabled, proceduralSky.starsbrightness,
+                        proceduralSky.starsdaytimebrightness, proceduralSky.starshorizonfalloff, proceduralSky.starssaturation,
+                        proceduralSky.proceduralstarsenabled, proceduralSky.proceduralstarssharpness, proceduralSky.proceduralstarsamount,
+                        proceduralSky.starstextureenabled, proceduralSky.startextureuri, ProcessColorIntoJSAPIColor(proceduralSky.startint),
+                        proceduralSky.starscale, proceduralSky.starrotationspeed, proceduralSky.cloudsenabled, proceduralSky.cloudstextureuri,
+                        new Javascript.APIs.WorldTypes.Vector2(proceduralSky.cloudsscalex, proceduralSky.cloudsscaley),
+                        new Javascript.APIs.WorldTypes.Vector2(proceduralSky.cloudsspeedx, proceduralSky.cloudsspeedy), proceduralSky.cloudiness,
+                        proceduralSky.cloudsopacity, proceduralSky.cloudssharpness, proceduralSky.cloudsshadingintensity,
+                        proceduralSky.cloudszenithfalloff, proceduralSky.cloudsiterations, proceduralSky.cloudsgain, proceduralSky.cloudslacunarity,
+                        ProcessColorIntoJSAPIColor(proceduralSky.cloudsdaycolor));
+                }
+        }
+
+        /// <summary>
+        /// Process VEML document environment effects.
+        /// </summary>
+        /// <param name="vemlDocument">The VEML document.</param>
+        /// <param name="baseURI">Base URI of the VEML document.</param>
+        /// <returns>Whether or not the operation succeeded.</returns>
+        private bool ProcessEffects(Schema.V2_3.veml vemlDocument, string baseURI)
+        {
+            string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
+
+            if (vemlDocument.environment.effects.litefog != null)
+            {
+                if (vemlDocument.environment.effects.litefog.fogenabled == true)
+                {
+                    Javascript.APIs.Environment.Environment.ActivateLiteFog(
+                        ProcessColorIntoJSAPIColor(vemlDocument.environment.effects.litefog.color),
+                        vemlDocument.environment.effects.litefog.density);
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -1094,7 +1252,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEntities(Schema.V2_2.veml vemlDocument, string baseURI)
+        private bool ProcessEntities(Schema.V2_3.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -1509,6 +1667,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     meshEntity.entityTag = entity.tag;
                     meshEntity.SetVisibility(true);
                     meshEntity.SetParent(null);
+                    meshEntity.SetInteractionState(BaseEntity.InteractionState.Static);
                     ApplyTransform(meshEntity, entity.transform, true, true, false);
 #if USE_WEBINTERFACE
                     if (!string.IsNullOrEmpty(entity.synchronizer))
@@ -3200,6 +3359,33 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         }
 
         /// <summary>
+        /// Get a color from a color value string (formatted "color(r g b a)").
+        /// </summary>
+        /// <param name="colorValueString">Color value string (formatted "color(r g b a)").</param>
+        /// <returns>A color matching the color value string.</returns>
+        private Color FromColorValue(string colorValueString)
+        {
+            string elementsString = colorValueString.ToLower().Replace("color(", "").Replace(")", "");
+            string[] elements = elementsString.Split(" ");
+            if (elements.Length != 3 && elements.Length != 4)
+            {
+                Logging.LogWarning("[VEMLHandler->FromColorValue] Invalid color value.");
+                return new Color(0.5f, 0.5f, 0.5f, 0.5f);
+            }
+
+            int r = Convert.ToInt32(elements[0]);
+            int g = Convert.ToInt32(elements[1]);
+            int b = Convert.ToInt32(elements[2]);
+            int a = 1;
+            if (elements.Length == 4)
+            {
+                a = Convert.ToInt32(elements[3]);
+            }
+
+            return new Color(r, g, b, a);
+        }
+
+        /// <summary>
         /// Process a color from a string.
         /// </summary>
         /// <param name="color">Color string.</param>
@@ -3237,9 +3423,28 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     return Color.green;
 
                 default:
-                    // Assume color code.
-                    return FromHex(color);
+                    if (color.ToLower().StartsWith("color("))
+                    {
+                        return FromColorValue(color);
+                    }
+                    else
+                    {
+                        // Assume color code.
+                        return FromHex(color);
+                    }
             }
+        }
+        
+        /// <summary>
+        /// Process a color into a JavaScript API compatible color from a string.
+        /// </summary>
+        /// <param name="color">Color string.</param>
+        /// <returns>A JavaScript API color matching the string.</returns>
+        private Javascript.APIs.WorldTypes.Color ProcessColorIntoJSAPIColor(string color)
+        {
+            Color processedColor = ProcessColor(color);
+            return new Javascript.APIs.WorldTypes.Color(processedColor.r,
+                processedColor.g, processedColor.b, processedColor.a);
         }
 
         /// <summary>

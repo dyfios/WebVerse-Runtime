@@ -1084,17 +1084,6 @@
                 },
                 {
                     "name": "",
-                    "id": "2fb48ba6-3e2c-46c4-a216-cb1ca284e229",
-                    "path": "<Joystick>/stick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "53122ece-2c3c-4640-bd91-10adf4adf200",
                     "path": "<Mouse>/rightButton",
                     "interactions": "",

@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 #if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WorldEngine.Utilities;
@@ -68,7 +68,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 = WebVerseRuntime.Instance.vosSynchronizationManager.GetSynchronizer(host, port);
             if (synchronizerToRemove == null)
             {
-                LogSystem.LogError("[VOSSynchronization:DisconnectService] Can't find service to disconnect.");
+                //LogSystem.LogError("[VOSSynchronization:DisconnectService] Can't find service to disconnect.");
                 return false;
             }
             synchronizerToRemove.Disconnect();

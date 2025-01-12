@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 #if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.MQTT;
@@ -248,6 +248,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 LogSystem.LogError("[VOSSynchronizer->Disconnect] Not initialized.");
                 return;
             }
+
+            LogSystem.Log("[VOSSynchronizer->Disconnect] Disconnecting " +
+                (mqttClient.host == null ? "unk" : mqttClient.host) + ":" + mqttClient.port);
 
             initiatedDisconnect = true;
 
