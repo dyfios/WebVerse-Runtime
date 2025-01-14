@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using System.Collections;
 using FiveSQD.WebVerse.Utilities;
@@ -152,6 +152,12 @@ namespace FiveSQD.WebVerse.Runtime
         public BasePlatformInput vrPlatformInput;
 
         /// <summary>
+        /// Sky sphere follower.
+        /// </summary>
+        [Tooltip("Sky sphere follower.")]
+        public WorldEngine.Environment.SkySphereFollower skySphereFollower;
+
+        /// <summary>
         /// Whether or not VR is enabled.
         /// </summary>
         private bool vrEnabled;
@@ -175,6 +181,7 @@ namespace FiveSQD.WebVerse.Runtime
             runtime.vr = true;
             vrMultibar.SetUpVRMultibarVRButton();
             SetCanvasEventCamera(vrCamera);
+            skySphereFollower.transformToFollow = vrCamera.transform;
         }
 
         /// <summary>
@@ -204,6 +211,7 @@ namespace FiveSQD.WebVerse.Runtime
             }
             runtime.vr = false;
             SetCanvasEventCamera(desktopCamera);
+            skySphereFollower.transformToFollow = desktopCamera.transform;
         }
 
         private void Awake()

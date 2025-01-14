@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using System;
 using FiveSQD.WebVerse.Runtime;
@@ -25,7 +25,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// text entity object.</param>
         /// <returns>The ID of the text entity object.</returns>
-        public static TextEntity Create(CanvasEntity parent, string text, int fontSize,
+        public static TextEntity Create(BaseEntity parent, string text, int fontSize,
             Vector2 positionPercent, Vector2 sizePercent,
             string id = null, string tag = null, string onLoaded = null)
         {
@@ -39,10 +39,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            WorldEngine.Entity.BaseEntity pCE = EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[TextEntity->Create] Invalid parent entity.");
+                return null;
+            }
+            if (pCE is not WorldEngine.Entity.UIEntity)
+            {
+                Logging.LogWarning("[TextEntity->Create] Parent entity not UI element.");
                 return null;
             }
 
@@ -62,7 +67,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTextEntity(text, fontSize, pCE, pos, size, guid, tag, onLoadAction);
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTextEntity(text, fontSize,
+                (WorldEngine.Entity.UIEntity) pCE, pos, size, guid, tag, onLoadAction);
 
             return te;
         }

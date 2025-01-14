@@ -1,4 +1,4 @@
-// Copyright (c) 2019-2024 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using System;
 using FiveSQD.WebVerse.Runtime;
@@ -24,7 +24,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="onLoaded">Action to perform on load. This takes a single parameter containing the created
         /// image entity object.</param>
         /// <returns>The ID of the image entity object.</returns>
-        public static ImageEntity Create(CanvasEntity parent, string imageFile,
+        public static ImageEntity Create(BaseEntity parent, string imageFile,
             Vector2 positionPercent, Vector2 sizePercent,
             string id = null, string tag = null, string onLoaded = null)
         {
@@ -38,10 +38,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            WorldEngine.Entity.BaseEntity pCE = EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[ImageEntity->Create] Invalid parent entity.");
+                return null;
+            }
+            if (pCE is not WorldEngine.Entity.UIEntity)
+            {
+                Logging.LogWarning("[ImageEntity->Create] Parent entity not UI element.");
                 return null;
             }
 
