@@ -46,6 +46,24 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
         /// Set the sky to lite-mode day/night procedural.
         /// </summary>
         /// <param name="sunEntity">Entity to use for the sun.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool SetLiteDayNightSky(LightEntity sunEntity)
+        {
+            return SetLiteDayNightSky(sunEntity, true, new WorldTypes.Color(0.0275f, 0.0275f, 0.0275f, 0), -0.02f,
+                0.02f, 0.579f, new WorldTypes.Color(0.2667f, 0.5451f, 0.7725f, 1),
+                new WorldTypes.Color(0.0314f, 0.0706f, 0.2549f, 0), new WorldTypes.Color(0.0275f, 0.0196f, 0.0510f, 0),
+                new WorldTypes.Color(0.0118f, 0.0039f, 0.0118f, 0), 0.894f, 4.45f, true, 2,
+                new WorldTypes.Color(155, 72, 33, 0), new WorldTypes.Color(158, 72, 33, 0), true, 10, 18, 0.039f, 0.1f,
+                0.6f, 0.5f, true, 2, new WorldTypes.Color(0.6706f, 0.7255f, 0.7490f, 0), 60, true, 0.85f, 0.1f, 0, 0.3f,
+                true, 1, 1, true, null, WorldTypes.Color.white, 0.5f, 0.25f, true, null, new WorldTypes.Vector2(2, 1),
+                new WorldTypes.Vector2(0.2f, 0.3f), 0.279f, 1, 0.8f, 0.8f, 0.31f, 3, 0.5f, 2,
+                new WorldTypes.Color(0.8431f, 0.8667f, 0.9059f, 1), new WorldTypes.Color(0.4902f, 0.3804f, 0.4353f, 1));
+        }
+
+        /// <summary>
+        /// Set the sky to lite-mode day/night procedural.
+        /// </summary>
+        /// <param name="sunEntity">Entity to use for the sun.</param>
         /// <param name="enableGround">Whether or not to enable procedural ground.</param>
         /// <param name="groundColor">Color for the ground.</param>
         /// <param name="groundHeight">Height to place ground at.</param>
@@ -453,6 +471,23 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
             
             return true;
 
+        }
+
+        /// <summary>
+        /// Set the sky to lite-mode constant color procedural.
+        /// </summary>
+        /// <param name="sunEntity">Entity to use for the sun.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool SetLiteConstantColorSky(LightEntity sunEntity)
+        {
+            return SetLiteConstantColorSky(sunEntity, true, new WorldTypes.Color(0.0275f, 0.0275f, 0.0275f, 0), -0.02f,
+                0.02f, 0.579f, new WorldTypes.Color(0.2667f, 0.5451f, 0.7725f, 1),
+                new WorldTypes.Color(0.0314f, 0.0706f, 0.2549f, 0), 0.894f, 4.45f, true, 2,
+                new WorldTypes.Color(155, 72, 33, 0), new WorldTypes.Color(158, 72, 33, 0), true, 10, 18, 0.039f, 0.1f,
+                0.6f, 0.5f, true, 2, new WorldTypes.Color(0.6706f, 0.7255f, 0.7490f, 0), 60, true, 0.85f, 0.1f, 0, 0.3f,
+                true, 1, 1, true, null, WorldTypes.Color.white, 0.5f, 0.25f, true, null, new WorldTypes.Vector2(2, 1),
+                new WorldTypes.Vector2(0.2f, 0.3f), 0.279f, 1, 0.8f, 0.8f, 0.31f, 3, 0.5f, 2,
+                new WorldTypes.Color(0.8431f, 0.8667f, 0.9059f, 1));
         }
 
         /// <summary>

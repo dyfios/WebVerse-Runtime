@@ -100,6 +100,20 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     z = z
                 };
             }
+
+            /// <summary>
+            /// Convert to API Vector3.
+            /// </summary>
+            /// <returns>API Vector3 representation of this class.</returns>
+            public Handlers.Javascript.APIs.WorldTypes.Vector3 ToAPIVector3()
+            {
+                return new Handlers.Javascript.APIs.WorldTypes.Vector3()
+                {
+                    x = x,
+                    y = y,
+                    z = z
+                };
+            }
         }
 
         /// <summary>

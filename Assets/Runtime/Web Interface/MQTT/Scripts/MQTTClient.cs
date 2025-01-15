@@ -379,7 +379,7 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
                 Logging.LogWarning("[MQTTClient->Connect] Not initialized.");
                 return;
             }
-
+            
             mqttClient.BeginConnect(ConnectPacketBuilderCallback);
         }
 
@@ -489,7 +489,8 @@ namespace FiveSQD.WebVerse.WebInterface.MQTT
         /// <param name="builder">Builder.</param>
         private ConnectPacketBuilder ConnectPacketBuilderCallback(Best.MQTT.MQTTClient mqttClient, ConnectPacketBuilder builder)
         {
-            return builder;
+            // TODO smarter tracking of client id and other options.
+            return builder.WithClientID(Guid.NewGuid().ToString());
         }
     }
 }

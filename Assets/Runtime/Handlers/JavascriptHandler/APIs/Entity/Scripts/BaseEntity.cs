@@ -450,8 +450,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// Set the visibility of the entity.
         /// </summary>
         /// <param name="visible">Whether or not to make entity visible.</param>
+        /// <param name="synchronize">Whether or not to synchronize the setting.</param>
         /// <returns>Whether or not the operation was successful.</returns>
-        public bool SetVisibility(bool visible)
+        public virtual bool SetVisibility(bool visible, bool synchronize = true)
         {
             if (IsValid() == false)
             {
@@ -459,7 +460,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return internalEntity.SetVisibility(visible);
+            return internalEntity.SetVisibility(visible, synchronize);
         }
 
         /// <summary>
@@ -1262,6 +1263,68 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             return internalEntity.SetAnimationSpeed(animationName, speed);
+        }
+
+        /// <summary>
+        /// Enable broadcasting of position via synchronizer.
+        /// </summary>
+        /// <param name="interval">Interval at which to broadcast, <= 0 to not broadcast.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public virtual bool EnablePositionBroadcast(float interval)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:EnablePositionBroadcast] Unknown entity.");
+                return false;
+            }
+
+            return internalEntity.EnablePositionBroadcast(interval);
+        }
+
+        /// <summary>
+        /// Disable broadcasting of position via synchronizer.
+        /// </summary>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public virtual bool DisablePositionBroadcast()
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:DisablePositionBroadcast] Unknown entity.");
+                return false;
+            }
+
+            return internalEntity.DisablePositionBroadcast();
+        }
+
+        /// <summary>
+        /// Enable broadcasting of rotation via synchronizer.
+        /// </summary>
+        /// <param name="interval">Interval at which to broadcast, <= 0 to not broadcast.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public virtual bool EnableRotationBroadcast(float interval)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:EnableRotationBroadcast] Unknown entity.");
+                return false;
+            }
+
+            return internalEntity.EnableRotationBroadcast(interval);
+        }
+
+        /// <summary>
+        /// Disable broadcasting of rotation via synchronizer.
+        /// </summary>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public virtual bool DisableRotationBroadcast()
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:DisableRotationBroadcast] Unknown entity.");
+                return false;
+            }
+
+            return internalEntity.DisableRotationBroadcast();
         }
 
         /// <summary>

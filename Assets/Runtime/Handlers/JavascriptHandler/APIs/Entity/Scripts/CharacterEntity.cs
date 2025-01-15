@@ -131,6 +131,34 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         }
 
         /// <summary>
+        /// Whether or not to fix the height if below ground.
+        /// </summary>
+        public bool fixHeight
+        {
+            get
+            {
+                if (IsValid() == false)
+                {
+                    Logging.LogError("[CharacterEntity:fixHeight] Unknown entity.");
+                    return false;
+                }
+
+                return ((WorldEngine.Entity.CharacterEntity) internalEntity).fixHeight;
+            }
+
+            set
+            {
+                if (IsValid() == false)
+                {
+                    Logging.LogError("[CharacterEntity:fixHeight] Unknown entity.");
+                    return;
+                }
+
+                ((WorldEngine.Entity.CharacterEntity) internalEntity).fixHeight = value;
+            }
+        }
+
+        /// <summary>
         /// Apply motion to the character entity with the given vector.
         /// </summary>
         /// <param name="amount">Amount to move the character entity.</param>
@@ -177,6 +205,23 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             return ((WorldEngine.Entity.CharacterEntity) internalEntity).IsOnSurface();
+        }
+
+        /// <summary>
+        /// Set the visibility of the entity.
+        /// </summary>
+        /// <param name="visible">Whether or not to make entity visible.</param>
+        /// <param name="synchronize">Whether or not to synchronize the setting.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public override bool SetVisibility(bool visible, bool synchronize = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:IsOnSurface] Unknown entity.");
+                return false;
+            }
+
+            return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetVisibility(visible, synchronize);
         }
     }
 }

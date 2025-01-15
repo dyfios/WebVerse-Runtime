@@ -63,6 +63,16 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         public float heartbeatInterval = 5;
 
         /// <summary>
+        /// Offset for this synchronized client in the world.
+        /// </summary>
+        public Vector3 synchronizationOffset { get; private set; }
+
+        /// <summary>
+        /// ID of the current session.
+        /// </summary>
+        public Guid? currentSessionID { get; private set; }
+
+        /// <summary>
         /// MQTT client.
         /// </summary>
         private MQTTClient mqttClient;
@@ -91,11 +101,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// Tag of the current client.
         /// </summary>
         private string currentClientTag;
-
-        /// <summary>
-        /// ID of the current session.
-        /// </summary>
-        private Guid? currentSessionID;
 
         /// <summary>
         /// Action to perform upon connection.
@@ -139,7 +144,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="port">Port to use.</param>
         /// <param name="tls">Whether or not to use TLS.</param>
         /// <param name="transport">Transport to use (tcp or ws).</param>
-        public void Initialize(string host, int port, bool tls, MQTTClient.Transports transport)
+        /// <param name="worldOffset">Offset for this synchronized client in the world.</param>
+        public void Initialize(string host, int port, bool tls,
+            MQTTClient.Transports transport, Vector3 worldOffset)
         {
             if (mqttClient != null)
             {
@@ -165,6 +172,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             currentStateMessage = null;
             onMessage = new List<Action<string, string, string>>();
             onGotState = null;
+            synchronizationOffset = worldOffset;
         }
 
         /// <summary>
@@ -1114,11 +1122,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 LogSystem.LogError("[VOSSynchronizer->UpdateSynchronizedEntityPosition] Invalid entity.");
                 return StatusCode.FAILED;
             }
+
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntityPositionMessage
                 updateEntityPositionMessage = new VOSSynchronizationMessages.RequestMessages
                 .UpdateEntityPositionMessage(messageID, currentClientID.Value, currentSessionID.Value,
-                entityToSet.id, position);
+                entityToSet.id, ToWorldPosition(position));
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/position",
                 JsonConvert.SerializeObject(updateEntityPositionMessage));
@@ -1611,7 +1620,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             "already exists.");
                         return;
                     }
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadContainerEntity(parent, addContainerEntityMessage.position.ToVector3(),
+                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadContainerEntity(parent,
+                        ToOffsetPosition(addContainerEntityMessage.position.ToVector3()),
                         addContainerEntityMessage.rotation.ToQuaternion(), scaleSize,
                         Guid.Parse(addContainerEntityMessage.id));
                     BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addContainerEntityMessage.id));
@@ -1621,7 +1631,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ce.SetVisibility(true);
+                        ce.SetVisibility(true, false);
                         ce.entityTag = addContainerEntityMessage.tag;
                     }
                 }
@@ -1669,7 +1679,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     if (addCharacterEntityMessage.path == null)
                     {
                         WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parent,
-                            null, Vector3.zero, Quaternion.identity, Vector3.zero, addCharacterEntityMessage.position.ToVector3(),
+                            null, Vector3.zero, Quaternion.identity, Vector3.zero,
+                            ToOffsetPosition(addCharacterEntityMessage.position.ToVector3()),
                         addCharacterEntityMessage.rotation.ToQuaternion(), scaleSize,
                         Guid.Parse(addCharacterEntityMessage.id), addCharacterEntityMessage.tag, isSize);
                     }
@@ -1687,8 +1698,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ce.SetVisibility(true);
-                        ce.SetPosition(addCharacterEntityMessage.position.ToVector3(), false, false);
+                        ce.SetVisibility(true, false);
+                        ce.SetPosition(ToOffsetPosition(addCharacterEntityMessage.position.ToVector3()), false, false);
                         ce.SetRotation(addCharacterEntityMessage.rotation.ToQuaternion(), false, false);
                         ce.SetPhysicalProperties(new BaseEntity.EntityPhysicalProperties()
                         {
@@ -1739,8 +1750,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        me.SetVisibility(true);
-                        me.SetPosition(addMeshEntityMessage.position.ToVector3(), false, false);
+                        me.SetVisibility(true, false);
+                        me.SetPosition(ToOffsetPosition(addMeshEntityMessage.position.ToVector3()), false, false);
                         me.SetRotation(addMeshEntityMessage.rotation.ToQuaternion(), false, false);
                         if (isSize)
                         {
@@ -1793,7 +1804,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        be.SetVisibility(true);
+                        be.SetVisibility(true, false);
                         be.entityTag = addButtonEntityMessage.tag;
                     }
                 }
@@ -1829,16 +1840,18 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
 
                     WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(parent,
-                        addCanvasEntityMessage.position.ToVector3(), addCanvasEntityMessage.rotation.ToQuaternion(),
-                        scaleSize, Guid.Parse(addCanvasEntityMessage.id), isSize, null);
-                    BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addCanvasEntityMessage.id));
+                        ToOffsetPosition(addCanvasEntityMessage.position.ToVector3()),
+                        addCanvasEntityMessage.rotation.ToQuaternion(), scaleSize,
+                        Guid.Parse(addCanvasEntityMessage.id), isSize, null);
+                    BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        Guid.Parse(addCanvasEntityMessage.id));
                     if (ce == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
                     }
                     else
                     {
-                        ce.SetVisibility(true);
+                        ce.SetVisibility(true, false);
                         ce.entityTag = addCanvasEntityMessage.tag;
                     }
                 }
@@ -1873,7 +1886,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        be.SetVisibility(true);
+                        be.SetVisibility(true, false);
                         be.entityTag = addInputEntityMessage.tag;
                     }
                 }
@@ -1887,15 +1900,17 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             Guid.Parse(addLightEntityMessage.parentID));
 
                     WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(parentEntity,
-                        addLightEntityMessage.position.ToVector3(), addLightEntityMessage.rotation.ToQuaternion(), null);
-                    BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addLightEntityMessage.id));
+                        ToOffsetPosition(addLightEntityMessage.position.ToVector3()),
+                        addLightEntityMessage.rotation.ToQuaternion(), null);
+                    BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        Guid.Parse(addLightEntityMessage.id));
                     if (me == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
                     }
                     else
                     {
-                        me.SetVisibility(true);
+                        me.SetVisibility(true, false);
                         me.entityTag = addLightEntityMessage.tag;
                     }
                 }
@@ -1946,8 +1961,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(addTerrainEntityMessage.length,
                             addTerrainEntityMessage.width, addTerrainEntityMessage.height, addTerrainEntityMessage.heights,
                             layers.ToArray(), Handlers.VEML.VEMLUtilities.ParseCSVLayerMasksToInternalFormat(addTerrainEntityMessage.layerMask),
-                            parentEntity, addTerrainEntityMessage.position.ToVector3(), addTerrainEntityMessage.rotation.ToQuaternion(),
-                            Guid.Parse(addTerrainEntityMessage.id), addTerrainEntityMessage.tag, null);
+                            parentEntity, ToOffsetPosition(addTerrainEntityMessage.position.ToVector3()),
+                            addTerrainEntityMessage.rotation.ToQuaternion(), Guid.Parse(addTerrainEntityMessage.id),
+                            addTerrainEntityMessage.tag, null);
                     }
                     else if (addTerrainEntityMessage.type == "voxel")
                     {
@@ -2028,9 +2044,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             addTerrainEntityMessage.length, addTerrainEntityMessage.width, addTerrainEntityMessage.height,
                             addTerrainEntityMessage.heights, layers.ToArray(),
                             Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(addTerrainEntityMessage.layerMask),
-                            formattedMods.ToArray(),
-                            new Handlers.Javascript.APIs.WorldTypes.Vector3(addTerrainEntityMessage.position.x,
-                                addTerrainEntityMessage.position.y, addTerrainEntityMessage.position.z),
+                            formattedMods.ToArray(), ToOffsetPosition(addTerrainEntityMessage.position.ToAPIVector3()),
                             new Handlers.Javascript.APIs.WorldTypes.Quaternion(addTerrainEntityMessage.rotation.x,
                                 addTerrainEntityMessage.rotation.y, addTerrainEntityMessage.rotation.z, addTerrainEntityMessage.rotation.w),
                             addTerrainEntityMessage.id, addTerrainEntityMessage.tag, null);
@@ -2047,7 +2061,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        me.SetVisibility(true);
+                        me.SetVisibility(true, false);
                         me.entityTag = addTerrainEntityMessage.tag;
                     }
                 }
@@ -2083,7 +2097,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        be.SetVisibility(true);
+                        be.SetVisibility(true, false);
                         be.entityTag = addTextEntityMessage.tag;
                     }
                 }
@@ -2097,8 +2111,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             Guid.Parse(addVoxelEntityMessage.parentID));
 
                     WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
-                        addVoxelEntityMessage.position.ToVector3(), addVoxelEntityMessage.rotation.ToQuaternion(),
-                        addVoxelEntityMessage.scale.ToVector3(), Guid.Parse(addVoxelEntityMessage.id), null);
+                        ToOffsetPosition(addVoxelEntityMessage.position.ToVector3()),
+                        addVoxelEntityMessage.rotation.ToQuaternion(), addVoxelEntityMessage.scale.ToVector3(),
+                        Guid.Parse(addVoxelEntityMessage.id), null);
                     BaseEntity ve = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addVoxelEntityMessage.id));
                     if (ve == null)
                     {
@@ -2106,7 +2121,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ve.SetVisibility(true);
+                        ve.SetVisibility(true, false);
                         ve.entityTag = addVoxelEntityMessage.tag;
                     }
                 }
@@ -2209,7 +2224,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         }
                         else
                         {
-                            pe.SetPosition(updateEntityPositionMessage.position.ToVector3(), false, false);
+                            pe.SetPosition(ToOffsetPosition(updateEntityPositionMessage.position.ToVector3()), false, false);
                         }
                     }
                     else if (topic.EndsWith("/rotation"))
@@ -2463,7 +2478,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         }
                         else
                         {
-                            ve.SetVisibility(setEntityVisibilityMessage.visible);
+                            ve.SetVisibility(setEntityVisibilityMessage.visible, false);
                         }
                     }
                 }
@@ -2516,8 +2531,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         ne.SetParent(parentEntity);
-                        ne.SetVisibility(true);
-                        ne.SetPosition(entityInfo.position.ToVector3(), false, false);
+                        ne.SetVisibility(true, false);
+                        ne.SetPosition(ToOffsetPosition(entityInfo.position.ToVector3()), false, false);
                         ne.SetRotation(entityInfo.rotation.ToQuaternion(), false, false);
                         if (isSize)
                         {
@@ -2536,7 +2551,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     {
                         newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parentEntity,
                             null, Vector3.zero, Quaternion.identity, Vector3.zero,
-                            new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z),
+                            ToOffsetPosition(new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z)),
                             new Quaternion(entityInfo.rotation.x, entityInfo.rotation.y,
                             entityInfo.rotation.z, entityInfo.rotation.w), scaleSize, Guid.Parse(entityInfo.id),
                             entityInfo.tag, isSize, null);
@@ -2558,8 +2573,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         ne.SetParent(parentEntity);
-                        ne.SetVisibility(true);
-                        ne.SetPosition(entityInfo.position.ToVector3(), false, false);
+                        ne.SetVisibility(true, false);
+                        ne.SetPosition(ToOffsetPosition(entityInfo.position.ToVector3()), false, false);
                         ne.SetRotation(entityInfo.rotation.ToQuaternion(), false, false);
                         if (isSize)
                         {
@@ -2575,7 +2590,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 case "container":
                     newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadContainerEntity(parentEntity,
-                        new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z),
+                        ToOffsetPosition(new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z)),
                         new Quaternion(entityInfo.rotation.x, entityInfo.rotation.y,
                         entityInfo.rotation.z, entityInfo.rotation.w), scaleSize, Guid.Parse(entityInfo.id));
                     ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
@@ -2585,7 +2600,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                         ne.entityTag = entityInfo.tag;
                     }
                     return ne;
@@ -2610,14 +2625,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                     }
                     return ne;
 
                 case "canvas":
                     newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(parentEntity,
-                        entityInfo.position.ToVector3(), entityInfo.rotation.ToQuaternion(), scaleSize, Guid.Parse(entityInfo.id),
-                        isSize, null);
+                        ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
+                        scaleSize, Guid.Parse(entityInfo.id), isSize, null);
                     ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
@@ -2625,7 +2640,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                     }
                     return ne;
 
@@ -2640,14 +2655,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                     }
                     return ne;
 
                 case "light":
                     newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(parentEntity,
-                        entityInfo.position.ToVector3(), entityInfo.rotation.ToQuaternion(), Guid.Parse(entityInfo.id),
-                        null);
+                        ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
+                        Guid.Parse(entityInfo.id), null);
                     ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
@@ -2655,7 +2670,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                     }
                     return ne;
 
@@ -2700,7 +2715,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(entityInfo.length,
                         entityInfo.width, entityInfo.height, entityInfo.heights, layers.ToArray(),
                             Handlers.VEML.VEMLUtilities.ParseCSVLayerMasksToInternalFormat(entityInfo.layerMask), parentEntity,
-                            entityInfo.position.ToVector3(), entityInfo.rotation.ToQuaternion(), Guid.Parse(entityInfo.id), null);
+                            ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
+                            Guid.Parse(entityInfo.id), null);
                         ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     }
                     else if (entityInfo.subType == "voxel")
@@ -2783,8 +2799,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             entityInfo.heights, layers.ToArray(),
                             Handlers.VEML.VEMLUtilities.ParseCSVLayerMasks(entityInfo.layerMask),
                             formattedMods.ToArray(),
-                            new Handlers.Javascript.APIs.WorldTypes.Vector3(entityInfo.position.x,
-                                entityInfo.position.y, entityInfo.position.z),
+                            ToOffsetPosition(new Handlers.Javascript.APIs.WorldTypes.Vector3(entityInfo.position.x,
+                                entityInfo.position.y, entityInfo.position.z)),
                             new Handlers.Javascript.APIs.WorldTypes.Quaternion(entityInfo.rotation.x,
                                 entityInfo.rotation.y, entityInfo.rotation.z, entityInfo.rotation.w),
                             entityInfo.id, entityInfo.tag, null);
@@ -2797,7 +2813,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                     }
                     return ne;
 
@@ -2812,14 +2828,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                     }
                     return ne;
 
                 case "voxel":
                     newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
-                        entityInfo.position.ToVector3(), entityInfo.rotation.ToQuaternion(), entityInfo.scale.ToVector3(),
-                        Guid.Parse(entityInfo.id), null);
+                        ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
+                        entityInfo.scale.ToVector3(), Guid.Parse(entityInfo.id), null);
                     ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
@@ -2827,12 +2843,58 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
-                        ne.SetVisibility(true);
+                        ne.SetVisibility(true, false);
                     }
                     return ne;
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Get offset/local position for a given world/synchronized position.
+        /// </summary>
+        /// <param name="worldPosition">World/synchronized position.</param>
+        /// <returns>Offset/local position for a given world/synchronized position.</returns>
+        private Vector3 ToOffsetPosition(Vector3 worldPosition)
+        {
+            return new Vector3(worldPosition.x - synchronizationOffset.x,
+                worldPosition.y - synchronizationOffset.y, worldPosition.z - synchronizationOffset.z);
+        }
+
+        /// <summary>
+        /// Get world/synchronized position for a given offset/local position.
+        /// </summary>
+        /// <param name="offsetPosition">Offset position.</param>
+        /// <returns>World/synchronized position for a given offset/local position.</returns>
+        private Vector3 ToWorldPosition(Vector3 offsetPosition)
+        {
+            return new Vector3(offsetPosition.x + synchronizationOffset.x,
+                offsetPosition.y + synchronizationOffset.y, offsetPosition.z + synchronizationOffset.z);
+        }
+
+        /// <summary>
+        /// Get offset/local position for a given world/synchronized position.
+        /// </summary>
+        /// <param name="worldPosition">World/synchronized position.</param>
+        /// <returns>Offset/local position for a given world/synchronized position.</returns>
+        private Handlers.Javascript.APIs.WorldTypes.Vector3 ToOffsetPosition(
+            Handlers.Javascript.APIs.WorldTypes.Vector3 worldPosition)
+        {
+            return new Handlers.Javascript.APIs.WorldTypes.Vector3(worldPosition.x - synchronizationOffset.x,
+                worldPosition.y - synchronizationOffset.y, worldPosition.z - synchronizationOffset.z);
+        }
+
+        /// <summary>
+        /// Get world/synchronized position for a given offset/local position.
+        /// </summary>
+        /// <param name="offsetPosition">Offset position.</param>
+        /// <returns>World/synchronized position for a given offset/local position.</returns>
+        private Handlers.Javascript.APIs.WorldTypes.Vector3 ToWorldPosition(
+            Handlers.Javascript.APIs.WorldTypes.Vector3 offsetPosition)
+        {
+            return new Handlers.Javascript.APIs.WorldTypes.Vector3(offsetPosition.x + synchronizationOffset.x,
+                offsetPosition.y + synchronizationOffset.y, offsetPosition.z + synchronizationOffset.z);
         }
 
         /// <summary>
@@ -2853,7 +2915,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 #endif
                 MQTTClient.Transports.WebSockets;
                 mqttClient = null;
-            Initialize(host, port, useTLS, transport);
+            Initialize(host, port, useTLS, transport, synchronizationOffset);
             Connect(new Action(() => {
                 if (sessionID.HasValue)
                 {
