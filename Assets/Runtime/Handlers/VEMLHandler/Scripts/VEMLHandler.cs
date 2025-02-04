@@ -1028,7 +1028,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             }
                             WebVerseRuntime.Instance.vosSynchronizationManager.AddSynchronizerAndSession(
                                 synchronizationservice.id, parts[0], int.Parse(parts[1]), tls, WebInterface.MQTT.MQTTClient.Transports.TCP,
-                                synchronizationservice.session);
+                                Vector3.zero, synchronizationservice.session);
 #endif
                             break;
 

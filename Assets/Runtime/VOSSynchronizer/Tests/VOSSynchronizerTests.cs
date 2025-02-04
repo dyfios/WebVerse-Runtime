@@ -1,7 +1,6 @@
-// Copyright (c) 2019-2023 Five Squared Interactive. All rights reserved.
+// Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using System.Collections;
-using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -25,7 +24,8 @@ public class VOSSynchronizerTests
             connected = true;
         };
         VOSSynchronizer synchronizer = new VOSSynchronizer();
-        synchronizer.Initialize("test.mosquitto.org", 1883, false, FiveSQD.WebVerse.WebInterface.MQTT.MQTTClient.Transports.TCP);
+        synchronizer.Initialize("test.mosquitto.org", 1883, false,
+            FiveSQD.WebVerse.WebInterface.MQTT.MQTTClient.Transports.TCP, Vector3.zero);
         synchronizer.Connect(onConnected);
         yield return new WaitForSeconds(waitTime);
         Assert.IsTrue(connected);
