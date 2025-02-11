@@ -23,7 +23,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
             {
                 if (rawData != null)
                 {
-                    Texture2D texture = new Texture2D(2, 2);
+                    Texture2D texture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                     texture.LoadImage(rawData);
                     WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
                 }
@@ -54,7 +54,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                 new WorldTypes.Color(0.0314f, 0.0706f, 0.2549f, 0), new WorldTypes.Color(0.0275f, 0.0196f, 0.0510f, 0),
                 new WorldTypes.Color(0.0118f, 0.0039f, 0.0118f, 0), 0.894f, 4.45f, true, 2,
                 new WorldTypes.Color(155, 72, 33, 0), new WorldTypes.Color(158, 72, 33, 0), true, 10, 18, 0.039f, 0.1f,
-                0.6f, 0.5f, true, 2, new WorldTypes.Color(0.6706f, 0.7255f, 0.7490f, 0), 60, true, 0.85f, 0.1f, 0, 0.3f,
+                0.6f, 0.5f, false, 2, new WorldTypes.Color(0.6706f, 0.7255f, 0.7490f, 0), 60, true, 0.85f, 0.1f, 0, 0.3f,
                 true, 1, 1, true, null, WorldTypes.Color.white, 0.5f, 0.25f, true, null, new WorldTypes.Vector2(2, 1),
                 new WorldTypes.Vector2(0.2f, 0.3f), 0.279f, 1, 0.8f, 0.8f, 0.31f, 3, 0.5f, 2,
                 new WorldTypes.Color(0.8431f, 0.8667f, 0.9059f, 1), new WorldTypes.Color(0.4902f, 0.3804f, 0.4353f, 1));
@@ -418,7 +418,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                 }
                 else
                 {
-                    starTexture = new Texture2D(2, 2);
+                    starTexture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                     starTexture.LoadImage(rawData);
                 }
 
@@ -431,7 +431,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                     }
                     else
                     {
-                        cloudsTexture = new Texture2D(2, 2);
+                        cloudsTexture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                         cloudsTexture.LoadImage(rawData);
                     }
 
@@ -827,7 +827,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                 }
                 else
                 {
-                    starTexture = new Texture2D(2, 2);
+                    starTexture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                     starTexture.LoadImage(rawData);
                 }
 
@@ -840,7 +840,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                     }
                     else
                     {
-                        cloudsTexture = new Texture2D(2, 2);
+                        cloudsTexture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                         cloudsTexture.LoadImage(rawData);
                     }
 

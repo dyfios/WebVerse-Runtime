@@ -1125,7 +1125,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             {
                                 if (rawData != null)
                                 {
-                                    Texture2D texture = new Texture2D(2, 2);
+                                    Texture2D texture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                                     texture.LoadImage(rawData);
                                     WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
                                 }
