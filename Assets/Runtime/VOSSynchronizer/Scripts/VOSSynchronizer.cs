@@ -1698,6 +1698,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     else
                     {
+                        ce.SetInteractionState(BaseEntity.InteractionState.Static);
                         ce.SetVisibility(true, false);
                         ce.SetPosition(ToOffsetPosition(addCharacterEntityMessage.position.ToVector3()), false, false);
                         ce.SetRotation(addCharacterEntityMessage.rotation.ToQuaternion(), false, false);
@@ -2573,6 +2574,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     else
                     {
                         ne.SetParent(parentEntity);
+                        ne.SetInteractionState(BaseEntity.InteractionState.Static);
                         ne.SetVisibility(true, false);
                         ne.SetPosition(ToOffsetPosition(entityInfo.position.ToVector3()), false, false);
                         ne.SetRotation(entityInfo.rotation.ToQuaternion(), false, false);

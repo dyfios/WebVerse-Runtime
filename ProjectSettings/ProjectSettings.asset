@@ -140,7 +140,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 2.1.0
+  bundleVersion: 2.1.2
   preloadedAssets:
   - {fileID: 11400000, guid: 3c904462da43f1742b30483a67a73e46, type: 2}
   - {fileID: -4420739663773056073, guid: 2286c3415e367974cb28de4c0ac3d585, type: 2}
@@ -404,6 +404,9 @@ PlayerSettings:
   - serializedVersion: 3
     m_BuildTarget: Android
     m_Formats: 03000000
+  - serializedVersion: 3
+    m_BuildTarget: WebGL
+    m_Formats: 05000000
   playModeTestRunnerEnabled: 0
   runPlayModeTestAsEditModeTest: 0
   actionOnDotNetUnhandledException: 1
