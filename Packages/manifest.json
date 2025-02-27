@@ -2,6 +2,7 @@
   "dependencies": {
     "com.unity.ai.navigation": "2.0.5",
     "com.unity.burst": "1.8.18",
+    "com.unity.cinemachine": "2.10.3",
     "com.unity.cloud.draco": "5.0.2",
     "com.unity.cloud.draco.webgl-2023": "1.0.0",
     "com.unity.cloud.gltfast": "6.5.0",
@@ -14,6 +15,7 @@
     "com.unity.inputsystem": "1.11.2",
     "com.unity.multiplayer.center": "1.0.0",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "com.unity.postprocessing": "3.4.0",
     "com.unity.probuilder": "6.0.4",
     "com.unity.render-pipelines.universal": "17.0.3",
     "com.unity.test-framework": "1.4.5",

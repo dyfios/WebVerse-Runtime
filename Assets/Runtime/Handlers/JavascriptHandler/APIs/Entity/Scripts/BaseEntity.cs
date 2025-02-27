@@ -122,9 +122,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     return false;
                 }
 
-                if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+                if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+                {
+                    return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
+                else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
                 {
                     return ((WorldEngine.Entity.AudioEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
+                else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+                {
+                    return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
                 else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
                 {
@@ -562,9 +570,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 velocity = new UnityEngine.Vector3(motion.velocity.x, motion.velocity.y, motion.velocity.z)
             };
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetMotion(eMotion);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 return ((WorldEngine.Entity.AudioEntity) internalEntity).SetMotion(eMotion);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetMotion(eMotion);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -646,9 +662,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             WorldEngine.Entity.BaseEntity.EntityMotion? eMotion = null;
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                eMotion = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 eMotion = ((WorldEngine.Entity.AudioEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                eMotion = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetMotion();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -764,9 +788,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 mass = properties.mass
             };
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetPhysicalProperties(props);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 return ((WorldEngine.Entity.AudioEntity) internalEntity).SetPhysicalProperties(props);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetPhysicalProperties(props);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -848,9 +880,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             WorldEngine.Entity.BaseEntity.EntityPhysicalProperties? props = null;
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                props = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 props = ((WorldEngine.Entity.AudioEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                props = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetPhysicalProperties();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -967,9 +1007,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             }
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetInteractionState(iState);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 return ((WorldEngine.Entity.AudioEntity) internalEntity).SetInteractionState(iState);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetInteractionState(iState);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -1052,9 +1100,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             WorldEngine.Entity.BaseEntity.InteractionState iState
                 = WorldEngine.Entity.BaseEntity.InteractionState.Hidden;
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                iState = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 iState = ((WorldEngine.Entity.AudioEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                iState = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetInteractionState();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {

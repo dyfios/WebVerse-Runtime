@@ -74,7 +74,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
 
             // Entity.
             new System.Tuple<string, System.Type>("Entity", typeof(Entity)),
+            new System.Tuple<string, System.Type>("AirplaneEntity", typeof(AirplaneEntity)),
             new System.Tuple<string, System.Type>("AudioEntity", typeof(AudioEntity)),
+            new System.Tuple<string, System.Type>("AutomobileEntity", typeof(AutomobileEntity)),
+            new System.Tuple<string, System.Type>("AutomobileEntityWheel", typeof(AutomobileEntityWheel)),
+            new System.Tuple<string, System.Type>("AutomobileType", typeof(AutomobileEntity.AutomobileType)),
             new System.Tuple<string, System.Type>("ButtonEntity", typeof(ButtonEntity)),
             new System.Tuple<string, System.Type>("CanvasEntity", typeof(CanvasEntity)),
             new System.Tuple<string, System.Type>("CharacterEntity", typeof(CharacterEntity)),

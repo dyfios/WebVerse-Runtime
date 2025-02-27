@@ -30,6 +30,24 @@ namespace FiveSQD.WebVerse.Runtime
     public class WebVerseRuntime : MonoBehaviour
     {
         /// <summary>
+        /// Serializable automobile entity type mapping.
+        /// </summary>
+        [Tooltip("Serializable automobile entity type mapping.")]
+        [Serializable]
+        public struct SerializableAutomobileEntityType
+        {
+            /// <summary>
+            /// Type enum.
+            /// </summary>
+            public WorldEngine.Entity.EntityManager.AutomobileEntityType type;
+
+            /// <summary>
+            /// State settings.
+            /// </summary>
+            public NWH.VehiclePhysics2.StateSettings stateSettings;
+        }
+
+        /// <summary>
         /// Enumeration for runtime states.
         /// </summary>
         public enum RuntimeState
@@ -205,6 +223,16 @@ namespace FiveSQD.WebVerse.Runtime
         /// Callback for a log message to be logged to a console.
         /// </summary>
         private List<Action<string, Logging.Type>> consoleCallbacks;
+
+        /// <summary>
+        /// Map for automobile entity types to their NWH State Settings object.
+        /// </summary>
+        public List<SerializableAutomobileEntityType> automobileEntityTypeMap;
+
+        /// <summary>
+        /// Prefab for an airplane entity.
+        /// </summary>
+        public GameObject airplaneEntityPrefab;
 
         /// <summary>
         /// Material to use for highlighting.
@@ -530,9 +558,10 @@ namespace FiveSQD.WebVerse.Runtime
                     UnloadWebPage();
                     LoadWorld(url, onLoaded);
                 });
-                
+#if USE_WEBINTERFACE
                 HTTPRequest headerReq = new HTTPRequest(url, HTTPRequest.HTTPMethod.Head, onRespAction);
                 headerReq.Send();
+#endif
             }
         }
 
@@ -629,12 +658,12 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             Logging.Log("[WebVerseRuntime->UnloadWorld] Input Manager reset. Resetting VOS Synchronization Manager...");
-
+#if USE_WEBINTERFACE
             if (vosSynchronizationManager != null)
             {
                 vosSynchronizationManager.Reset();
             }
-
+#endif
             Logging.Log("[WebVerseRuntime->UnloadWorld] VOS Synchronization Manager reset. Unloading World...");
 
             WorldEngine.WorldEngine.UnloadWorld();
@@ -686,6 +715,22 @@ namespace FiveSQD.WebVerse.Runtime
             GameObject worldEngineGO = new GameObject("WorldEngine");
             worldEngineGO.transform.SetParent(transform);
             worldEngine = worldEngineGO.AddComponent<WorldEngine.WorldEngine>();
+            worldEngine.automobileEntityTypeMap
+                = new Dictionary<WorldEngine.Entity.EntityManager.AutomobileEntityType,
+                        NWH.VehiclePhysics2.StateSettings>();
+            foreach (SerializableAutomobileEntityType automobileEntityType in automobileEntityTypeMap)
+            {
+                WorldEngine.Entity.EntityManager.AutomobileEntityType type;
+                switch(automobileEntityType.type)
+                {
+                    case WorldEngine.Entity.EntityManager.AutomobileEntityType.Default:
+                    default:
+                        type = WorldEngine.Entity.EntityManager.AutomobileEntityType.Default;
+                        break;
+                }
+                worldEngine.automobileEntityTypeMap.Add(type, automobileEntityType.stateSettings);
+            }
+            worldEngine.airplaneEntityPrefab = airplaneEntityPrefab;
             worldEngine.highlightMaterial = highlightMaterial;
             worldEngine.skyMaterial = skyMaterial;
             worldEngine.liteProceduralSkyMaterial = liteProceduralSkyMaterial;
