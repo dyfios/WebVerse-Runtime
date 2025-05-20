@@ -28,11 +28,11 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
                 {
                     case UnityWebRequest.Result.ConnectionError:
                     case UnityWebRequest.Result.DataProcessingError:
-                        Logging.LogError("[HTTPRequestManager->HandleRequest]" + request.error);
+                        Logging.LogError("[HTTPRequestManager->HandleRequest]" + request.uri + ":" + request.error);
                         onFinished.Invoke((int) request.responseCode, request.GetResponseHeaders(), null);
                         break;
                     case UnityWebRequest.Result.ProtocolError:
-                        Logging.LogError("[HTTPRequestManager->HandleRequest]" + request.error);
+                        Logging.LogError("[HTTPRequestManager->HandleRequest]" + request.uri + ":" + request.error);
                         onFinished.Invoke((int) request.responseCode, request.GetResponseHeaders(), null);
                         break;
                     case UnityWebRequest.Result.Success:

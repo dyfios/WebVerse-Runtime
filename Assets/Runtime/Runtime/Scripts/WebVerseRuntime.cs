@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
 using FiveSQD.WebVerse.Input.SteamVR;
+using Vuplex.WebView;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -117,7 +118,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <summary>
         /// WebVerse version.
         /// </summary>
-        public static readonly string versionString = "v2.1.2";
+        public static readonly string versionString = "v2.1.4";
 
         /// <summary>
         /// WebVerse codename.
@@ -218,6 +219,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The Console.")]
         public List<Interface.Console.Console> consoles;
+
+        /// <summary>
+        /// Crosshair.
+        /// </summary>
+        [Tooltip("Crosshair.")]
+        public GameObject crosshair;
 
         /// <summary>
         /// Callback for a log message to be logged to a console.
@@ -711,6 +718,17 @@ namespace FiveSQD.WebVerse.Runtime
             int maxEntries, int maxEntryLength, int maxKeyLength, string filesDirectory,
             float timeout = 120)
         {
+            #if UNITY_STANDALONE || UNITY_EDITOR
+                // On Windows and macOS, change the User-Agent to mobile:
+                Web.SetUserAgent(true);
+            #elif UNITY_IOS
+                // On iOS, change the User-Agent to desktop:
+                Web.SetUserAgent(false);
+            #elif UNITY_ANDROID
+                // On Android, change the User-Agent to "random":
+                Web.SetUserAgent("random");
+            #endif
+
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
             worldEngineGO.transform.SetParent(transform);
@@ -747,6 +765,7 @@ namespace FiveSQD.WebVerse.Runtime
             worldEngine.canvasWebViewPrefab = canvasWebViewPrefab;
             worldEngine.cameraOffset = cameraOffset;
             worldEngine.vr = vr;
+            worldEngine.crosshair = crosshair;
 
             // Set up Handlers.
             GameObject handlersGO = new GameObject("Handlers");

@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using FiveSQD.WebVerse.WorldEngine.Entity.Terrain;
+using System.Linq;
 
 namespace FiveSQD.WebVerse.VOSSynchronization
 {
@@ -98,6 +99,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         private Guid? currentClientID;
 
         /// <summary>
+        /// Token for the current client.
+        /// </summary>
+        private string currentClientToken;
+
+        /// <summary>
         /// Tag of the current client.
         /// </summary>
         private string currentClientTag;
@@ -146,7 +152,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="transport">Transport to use (tcp or ws).</param>
         /// <param name="worldOffset">Offset for this synchronized client in the world.</param>
         public void Initialize(string host, int port, bool tls,
-            MQTTClient.Transports transport, Vector3 worldOffset)
+            MQTTClient.Transports transport, Vector3 worldOffset,
+            Guid? clientID = null, string clientToken = null)
         {
             if (mqttClient != null)
             {
@@ -167,7 +174,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             synchronizedUsers = new Dictionary<Guid, string>();
             synchronizedEntities = new List<BaseEntity>();
             availableSessions = new Dictionary<Guid, string>();
-            currentClientID = Guid.NewGuid();
+            currentClientID = clientID.HasValue ? clientID : Guid.NewGuid();
+            currentClientToken = clientToken;
             currentSessionID = null;
             currentStateMessage = null;
             onMessage = new List<Action<string, string, string>>();
@@ -281,7 +289,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.CreateSessionMessage
                 createSessionMessage = new VOSSynchronizationMessages.SessionMessages.CreateSessionMessage(
-                    messageID, currentClientID.Value, id, tag);
+                    messageID, currentClientID.Value, currentClientToken, id, tag);
             mqttClient.Publish("vos/session/create", JsonConvert.SerializeObject(createSessionMessage));
         }
 
@@ -311,7 +319,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.DestroySessionMessage
                 destroySessionMessage = new VOSSynchronizationMessages.SessionMessages.DestroySessionMessage(
-                    messageID, currentClientID.Value, currentSessionID.Value);
+                    messageID, currentClientID.Value, currentClientToken, currentSessionID.Value);
             mqttClient.Publish("vos/session/destroy", JsonConvert.SerializeObject(destroySessionMessage));
         }
 
@@ -340,7 +348,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.JoinSessionMessage
                 createSessionMessage = new VOSSynchronizationMessages.SessionMessages
-                .JoinSessionMessage(messageID, sessionID, currentClientID.Value, clientTag);
+                .JoinSessionMessage(messageID, sessionID, currentClientID.Value, currentClientToken, clientTag);
             mqttClient.Publish("vos/session/join", JsonConvert.SerializeObject(createSessionMessage));
             mqttClient.Subscribe("vos/status/" + sessionID.ToString() + "/#", (info) =>
                 LogSystem.Log("Joined session " + currentSessionID.ToString() + "."),
@@ -383,7 +391,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.LeaveSessionMessage
                 exitSessionMessage = new VOSSynchronizationMessages.SessionMessages
-                .LeaveSessionMessage(messageID, currentSessionID.Value, currentClientID.Value);
+                .LeaveSessionMessage(messageID, currentSessionID.Value, currentClientID.Value, currentClientToken);
             mqttClient.Publish("vos/session/exit", JsonConvert.SerializeObject(exitSessionMessage));
             mqttClient.UnSubscribe("vos/status/" + currentSessionID.Value.ToString() + "/#", (info) =>
                 LogSystem.Log("Exited session " + currentSessionID.Value.ToString() + ".")
@@ -416,7 +424,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.ClientHeartbeatMessage
                 clientHeartbeatMessage = new VOSSynchronizationMessages.SessionMessages
-                .ClientHeartbeatMessage(messageID, currentSessionID.Value, currentClientID.Value);
+                .ClientHeartbeatMessage(messageID, currentSessionID.Value, currentClientID.Value, currentClientToken);
             mqttClient.Publish("vos/session/heartbeat", JsonConvert.SerializeObject(clientHeartbeatMessage));
         }
 
@@ -447,7 +455,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.GetSessionStateMessage
                 getSessionStateMessage = new VOSSynchronizationMessages.SessionMessages
-                .GetSessionStateMessage(messageID, currentSessionID.Value, currentClientID.Value);
+                .GetSessionStateMessage(messageID, currentSessionID.Value, currentClientID.Value, currentClientToken);
             requestedState = true;
             onGotState = onStateReceived;
             mqttClient.Publish("vos/session/getstate", JsonConvert.SerializeObject(getSessionStateMessage));
@@ -463,10 +471,16 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="modelOffset">Offset for a model.</param>
         /// <param name="modelRotation">Rotation for a model.</param>
         /// <param name="labelOffset">Offset for a label.</param>
+        /// <param name="mass">Mass for an airplane/automobile entity.</param>
+        /// <param name="type">Type of the entity.</param>
+        /// <param name="wheels">Wheels for an automobile entity.</param>
+        /// <param name="menuOptions">Options for a menu.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public override StatusCode AddSynchronizedEntity(BaseEntity entityToSynchronize,
             bool deleteWithClient, string filePath = null, string[] resourcesPaths = null,
-            Vector3? modelOffset = null, Quaternion? modelRotation = null, Vector3? labelOffset = null)
+            Vector3? modelOffset = null, Quaternion? modelRotation = null, Vector3? labelOffset = null,
+            float? mass = null, string type = null, Dictionary<string, float> wheels = null,
+            string[] menuOptions = null)
         {
             if (mqttClient == null)
             {
@@ -511,7 +525,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddMeshEntityMessage
                     addMeshEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddMeshEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddMeshEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, filePath, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, deleteWithClient);
@@ -522,7 +536,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddContainerEntityMessage
                     addContainerEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddContainerEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddContainerEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), deleteWithClient);
@@ -533,7 +547,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddCharacterEntityMessage
                     addCharacterEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddCharacterEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddCharacterEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID, filePath, resourcesPaths,
                     ((CharacterEntity) entityToSynchronize).characterObjectOffset,
                     ((CharacterEntity) entityToSynchronize).characterObjectRotation,
@@ -552,7 +566,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddButtonEntityMessage
                     addButtonEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddButtonEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddButtonEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((ButtonEntity) entityToSynchronize).GetPositionPercent(),
                     ((ButtonEntity) entityToSynchronize).GetSizePercent(), null, deleteWithClient); // TODO event.
@@ -563,7 +577,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddCanvasEntityMessage
                     addCanvasEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddCanvasEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddCanvasEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, deleteWithClient);
@@ -580,7 +594,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddInputEntityMessage
                     addInputEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddInputEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddInputEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((InputEntity) entityToSynchronize).GetPositionPercent(),
                     ((InputEntity) entityToSynchronize).GetSizePercent(), deleteWithClient);
@@ -591,7 +605,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddLightEntityMessage
                     addLightEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddLightEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddLightEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     deleteWithClient);
@@ -613,7 +627,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 }
                 VOSSynchronizationMessages.RequestMessages.AddTerrainEntityMessage
                     addTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddTerrainEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     size.x, size.y, size.z, ((TerrainEntity) entityToSynchronize).GetHeights(),
@@ -638,7 +652,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddTerrainEntityMessage
                     addTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddTerrainEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     size.x, size.y, size.z, ((HybridTerrainEntity) entityToSynchronize).GetBaseHeights(),
@@ -658,7 +672,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddTextEntityMessage
                     addTextEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddTextEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddTextEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((TextEntity) entityToSynchronize).GetPositionPercent(),
                     ((TextEntity) entityToSynchronize).GetSizePercent(),
@@ -671,12 +685,89 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddVoxelEntityMessage
                     addVoxelEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddVoxelEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                    .AddVoxelEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), deleteWithClient);
                 mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createvoxelentity",
                     JsonConvert.SerializeObject(addVoxelEntityMessage));
+            }
+            else if (entityToSynchronize is AirplaneEntity)
+            {
+                if (string.IsNullOrEmpty(filePath))
+                {
+                    LogSystem.LogError("[VOSSynchronizer->AddSynchronizedEntity] Invalid file path.");
+                    return StatusCode.FAILED;
+                }
+
+                VOSSynchronizationMessages.RequestMessages.AddAirplaneEntityMessage
+                    addAirplaneEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                    .AddAirplaneEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
+                    entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
+                    entityToSynchronize.GetScale(), false, filePath, modelOffset.HasValue ? modelOffset.Value : Vector3.zero,
+                    modelRotation.HasValue ? modelRotation.Value : Quaternion.identity, mass.HasValue ? mass.Value : 0,
+                    deleteWithClient);
+                mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createairplaneentity",
+                    JsonConvert.SerializeObject(addAirplaneEntityMessage));
+            }
+            else if (entityToSynchronize is AudioEntity)
+            {
+                VOSSynchronizationMessages.RequestMessages.AddAudioEntityMessage
+                    addAudioEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                    .AddAudioEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
+                    entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
+                    entityToSynchronize.GetScale(), deleteWithClient);
+                mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createaudioentity",
+                    JsonConvert.SerializeObject(addAudioEntityMessage));
+            }
+            else if (entityToSynchronize is AutomobileEntity)
+            {
+                VOSSynchronizationMessages.RequestMessages.AddAutomobileEntityMessage
+                    addAutomobileEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                    .AddAutomobileEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
+                    entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
+                    entityToSynchronize.GetScale(), false, filePath, modelOffset.HasValue ? modelOffset.Value : Vector3.zero,
+                    modelRotation.HasValue ? modelRotation.Value : Quaternion.identity, mass.HasValue ? mass.Value : 0,
+                    type, ToWheelString(wheels), deleteWithClient);
+                mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createautomobileentity",
+                    JsonConvert.SerializeObject(addAutomobileEntityMessage));
+            }
+            else if (entityToSynchronize is DropdownEntity)
+            {
+                VOSSynchronizationMessages.RequestMessages.AddDropdownEntityMessage
+                    addDropdownEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                    .AddDropdownEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
+                    ((DropdownEntity) entityToSynchronize).GetPositionPercent(),
+                    ((DropdownEntity) entityToSynchronize).GetSizePercent(),
+                    null, menuOptions, deleteWithClient); // TODO event
+                mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createdropdownentity",
+                    JsonConvert.SerializeObject(addDropdownEntityMessage));
+            }
+            else if (entityToSynchronize is HTMLEntity)
+            {
+                VOSSynchronizationMessages.RequestMessages.AddHTMLEntityMessage
+                    addHTMLEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                    .AddHTMLEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
+                    entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
+                    entityToSynchronize.GetScale(), false, null, deleteWithClient);
+                mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createhtmlentity",
+                    JsonConvert.SerializeObject(addHTMLEntityMessage));
+            }
+            else if (entityToSynchronize is ImageEntity)
+            {
+                VOSSynchronizationMessages.RequestMessages.AddImageEntityMessage
+                    addImageEntityMessage = new VOSSynchronizationMessages.RequestMessages
+                    .AddImageEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
+                    ((DropdownEntity) entityToSynchronize).GetPositionPercent(),
+                    ((DropdownEntity) entityToSynchronize).GetSizePercent(), filePath, deleteWithClient);
+                mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString() + "/createimageentity",
+                    JsonConvert.SerializeObject(addImageEntityMessage));
             }
             else
             {
@@ -721,7 +812,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.RemoveEntityMessage
                 removeEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                .RemoveEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .RemoveEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToUnSynchronize.id);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToUnSynchronize.id.ToString() + "/remove",
@@ -764,7 +855,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.DeleteEntityMessage
                 deleteEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                .DeleteEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .DeleteEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToDelete.id);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToDelete.id.ToString() + "/delete",
@@ -806,7 +897,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetCanvasTypeMessage
                 setCanvasTypeMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetCanvasTypeMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetCanvasTypeMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, "screen");
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/canvastype",
@@ -847,7 +938,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetCanvasTypeMessage
                 setCanvasTypeMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetCanvasTypeMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetCanvasTypeMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, "world");
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/canvastype",
@@ -889,7 +980,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetHighlightStateMessage
                 setHighlightStateMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetHighlightStateMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetHighlightStateMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, highlight);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/highlight",
@@ -931,7 +1022,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetInteractionStateMessage
                 setInteractionStateMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetInteractionStateMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetInteractionStateMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, state.HasValue ? state.Value.ToString().ToLower() : "static");
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/interactionstate",
@@ -984,7 +1075,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetMotionMessage
                 setMotionMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetMotionMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetMotionMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, angularVelocity, velocity, stationary);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/motion",
@@ -1027,7 +1118,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetParentMessage
                 setParentMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetParentMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetParentMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, parentToSet.id);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/parent",
@@ -1083,7 +1174,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetPhysicalPropertiesMessage
                 setPhysicalPropertiesMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetPhysicalPropertiesMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetPhysicalPropertiesMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, angularDrag, centerOfMass == null ? Vector3.zero : centerOfMass.Value, drag, gravitational, mass);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/physicalproperties",
@@ -1126,7 +1217,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntityPositionMessage
                 updateEntityPositionMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntityPositionMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .UpdateEntityPositionMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, ToWorldPosition(position));
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/position",
@@ -1168,7 +1259,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntityRotationMessage
                 updateEntityRotationMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntityRotationMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .UpdateEntityRotationMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, rotation);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/rotation",
@@ -1210,7 +1301,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntityScaleMessage
                 updateEntityScaleMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntityScaleMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .UpdateEntityScaleMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, scale);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/scale",
@@ -1252,7 +1343,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntitySizeMessage
                 updateEntitySizeMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntitySizeMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .UpdateEntitySizeMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, size);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/size",
@@ -1320,7 +1411,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.ModifyTerrainEntityMessage
                 modifyTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                .ModifyTerrainEntityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .ModifyTerrainEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, mod, position, bt, layer);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/terrain-mod",
@@ -1362,7 +1453,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetVisibilityMessage
                 setVisibilityMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetVisibilityMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .SetVisibilityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 entityToSet.id, visible);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/visibility",
@@ -1398,7 +1489,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.PublishMessageMessage
                 publishMessageMessage = new VOSSynchronizationMessages.RequestMessages
-                .PublishMessageMessage(messageID, currentClientID.Value, currentSessionID.Value,
+                .PublishMessageMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
                 topic, message);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/message/create",
@@ -2126,6 +2217,268 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         ve.entityTag = addVoxelEntityMessage.tag;
                     }
                 }
+                else if (topic == "vos/status/" + currentSessionID.ToString() + "/createairplaneentity")
+                {
+                    VOSSynchronizationMessages.StatusMessages.AddAirplaneEntityMessage
+                        addAirplaneEntityMessage = JsonConvert.DeserializeObject<
+                        VOSSynchronizationMessages.StatusMessages.AddAirplaneEntityMessage>(message);
+
+                    bool isSize = false;
+                    Vector3 scaleSize = Vector3.zero;
+                    if (addAirplaneEntityMessage.scale != null)
+                    {
+                        isSize = false;
+                        scaleSize = addAirplaneEntityMessage.scale.ToVector3();
+                    }
+                    else if (addAirplaneEntityMessage.size != null)
+                    {
+                        isSize = true;
+                        scaleSize = addAirplaneEntityMessage.size.ToVector3();
+                    }
+                    else
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Invalid " +
+                            "createairplaneentity message.");
+                    }
+
+                    WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsAirplaneEntity(
+                        addAirplaneEntityMessage.path, new string[] { addAirplaneEntityMessage.path },
+                        addAirplaneEntityMessage.position.ToVector3(),
+                        addAirplaneEntityMessage.rotation.ToQuaternion(), addAirplaneEntityMessage.mass,
+                        Guid.Parse(addAirplaneEntityMessage.id), null);
+
+                    BaseEntity ae = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAirplaneEntityMessage.id));
+                    if (ae == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
+                    }
+                    else
+                    {
+                        ae.SetVisibility(true, false);
+                        ae.SetPosition(ToOffsetPosition(addAirplaneEntityMessage.position.ToVector3()), false, false);
+                        ae.SetRotation(addAirplaneEntityMessage.rotation.ToQuaternion(), false, false);
+                        if (isSize)
+                        {
+                            ae.SetSize(scaleSize, false);
+                        }
+                        else
+                        {
+                            ae.SetScale(scaleSize, false);
+                        }
+                        ae.entityTag = addAirplaneEntityMessage.tag;
+                    }
+                }
+                else if (topic == "vos/status/" + currentSessionID.ToString() + "/createaudioentity")
+                {
+                    VOSSynchronizationMessages.StatusMessages.AddAudioEntityMessage
+                        addAudioEntityMessage = JsonConvert.DeserializeObject<
+                        VOSSynchronizationMessages.StatusMessages.AddAudioEntityMessage>(message);
+
+                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                            Guid.Parse(addAudioEntityMessage.parentID));
+
+                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAudioEntity(parentEntity,
+                        ToOffsetPosition(addAudioEntityMessage.position.ToVector3()),
+                        addAudioEntityMessage.rotation.ToQuaternion(),
+                        Guid.Parse(addAudioEntityMessage.id), null);
+                    BaseEntity ae = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAudioEntityMessage.id));
+                    if (ae == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
+                    }
+                    else
+                    {
+                        ae.SetVisibility(true, false);
+                        ae.entityTag = addAudioEntityMessage.tag;
+                    }
+                }
+                else if (topic == "vos/status/" + currentSessionID.ToString() + "/createautomobileentity")
+                {
+                    VOSSynchronizationMessages.StatusMessages.AddAutomobileEntityMessage
+                        addAutomobileEntityMessage = JsonConvert.DeserializeObject<
+                        VOSSynchronizationMessages.StatusMessages.AddAutomobileEntityMessage>(message);
+
+                    bool isSize = false;
+                    Vector3 scaleSize = Vector3.zero;
+                    if (addAutomobileEntityMessage.scale != null)
+                    {
+                        isSize = false;
+                        scaleSize = addAutomobileEntityMessage.scale.ToVector3();
+                    }
+                    else if (addAutomobileEntityMessage.size != null)
+                    {
+                        isSize = true;
+                        scaleSize = addAutomobileEntityMessage.size.ToVector3();
+                    }
+                    else
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Invalid " +
+                            "createautomobileentity message.");
+                    }
+
+                    Handlers.Javascript.APIs.Entity.AutomobileEntity.AutomobileType at =
+                        Handlers.Javascript.APIs.Entity.AutomobileEntity.AutomobileType.Default;
+
+                    Handlers.Javascript.APIs.Entity.AutomobileEntityWheel[] wheels =
+                        FromWheelString(addAutomobileEntityMessage.wheels);
+
+                    WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsAutomobileEntity(
+                        addAutomobileEntityMessage.path, new string[] { addAutomobileEntityMessage.path },
+                        ToOffsetPosition(addAutomobileEntityMessage.position.ToVector3()),
+                        addAutomobileEntityMessage.rotation.ToQuaternion(),
+                        wheels,
+                        addAutomobileEntityMessage.mass,
+                        at,
+                        Guid.Parse(addAutomobileEntityMessage.id), null);
+
+                    BaseEntity ae = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAutomobileEntityMessage.id));
+                    if (ae == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
+                    }
+                    else
+                    {
+                        ae.SetVisibility(true, false);
+                        ae.SetPosition(ToOffsetPosition(addAutomobileEntityMessage.position.ToVector3()), false, false);
+                        ae.SetRotation(addAutomobileEntityMessage.rotation.ToQuaternion(), false, false);
+                        if (isSize)
+                        {
+                            ae.SetSize(scaleSize, false);
+                        }
+                        else
+                        {
+                            ae.SetScale(scaleSize, false);
+                        }
+                        ae.entityTag = addAutomobileEntityMessage.tag;
+                    }
+                }
+                else if (topic == "vos/status/" + currentSessionID.ToString() + "/createdropdownentity")
+                {
+                    VOSSynchronizationMessages.StatusMessages.AddDropdownEntityMessage
+                        addDropdownEntityMessage = JsonConvert.DeserializeObject<
+                        VOSSynchronizationMessages.StatusMessages.AddDropdownEntityMessage>(message);
+
+                    CanvasEntity parent = null;
+                    if (!string.IsNullOrEmpty(addDropdownEntityMessage.parentID))
+                    {
+                        BaseEntity foundEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                            Guid.Parse(addDropdownEntityMessage.parentID));
+                        if (foundEntity is CanvasEntity)
+                        {
+                            parent = (CanvasEntity) foundEntity;
+                        }
+                        else
+                        {
+                            LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Parent is not a canvas entity.");
+                        }
+                    }
+
+                    Action<int> onChangeAction = null;
+                    if (addDropdownEntityMessage.onChange != null)
+                    {
+                        onChangeAction = new Action<int>((idx) =>
+                        {
+                            WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                                addDropdownEntityMessage.onChange, new object[] { idx });
+                        });
+                    }
+
+                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadDropdownEntity(parent,
+                        addDropdownEntityMessage.positionPercent.ToVector2(),
+                        addDropdownEntityMessage.sizePercent.ToVector2(),
+                        onChangeAction, addDropdownEntityMessage.options.ToList(),
+                        Guid.Parse(addDropdownEntityMessage.id), null);
+                    BaseEntity de = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addDropdownEntityMessage.id));
+                    if (de == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
+                    }
+                    else
+                    {
+                        de.SetVisibility(true, false);
+                        de.entityTag = addDropdownEntityMessage.tag;
+                    }
+                }
+                else if (topic == "vos/status/" + currentSessionID.ToString() + "/createhtmlentity")
+                {
+                    VOSSynchronizationMessages.StatusMessages.AddHTMLEntityMessage
+                        addHTMLEntityMessage = JsonConvert.DeserializeObject<
+                        VOSSynchronizationMessages.StatusMessages.AddHTMLEntityMessage>(message);
+
+                    bool isSize = false;
+                    Vector3 scaleSize = Vector3.zero;
+                    if (addHTMLEntityMessage.scale != null)
+                    {
+                        isSize = false;
+                        scaleSize = addHTMLEntityMessage.scale.ToVector3();
+                    }
+                    else if (addHTMLEntityMessage.size != null)
+                    {
+                        isSize = true;
+                        scaleSize = addHTMLEntityMessage.size.ToVector3();
+                    }
+                    else
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Invalid " +
+                            "createhtmlentity message.");
+                    }
+
+                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                            Guid.Parse(addHTMLEntityMessage.parentID));
+
+                    Action<string> onMessageAction = null;
+                    if (addHTMLEntityMessage.onMessage != null)
+                    {
+                        onMessageAction = new Action<string>((msg) =>
+                        {
+                            WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                                addHTMLEntityMessage.onMessage, new object[] { msg });
+                        });
+                    }
+
+                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLEntity(parentEntity,
+                        ToOffsetPosition(addHTMLEntityMessage.position.ToVector3()),
+                        addHTMLEntityMessage.rotation.ToQuaternion(), addHTMLEntityMessage.scale.ToVector3(),
+                        Guid.Parse(addHTMLEntityMessage.id), isSize, null, onMessageAction);
+                    BaseEntity he = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addHTMLEntityMessage.id));
+                    if (he == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
+                    }
+                    else
+                    {
+                        he.SetVisibility(true, false);
+                        he.entityTag = addHTMLEntityMessage.tag;
+                    }
+                }
+                else if (topic == "vos/status/" + currentSessionID.ToString() + "/createimageentity")
+                {
+                    VOSSynchronizationMessages.StatusMessages.AddImageEntityMessage
+                        addImageEntityMessage = JsonConvert.DeserializeObject<
+                        VOSSynchronizationMessages.StatusMessages.AddImageEntityMessage>(message);
+
+                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                            Guid.Parse(addImageEntityMessage.parentID));
+
+                    Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadImageEntityAsync(
+                        Handlers.Javascript.APIs.Entity.EntityAPIHelper.GetPublicEntity(parentEntity),
+                        addImageEntityMessage.imageFile,
+                        new Handlers.Javascript.APIs.WorldTypes.Vector2(
+                            addImageEntityMessage.positionPercent.x, addImageEntityMessage.positionPercent.y),
+                        new Handlers.Javascript.APIs.WorldTypes.Vector2(
+                            addImageEntityMessage.sizePercent.x, addImageEntityMessage.sizePercent.y),
+                        addImageEntityMessage.id, null);
+                    BaseEntity ie = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addImageEntityMessage.id));
+                    if (ie == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
+                    }
+                    else
+                    {
+                        ie.SetVisibility(true, false);
+                        ie.entityTag = addImageEntityMessage.tag;
+                    }
+                }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/state")
                 {
                     VOSSynchronizationMessages.SessionMessages.SessionStateMessage
@@ -2848,6 +3201,164 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         ne.SetVisibility(true, false);
                     }
                     return ne;
+
+                case "airplane":
+                    newEntityID = Guid.Parse(entityInfo.id);
+                    WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsAirplaneEntity(
+                        entityInfo.path, new string[] { entityInfo.path },
+                        ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
+                        entityInfo.mass, newEntityID, null);
+                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    if (ne == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
+                    }
+                    else
+                    {
+                        ne.SetVisibility(true, false);
+                        ne.SetPosition(ToOffsetPosition(entityInfo.position.ToVector3()), false, false);
+                        ne.SetRotation(entityInfo.rotation.ToQuaternion(), false, false);
+                        if (isSize)
+                        {
+                            ne.SetSize(scaleSize, false);
+                        }
+                        else
+                        {
+                            ne.SetScale(scaleSize, false);
+                        }
+                        ne.entityTag = entityInfo.tag;
+                    }
+                    return ne;
+
+                case "audio":
+                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAudioEntity(
+                        parentEntity, ToOffsetPosition(entityInfo.position.ToVector3()),
+                        entityInfo.rotation.ToQuaternion(),
+                        Guid.Parse(entityInfo.id), null);
+                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    if (ne == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
+                    }
+                    else
+                    {
+                        ne.SetVisibility(true, false);
+                        ne.entityTag = entityInfo.tag;
+                    }
+                    return ne;
+
+                case "automobile":
+                    Handlers.Javascript.APIs.Entity.AutomobileEntity.AutomobileType at =
+                        Handlers.Javascript.APIs.Entity.AutomobileEntity.AutomobileType.Default;
+
+                    Handlers.Javascript.APIs.Entity.AutomobileEntityWheel[] wheels =
+                        FromWheelString(entityInfo.wheels);
+
+                    newEntityID = Guid.Parse(entityInfo.id);
+                    WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsAutomobileEntity(
+                        entityInfo.path, new string[] { entityInfo.path },
+                        ToOffsetPosition(entityInfo.position.ToVector3()),
+                        entityInfo.rotation.ToQuaternion(), wheels, entityInfo.mass, at,
+                        Guid.Parse(entityInfo.id), null);
+                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    if (ne == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
+                    }
+                    else
+                    {
+                        ne.SetVisibility(true, false);
+                        ne.SetPosition(ToOffsetPosition(entityInfo.position.ToVector3()), false, false);
+                        ne.SetRotation(entityInfo.rotation.ToQuaternion(), false, false);
+                        if (isSize)
+                        {
+                            ne.SetSize(scaleSize, false);
+                        }
+                        else
+                        {
+                            ne.SetScale(scaleSize, false);
+                        }
+                        ne.entityTag = entityInfo.tag;
+                    }
+                    return ne;
+
+                case "dropdown":
+                    Action<int> onChangeAction = null;
+                    if (entityInfo.onChange != null)
+                    {
+                        onChangeAction = new Action<int>((idx) =>
+                        {
+                            WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                                entityInfo.onChange, new object[] { idx });
+                        });
+                    }
+
+                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadDropdownEntity(
+                        parentCE, entityInfo.positionPercent.ToVector2(),
+                        entityInfo.sizePercent.ToVector2(), onChangeAction, entityInfo.options.ToList(),
+                        Guid.Parse(entityInfo.id), null);
+                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    if (ne == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
+                    }
+                    else
+                    {
+                        ne.SetVisibility(true, false);
+                        ne.entityTag = entityInfo.tag;
+                    }
+                    return ne;
+
+                case "html":
+                    Action<string> onMessageAction = null;
+                    if (entityInfo.onMessage != null)
+                    {
+                        onMessageAction = new Action<string>((msg) =>
+                        {
+                            WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                                entityInfo.onMessage, new object[] { msg });
+                        });
+                    }
+
+                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLEntity(parentEntity,
+                        ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
+                        entityInfo.scale.ToVector3(), Guid.Parse(entityInfo.id), isSize, null, onMessageAction);
+                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    if (ne == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
+                    }
+                    else
+                    {
+                        ne.SetVisibility(true, false);
+                        ne.entityTag = entityInfo.tag;
+                    }
+                    return ne;
+
+                case "image":
+                    newEntityID = Guid.Parse(entityInfo.id);
+                    Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadImageEntityAsync(
+                        Handlers.Javascript.APIs.Entity.EntityAPIHelper.GetPublicEntity(parentEntity),
+                        entityInfo.imageFile, new Handlers.Javascript.APIs.WorldTypes.Vector2(
+                            entityInfo.positionPercent.x, entityInfo.positionPercent.y),
+                        new Handlers.Javascript.APIs.WorldTypes.Vector2(
+                            entityInfo.sizePercent.x, entityInfo.sizePercent.y),
+                        entityInfo.id, null);
+
+                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
+                        ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
+                        entityInfo.scale.ToVector3(), Guid.Parse(entityInfo.id), null);
+                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    if (ne == null)
+                    {
+                        LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
+                    }
+                    else
+                    {
+                        ne.SetVisibility(true, false);
+                        ne.entityTag = entityInfo.tag;
+                    }
+                    return ne;
             }
 
             return null;
@@ -2897,6 +3408,51 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         {
             return new Handlers.Javascript.APIs.WorldTypes.Vector3(offsetPosition.x + synchronizationOffset.x,
                 offsetPosition.y + synchronizationOffset.y, offsetPosition.z + synchronizationOffset.z);
+        }
+
+        private Handlers.Javascript.APIs.Entity.AutomobileEntityWheel[] FromWheelString(string wheelString)
+        {
+            List<Handlers.Javascript.APIs.Entity.AutomobileEntityWheel> wheels
+                = new List<Handlers.Javascript.APIs.Entity.AutomobileEntityWheel>();
+            
+            if (!string.IsNullOrEmpty(wheelString))
+            {
+                string[] wls = wheelString.Split(";");
+                foreach (string wl in wls)
+                {
+                    string[] wlParts = wl.Split(",");
+                    if (wlParts.Length != 2)
+                    {
+                        LogSystem.LogWarning("[] Invalid wheel definition.");
+                    }
+                    else
+                    {
+                        wheels.Add(new Handlers.Javascript.APIs.Entity.AutomobileEntityWheel(
+                            wlParts[0], int.Parse(wlParts[1])));
+                    }
+                }
+            }
+
+            return wheels.ToArray();
+        }
+
+        private string ToWheelString(Dictionary<string, float> wheels)
+        {
+            string wheelString = "";
+
+            if (wheels != null)
+            {
+                foreach ( System.Collections.Generic.KeyValuePair<string, float> wheel in wheels)
+                {
+                    if (!string.IsNullOrEmpty(wheelString))
+                    {
+                        wheelString = wheelString + ";";
+                    }
+                    wheelString = wheelString + wheel.Key + "," + wheel.Value;
+                }
+            }
+
+            return wheelString;
         }
 
         /// <summary>

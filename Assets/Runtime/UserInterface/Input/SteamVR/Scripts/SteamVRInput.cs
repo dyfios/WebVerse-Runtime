@@ -674,16 +674,20 @@ namespace FiveSQD.WebVerse.Input.SteamVR
         {
             if (context.phase == InputActionPhase.Started)
             {
+                Vector2 value = context.ReadValue<Vector2>();
                 WebVerseRuntime.Instance.inputManager.LeftStick();
+                WebVerseRuntime.Instance.inputManager.LeftStickValueChange(value);
                 WebVerseRuntime.Instance.inputManager.leftStickValue = true;
             }
             else if (context.phase == InputActionPhase.Performed)
             {
-
+                Vector2 value = context.ReadValue<Vector2>();
+                WebVerseRuntime.Instance.inputManager.LeftStickValueChange(value);
             }
             else if (context.phase == InputActionPhase.Canceled)
             {
                 WebVerseRuntime.Instance.inputManager.EndLeftStick();
+                WebVerseRuntime.Instance.inputManager.LeftStickValueChange(Vector2.zero);
                 WebVerseRuntime.Instance.inputManager.leftStickValue = false;
             }
         }
@@ -696,16 +700,20 @@ namespace FiveSQD.WebVerse.Input.SteamVR
         {
             if (context.phase == InputActionPhase.Started)
             {
+                Vector2 value = context.ReadValue<Vector2>();
                 WebVerseRuntime.Instance.inputManager.RightStick();
+                WebVerseRuntime.Instance.inputManager.LeftStickValueChange(value);
                 WebVerseRuntime.Instance.inputManager.rightStickValue = true;
             }
             else if (context.phase == InputActionPhase.Performed)
             {
-
+                Vector2 value = context.ReadValue<Vector2>();
+                WebVerseRuntime.Instance.inputManager.RightStickValueChange(value);
             }
             else if (context.phase == InputActionPhase.Canceled)
             {
                 WebVerseRuntime.Instance.inputManager.EndRightStick();
+                WebVerseRuntime.Instance.inputManager.LeftStickValueChange(Vector2.zero);
                 WebVerseRuntime.Instance.inputManager.rightStickValue = false;
             }
         }

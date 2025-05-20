@@ -103,14 +103,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
         /// <param name="worldOffset">Offset for this synchronized client in the world.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool CreateSession(string host, int port, bool tls, string id, string tag,
-            Vector3 worldOffset, Transport transport = Transport.TCP)
+            Vector3 worldOffset, Transport transport = Transport.TCP, string clientID = null,
+            string clientToken = null)
         {
             Tuple<WebVerse.VOSSynchronization.VOSSynchronizer, Guid> newSynchronizerAndSession
                 = WebVerseRuntime.Instance.vosSynchronizationManager.AddSynchronizerAndSession(
                     Guid.NewGuid().ToString(), host, port, tls,
                     transport == Transport.TCP ? WebInterface.MQTT.MQTTClient.Transports.TCP :
                     WebInterface.MQTT.MQTTClient.Transports.WebSockets,
-                    new UnityEngine.Vector3(worldOffset.x, worldOffset.y, worldOffset.z), Guid.Parse(id), tag);
+                    new UnityEngine.Vector3(worldOffset.x, worldOffset.y, worldOffset.z), Guid.Parse(id), tag,
+                    string.IsNullOrEmpty(clientID) ? null : Guid.Parse(clientID), clientToken);
             if (newSynchronizerAndSession == null)
             {
                 LogSystem.LogError("[VOSSynchronization:CreateSession] Unable to set up synchronizer.");
@@ -150,9 +152,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
         /// <param name="tag">Tag of the client.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public static string JoinSession(string host, int port, bool tls, string id, string tag,
-            string callback = null, Transport transport = Transport.TCP)
+            string callback = null, Transport transport = Transport.TCP, string clientID = null,
+            string clientToken = null)
         {
-            return JoinSession(host, port, tls, id, tag, Vector3.zero, callback, transport);
+            return JoinSession(host, port, tls, id, tag, Vector3.zero, callback, transport, clientID,
+                clientToken);
         }
 
         /// <summary>
@@ -165,7 +169,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
         /// <param name="worldOffset">Offset for this synchronized client in the world.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public static string JoinSession(string host, int port, bool tls, string id, string tag,
-            Vector3 worldOffset, string callback = null, Transport transport = Transport.TCP)
+            Vector3 worldOffset, string callback = null, Transport transport = Transport.TCP,
+            string clientID = null, string clientToken = null)
         {
             // Handle callback.
             Action onJoinAction = null;
@@ -187,7 +192,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                     transport == Transport.TCP ? WebInterface.MQTT.MQTTClient.Transports.TCP :
                     WebInterface.MQTT.MQTTClient.Transports.WebSockets,
                     new UnityEngine.Vector3(worldOffset.x, worldOffset.y, worldOffset.z),
-                    Guid.Parse(id), onSynchronizerJoinedAction);
+                    Guid.Parse(id), onSynchronizerJoinedAction,
+                        string.IsNullOrEmpty(clientID) ? null : Guid.Parse(clientID), clientToken);
             if (newSynchronizerAndSession == null)
             {
                 LogSystem.LogError("[VOSSynchronization:JoinSession] Unable to set up synchronizer.");
@@ -201,9 +207,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 return null;
             }
 
-            Guid? clientID = newSynchronizerAndSession.Item3;
+            Guid? clID = newSynchronizerAndSession.Item3;
 
-            return clientID.HasValue ? clientID.Value.ToString() : null;
+            return clID.HasValue ? clID.Value.ToString() : null;
         }
 
         /// <summary>

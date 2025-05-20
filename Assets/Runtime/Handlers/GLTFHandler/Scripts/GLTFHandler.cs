@@ -274,15 +274,15 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     {
                         foreach (Javascript.APIs.Entity.AutomobileEntityWheel wheel in wheels)
                         {
-                            GameObject wheelSubMesh = FindChildObjectByName(meshObject, wheel.wheelSubMesh);
+                            /*GameObject wheelSubMesh = FindChildObjectByName(meshObject, wheel.wheelSubMesh);
                             if (wheelSubMesh == null)
                             {
                                 Logging.LogWarning("[GLTFHandler->LoadGLTFResourceAsAutomobileEntity] Unable to find wheel submesh "
                                     + wheel.wheelSubMesh);
                             }
-                            else
+                            else*/
                             {
-                                convertedWheels.Add(wheelSubMesh, wheel.wheelRadius);
+                                convertedWheels.Add(wheel.wheelSubMesh, wheel.wheelRadius);
                             }
                         }
 

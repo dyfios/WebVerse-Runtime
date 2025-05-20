@@ -136,6 +136,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("Date", typeof(APIs.Utilities.Date)),
             new System.Tuple<string, System.Type>("LocalStorage", typeof(APIs.Utilities.LocalStorage)),
             new System.Tuple<string, System.Type>("Logging", typeof(APIs.Utilities.Logging)),
+            new System.Tuple<string, System.Type>("Scripting", typeof(APIs.Utilities.Scripting)),
             new System.Tuple<string, System.Type>("Time", typeof(APIs.Utilities.Time)),
             new System.Tuple<string, System.Type>("World", typeof(APIs.Utilities.World)),
             new System.Tuple<string, System.Type>("WorldStorage", typeof(APIs.Utilities.WorldStorage))
