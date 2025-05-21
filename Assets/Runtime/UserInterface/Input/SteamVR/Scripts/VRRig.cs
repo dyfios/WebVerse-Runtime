@@ -139,6 +139,18 @@ namespace FiveSQD.WebVerse.Input.SteamVR
         public List<BaseEntity> rigFollowers;
 
         /// <summary>
+        /// Entities following the left hand.
+        /// </summary>
+        [Tooltip("Entities following the left hand.")]
+        public List<BaseEntity> leftHandFollowers;
+
+        /// <summary>
+        /// Entities following the right hand.
+        /// </summary>
+        [Tooltip("Entities following the right hand.")]
+        public List<BaseEntity> rightHandFollowers;
+
+        /// <summary>
         /// Cycles to wait in between rig follower updates.
         /// </summary>
         [Tooltip("Cycles to wait in between rig follower updates.")]
@@ -147,7 +159,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
         /// <summary>
         /// The rig follower update counter.
         /// </summary>
-        private int rigFollowerUpdateCount = 0;
+        private int followersUpdateCount = 0;
 
         /// <summary>
         /// The left pointer mode.
@@ -176,12 +188,14 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                 {
                     case PointerMode.Teleport:
                         leftTeleportInteractor.enabled = true;
+                        leftTeleportInteractor.gameObject.SetActive(true);
                         leftNearFarInteractor.enabled = false;
                         teleportationProvider.enabled = true;
                         break;
 
                     case PointerMode.UI:
                         leftTeleportInteractor.enabled = false;
+                        leftTeleportInteractor.gameObject.SetActive(false);
                         leftNearFarInteractor.enabled = true;
                         if (rightPointerMode != PointerMode.Teleport)
                         {
@@ -192,6 +206,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                     case PointerMode.None:
                     default:
                         leftTeleportInteractor.enabled = false;
+                        leftTeleportInteractor.gameObject.SetActive(false);
                         leftNearFarInteractor.enabled = false;
                         if (rightPointerMode != PointerMode.Teleport)
                         {
@@ -503,6 +518,8 @@ namespace FiveSQD.WebVerse.Input.SteamVR
             rightGrabMoveEnabled = false;
             twoHandedGrabMoveEnabled = false;
             rigFollowers = new List<BaseEntity>();
+            leftHandFollowers = new List<BaseEntity>();
+            rightHandFollowers = new List<BaseEntity>();
         }
 
         /// <summary>
@@ -515,7 +532,7 @@ namespace FiveSQD.WebVerse.Input.SteamVR
         
         void Update()
         {
-            if (rigFollowerUpdateCount++ >= cyclesPerRigFollowerUpdate)
+            if (followersUpdateCount++ >= cyclesPerRigFollowerUpdate)
             {
                 if (rigFollowers != null)
                 {
@@ -528,7 +545,32 @@ namespace FiveSQD.WebVerse.Input.SteamVR
                         }
                     }
                 }
-                rigFollowerUpdateCount = 0;
+
+                if (leftHandFollowers != null)
+                {
+                    foreach (BaseEntity follower in leftHandFollowers)
+                    {
+                        if (follower != null)
+                        {
+                            follower.SetPosition(leftControllerManager.transform.position, false, true);
+                            follower.SetRotation(leftControllerManager.transform.rotation, false, true);
+                        }
+                    }
+                }
+
+                if (rightHandFollowers != null)
+                {
+                    foreach (BaseEntity follower in rightHandFollowers)
+                    {
+                        if (follower != null)
+                        {
+                            follower.SetPosition(rightControllerManager.transform.position, false, true);
+                            follower.SetRotation(rightControllerManager.transform.rotation, false, true);
+                        }
+                    }
+                }
+
+                followersUpdateCount = 0;
             }
         }
     }

@@ -685,6 +685,11 @@ namespace FiveSQD.WebVerse.Input
         private List<string> endLeftStickFunctions;
 
         /// <summary>
+        /// Left Stick Value Change functions.
+        /// </summary>
+        private List<string> leftStickValueChangeFunctions;
+
+        /// <summary>
         /// Right Stick functions.
         /// </summary>
         private List<string> rightStickFunctions;
@@ -693,6 +698,11 @@ namespace FiveSQD.WebVerse.Input
         /// End Right Stick functions.
         /// </summary>
         private List<string> endRightStickFunctions;
+
+        /// <summary>
+        /// Right Stick Value Change functions.
+        /// </summary>
+        private List<string> rightStickValueChangeFunctions;
 
         /// <summary>
         /// Initialize the Input Manager.
@@ -797,8 +807,10 @@ namespace FiveSQD.WebVerse.Input
             endSecondaryPressFunctions = new List<string>();
             leftStickFunctions = new List<string>();
             endLeftStickFunctions = new List<string>();
+            leftStickValueChangeFunctions = new List<string>();
             rightStickFunctions = new List<string>();
             endRightStickFunctions = new List<string>();
+            rightStickValueChangeFunctions = new List<string>();
         }
 
         /// <summary>
@@ -1130,12 +1142,20 @@ namespace FiveSQD.WebVerse.Input
                     endLeftStickFunctions.Add(call);
                     break;
 
+                case "leftstickvaluechange":
+                    leftStickValueChangeFunctions.Add(call);
+                    break;
+
                 case "rightstick":
                     rightStickFunctions.Add(call);
                     break;
 
                 case "endrightstick":
                     endRightStickFunctions.Add(call);
+                    break;
+
+                case "rightstickvaluechange":
+                    rightStickValueChangeFunctions.Add(call);
                     break;
             }
         }
@@ -1851,6 +1871,15 @@ namespace FiveSQD.WebVerse.Input
                     endLeftStickFunctions.Remove(call);
                     break;
 
+                case "leftstickvaluechange":
+                    if (!leftStickValueChangeFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    leftStickValueChangeFunctions.Remove(call);
+                    break;
+
                 case "rightstick":
                     if (!rightStickFunctions.Contains(call))
                     {
@@ -1867,6 +1896,15 @@ namespace FiveSQD.WebVerse.Input
                         break;
                     }
                     endRightStickFunctions.Remove(call);
+                    break;
+                
+                case "rightstickvaluechange":
+                    if (!rightStickValueChangeFunctions.Contains(call))
+                    {
+                        Logging.LogWarning("[InputManager->DeregisterInputEvent] Event " + call + " does not exist.");
+                        break;
+                    }
+                    rightStickValueChangeFunctions.Remove(call);
                     break;
             }
         }
@@ -1940,12 +1978,12 @@ namespace FiveSQD.WebVerse.Input
             {
                 foreach (string function in keyFunctions)
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key.Replace("\\", "\\\\") + "\""));
                 }
 
                 foreach (string function in keyCodeFunctions)
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode + "\""));
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode.Replace("\\", "\\\\") + "\""));
                 }
             }
         }
@@ -1961,12 +1999,12 @@ namespace FiveSQD.WebVerse.Input
             {
                 foreach (string function in endKeyFunctions)
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key + "\""));
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + key.Replace("\\", "\\\\") + "\""));
                 }
 
                 foreach (string function in endKeyCodeFunctions)
                 {
-                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode + "\""));
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", "\"" + keyCode.Replace("\\", "\\\\") + "\""));
                 }
             }
         }
@@ -2953,6 +2991,21 @@ namespace FiveSQD.WebVerse.Input
             }
         }
 
+        // <summary>
+        /// Perform a left stick vaue change.
+        /// </summary>
+        /// <param name="position">Position of the stick.</param>
+        public void LeftStickValueChange(Vector2 position)
+        {
+            if (inputEnabled)
+            {
+                foreach (string function in leftStickValueChangeFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
+                }
+            }
+        }
+
         /// <summary>
         /// Perform a right stick.
         /// </summary>
@@ -2977,6 +3030,21 @@ namespace FiveSQD.WebVerse.Input
                 foreach (string function in endRightStickFunctions)
                 {
                     WebVerseRuntime.Instance.javascriptHandler.Run(function);
+                }
+            }
+        }
+
+        // <summary>
+        /// Perform a right stick vaue change.
+        /// </summary>
+        /// <param name="position">Position of the stick.</param>
+        public void RightStickValueChange(Vector2 position)
+        {
+            if (inputEnabled)
+            {
+                foreach (string function in rightStickValueChangeFunctions)
+                {
+                    WebVerseRuntime.Instance.javascriptHandler.Run(function.Replace("?", position.x + ", " + position.y));
                 }
             }
         }

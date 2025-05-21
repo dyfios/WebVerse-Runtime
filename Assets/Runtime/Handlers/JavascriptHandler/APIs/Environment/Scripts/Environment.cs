@@ -14,6 +14,26 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
     public class Environment
     {
         /// <summary>
+        /// Set the offset for the world.
+        /// </summary>
+        /// <param name="worldOffset">Offset.</param>
+        public static void SetWorldOffset(WorldTypes.Vector3 worldOffset)
+        {
+            WorldEngine.WorldEngine.ActiveWorld.worldOffset = new Vector3(
+                worldOffset.x, worldOffset.y, worldOffset.z);
+        }
+
+        /// <summary>
+        /// Get the offset for the world.
+        /// </summary>
+        /// <returns>Offset for the world.</returns>
+        public static WorldTypes.Vector3 GetWorldOffset()
+        {
+            Vector3 worldOffset = WorldEngine.WorldEngine.ActiveWorld.worldOffset;
+                return new WorldTypes.Vector3(worldOffset.x, worldOffset.y, worldOffset.z);
+        }
+
+        /// <summary>
         /// Set the sky to a texture.
         /// </summary>
         /// <param name="texture">URI of the texture to set the sky to.</param>

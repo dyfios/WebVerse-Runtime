@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
 using FiveSQD.WebVerse.Input.SteamVR;
+using Vuplex.WebView;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -29,6 +30,24 @@ namespace FiveSQD.WebVerse.Runtime
     /// </summary>
     public class WebVerseRuntime : MonoBehaviour
     {
+        /// <summary>
+        /// Serializable automobile entity type mapping.
+        /// </summary>
+        [Tooltip("Serializable automobile entity type mapping.")]
+        [Serializable]
+        public struct SerializableAutomobileEntityType
+        {
+            /// <summary>
+            /// Type enum.
+            /// </summary>
+            public WorldEngine.Entity.EntityManager.AutomobileEntityType type;
+
+            /// <summary>
+            /// State settings.
+            /// </summary>
+            public NWH.VehiclePhysics2.StateSettings stateSettings;
+        }
+
         /// <summary>
         /// Enumeration for runtime states.
         /// </summary>
@@ -99,7 +118,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// <summary>
         /// WebVerse version.
         /// </summary>
-        public static readonly string versionString = "v2.1.2";
+        public static readonly string versionString = "v2.1.4";
 
         /// <summary>
         /// WebVerse codename.
@@ -202,9 +221,25 @@ namespace FiveSQD.WebVerse.Runtime
         public List<Interface.Console.Console> consoles;
 
         /// <summary>
+        /// Crosshair.
+        /// </summary>
+        [Tooltip("Crosshair.")]
+        public GameObject crosshair;
+
+        /// <summary>
         /// Callback for a log message to be logged to a console.
         /// </summary>
         private List<Action<string, Logging.Type>> consoleCallbacks;
+
+        /// <summary>
+        /// Map for automobile entity types to their NWH State Settings object.
+        /// </summary>
+        public List<SerializableAutomobileEntityType> automobileEntityTypeMap;
+
+        /// <summary>
+        /// Prefab for an airplane entity.
+        /// </summary>
+        public GameObject airplaneEntityPrefab;
 
         /// <summary>
         /// Material to use for highlighting.
@@ -530,9 +565,10 @@ namespace FiveSQD.WebVerse.Runtime
                     UnloadWebPage();
                     LoadWorld(url, onLoaded);
                 });
-                
+#if USE_WEBINTERFACE
                 HTTPRequest headerReq = new HTTPRequest(url, HTTPRequest.HTTPMethod.Head, onRespAction);
                 headerReq.Send();
+#endif
             }
         }
 
@@ -629,12 +665,12 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             Logging.Log("[WebVerseRuntime->UnloadWorld] Input Manager reset. Resetting VOS Synchronization Manager...");
-
+#if USE_WEBINTERFACE
             if (vosSynchronizationManager != null)
             {
                 vosSynchronizationManager.Reset();
             }
-
+#endif
             Logging.Log("[WebVerseRuntime->UnloadWorld] VOS Synchronization Manager reset. Unloading World...");
 
             WorldEngine.WorldEngine.UnloadWorld();
@@ -682,10 +718,37 @@ namespace FiveSQD.WebVerse.Runtime
             int maxEntries, int maxEntryLength, int maxKeyLength, string filesDirectory,
             float timeout = 120)
         {
+            #if UNITY_STANDALONE || UNITY_EDITOR
+                // On Windows and macOS, change the User-Agent to mobile:
+                Web.SetUserAgent(true);
+            #elif UNITY_IOS
+                // On iOS, change the User-Agent to desktop:
+                Web.SetUserAgent(false);
+            #elif UNITY_ANDROID
+                // On Android, change the User-Agent to "random":
+                Web.SetUserAgent("random");
+            #endif
+
             // Set up World Engine.
             GameObject worldEngineGO = new GameObject("WorldEngine");
             worldEngineGO.transform.SetParent(transform);
             worldEngine = worldEngineGO.AddComponent<WorldEngine.WorldEngine>();
+            worldEngine.automobileEntityTypeMap
+                = new Dictionary<WorldEngine.Entity.EntityManager.AutomobileEntityType,
+                        NWH.VehiclePhysics2.StateSettings>();
+            foreach (SerializableAutomobileEntityType automobileEntityType in automobileEntityTypeMap)
+            {
+                WorldEngine.Entity.EntityManager.AutomobileEntityType type;
+                switch(automobileEntityType.type)
+                {
+                    case WorldEngine.Entity.EntityManager.AutomobileEntityType.Default:
+                    default:
+                        type = WorldEngine.Entity.EntityManager.AutomobileEntityType.Default;
+                        break;
+                }
+                worldEngine.automobileEntityTypeMap.Add(type, automobileEntityType.stateSettings);
+            }
+            worldEngine.airplaneEntityPrefab = airplaneEntityPrefab;
             worldEngine.highlightMaterial = highlightMaterial;
             worldEngine.skyMaterial = skyMaterial;
             worldEngine.liteProceduralSkyMaterial = liteProceduralSkyMaterial;
@@ -702,6 +765,7 @@ namespace FiveSQD.WebVerse.Runtime
             worldEngine.canvasWebViewPrefab = canvasWebViewPrefab;
             worldEngine.cameraOffset = cameraOffset;
             worldEngine.vr = vr;
+            worldEngine.crosshair = crosshair;
 
             // Set up Handlers.
             GameObject handlersGO = new GameObject("Handlers");

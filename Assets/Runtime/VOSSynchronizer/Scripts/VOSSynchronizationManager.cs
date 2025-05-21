@@ -79,10 +79,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="session">Name for the session.</param>
         /// <returns>Tuple containing the synchronizer and session ID.</returns>
         public Tuple<VOSSynchronizer, Guid> AddSynchronizerAndSession(string id, string host, int port, bool tls,
-            MQTTClient.Transports transport, Vector3 worldOffset, string session)
+            MQTTClient.Transports transport, Vector3 worldOffset, string session, Guid? clientID = null,
+            string clientToken = null)
         {
             Guid newSessionID = Guid.NewGuid();
-            return AddSynchronizerAndSession(id, host, port, tls, transport, worldOffset, newSessionID, session);
+            return AddSynchronizerAndSession(id, host, port, tls, transport, worldOffset, newSessionID, session,
+                clientID, clientToken);
         }
 
         /// <summary>
@@ -97,7 +99,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="sessionTag">Name for the session.</param>
         /// <returns>Tuple containing the synchronizer and session ID.</returns>
         public Tuple<VOSSynchronizer, Guid> AddSynchronizerAndSession(string id, string host, int port, bool tls,
-            MQTTClient.Transports transport, Vector3 worldOffset, Guid sessionID, string sessionTag)
+            MQTTClient.Transports transport, Vector3 worldOffset, Guid sessionID, string sessionTag,
+            Guid? clientID = null, string clientToken = null)
         {
             if (vosSynchronizers == null)
             {
@@ -105,7 +108,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 return null;
             }
 
-            VOSSynchronizer newSync = AddSynchronizer(host, port, tls, transport, worldOffset);
+            VOSSynchronizer newSync = AddSynchronizer(host, port, tls, transport, worldOffset, clientID, clientToken);
             Action onConnected = () =>
             {
                 newSync.CreateSession(sessionID, sessionTag);
@@ -131,7 +134,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <returns>Tuple containing the synchronizer, session ID, and client ID.</returns>
         public Tuple<VOSSynchronizer, Guid, Guid?> AddSynchronizerAndJoinSession(string clientTag,
             string host, int port, bool tls, MQTTClient.Transports transport, Vector3 worldOffset,
-            Guid sessionID, Action onJoined = null)
+            Guid sessionID, Action onJoined = null, Guid? clientID = null, string clientToken = null)
         {
             if (vosSynchronizers == null)
             {
@@ -139,11 +142,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 return null;
             }
 
-            Guid? clientID = null;
-            VOSSynchronizer newSync = AddSynchronizer(host, port, tls, transport, worldOffset);
+            Guid? clID = null;
+            VOSSynchronizer newSync = AddSynchronizer(host, port, tls, transport, worldOffset, clientID, clientToken);
             Action onConnected = () =>
             {
-                clientID = newSync.JoinSession(sessionID, clientTag);
+                clID = newSync.JoinSession(sessionID, clientTag);
                 if (onJoined != null)
                 {
                     onJoined.Invoke();
@@ -152,7 +155,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             newSync.Connect(onConnected);
             Tuple<VOSSynchronizer, Guid> combo = new Tuple<VOSSynchronizer, Guid>(newSync, sessionID);
             Tuple<VOSSynchronizer, Guid, Guid?> returnCombo =
-                new Tuple<VOSSynchronizer, Guid, Guid?>(newSync, sessionID, clientID);
+                new Tuple<VOSSynchronizer, Guid, Guid?>(newSync, sessionID, clID);
             vosSynchronizersAndSessions.Add(sessionID.ToString(), combo);
 
             return returnCombo;
@@ -168,7 +171,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="worldOffset">Offset for this synchronized client in the world.</param>
         /// <returns>Synchronizer that has been added.</returns>
         public VOSSynchronizer AddSynchronizer(string host, int port, bool tls,
-            MQTTClient.Transports transport, Vector3 worldOffset)
+            MQTTClient.Transports transport, Vector3 worldOffset, Guid? clientID = null,
+            string clientToken = null)
         {
             if (vosSynchronizers == null)
             {
@@ -179,7 +183,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             GameObject newSynchronizerGO = new GameObject("Synchronizer-"
                 + host + ":" + port);
             VOSSynchronizer vosSynchronizer = newSynchronizerGO.AddComponent<VOSSynchronizer>();
-            vosSynchronizer.Initialize(host, port, tls, transport, worldOffset);
+            vosSynchronizer.Initialize(host, port, tls, transport, worldOffset, clientID, clientToken);
             vosSynchronizers.Add(vosSynchronizer);
             return vosSynchronizer;
         }

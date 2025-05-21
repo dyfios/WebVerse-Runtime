@@ -185,5 +185,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
                 return null;
             }
         }
+
+        public static bool PlaceEntityInFrontOfCamera(BaseEntity entityToPlace, float distance)
+        {
+            UnityEngine.Vector3 newCamPos =
+                WorldEngine.WorldEngine.ActiveWorld.cameraManager.cam.transform.position +
+                WorldEngine.WorldEngine.ActiveWorld.cameraManager.cam.transform.forward * distance;
+            return entityToPlace.SetPosition(new Vector3(newCamPos.x, newCamPos.y, newCamPos.z), false);
+        }
     }
 }

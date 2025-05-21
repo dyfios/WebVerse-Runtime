@@ -122,9 +122,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     return false;
                 }
 
-                if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+                if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+                {
+                    return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
+                else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
                 {
                     return ((WorldEngine.Entity.AudioEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                }
+                else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+                {
+                    return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
                 else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
                 {
@@ -283,7 +291,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             UnityEngine.Transform transform = internalEntity.transform;
             Transform t = new Transform();
-            t.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+            UnityEngine.Vector3 worldOffset = WorldEngine.WorldEngine.ActiveWorld.worldOffset;
+            t.position = new Vector3(transform.position.x - worldOffset.x, transform.position.y - worldOffset.y,
+                transform.position.z - worldOffset.z);
             t.rotation = new Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
             t.scale = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
             return t;
@@ -378,6 +388,23 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             return internalEntity.SetEulerRotation(new UnityEngine.Vector3(eulerRotation.x, eulerRotation.y, eulerRotation.z),
                 local, synchronizeChange);
+        }
+
+        /// <summary>
+        /// Get the Euler rotation of the entity.
+        /// </summary>
+        /// <param name="local">Whether or not to get the local rotation.</param>
+        /// <returns>The Euler rotation of the entity.</returns>
+        public Vector3 GetEulerRotation(bool local)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[BaseEntity:GetEulerRotation] Unknown entity.");
+                return null;
+            }
+
+            UnityEngine.Vector3 rotation = internalEntity.GetEulerRotation(local);
+            return new Vector3(rotation.x, rotation.y, rotation.z);
         }
 
         /// <summary>
@@ -519,7 +546,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             if (IsValid() == false)
             {
-                Logging.LogError("[BaseEntity:Delete] Unknown entity.");
+                Logging.LogWarning("[BaseEntity:Delete] Unknown entity.");
                 return false;
             }
 
@@ -562,9 +589,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 velocity = new UnityEngine.Vector3(motion.velocity.x, motion.velocity.y, motion.velocity.z)
             };
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetMotion(eMotion);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 return ((WorldEngine.Entity.AudioEntity) internalEntity).SetMotion(eMotion);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetMotion(eMotion);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -646,9 +681,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             WorldEngine.Entity.BaseEntity.EntityMotion? eMotion = null;
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                eMotion = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 eMotion = ((WorldEngine.Entity.AudioEntity) internalEntity).GetMotion();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                eMotion = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetMotion();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -764,9 +807,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 mass = properties.mass
             };
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetPhysicalProperties(props);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 return ((WorldEngine.Entity.AudioEntity) internalEntity).SetPhysicalProperties(props);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetPhysicalProperties(props);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -848,9 +899,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             WorldEngine.Entity.BaseEntity.EntityPhysicalProperties? props = null;
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                props = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 props = ((WorldEngine.Entity.AudioEntity) internalEntity).GetPhysicalProperties();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                props = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetPhysicalProperties();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -967,9 +1026,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             }
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetInteractionState(iState);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 return ((WorldEngine.Entity.AudioEntity) internalEntity).SetInteractionState(iState);
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetInteractionState(iState);
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -1052,9 +1119,17 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             WorldEngine.Entity.BaseEntity.InteractionState iState
                 = WorldEngine.Entity.BaseEntity.InteractionState.Hidden;
-            if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            {
+                iState = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
             {
                 iState = ((WorldEngine.Entity.AudioEntity) internalEntity).GetInteractionState();
+            }
+            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            {
+                iState = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetInteractionState();
             }
             else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
             {
@@ -1176,10 +1251,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                         return null;
                     }
 
+                    UnityEngine.Vector3 worldOffset = WebVerse.WorldEngine.WorldEngine.ActiveWorld.worldOffset;
                     return new RaycastHitInfo()
                     {
                         entity = hitPublicEntity,
-                        hitPoint = new Vector3(hit.point.x, hit.point.y, hit.point.z),
+                        hitPoint = new Vector3(hit.point.x - worldOffset.x,
+                            hit.point.y - worldOffset.y, hit.point.z - worldOffset.z),
                         hitPointNormal = new Vector3(hit.normal.x, hit.normal.y, hit.normal.z),
                         origin = GetPosition(false)
                     };

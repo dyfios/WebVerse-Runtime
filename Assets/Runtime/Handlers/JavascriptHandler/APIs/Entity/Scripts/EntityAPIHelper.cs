@@ -605,11 +605,27 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool RegisterPrivateEntity(WorldEngine.Entity.BaseEntity entityToRegister)
         {
-            if (entityToRegister is WorldEngine.Entity.AudioEntity)
+            if (entityToRegister is WorldEngine.Entity.AirplaneEntity)
+            {
+                AirplaneEntity ae = new AirplaneEntity();
+                ae.internalEntity = entityToRegister;
+                ae.internalEntityType = typeof(WorldEngine.Entity.AirplaneEntity);
+                AddEntityMapping(entityToRegister, ae);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.AudioEntity)
             {
                 AudioEntity ae = new AudioEntity();
                 ae.internalEntity = entityToRegister;
                 ae.internalEntityType = typeof(WorldEngine.Entity.AudioEntity);
+                AddEntityMapping(entityToRegister, ae);
+                return true;
+            }
+            else if (entityToRegister is WorldEngine.Entity.AutomobileEntity)
+            {
+                AutomobileEntity ae = new AutomobileEntity();
+                ae.internalEntity = entityToRegister;
+                ae.internalEntityType = typeof(WorldEngine.Entity.AutomobileEntity);
                 AddEntityMapping(entityToRegister, ae);
                 return true;
             }

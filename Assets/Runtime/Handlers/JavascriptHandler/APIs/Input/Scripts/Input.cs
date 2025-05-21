@@ -548,9 +548,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
         }
 
         /// <summary>
-        /// Add a rig follwer (an entity that follows the rig).
+        /// Add a rig follower (an entity that follows the rig).
         /// </summary>
-        /// <param name="entityToFollowRig">Entity to follow the rig.</param>
+        /// <param name="entityToFollowLeftHand">Entity to follow the rig.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool AddRigFollower(BaseEntity entityToFollowRig)
         {
@@ -577,9 +577,67 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
         }
 
         /// <summary>
-        /// Remove a rig follwer (an entity that follows the rig).
+        /// Add a left hand follower (an entity that follows the left hand).
         /// </summary>
-        /// <param name="entityToFollowRig">Entity that follow the rig to remove.</param>
+        /// <param name="entityToFollowLeftHand">Entity to follow the rig.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool AddLeftHandFollower(BaseEntity entityToFollowLeftHand)
+        {
+            if (entityToFollowLeftHand == null)
+            {
+                Logging.LogWarning("[Input->AddLeftHandFollower] Invalid entityToFollowLeftHand.");
+                return false;
+            }
+
+            if (entityToFollowLeftHand.internalEntity == null)
+            {
+                Logging.LogError("[Input->AddLeftHandFollower] Invalid entityToFollowLeftHand.");
+                return false;
+            }
+
+            if (WebVerseRuntime.Instance.vrRig != null && WebVerseRuntime.Instance.vrRig.leftHandFollowers != null)
+            {
+                if (!WebVerseRuntime.Instance.vrRig.leftHandFollowers.Contains(entityToFollowLeftHand.internalEntity))
+                {
+                    WebVerseRuntime.Instance.vrRig.leftHandFollowers.Add(entityToFollowLeftHand.internalEntity);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Add a right hand follower (an entity that follows the right hand).
+        /// </summary>
+        /// <param name="entityToFollowRightHand">Entity to follow the right hand.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool AddRightHandFollower(BaseEntity entityToFollowRightHand)
+        {
+            if (entityToFollowRightHand == null)
+            {
+                Logging.LogWarning("[Input->AddRightHandFollower] Invalid entityToFollowRightHand.");
+                return false;
+            }
+
+            if (entityToFollowRightHand.internalEntity == null)
+            {
+                Logging.LogError("[Input->AddRightHandFollower] Invalid entityToFollowRightHand.");
+                return false;
+            }
+
+            if (WebVerseRuntime.Instance.vrRig != null && WebVerseRuntime.Instance.vrRig.rightHandFollowers != null)
+            {
+                if (!WebVerseRuntime.Instance.vrRig.rightHandFollowers.Contains(entityToFollowRightHand.internalEntity))
+                {
+                    WebVerseRuntime.Instance.vrRig.rightHandFollowers.Add(entityToFollowRightHand.internalEntity);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Remove a rig follower (an entity that follows the rig).
+        /// </summary>
+        /// <param name="entityToFollowRightHand">Entity that follow the rig to remove.</param>
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool RemoveRigFollower(BaseEntity entityToFollowRig)
         {
@@ -600,6 +658,64 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
                 if (WebVerseRuntime.Instance.vrRig.rigFollowers.Contains(entityToFollowRig.internalEntity))
                 {
                     WebVerseRuntime.Instance.vrRig.rigFollowers.Remove(entityToFollowRig.internalEntity);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Remove a left hand follower (an entity that follows the left hand).
+        /// </summary>
+        /// <param name="entityToFollowLeftHand">Entity that follow the left hand to remove.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool RemoveLeftHandFollower(BaseEntity entityToFollowLeftHand)
+        {
+            if (entityToFollowLeftHand == null)
+            {
+                Logging.LogWarning("[Input->RemoveLeftHandFollower] Invalid entityToFollowLeftHand.");
+                return false;
+            }
+
+            if (entityToFollowLeftHand.internalEntity == null)
+            {
+                Logging.LogError("[Input->RemoveLeftHandFollower] Invalid entityToFollowLeftHand.");
+                return false;
+            }
+
+            if (WebVerseRuntime.Instance.vrRig != null && WebVerseRuntime.Instance.vrRig.leftHandFollowers != null)
+            {
+                if (WebVerseRuntime.Instance.vrRig.leftHandFollowers.Contains(entityToFollowLeftHand.internalEntity))
+                {
+                    WebVerseRuntime.Instance.vrRig.leftHandFollowers.Remove(entityToFollowLeftHand.internalEntity);
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Remove a right hand follower (an entity that follows the right hand).
+        /// </summary>
+        /// <param name="entityToFollowRightHand">Entity that follow the right hand to remove.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public static bool RemoveRightHandFollower(BaseEntity entityToFollowRightHand)
+        {
+            if (entityToFollowRightHand == null)
+            {
+                Logging.LogWarning("[Input->RemoveRightHandFollower] Invalid entityToFollowRightHand.");
+                return false;
+            }
+
+            if (entityToFollowRightHand.internalEntity == null)
+            {
+                Logging.LogError("[Input->RemoveRightHandFollower] Invalid entityToFollowRightHand.");
+                return false;
+            }
+
+            if (WebVerseRuntime.Instance.vrRig != null && WebVerseRuntime.Instance.vrRig.rightHandFollowers != null)
+            {
+                if (WebVerseRuntime.Instance.vrRig.rightHandFollowers.Contains(entityToFollowRightHand.internalEntity))
+                {
+                    WebVerseRuntime.Instance.vrRig.rightHandFollowers.Remove(entityToFollowRightHand.internalEntity);
                 }
             }
             return true;

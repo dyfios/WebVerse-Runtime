@@ -191,6 +191,189 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         }
 
         /// <summary>
+        /// Load a GLTF resource as an automobile entity.
+        /// </summary>
+        /// <param name="gltfResourceURI">URI of the top-level GLTF resource.</param>
+        /// <param name="resourceURIs">URIs of resources needed by the top-level GLTF.</param>
+        /// <param name="meshPosition">Position for the automobile entity object.</param>
+        /// <param name="meshRotation">Rotation for the automobile entity object.</param>
+        /// <param name="wheels">Wheels for the automobile entity.</param>
+        /// <param name="mass">Mass of the automobile entity.</param>
+        /// <param name="type">Type of automobile entity.</param>
+        /// <param name="id">ID of the automobile entity.</param>
+        /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
+        /// to the loaded automobile entity.</param>
+        /// <param name="timeout">Timeout period after which loading will be aborted.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
+        /// <returns>ID of the automobile entity being loaded.</returns>
+        public Guid LoadGLTFResourceAsAutomobileEntity(string gltfResourceURI, string[] resourceURIs,
+            Vector3 meshPosition, Quaternion meshRotation, Javascript.APIs.Entity.AutomobileEntityWheel[] wheels,
+            float mass, Javascript.APIs.Entity.AutomobileEntity.AutomobileType type, Guid? id = null,
+            Action<AutomobileEntity> onLoaded = null, float timeout = 10, bool checkForUpdateIfCached = true)
+        {
+            Dictionary<string, float> convertedWheels = new Dictionary<string, float>();
+
+            EntityManager.AutomobileEntityType convertedType = EntityManager.AutomobileEntityType.Default;
+            switch (type)
+            {
+                case Javascript.APIs.Entity.AutomobileEntity.AutomobileType.Default:
+                default:
+                    convertedType = EntityManager.AutomobileEntityType.Default;
+                    break;
+            }
+
+#if !UNITY_WEBGL
+            Dictionary<string, bool> downloadedState = new Dictionary<string, bool>();
+
+            if (resourceURIs != null)
+            {
+                foreach (string resourceURI in resourceURIs)
+                {
+                    if (!string.IsNullOrEmpty(resourceURI))
+                    {
+                        downloadedState.Add(resourceURI, false);
+                        Action onResouceDownloaded = () =>
+                        {
+                            downloadedState[resourceURI] = true;
+                        };
+
+                        DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
+                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded,
+                            !checkForUpdateIfCached);
+                    }
+                }
+            }
+            Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
+            Action onDownloaded = () =>
+            {
+                LoadGLTF(
+                    System.IO.Path.Combine(runtime.fileHandler.fileDirectory,
+                    FileHandler.ToFileURI(VEML.VEMLUtilities.FullyQualifyURI(
+                        gltfResourceURI, WebVerseRuntime.Instance.currentBasePath))),
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        foreach (Javascript.APIs.Entity.AutomobileEntityWheel wheel in wheels)
+                        {
+                            convertedWheels.Add(wheel.wheelSubMesh, wheel.wheelRadius);
+                        }
+
+                        SetUpLoadedGLTFMeshAsAutomobileEntity(meshObject, meshPosition, meshRotation,
+                            convertedWheels, mass, convertedType, guid, tag, onLoaded);
+                        CleanUpExtraPrefabs();
+                    }));
+            };
+
+            DownloadGLTFResource(gltfResourceURI, onDownloaded, !checkForUpdateIfCached);
+            return guid;
+#else
+            Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
+            Action<byte[]> onDownloaded = (data) =>
+            {
+                LoadGLTF(gltfResourceURI.Substring(gltfResourceURI.LastIndexOf("/")), data,
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        foreach (Javascript.APIs.Entity.AutomobileEntityWheel wheel in wheels)
+                        {
+                            /*GameObject wheelSubMesh = FindChildObjectByName(meshObject, wheel.wheelSubMesh);
+                            if (wheelSubMesh == null)
+                            {
+                                Logging.LogWarning("[GLTFHandler->LoadGLTFResourceAsAutomobileEntity] Unable to find wheel submesh "
+                                    + wheel.wheelSubMesh);
+                            }
+                            else*/
+                            {
+                                convertedWheels.Add(wheel.wheelSubMesh, wheel.wheelRadius);
+                            }
+                        }
+
+                        SetUpLoadedGLTFMeshAsAutomobileEntity(meshObject, meshPosition, meshRotation,
+                            convertedWheels, mass, convertedType, guid, tag, onLoaded);
+                        CleanUpExtraPrefabs();
+                    }));
+            };
+
+            DownloadGLTFDirect(gltfResourceURI, onDownloaded);
+            return guid;
+#endif
+        }
+
+        /// <summary>
+        /// Load a GLTF resource as an airplane entity.
+        /// </summary>
+        /// <param name="gltfResourceURI">URI of the top-level GLTF resource.</param>
+        /// <param name="resourceURIs">URIs of resources needed by the top-level GLTF.</param>
+        /// <param name="meshPosition">Position for the airplane entity object.</param>
+        /// <param name="meshRotation">Rotation for the airplane entity object.</param>
+        /// <param name="wheels">Wheels for the airplane entity.</param>
+        /// <param name="mass">Mass of the airplane entity.</param>
+        /// <param name="type">Type of airplane entity.</param>
+        /// <param name="id">ID of the airplane entity.</param>
+        /// <param name="onLoaded">Action to invoke when loading is complete. Provides reference
+        /// to the loaded airplane entity.</param>
+        /// <param name="timeout">Timeout period after which loading will be aborted.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
+        /// <returns>ID of the airplane entity being loaded.</returns>
+        public Guid LoadGLTFResourceAsAirplaneEntity(string gltfResourceURI, string[] resourceURIs,
+            Vector3 meshPosition, Quaternion meshRotation, float mass, Guid? id = null,
+            Action<AirplaneEntity> onLoaded = null, float timeout = 10, bool checkForUpdateIfCached = true)
+        {
+#if !UNITY_WEBGL
+            Dictionary<string, bool> downloadedState = new Dictionary<string, bool>();
+
+            if (resourceURIs != null)
+            {
+                foreach (string resourceURI in resourceURIs)
+                {
+                    if (!string.IsNullOrEmpty(resourceURI))
+                    {
+                        downloadedState.Add(resourceURI, false);
+                        Action onResouceDownloaded = () =>
+                        {
+                            downloadedState[resourceURI] = true;
+                        };
+
+                        DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
+                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded,
+                            !checkForUpdateIfCached);
+                    }
+                }
+            }
+            Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
+            Action onDownloaded = () =>
+            {
+                LoadGLTF(
+                    System.IO.Path.Combine(runtime.fileHandler.fileDirectory,
+                    FileHandler.ToFileURI(VEML.VEMLUtilities.FullyQualifyURI(
+                        gltfResourceURI, WebVerseRuntime.Instance.currentBasePath))),
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        SetUpLoadedGLTFMeshAsAirplaneEntity(meshObject, meshPosition, meshRotation,
+                            mass, guid, tag, onLoaded);
+                        CleanUpExtraPrefabs();
+                    }));
+            };
+
+            DownloadGLTFResource(gltfResourceURI, onDownloaded, !checkForUpdateIfCached);
+            return guid;
+#else
+            Guid guid = id.HasValue ? id.Value : Guid.NewGuid();
+            Action<byte[]> onDownloaded = (data) =>
+            {
+                LoadGLTF(gltfResourceURI.Substring(gltfResourceURI.LastIndexOf("/")), data,
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        SetUpLoadedGLTFMeshAsAirplaneEntity(meshObject, meshPosition, meshRotation,
+                            mass, guid, tag, onLoaded);
+                        CleanUpExtraPrefabs();
+                    }));
+            };
+
+            DownloadGLTFDirect(gltfResourceURI, onDownloaded);
+            return guid;
+#endif
+        }
+
+        /// <summary>
         /// Download a GLTF resource.
         /// </summary>
         /// <param name="uri">URI of the GLTF resource.</param>
@@ -476,15 +659,15 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         }
 
         /// <summary>
-        /// Set up a loaded GLTF as a mesh entity.
+        /// Set up a loaded GLTF as a character entity.
         /// </summary>
         /// <param name="loadedMesh">Loaded gameobject containing mesh.</param>
         /// <param name="meshOffset">Offset for the mesh character entity object.</param>
         /// <param name="meshRotation">Rotation for the mesh character entity object.</param>
         /// <param name="avatarLabelOffset">Offset for the avatar label.</param>
-        /// <param name="guid">ID of the mesh entity.</param>
+        /// <param name="guid">ID of the mesh character entity.</param>
         /// <param name="onLoaded">Action to invoke when setup is complete. Takes a reference
-        /// to the set up mesh entity.</param>
+        /// to the set up character entity.</param>
         private void SetUpLoadedGLTFMeshAsCharacterEntity(GameObject loadedMesh, Vector3 meshOffset,
             Quaternion meshRotation, Vector3 avatarLabelOffset, Guid guid, Action<CharacterEntity> onLoaded)
         {
@@ -506,6 +689,76 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(
                 null, loadedMesh, meshOffset, meshRotation, avatarLabelOffset, Vector3.zero, Quaternion.identity,
                 Vector3.one, guid, null, false, onLoad);
+        }
+
+        /// <summary>
+        /// Set up a loaded GLTF as an automobile entity.
+        /// </summary>
+        /// <param name="loadedMesh">Loaded gameobject containing mesh.</param>
+        /// <param name="meshPosition">Position for the automobile entity object.</param>
+        /// <param name="meshRotation">Rotation for the automobile entity object.</param>
+        /// <param name="wheels">Wheels for the automobile entity.</param>
+        /// <param name="mass">Mass of the automobile entity.</param>
+        /// <param name="type">Type of automobile entity.</param>
+        /// <param name="guid">ID of the automobile entity.</param>
+        /// <param name="tag">Tag for the automobile entity.</param>
+        /// <param name="onLoaded">Action to invoke when setup is complete. Takes a reference
+        /// to the set up automobile entity.</param>
+        private void SetUpLoadedGLTFMeshAsAutomobileEntity(GameObject loadedMesh, Vector3 meshPosition,
+            Quaternion meshRotation, Dictionary<string, float> wheels, float mass,
+            EntityManager.AutomobileEntityType type, Guid guid, string tag, Action<AutomobileEntity> onLoaded)
+        {
+            Action onLoad = () =>
+            {
+                BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                if (entity == null)
+                {
+                    Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsAutomobileEntity] Unable to find loaded entity.");
+                    return;
+                }
+
+                if (onLoaded != null)
+                {
+                    onLoaded.Invoke((AutomobileEntity) entity);
+                }
+            };
+
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAutomobileEntity(
+                null, meshPosition, meshRotation, loadedMesh, wheels, mass, type, guid, tag, onLoad);
+        }
+
+        /// <summary>
+        /// Set up a loaded GLTF as an airplane entity.
+        /// </summary>
+        /// <param name="loadedMesh">Loaded gameobject containing mesh.</param>
+        /// <param name="meshPosition">Position for the airplane entity object.</param>
+        /// <param name="meshRotation">Rotation for the airplane entity object.</param>
+        /// <param name="mass">Mass of the airplane entity.</param>
+        /// <param name="guid">ID of the airplane entity.</param>
+        /// <param name="tag">Tag for the airplane entity.</param>
+        /// <param name="onLoaded">Action to invoke when setup is complete. Takes a reference
+        /// to the set up airplane entity.</param>
+        private void SetUpLoadedGLTFMeshAsAirplaneEntity(GameObject loadedMesh, Vector3 meshPosition,
+            Quaternion meshRotation, float mass,
+            Guid guid, string tag, Action<AirplaneEntity> onLoaded)
+        {
+            Action onLoad = () =>
+            {
+                BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                if (entity == null)
+                {
+                    Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsAirplaneEntity] Unable to find loaded entity.");
+                    return;
+                }
+
+                if (onLoaded != null)
+                {
+                    onLoaded.Invoke((AirplaneEntity) entity);
+                }
+            };
+
+            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAirplaneEntity(
+                null, meshPosition, meshRotation, loadedMesh, mass, guid, tag, onLoad);
         }
 
         /// <summary>
