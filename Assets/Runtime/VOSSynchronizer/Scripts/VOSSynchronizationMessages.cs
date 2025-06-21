@@ -237,17 +237,6 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             public string tag;
 
             /// <summary>
-            /// Guid representation of the ID.
-            /// </summary>
-            public Guid uuid
-            {
-                get
-                {
-                    return Guid.Parse(id);
-                }
-            }
-
-            /// <summary>
             /// Constructor for JSON-serializable VOS client information.
             /// </summary>
             /// <param name="_id">ID to use.</param>
@@ -688,11 +677,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "session-tag")]
                 public string sessionTag;
 
-                public CreateSessionMessage(Guid _messageID, Guid _clientID,
+                public CreateSessionMessage(Guid _messageID, string _clientID,
                     string _clientToken, Guid _sessionID, string tag)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     sessionTag = tag;
@@ -730,11 +719,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "session-id")]
                 public string sessionID;
 
-                public DestroySessionMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public DestroySessionMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                 }
@@ -836,11 +825,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string clientTag;
 
                 public JoinSessionMessage(Guid _messageID, Guid sessionID,
-                    Guid clientID, string clientToken, string clientTag)
+                    string clientID, string clientToken, string clientTag)
                 {
                     messageID = _messageID.ToString();
                     this.sessionID = sessionID.ToString();
-                    this.clientID = clientID.ToString();
+                    this.clientID = clientID;
                     this.clientToken = clientToken;
                     this.clientTag = clientTag;
                 }
@@ -878,11 +867,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string clientToken;
 
                 public LeaveSessionMessage(Guid _messageID, Guid _sessionID,
-                    Guid _clientID, string _clientToken)
+                    string _clientID, string _clientToken)
                 {
                     messageID = _messageID.ToString();
                     sessionID = _sessionID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                 }
             }
@@ -925,11 +914,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string clientTag;
 
                 public NewClientMessage(Guid _messageID, Guid _sessionID,
-                    Guid _clientID, string _clientToken, string _clientTag)
+                    string _clientID, string _clientToken, string _clientTag)
                 {
                     messageID = _messageID.ToString();
                     sessionID = _sessionID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     clientTag = _clientTag;
                 }
@@ -967,11 +956,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string clientToken;
 
                 public ClientLeftMessage(Guid _messageID, Guid _sessionID,
-                    Guid _clientID, string _clientToken)
+                    string _clientID, string _clientToken)
                 {
                     messageID = _messageID.ToString();
                     sessionID = _sessionID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                 }
             }
@@ -1008,11 +997,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string clientToken;
 
                 public ClientHeartbeatMessage(Guid _messageID, Guid _sessionID,
-                    Guid _clientID, string _clientToken)
+                    string _clientID, string _clientToken)
                 {
                     messageID = _messageID.ToString();
                     sessionID = _sessionID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                 }
             }
@@ -1049,11 +1038,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 public string clientToken;
 
                 public GetSessionStateMessage(Guid _messageID, Guid _sessionID,
-                    Guid _clientID, string _clientToken)
+                    string _clientID, string _clientToken)
                 {
                     messageID = _messageID.ToString();
                     sessionID = _sessionID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                 }
             }
@@ -1178,13 +1167,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddContainerEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddContainerEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag, Guid? _parentID,
                     Vector3 _position, Quaternion _rotation, Vector3 _scale,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -1307,7 +1296,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddCharacterEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddCharacterEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag, Guid? _parentID,
                     string _path, string[] _resources, Vector3 _modelOffset,
                     Quaternion _modelRotation, Vector3 _labelOffset,
@@ -1315,7 +1304,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     bool isSize, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -1426,13 +1415,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddMeshEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddMeshEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag, string _path,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -1528,14 +1517,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddButtonEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddButtonEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent,
                     Vector2 _sizePercent, string _onClick,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -1628,13 +1617,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddCanvasEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddCanvasEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -1722,13 +1711,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddInputEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddInputEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent,
                     Vector2 _sizePercent, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -1808,13 +1797,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddLightEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddLightEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -1972,7 +1961,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddTerrainEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddTerrainEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     float _length, float _width, float _height, float[,] _heights,
@@ -1983,7 +1972,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2154,14 +2143,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddTextEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddTextEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent,
                     Vector2 _sizePercent, string _text, int _fontSize,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2249,13 +2238,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddVoxelEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddVoxelEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scale, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2372,14 +2361,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddAirplaneEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddAirplaneEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, string _path, Vector3 _meshPosition,
                     Quaternion _meshRotation, float _mass, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2483,13 +2472,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddAudioEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddAudioEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scale, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2618,7 +2607,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddAutomobileEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddAutomobileEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, string _path, Vector3 _meshPosition,
@@ -2626,7 +2615,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2732,13 +2721,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddDropdownEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddDropdownEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent, Vector2 _sizePercent,
                     string _onChange, string[] _options, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2838,13 +2827,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddHTMLEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddHTMLEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, string _onMessage, bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2939,13 +2928,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddImageEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddImageEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent, Vector2 _sizePercent, string _imageFile,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -2995,11 +2984,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "entity-id")]
                 public string id;
 
-                public RemoveEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public RemoveEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3043,11 +3032,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "entity-id")]
                 public string id;
 
-                public DeleteEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public DeleteEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3097,11 +3086,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "canvas-type")]
                 public string type;
 
-                public SetCanvasTypeMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetCanvasTypeMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _type)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3152,11 +3141,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "highlighted")]
                 public bool highlighted;
 
-                public SetHighlightStateMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetHighlightStateMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, bool _highlighted)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3207,11 +3196,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "interaction-state")]
                 public string interactionState;
 
-                public SetInteractionStateMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetInteractionStateMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _interactionState)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3274,12 +3263,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "stationary")]
                 public bool stationary;
 
-                public SetMotionMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetMotionMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _angularVelocity,
                     Vector3 _velocity, bool _stationary)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3333,15 +3322,15 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "parent-id")]
                 public string parentID;
 
-                public SetParentMessage(Guid _messageID, Guid _clientID, string _clientToken,
-                    Guid _sessionID, Guid _entityID, Guid _parentID)
+                public SetParentMessage(Guid _messageID, string _clientID, string _clientToken,
+                    Guid _sessionID, Guid _entityID, Guid? _parentID)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
-                    parentID = _parentID.ToString();
+                    parentID = parentID == null ? null : _parentID.ToString();
                 }
             }
 
@@ -3412,12 +3401,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "mass")]
                 public float mass;
 
-                public SetPhysicalPropertiesMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetPhysicalPropertiesMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, float _angularDrag,
                     Vector3 _centerOfMass, float _drag, bool _gravitational, float _mass)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3472,11 +3461,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "visible")]
                 public bool visible;
 
-                public SetVisibilityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetVisibilityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, bool _visible)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3527,11 +3516,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "position")]
                 public SerializableVector3 position;
 
-                public UpdateEntityPositionMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntityPositionMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _position)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3582,11 +3571,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "rotation")]
                 public SerializableQuaternion rotation;
 
-                public UpdateEntityRotationMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntityRotationMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Quaternion _rotation)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3637,11 +3626,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "scale")]
                 public SerializableVector3 scale;
 
-                public UpdateEntityScaleMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntityScaleMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _scale)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3692,11 +3681,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size")]
                 public SerializableVector3 size;
 
-                public UpdateEntitySizeMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntitySizeMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _size)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3765,12 +3754,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "layer")]
                 public int layer;
 
-                public ModifyTerrainEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public ModifyTerrainEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                 Guid _sessionID, Guid _entityID, string _modification,
                 Vector3 _position, string _brushType, int _layer)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -3824,11 +3813,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "message")]
                 public string message;
 
-                public PublishMessageMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public PublishMessageMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, string _topic, string _message)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     topic = _topic;
@@ -3916,13 +3905,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "delete-with-client")]
                 public bool deleteWithClient;
 
-                public AddContainerEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddContainerEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag, Guid? _parentID,
                     Vector3 _position, Quaternion _rotation, Vector3 _scale,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4039,14 +4028,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size", Required = Required.AllowNull)]
                 public SerializableVector3 size;
 
-                public AddCharacterEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddCharacterEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag, string _path,
                     string[] _resources, Vector3 _modelOffset, Quaternion _modelRotation,
                     Vector3 _labelOffset, Guid? _parentID, Vector3 _position,
                     Quaternion _rotation, Vector3 _scaleSize, bool isSize)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4156,13 +4145,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size", Required = Required.AllowNull)]
                 public SerializableVector3 size;
 
-                public AddMeshEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddMeshEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag, string _path,
                     string[] _resources, Guid? _parentID, Vector3 _position,
                     Quaternion _rotation, Vector3 _scaleSize, bool isSize)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4252,13 +4241,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "on-click")]
                 public string onClick;
 
-                public AddButtonEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddButtonEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent,
                     Vector2 _sizePercent, string _onClick)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4344,13 +4333,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size", Required = Required.AllowNull)]
                 public SerializableVector3 size;
 
-                public AddCanvasEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddCanvasEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4431,13 +4420,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size-percent")]
                 public SerializableVector2 sizePercent;
 
-                public AddInputEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddInputEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent,
                     Vector2 _sizePercent)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4510,12 +4499,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "rotation")]
                 public SerializableQuaternion rotation;
 
-                public AddLightEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddLightEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4666,7 +4655,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "terrain-modification")]
                 public TerrainModification[] modifications;
 
-                public AddTerrainEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddTerrainEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     float _length, float _width, float _height, float[,] _heights,
@@ -4678,7 +4667,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> _modifications)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4822,13 +4811,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "font-size")]
                 public int fontSize;
 
-                public AddTextEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddTextEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent,
                     Vector2 _sizePercent, string _text, int _fontSize)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -4915,13 +4904,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size", Required = Required.AllowNull)]
                 public SerializableVector3 size;
 
-                public AddVoxelEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddVoxelEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scale)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5031,14 +5020,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "mass")]
                 public float mass;
 
-                public AddAirplaneEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddAirplaneEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, string _path, Vector3 _meshPosition,
                     Quaternion _meshRotation, float _mass)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5135,13 +5124,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size", Required = Required.AllowNull)]
                 public SerializableVector3 size;
 
-                public AddAudioEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddAudioEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scale)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5263,14 +5252,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "wheels")]
                 public string wheels;
 
-                public AddAutomobileEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddAutomobileEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, string _path, Vector3 _meshPosition,
                     Quaternion _meshRotation, float _mass, string _automobileEntityType, string _wheels)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5369,13 +5358,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "options")]
                 public string[] options;
 
-                public AddDropdownEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddDropdownEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent, Vector2 _sizePercent,
                     string _onChange, string[] _options)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5468,13 +5457,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "on-message")]
                 public string onMessage;
 
-                public AddHTMLEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddHTMLEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     Vector3 _scaleSize, bool isSize, string _onMessage)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5562,12 +5551,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty("image-file")]
                 public string imageFile;
 
-                public AddImageEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public AddImageEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector2 _positionPercent, Vector2 _sizePercent, string _imageFile)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5616,11 +5605,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "entity-id")]
                 public string id;
 
-                public RemoveEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public RemoveEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5660,11 +5649,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "entity-id")]
                 public string id;
 
-                public DeleteEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public DeleteEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5714,11 +5703,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "canvas-type")]
                 public string type;
 
-                public SetCanvasTypeMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetCanvasTypeMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _type)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5769,11 +5758,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "highlighted")]
                 public bool highlighted;
 
-                public SetHighlightStateMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetHighlightStateMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, bool _highlighted)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5824,11 +5813,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "interaction-state")]
                 public string interactionState;
 
-                public SetInteractionStateMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetInteractionStateMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, string _interactionState)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5891,12 +5880,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "stationary")]
                 public bool stationary;
 
-                public SetMotionMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetMotionMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _angularVelocity,
                     Vector3 _velocity, bool _stationary)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -5950,11 +5939,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "parent-id")]
                 public string parentID;
 
-                public SetParentMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetParentMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Guid _parentID)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6029,12 +6018,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "mass")]
                 public float mass;
 
-                public SetPhysicalPropertiesMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetPhysicalPropertiesMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, float _angularDrag,
                     Vector3 _centerOfMass, float _drag, bool _gravitational, float _mass)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6089,11 +6078,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "visible")]
                 public bool visible;
 
-                public SetVisibilityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public SetVisibilityMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, bool _visible)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6144,11 +6133,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "position")]
                 public SerializableVector3 position;
 
-                public UpdateEntityPositionMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntityPositionMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _position)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6199,11 +6188,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "rotation")]
                 public SerializableQuaternion rotation;
 
-                public UpdateEntityRotationMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntityRotationMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Quaternion _rotation)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6254,11 +6243,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "scale")]
                 public SerializableVector3 scale;
 
-                public UpdateEntityScaleMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntityScaleMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _scale)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6309,11 +6298,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size")]
                 public SerializableVector3 size;
 
-                public UpdateEntitySizeMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public UpdateEntitySizeMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, Guid _entityID, Vector3 _size)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6388,12 +6377,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "size")]
                 public float size;
 
-                public ModifyTerrainEntityMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public ModifyTerrainEntityMessage(Guid _messageID, string _clientID, string _clientToken,
                 Guid _sessionID, Guid _entityID, string _modification,
                 Vector3 _position, string _brushType, int _layer)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     id = _entityID.ToString();
@@ -6446,11 +6435,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 [JsonProperty(PropertyName = "message")]
                 public string message;
 
-                public NewMessageMessage(Guid _messageID, Guid _clientID, string _clientToken,
+                public NewMessageMessage(Guid _messageID, string _clientID, string _clientToken,
                     Guid _sessionID, string _topic, string _message)
                 {
                     messageID = _messageID.ToString();
-                    clientID = _clientID.ToString();
+                    clientID = _clientID;
                     clientToken = _clientToken;
                     sessionID = _sessionID.ToString();
                     topic = _topic;
