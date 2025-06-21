@@ -112,7 +112,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                     transport == Transport.TCP ? WebInterface.MQTT.MQTTClient.Transports.TCP :
                     WebInterface.MQTT.MQTTClient.Transports.WebSockets,
                     new UnityEngine.Vector3(worldOffset.x, worldOffset.y, worldOffset.z), Guid.Parse(id), tag,
-                    string.IsNullOrEmpty(clientID) ? null : Guid.Parse(clientID), clientToken);
+                    clientID, clientToken);
             if (newSynchronizerAndSession == null)
             {
                 LogSystem.LogError("[VOSSynchronization:CreateSession] Unable to set up synchronizer.");
@@ -181,7 +181,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 };
             }
 
-            Tuple<WebVerse.VOSSynchronization.VOSSynchronizer, Guid, Guid?> newSynchronizerAndSession = null;
+            Tuple<WebVerse.VOSSynchronization.VOSSynchronizer, Guid, string> newSynchronizerAndSession = null;
             Action onSynchronizerJoinedAction = () => {
                 newSynchronizerAndSession.Item1.GetSessionState(onJoinAction);
             };
@@ -193,7 +193,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                     WebInterface.MQTT.MQTTClient.Transports.WebSockets,
                     new UnityEngine.Vector3(worldOffset.x, worldOffset.y, worldOffset.z),
                     Guid.Parse(id), onSynchronizerJoinedAction,
-                        string.IsNullOrEmpty(clientID) ? null : Guid.Parse(clientID), clientToken);
+                        clientID, clientToken);
             if (newSynchronizerAndSession == null)
             {
                 LogSystem.LogError("[VOSSynchronization:JoinSession] Unable to set up synchronizer.");
@@ -207,9 +207,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 return null;
             }
 
-            Guid? clID = newSynchronizerAndSession.Item3;
+            string clID = newSynchronizerAndSession.Item3;
 
-            return clID.HasValue ? clID.Value.ToString() : null;
+            return clID;
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 return null;
             }
 
-            return synchronizerToGetUserTagOn.GetUserTag(Guid.Parse(userID));
+            return synchronizerToGetUserTagOn.GetUserTag(userID);
         }
 
         /// <summary>

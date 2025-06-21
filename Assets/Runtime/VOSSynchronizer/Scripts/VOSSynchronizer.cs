@@ -86,7 +86,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <summary>
         /// Currently synchronized users.
         /// </summary>
-        private Dictionary<Guid, string> synchronizedUsers;
+        private Dictionary<string, string> synchronizedUsers;
 
         /// <summary>
         /// Currently synchronized entities.
@@ -96,7 +96,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <summary>
         /// ID of the current client.
         /// </summary>
-        private Guid? currentClientID;
+        private string currentClientID;
 
         /// <summary>
         /// Token for the current client.
@@ -153,7 +153,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="worldOffset">Offset for this synchronized client in the world.</param>
         public void Initialize(string host, int port, bool tls,
             MQTTClient.Transports transport, Vector3 worldOffset,
-            Guid? clientID = null, string clientToken = null)
+            string clientID = null, string clientToken = null)
         {
             if (mqttClient != null)
             {
@@ -171,10 +171,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             mqttClient = new MQTTClient(host, port, tls, transport,
                 onConnectedAction, onDisconnectedAction, onStateChangedAction, onErrorAction, "/mqtt");
             isConnected = false;
-            synchronizedUsers = new Dictionary<Guid, string>();
+            synchronizedUsers = new Dictionary<string, string>();
             synchronizedEntities = new List<BaseEntity>();
             availableSessions = new Dictionary<Guid, string>();
-            currentClientID = clientID.HasValue ? clientID : Guid.NewGuid();
+            currentClientID = clientID;
             currentClientToken = clientToken;
             currentSessionID = null;
             currentStateMessage = null;
@@ -226,7 +226,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// </summary>
         /// <param name="userID">ID of the user to get the tag for.</param>
         /// <returns>Tag of the requested user, or null if not found.</returns>
-        public string GetUserTag(Guid userID)
+        public string GetUserTag(string userID)
         {
             if (synchronizedUsers == null)
             {
@@ -289,7 +289,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.CreateSessionMessage
                 createSessionMessage = new VOSSynchronizationMessages.SessionMessages.CreateSessionMessage(
-                    messageID, currentClientID.Value, currentClientToken, id, tag);
+                    messageID, currentClientID, currentClientToken, id, tag);
             mqttClient.Publish("vos/session/create", JsonConvert.SerializeObject(createSessionMessage));
         }
 
@@ -319,7 +319,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.DestroySessionMessage
                 destroySessionMessage = new VOSSynchronizationMessages.SessionMessages.DestroySessionMessage(
-                    messageID, currentClientID.Value, currentClientToken, currentSessionID.Value);
+                    messageID, currentClientID, currentClientToken, currentSessionID.Value);
             mqttClient.Publish("vos/session/destroy", JsonConvert.SerializeObject(destroySessionMessage));
         }
 
@@ -329,7 +329,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
         /// <param name="sessionID">ID of the session to join.</param>
         /// <param name="clientTag">Tag for the client.</param>
         /// <returns>ID of the client in the session, or null if unsuccessful.</returns>
-        public Guid? JoinSession(Guid sessionID, string clientTag)
+        public string JoinSession(Guid sessionID, string clientTag)
         {
             if (mqttClient == null)
             {
@@ -348,7 +348,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.JoinSessionMessage
                 createSessionMessage = new VOSSynchronizationMessages.SessionMessages
-                .JoinSessionMessage(messageID, sessionID, currentClientID.Value, currentClientToken, clientTag);
+                .JoinSessionMessage(messageID, sessionID, currentClientID, currentClientToken, clientTag);
             mqttClient.Publish("vos/session/join", JsonConvert.SerializeObject(createSessionMessage));
             mqttClient.Subscribe("vos/status/" + sessionID.ToString() + "/#", (info) =>
                 LogSystem.Log("Joined session " + currentSessionID.ToString() + "."),
@@ -391,7 +391,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.LeaveSessionMessage
                 exitSessionMessage = new VOSSynchronizationMessages.SessionMessages
-                .LeaveSessionMessage(messageID, currentSessionID.Value, currentClientID.Value, currentClientToken);
+                .LeaveSessionMessage(messageID, currentSessionID.Value, currentClientID, currentClientToken);
             mqttClient.Publish("vos/session/exit", JsonConvert.SerializeObject(exitSessionMessage));
             mqttClient.UnSubscribe("vos/status/" + currentSessionID.Value.ToString() + "/#", (info) =>
                 LogSystem.Log("Exited session " + currentSessionID.Value.ToString() + ".")
@@ -424,7 +424,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.ClientHeartbeatMessage
                 clientHeartbeatMessage = new VOSSynchronizationMessages.SessionMessages
-                .ClientHeartbeatMessage(messageID, currentSessionID.Value, currentClientID.Value, currentClientToken);
+                .ClientHeartbeatMessage(messageID, currentSessionID.Value, currentClientID, currentClientToken);
             mqttClient.Publish("vos/session/heartbeat", JsonConvert.SerializeObject(clientHeartbeatMessage));
         }
 
@@ -455,7 +455,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.SessionMessages.GetSessionStateMessage
                 getSessionStateMessage = new VOSSynchronizationMessages.SessionMessages
-                .GetSessionStateMessage(messageID, currentSessionID.Value, currentClientID.Value, currentClientToken);
+                .GetSessionStateMessage(messageID, currentSessionID.Value, currentClientID, currentClientToken);
             requestedState = true;
             onGotState = onStateReceived;
             mqttClient.Publish("vos/session/getstate", JsonConvert.SerializeObject(getSessionStateMessage));
@@ -525,7 +525,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddMeshEntityMessage
                     addMeshEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddMeshEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddMeshEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, filePath, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, deleteWithClient);
@@ -536,7 +536,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddContainerEntityMessage
                     addContainerEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddContainerEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddContainerEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), deleteWithClient);
@@ -547,7 +547,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddCharacterEntityMessage
                     addCharacterEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddCharacterEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddCharacterEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID, filePath, resourcesPaths,
                     ((CharacterEntity) entityToSynchronize).characterObjectOffset,
                     ((CharacterEntity) entityToSynchronize).characterObjectRotation,
@@ -566,7 +566,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddButtonEntityMessage
                     addButtonEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddButtonEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddButtonEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((ButtonEntity) entityToSynchronize).GetPositionPercent(),
                     ((ButtonEntity) entityToSynchronize).GetSizePercent(), null, deleteWithClient); // TODO event.
@@ -577,7 +577,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddCanvasEntityMessage
                     addCanvasEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddCanvasEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddCanvasEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, deleteWithClient);
@@ -594,7 +594,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddInputEntityMessage
                     addInputEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddInputEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddInputEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((InputEntity) entityToSynchronize).GetPositionPercent(),
                     ((InputEntity) entityToSynchronize).GetSizePercent(), deleteWithClient);
@@ -605,7 +605,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddLightEntityMessage
                     addLightEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddLightEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddLightEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     deleteWithClient);
@@ -627,7 +627,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 }
                 VOSSynchronizationMessages.RequestMessages.AddTerrainEntityMessage
                     addTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddTerrainEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddTerrainEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     size.x, size.y, size.z, ((TerrainEntity) entityToSynchronize).GetHeights(),
@@ -652,7 +652,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddTerrainEntityMessage
                     addTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddTerrainEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddTerrainEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     size.x, size.y, size.z, ((HybridTerrainEntity) entityToSynchronize).GetBaseHeights(),
@@ -672,7 +672,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddTextEntityMessage
                     addTextEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddTextEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddTextEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((TextEntity) entityToSynchronize).GetPositionPercent(),
                     ((TextEntity) entityToSynchronize).GetSizePercent(),
@@ -685,7 +685,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddVoxelEntityMessage
                     addVoxelEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddVoxelEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddVoxelEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), deleteWithClient);
@@ -702,7 +702,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
 
                 VOSSynchronizationMessages.RequestMessages.AddAirplaneEntityMessage
                     addAirplaneEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddAirplaneEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddAirplaneEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, filePath, modelOffset.HasValue ? modelOffset.Value : Vector3.zero,
@@ -715,7 +715,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddAudioEntityMessage
                     addAudioEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddAudioEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddAudioEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), deleteWithClient);
@@ -726,7 +726,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddAutomobileEntityMessage
                     addAutomobileEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddAutomobileEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddAutomobileEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, filePath, modelOffset.HasValue ? modelOffset.Value : Vector3.zero,
@@ -739,7 +739,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddDropdownEntityMessage
                     addDropdownEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddDropdownEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddDropdownEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((DropdownEntity) entityToSynchronize).GetPositionPercent(),
                     ((DropdownEntity) entityToSynchronize).GetSizePercent(),
@@ -751,7 +751,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddHTMLEntityMessage
                     addHTMLEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddHTMLEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddHTMLEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     entityToSynchronize.GetPosition(true), entityToSynchronize.GetRotation(true),
                     entityToSynchronize.GetScale(), false, null, deleteWithClient);
@@ -762,7 +762,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             {
                 VOSSynchronizationMessages.RequestMessages.AddImageEntityMessage
                     addImageEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                    .AddImageEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                    .AddImageEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                     entityToSynchronize.id, entityToSynchronize.entityTag, parentID,
                     ((DropdownEntity) entityToSynchronize).GetPositionPercent(),
                     ((DropdownEntity) entityToSynchronize).GetSizePercent(), filePath, deleteWithClient);
@@ -812,7 +812,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.RemoveEntityMessage
                 removeEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                .RemoveEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .RemoveEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToUnSynchronize.id);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToUnSynchronize.id.ToString() + "/remove",
@@ -855,7 +855,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.DeleteEntityMessage
                 deleteEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                .DeleteEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .DeleteEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToDelete.id);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToDelete.id.ToString() + "/delete",
@@ -897,7 +897,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetCanvasTypeMessage
                 setCanvasTypeMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetCanvasTypeMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .SetCanvasTypeMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, "screen");
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/canvastype",
@@ -938,7 +938,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetCanvasTypeMessage
                 setCanvasTypeMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetCanvasTypeMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .SetCanvasTypeMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, "world");
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/canvastype",
@@ -980,7 +980,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetHighlightStateMessage
                 setHighlightStateMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetHighlightStateMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .SetHighlightStateMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, highlight);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/highlight",
@@ -1022,7 +1022,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetInteractionStateMessage
                 setInteractionStateMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetInteractionStateMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .SetInteractionStateMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, state.HasValue ? state.Value.ToString().ToLower() : "static");
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/interactionstate",
@@ -1075,7 +1075,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetMotionMessage
                 setMotionMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetMotionMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .SetMotionMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, angularVelocity, velocity, stationary);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/motion",
@@ -1118,8 +1118,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetParentMessage
                 setParentMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetParentMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
-                entityToSet.id, parentToSet.id);
+                .SetParentMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
+                entityToSet.id, parentToSet == null ? null : parentToSet.id);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/parent",
                 JsonConvert.SerializeObject(setParentMessage));
@@ -1174,7 +1174,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetPhysicalPropertiesMessage
                 setPhysicalPropertiesMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetPhysicalPropertiesMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .SetPhysicalPropertiesMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, angularDrag, centerOfMass == null ? Vector3.zero : centerOfMass.Value, drag, gravitational, mass);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/physicalproperties",
@@ -1217,7 +1217,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntityPositionMessage
                 updateEntityPositionMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntityPositionMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .UpdateEntityPositionMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, ToWorldPosition(position));
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/position",
@@ -1259,7 +1259,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntityRotationMessage
                 updateEntityRotationMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntityRotationMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .UpdateEntityRotationMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, rotation);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/rotation",
@@ -1301,7 +1301,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntityScaleMessage
                 updateEntityScaleMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntityScaleMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .UpdateEntityScaleMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, scale);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/scale",
@@ -1343,7 +1343,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.UpdateEntitySizeMessage
                 updateEntitySizeMessage = new VOSSynchronizationMessages.RequestMessages
-                .UpdateEntitySizeMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .UpdateEntitySizeMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, size);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/size",
@@ -1411,7 +1411,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.ModifyTerrainEntityMessage
                 modifyTerrainEntityMessage = new VOSSynchronizationMessages.RequestMessages
-                .ModifyTerrainEntityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .ModifyTerrainEntityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, mod, position, bt, layer);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/terrain-mod",
@@ -1453,7 +1453,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.SetVisibilityMessage
                 setVisibilityMessage = new VOSSynchronizationMessages.RequestMessages
-                .SetVisibilityMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .SetVisibilityMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 entityToSet.id, visible);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/entity/" + entityToSet.id.ToString() + "/visibility",
@@ -1489,7 +1489,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             Guid messageID = Guid.NewGuid();
             VOSSynchronizationMessages.RequestMessages.PublishMessageMessage
                 publishMessageMessage = new VOSSynchronizationMessages.RequestMessages
-                .PublishMessageMessage(messageID, currentClientID.Value, currentClientToken, currentSessionID.Value,
+                .PublishMessageMessage(messageID, currentClientID, currentClientToken, currentSessionID.Value,
                 topic, message);
             mqttClient.Publish("vos/request/" + currentSessionID.Value.ToString()
                 + "/message/create",
@@ -1646,10 +1646,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             DeleteSynchronizedEntity(entity);
                         }
 
-                        synchronizedUsers = new Dictionary<Guid, string>();
+                        synchronizedUsers = new Dictionary<string, string>();
                         foreach (VOSSynchronizationMessages.ClientInfo clientInfo in sessionStateMessage.clients)
                         {
-                            synchronizedUsers.Add(clientInfo.uuid, clientInfo.tag);
+                            synchronizedUsers.Add(clientInfo.id, clientInfo.tag);
                         }
 
                         synchronizedEntities = new List<BaseEntity>();
@@ -1668,14 +1668,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     VOSSynchronizationMessages.SessionMessages.NewClientMessage
                         newClientMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.SessionMessages.NewClientMessage>(message);
-                    synchronizedUsers.Add(Guid.Parse(newClientMessage.clientID), newClientMessage.clientTag);
+                    synchronizedUsers.Add(newClientMessage.clientID, newClientMessage.clientTag);
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/clientleft")
                 {
                     VOSSynchronizationMessages.SessionMessages.ClientLeftMessage
                         clientLeftMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.SessionMessages.ClientLeftMessage>(message);
-                    synchronizedUsers.Remove(Guid.Parse(clientLeftMessage.clientID));
+                    synchronizedUsers.Remove(clientLeftMessage.clientID);
                 }
                 else if (topic == "vos/status/" + currentSessionID.ToString() + "/createcontainerentity")
                 {
@@ -2499,12 +2499,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                                 RemoveSynchronizedEntity(entity);
                             }
 
-                            synchronizedUsers = new Dictionary<Guid, string>();
+                            synchronizedUsers = new Dictionary<string, string>();
                             if (sessionStateMessage.clients != null)
                             {
                                 foreach (VOSSynchronizationMessages.ClientInfo clientInfo in sessionStateMessage.clients)
                                 {
-                                    synchronizedUsers.Add(clientInfo.uuid, clientInfo.tag);
+                                    synchronizedUsers.Add(clientInfo.id, clientInfo.tag);
                                 }
                             }
 
