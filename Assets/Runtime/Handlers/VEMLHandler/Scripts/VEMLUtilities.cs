@@ -239,6 +239,78 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         }
 
         /// <summary>
+        /// Helper method to convert V2.4 entities to V3.0 entities.
+        /// </summary>
+        /// <param name="inputEntity">V2.4 entity to convert.</param>
+        /// <returns>V3.0 entity or null if conversion not supported.</returns>
+        private static Schema.V3_0.entity ConvertV2_4EntityToV3_0(Schema.V2_4.entity inputEntity)
+        {
+            if (inputEntity == null) return null;
+
+            // Since V2.4 and V3.0 are very similar, we can create a simplified mapping
+            // For now, we'll just do basic entity conversions and leave detailed conversion for later
+            
+            // Create a basic V3.0 entity and copy common properties
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            
+            // Convert transform (simplified - assumes basic compatibility)
+            if (inputEntity.transform != null)
+            {
+                outputEntity.transform = new Schema.V3_0.scaletransform();
+                if (inputEntity.transform is Schema.V2_4.scaletransform)
+                {
+                    var inputTransform = (Schema.V2_4.scaletransform)inputEntity.transform;
+                    var outputTransform = (Schema.V3_0.scaletransform)outputEntity.transform;
+                    
+                    if (inputTransform.position != null)
+                    {
+                        outputTransform.position = new Schema.V3_0.position();
+                        outputTransform.position.x = inputTransform.position.x;
+                        outputTransform.position.y = inputTransform.position.y;
+                        outputTransform.position.z = inputTransform.position.z;
+                    }
+                    
+                    if (inputTransform.rotation != null)
+                    {
+                        outputTransform.rotation = new Schema.V3_0.rotation();
+                        outputTransform.rotation.x = inputTransform.rotation.x;
+                        outputTransform.rotation.y = inputTransform.rotation.y;
+                        outputTransform.rotation.z = inputTransform.rotation.z;
+                        outputTransform.rotation.w = inputTransform.rotation.w;
+                    }
+                    
+                    if (inputTransform.scale != null)
+                    {
+                        outputTransform.scale = new Schema.V3_0.scale();
+                        outputTransform.scale.x = inputTransform.scale.x;
+                        outputTransform.scale.y = inputTransform.scale.y;
+                        outputTransform.scale.z = inputTransform.scale.z;
+                    }
+                }
+            }
+            
+            // Convert child entities recursively
+            if (inputEntity.entity1 != null)
+            {
+                List<Schema.V3_0.entity> childEntities = new List<Schema.V3_0.entity>();
+                foreach (Schema.V2_4.entity childEntity in inputEntity.entity1)
+                {
+                    Schema.V3_0.entity convertedChild = ConvertV2_4EntityToV3_0(childEntity);
+                    if (convertedChild != null)
+                    {
+                        childEntities.Add(convertedChild);
+                    }
+                }
+                outputEntity.entity1 = childEntities.ToArray();
+            }
+            
+            return outputEntity;
+        }
+
+        /// <summary>
         /// Helper method to convert V3.0 entities to V2.4 entities.
         /// </summary>
         /// <param name="inputEntity">V3.0 entity to convert.</param>
@@ -5203,6 +5275,102 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
             entityList.Add(entityToAdd);
             return entityList.ToArray();
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.3 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_3(Schema.V2_3.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV2_3(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.2 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_2(Schema.V2_2.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV2_2(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.1 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_1(Schema.V2_1.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV2_1(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.0 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_0(Schema.V2_0.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV2_0(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.3 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_3(Schema.V1_3.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV1_3(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.2 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_2(Schema.V1_2.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV1_2(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.1 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_1(Schema.V1_1.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV1_1(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.0 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_0(Schema.V1_0.veml inputVEML)
+        {
+            // First convert to V2.4, then to V3.0
+            Schema.V2_4.veml v2_4VEML = ConvertFromV1_0(inputVEML);
+            return ConvertToV3_0FromV2_4(v2_4VEML);
         }
     }
 }
