@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using FiveSQD.WebVerse.Utilities;
 
 namespace FiveSQD.WebVerse.Handlers.VEML
 {
@@ -245,16 +246,460 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <returns>V2.4 entity or null if conversion not supported.</returns>
         private static Schema.V2_4.entity ConvertV3_0EntityToV2_4(Schema.V3_0.entity inputEntity)
         {
-            // Since the entity types are largely the same between V3.0 and V2.4,
-            // we can do a simple type-based conversion for most cases
+            if (inputEntity == null) return null;
+
+            // Convert different entity types - since V3.0 is based on V2.4, most conversions are direct field mappings
+            if (inputEntity is Schema.V3_0.meshentity)
+            {
+                return ConvertV3_0MeshEntityToV2_4((Schema.V3_0.meshentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.lightentity)
+            {
+                return ConvertV3_0LightEntityToV2_4((Schema.V3_0.lightentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.characterentity)
+            {
+                return ConvertV3_0CharacterEntityToV2_4((Schema.V3_0.characterentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.buttonentity)
+            {
+                return ConvertV3_0ButtonEntityToV2_4((Schema.V3_0.buttonentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.canvasentity)
+            {
+                return ConvertV3_0CanvasEntityToV2_4((Schema.V3_0.canvasentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.textentity)
+            {
+                return ConvertV3_0TextEntityToV2_4((Schema.V3_0.textentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.htmlentity)
+            {
+                return ConvertV3_0HTMLEntityToV2_4((Schema.V3_0.htmlentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.inputentity)
+            {
+                return ConvertV3_0InputEntityToV2_4((Schema.V3_0.inputentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.imageentity)
+            {
+                return ConvertV3_0ImageEntityToV2_4((Schema.V3_0.imageentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.voxelentity)
+            {
+                return ConvertV3_0VoxelEntityToV2_4((Schema.V3_0.voxelentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.audioentity)
+            {
+                return ConvertV3_0AudioEntityToV2_4((Schema.V3_0.audioentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.waterentity)
+            {
+                return ConvertV3_0WaterEntityToV2_4((Schema.V3_0.waterentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.waterblockerentity)
+            {
+                return ConvertV3_0WaterBlockerEntityToV2_4((Schema.V3_0.waterblockerentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.automobileentity)
+            {
+                return ConvertV3_0AutomobileEntityToV2_4((Schema.V3_0.automobileentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.airplaneentity)
+            {
+                return ConvertV3_0AirplaneEntityToV2_4((Schema.V3_0.airplaneentity)inputEntity);
+            }
+
+            // If entity type is not recognized, log warning and return null
+            Logging.LogWarning("[VEMLUtilities->ConvertV3_0EntityToV2_4] Unknown entity type: " + inputEntity.GetType().Name);
+            return null;
+        }
+
+        private static Schema.V2_4.meshentity ConvertV3_0MeshEntityToV2_4(Schema.V3_0.meshentity input)
+        {
+            Schema.V2_4.meshentity output = new Schema.V2_4.meshentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
             
-            // The conversion logic here would map specific V3.0 entity types to V2.4
-            // For now, assume direct compatibility since both versions have the same entity types
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.physics = input.physics;
+            output.physicsSpecified = input.physicsSpecified;
             
-            // This would need to be expanded based on actual V3.0 specification differences
-            // For the purpose of this implementation, we'll assume entities are largely compatible
+            if (input.placementsocket != null)
+            {
+                List<Schema.V2_4.placementsocket> sockets = new List<Schema.V2_4.placementsocket>();
+                foreach (Schema.V3_0.placementsocket socket in input.placementsocket)
+                {
+                    Schema.V2_4.placementsocket outputSocket = new Schema.V2_4.placementsocket();
+                    outputSocket.position = ConvertV3_0PositionToV2_4(socket.position);
+                    outputSocket.rotation = ConvertV3_0RotationToV2_4(socket.rotation);
+                    outputSocket.connectingoffset = ConvertV3_0PositionToV2_4(socket.connectingoffset);
+                    sockets.Add(outputSocket);
+                }
+                output.placementsocket = sockets.ToArray();
+            }
             
-            return null; // TODO: Implement proper entity conversion when V3.0 spec is available
+            return output;
+        }
+
+        private static Schema.V2_4.lightentity ConvertV3_0LightEntityToV2_4(Schema.V3_0.lightentity input)
+        {
+            Schema.V2_4.lightentity output = new Schema.V2_4.lightentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.lighttype = input.lighttype;
+            output.color = input.color;
+            output.intensity = input.intensity;
+            output.range = input.range;
+            output.spotangle = input.spotangle;
+            output.spotangleSpecified = input.spotangleSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.characterentity ConvertV3_0CharacterEntityToV2_4(Schema.V3_0.characterentity input)
+        {
+            Schema.V2_4.characterentity output = new Schema.V2_4.characterentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.animationresource = input.animationresource;
+            output.animationname = input.animationname;
+            output.autoplay = input.autoplay;
+            output.autoplaySpecified = input.autoplaySpecified;
+            output.@default = input.@default;
+            output.defaultSpecified = input.defaultSpecified;
+            output.loop = input.loop;
+            output.loopSpecified = input.loopSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.buttonentity ConvertV3_0ButtonEntityToV2_4(Schema.V3_0.buttonentity input)
+        {
+            Schema.V2_4.buttonentity output = new Schema.V2_4.buttonentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.text = input.text;
+            output.onclick = input.onclick;
+            output.fontsize = input.fontsize;
+            output.fontsizeSpecified = input.fontsizeSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.canvasentity ConvertV3_0CanvasEntityToV2_4(Schema.V3_0.canvasentity input)
+        {
+            Schema.V2_4.canvasentity output = new Schema.V2_4.canvasentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.textentity ConvertV3_0TextEntityToV2_4(Schema.V3_0.textentity input)
+        {
+            Schema.V2_4.textentity output = new Schema.V2_4.textentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.text = input.text;
+            output.fontsize = input.fontsize;
+            output.fontsizeSpecified = input.fontsizeSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.htmlentity ConvertV3_0HTMLEntityToV2_4(Schema.V3_0.htmlentity input)
+        {
+            Schema.V2_4.htmlentity output = new Schema.V2_4.htmlentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.url = input.url;
+            output.onmessage = input.onmessage;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.inputentity ConvertV3_0InputEntityToV2_4(Schema.V3_0.inputentity input)
+        {
+            Schema.V2_4.inputentity output = new Schema.V2_4.inputentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.imageentity ConvertV3_0ImageEntityToV2_4(Schema.V3_0.imageentity input)
+        {
+            Schema.V2_4.imageentity output = new Schema.V2_4.imageentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.imagefile = input.imagefile;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.voxelentity ConvertV3_0VoxelEntityToV2_4(Schema.V3_0.voxelentity input)
+        {
+            Schema.V2_4.voxelentity output = new Schema.V2_4.voxelentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.audioentity ConvertV3_0AudioEntityToV2_4(Schema.V3_0.audioentity input)
+        {
+            Schema.V2_4.audioentity output = new Schema.V2_4.audioentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.audiofile = input.audiofile;
+            output.autoplay = input.autoplay;
+            output.autoplaySpecified = input.autoplaySpecified;
+            output.loop = input.loop;
+            output.loopSpecified = input.loopSpecified;
+            output.volume = input.volume;
+            output.volumeSpecified = input.volumeSpecified;
+            output.pitch = input.pitch;
+            output.pitchSpecified = input.pitchSpecified;
+            output.stereopan = input.stereopan;
+            output.stereopanSpecified = input.stereopanSpecified;
+            output.priority = input.priority;
+            output.prioritySpecified = input.prioritySpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.waterentity ConvertV3_0WaterEntityToV2_4(Schema.V3_0.waterentity input)
+        {
+            Schema.V2_4.waterentity output = new Schema.V2_4.waterentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.shallowcolor = input.shallowcolor;
+            output.deepcolor = input.deepcolor;
+            output.specularcolor = input.specularcolor;
+            output.scatteringcolor = input.scatteringcolor;
+            output.deepstart = input.deepstart;
+            output.deepstartSpecified = input.deepstartSpecified;
+            output.deepend = input.deepend;
+            output.deependSpecified = input.deependSpecified;
+            output.distortion = input.distortion;
+            output.distortionSpecified = input.distortionSpecified;
+            output.smoothness = input.smoothness;
+            output.smoothnessSpecified = input.smoothnessSpecified;
+            output.numwaves = input.numwaves;
+            output.numwavesSpecified = input.numwavesSpecified;
+            output.waveamplitude = input.waveamplitude;
+            output.waveamplitudeSpecified = input.waveamplitudeSpecified;
+            output.wavesteepness = input.wavesteepness;
+            output.wavesteepnessSpecified = input.wavesteepnessSpecified;
+            output.wavespeed = input.wavespeed;
+            output.wavespeedSpecified = input.wavespeedSpecified;
+            output.wavelength = input.wavelength;
+            output.wavelengthSpecified = input.wavelengthSpecified;
+            output.wavescale = input.wavescale;
+            output.wavescaleSpecified = input.wavescaleSpecified;
+            output.waveintensity = input.waveintensity;
+            output.waveintensitySpecified = input.waveintensitySpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.waterblockerentity ConvertV3_0WaterBlockerEntityToV2_4(Schema.V3_0.waterblockerentity input)
+        {
+            Schema.V2_4.waterblockerentity output = new Schema.V2_4.waterblockerentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.automobileentity ConvertV3_0AutomobileEntityToV2_4(Schema.V3_0.automobileentity input)
+        {
+            Schema.V2_4.automobileentity output = new Schema.V2_4.automobileentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.mass = input.mass;
+            output.massSpecified = input.massSpecified;
+            output.automobiletype = input.automobiletype;
+            
+            if (input.wheels != null)
+            {
+                List<Schema.V2_4.automobileentitywheel> wheels = new List<Schema.V2_4.automobileentitywheel>();
+                foreach (Schema.V3_0.automobileentitywheel wheel in input.wheels)
+                {
+                    Schema.V2_4.automobileentitywheel outputWheel = new Schema.V2_4.automobileentitywheel();
+                    outputWheel.wheelsubmesh = wheel.wheelsubmesh;
+                    outputWheel.wheelradius = wheel.wheelradius;
+                    outputWheel.wheelradiusSpecified = wheel.wheelradiusSpecified;
+                    wheels.Add(outputWheel);
+                }
+                output.wheels = wheels.ToArray();
+            }
+            
+            if (input.placementsocket != null)
+            {
+                List<Schema.V2_4.placementsocket> sockets = new List<Schema.V2_4.placementsocket>();
+                foreach (Schema.V3_0.placementsocket socket in input.placementsocket)
+                {
+                    Schema.V2_4.placementsocket outputSocket = new Schema.V2_4.placementsocket();
+                    outputSocket.position = ConvertV3_0PositionToV2_4(socket.position);
+                    outputSocket.rotation = ConvertV3_0RotationToV2_4(socket.rotation);
+                    outputSocket.connectingoffset = ConvertV3_0PositionToV2_4(socket.connectingoffset);
+                    sockets.Add(outputSocket);
+                }
+                output.placementsocket = sockets.ToArray();
+            }
+            
+            return output;
+        }
+
+        private static Schema.V2_4.airplaneentity ConvertV3_0AirplaneEntityToV2_4(Schema.V3_0.airplaneentity input)
+        {
+            Schema.V2_4.airplaneentity output = new Schema.V2_4.airplaneentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.mass = input.mass;
+            output.massSpecified = input.massSpecified;
+            
+            if (input.placementsocket != null)
+            {
+                List<Schema.V2_4.placementsocket> sockets = new List<Schema.V2_4.placementsocket>();
+                foreach (Schema.V3_0.placementsocket socket in input.placementsocket)
+                {
+                    Schema.V2_4.placementsocket outputSocket = new Schema.V2_4.placementsocket();
+                    outputSocket.position = ConvertV3_0PositionToV2_4(socket.position);
+                    outputSocket.rotation = ConvertV3_0RotationToV2_4(socket.rotation);
+                    outputSocket.connectingoffset = ConvertV3_0PositionToV2_4(socket.connectingoffset);
+                    sockets.Add(outputSocket);
+                }
+                output.placementsocket = sockets.ToArray();
+            }
+            
+            return output;
+        }
+
+        private static void ConvertV3_0BaseEntityToV2_4(Schema.V3_0.entity input, Schema.V2_4.entity output)
+        {
+            output.id = input.id;
+            output.tag = input.tag;
+            output.synchronizer = input.synchronizer;
+            output.transform = ConvertV3_0TransformToV2_4(input.transform);
+            
+            // Convert child entities recursively
+            if (input.entity1 != null)
+            {
+                List<Schema.V2_4.entity> childEntities = new List<Schema.V2_4.entity>();
+                foreach (Schema.V3_0.entity childEntity in input.entity1)
+                {
+                    Schema.V2_4.entity convertedChild = ConvertV3_0EntityToV2_4(childEntity);
+                    if (convertedChild != null)
+                    {
+                        childEntities.Add(convertedChild);
+                    }
+                }
+                output.entity1 = childEntities.ToArray();
+            }
+        }
+
+        private static Schema.V2_4.basetransform ConvertV3_0TransformToV2_4(Schema.V3_0.basetransform input)
+        {
+            if (input == null) return null;
+            
+            if (input is Schema.V3_0.scaletransform)
+            {
+                Schema.V3_0.scaletransform inputScale = (Schema.V3_0.scaletransform)input;
+                Schema.V2_4.scaletransform outputScale = new Schema.V2_4.scaletransform();
+                outputScale.position = ConvertV3_0PositionToV2_4(inputScale.position);
+                outputScale.rotation = ConvertV3_0RotationToV2_4(inputScale.rotation);
+                outputScale.scale = ConvertV3_0ScaleToV2_4(inputScale.scale);
+                return outputScale;
+            }
+            else if (input is Schema.V3_0.sizetransform)
+            {
+                Schema.V3_0.sizetransform inputSize = (Schema.V3_0.sizetransform)input;
+                Schema.V2_4.sizetransform outputSize = new Schema.V2_4.sizetransform();
+                outputSize.position = ConvertV3_0PositionToV2_4(inputSize.position);
+                outputSize.rotation = ConvertV3_0RotationToV2_4(inputSize.rotation);
+                outputSize.size = ConvertV3_0SizeToV2_4(inputSize.size);
+                return outputSize;
+            }
+            else if (input is Schema.V3_0.canvastransform)
+            {
+                Schema.V3_0.canvastransform inputCanvas = (Schema.V3_0.canvastransform)input;
+                Schema.V2_4.canvastransform outputCanvas = new Schema.V2_4.canvastransform();
+                outputCanvas.positionpercent = ConvertV3_0PositionPercentToV2_4(inputCanvas.positionpercent);
+                outputCanvas.sizepercent = ConvertV3_0SizePercentToV2_4(inputCanvas.sizepercent);
+                return outputCanvas;
+            }
+            
+            return null;
+        }
+
+        private static Schema.V2_4.position ConvertV3_0PositionToV2_4(Schema.V3_0.position input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.position output = new Schema.V2_4.position();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            return output;
+        }
+
+        private static Schema.V2_4.rotation ConvertV3_0RotationToV2_4(Schema.V3_0.rotation input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.rotation output = new Schema.V2_4.rotation();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            output.w = input.w;
+            return output;
+        }
+
+        private static Schema.V2_4.scale ConvertV3_0ScaleToV2_4(Schema.V3_0.scale input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.scale output = new Schema.V2_4.scale();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            return output;
+        }
+
+        private static Schema.V2_4.size ConvertV3_0SizeToV2_4(Schema.V3_0.size input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.size output = new Schema.V2_4.size();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            return output;
+        }
+
+        private static Schema.V2_4.positionpercent ConvertV3_0PositionPercentToV2_4(Schema.V3_0.positionpercent input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.positionpercent output = new Schema.V2_4.positionpercent();
+            output.x = input.x;
+            output.y = input.y;
+            return output;
+        }
+
+        private static Schema.V2_4.sizepercent ConvertV3_0SizePercentToV2_4(Schema.V3_0.sizepercent input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.sizepercent output = new Schema.V2_4.sizepercent();
+            output.x = input.x;
+            output.y = input.y;
+            return output;
         }
 
         /// <summary>
