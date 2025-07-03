@@ -104,19 +104,19 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         }
 
         /// <summary>
-        /// Convert the schema instance from version 3.0 to the current schema (version 2.4).
+        /// Convert the schema instance from version 2.4 to version 3.0.
         /// </summary>
         /// <param name="inputVEML">Input VEML instance.</param>
-        /// <returns>Current schema version for the input VEML instance.</returns>
-        public static Schema.V2_4.veml ConvertFromV3_0(Schema.V3_0.veml inputVEML)
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_4(Schema.V2_4.veml inputVEML)
         {
-            // Since V3.0 is very similar to V2.4, this is mostly a direct mapping
-            Schema.V2_4.veml outputVEML = new Schema.V2_4.veml();
+            // Since V2.4 is very similar to V3.0, this is mostly a direct mapping
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
 
             if (inputVEML.metadata != null)
             {
                 // Set up metadata.
-                outputVEML.metadata = new Schema.V2_4.vemlMetadata();
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
 
                 // Direct mappings for most fields
                 outputVEML.metadata.script = inputVEML.metadata.script;
@@ -126,10 +126,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 // Convert input events
                 if (inputVEML.metadata.inputevent != null)
                 {
-                    List<Schema.V2_4.inputevent> outputVEMLInputEvents = new List<Schema.V2_4.inputevent>();
-                    foreach (Schema.V3_0.inputevent inputEvent in inputVEML.metadata.inputevent)
+                    List<Schema.V3_0.inputevent> outputVEMLInputEvents = new List<Schema.V3_0.inputevent>();
+                    foreach (Schema.V2_4.inputevent inputEvent in inputVEML.metadata.inputevent)
                     {
-                        Schema.V2_4.inputevent outputVEMLInputEvent = new Schema.V2_4.inputevent();
+                        Schema.V3_0.inputevent outputVEMLInputEvent = new Schema.V3_0.inputevent();
                         outputVEMLInputEvent.@event = inputEvent.@event;
                         outputVEMLInputEvent.input = inputEvent.input;
                         outputVEMLInputEvents.Add(outputVEMLInputEvent);
@@ -137,10 +137,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     outputVEML.metadata.inputevent = outputVEMLInputEvents.ToArray();
                 }
 
-                // Convert control flags - V3.0 might have new flags, map what we can
+                // Convert control flags
                 if (inputVEML.metadata.controlflags != null)
                 {
-                    Schema.V2_4.controlflags outputControlFlags = new Schema.V2_4.controlflags();
+                    Schema.V3_0.controlflags outputControlFlags = new Schema.V3_0.controlflags();
                     outputControlFlags.leftvrpointer = inputVEML.metadata.controlflags.leftvrpointer;
                     outputControlFlags.rightvrpointer = inputVEML.metadata.controlflags.rightvrpointer;
                     outputControlFlags.leftvrpoker = inputVEML.metadata.controlflags.leftvrpoker;
@@ -166,10 +166,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 // Convert synchronization services
                 if (inputVEML.metadata.synchronizationservice != null)
                 {
-                    List<Schema.V2_4.synchronizationservice> outputVEMLSynchronizationServices = new List<Schema.V2_4.synchronizationservice>();
-                    foreach (Schema.V3_0.synchronizationservice synchronizationService in inputVEML.metadata.synchronizationservice)
+                    List<Schema.V3_0.synchronizationservice> outputVEMLSynchronizationServices = new List<Schema.V3_0.synchronizationservice>();
+                    foreach (Schema.V2_4.synchronizationservice synchronizationService in inputVEML.metadata.synchronizationservice)
                     {
-                        Schema.V2_4.synchronizationservice outputVEMLSynchronizationService = new Schema.V2_4.synchronizationservice();
+                        Schema.V3_0.synchronizationservice outputVEMLSynchronizationService = new Schema.V3_0.synchronizationservice();
                         outputVEMLSynchronizationService.id = synchronizationService.id;
                         outputVEMLSynchronizationService.address = synchronizationService.address;
                         outputVEMLSynchronizationService.session = synchronizationService.session;
@@ -183,26 +183,25 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             if (inputVEML.environment != null)
             {
                 // Set up environment - most things should map directly
-                outputVEML.environment = new Schema.V2_4.vemlEnvironment();
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
 
                 // Convert background
                 if (inputVEML.environment.background != null)
                 {
-                    outputVEML.environment.background = new Schema.V2_4.background();
+                    outputVEML.environment.background = new Schema.V3_0.background();
                     outputVEML.environment.background.Item = inputVEML.environment.background.Item;
                     
                     // Map background choice types
                     switch (inputVEML.environment.background.ItemElementName)
                     {
-                        case Schema.V3_0.ItemChoiceType.panorama:
-                            outputVEML.environment.background.ItemElementName = Schema.V2_4.ItemChoiceType.panorama;
+                        case Schema.V2_4.ItemChoiceType.panorama:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.panorama;
                             break;
-                        case Schema.V3_0.ItemChoiceType.color:
-                            outputVEML.environment.background.ItemElementName = Schema.V2_4.ItemChoiceType.color;
+                        case Schema.V2_4.ItemChoiceType.color:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.color;
                             break;
-                        case Schema.V3_0.ItemChoiceType.liteproceduralsky:
-                            outputVEML.environment.background.ItemElementName = Schema.V2_4.ItemChoiceType.liteproceduralsky;
-                            // Convert lite procedural sky if needed - for now assume it's compatible
+                        case Schema.V2_4.ItemChoiceType.liteproceduralsky:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.liteproceduralsky;
                             break;
                     }
                 }
@@ -210,23 +209,23 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 // Convert effects
                 if (inputVEML.environment.effects != null)
                 {
-                    outputVEML.environment.effects = new Schema.V2_4.vemlEnvironmentEffects();
+                    outputVEML.environment.effects = new Schema.V3_0.vemlEnvironmentEffects();
                     if (inputVEML.environment.effects.litefog != null)
                     {
-                        outputVEML.environment.effects.litefog = new Schema.V2_4.litefog();
+                        outputVEML.environment.effects.litefog = new Schema.V3_0.litefog();
                         outputVEML.environment.effects.litefog.fogenabled = inputVEML.environment.effects.litefog.fogenabled;
                         outputVEML.environment.effects.litefog.color = inputVEML.environment.effects.litefog.color;
                         outputVEML.environment.effects.litefog.density = inputVEML.environment.effects.litefog.density;
                     }
                 }
 
-                // Convert entities - this is where most of the work is since V3.0 might have new entity types
+                // Convert entities
                 if (inputVEML.environment.entity != null)
                 {
-                    List<Schema.V2_4.entity> outputEntities = new List<Schema.V2_4.entity>();
-                    foreach (Schema.V3_0.entity inputEntity in inputVEML.environment.entity)
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V2_4.entity inputEntity in inputVEML.environment.entity)
                     {
-                        Schema.V2_4.entity outputEntity = ConvertV3_0EntityToV2_4(inputEntity);
+                        Schema.V3_0.entity outputEntity = ConvertV2_4EntityToV3_0(inputEntity);
                         if (outputEntity != null)
                         {
                             outputEntities.Add(outputEntity);
