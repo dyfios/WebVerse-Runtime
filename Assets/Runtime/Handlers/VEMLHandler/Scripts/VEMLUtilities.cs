@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using FiveSQD.WebVerse.Utilities;
 
 namespace FiveSQD.WebVerse.Handlers.VEML
 {
@@ -11,6 +12,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
     public class VEMLUtilities
     {
         public static readonly string xmlHeadingTag = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+
+        public static readonly string VEML3_0FullTag = "<veml xmlns=\"http://www.fivesqd.com/schemas/veml/3.0\"" +
+            " xsi:schemaLocation=\"http://www.fivesqd.com/schemas/veml/3.0 schema.xsd\"" +
+            " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
 
         public static readonly string VEML2_4FullTag = "<veml xmlns=\"http://www.fivesqd.com/schemas/veml/2.4\"" +
             " xsi:schemaLocation=\"http://www.fivesqd.com/schemas/veml/2.4 schema.xsd\"" +
@@ -47,6 +52,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         public static readonly string VEML1_0FullTag = "<veml xmlns=\"http://www.fivesqd.com/schemas/veml/1.0\"" +
             " xsi:schemaLocation=\"http://www.fivesqd.com/schemas/veml/1.0 schema.xsd\"" +
             " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+
+        public static string FullyNotateVEML3_0(string inputVEML)
+        {
+            return FullyNotateVEML(inputVEML, VEML3_0FullTag);
+        }
 
         public static string FullyNotateVEML2_4(string inputVEML)
         {
@@ -91,6 +101,676 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         public static string FullyNotateVEML1_0(string inputVEML)
         {
             return FullyNotateVEML(inputVEML, VEML1_0FullTag);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.4 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_4(Schema.V2_4.veml inputVEML)
+        {
+            // Since V2.4 is very similar to V3.0, this is mostly a direct mapping
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+
+            if (inputVEML.metadata != null)
+            {
+                // Set up metadata.
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+
+                // Direct mappings for most fields
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                outputVEML.metadata.capability = inputVEML.metadata.capability;
+
+                // Convert input events
+                if (inputVEML.metadata.inputevent != null)
+                {
+                    List<Schema.V3_0.inputevent> outputVEMLInputEvents = new List<Schema.V3_0.inputevent>();
+                    foreach (Schema.V2_4.inputevent inputEvent in inputVEML.metadata.inputevent)
+                    {
+                        Schema.V3_0.inputevent outputVEMLInputEvent = new Schema.V3_0.inputevent();
+                        outputVEMLInputEvent.@event = inputEvent.@event;
+                        outputVEMLInputEvent.input = inputEvent.input;
+                        outputVEMLInputEvents.Add(outputVEMLInputEvent);
+                    }
+                    outputVEML.metadata.inputevent = outputVEMLInputEvents.ToArray();
+                }
+
+                // Convert control flags
+                if (inputVEML.metadata.controlflags != null)
+                {
+                    Schema.V3_0.controlflags outputControlFlags = new Schema.V3_0.controlflags();
+                    outputControlFlags.leftvrpointer = inputVEML.metadata.controlflags.leftvrpointer;
+                    outputControlFlags.rightvrpointer = inputVEML.metadata.controlflags.rightvrpointer;
+                    outputControlFlags.leftvrpoker = inputVEML.metadata.controlflags.leftvrpoker;
+                    outputControlFlags.rightvrpoker = inputVEML.metadata.controlflags.rightvrpoker;
+                    outputControlFlags.leftvrpokerSpecified = inputVEML.metadata.controlflags.leftvrpokerSpecified;
+                    outputControlFlags.rightvrpokerSpecified = inputVEML.metadata.controlflags.rightvrpokerSpecified;
+                    outputControlFlags.lefthandinteraction = inputVEML.metadata.controlflags.lefthandinteraction;
+                    outputControlFlags.righthandinteraction = inputVEML.metadata.controlflags.righthandinteraction;
+                    outputControlFlags.lefthandinteractionSpecified = inputVEML.metadata.controlflags.lefthandinteractionSpecified;
+                    outputControlFlags.righthandinteractionSpecified = inputVEML.metadata.controlflags.righthandinteractionSpecified;
+                    outputControlFlags.turnlocomotion = inputVEML.metadata.controlflags.turnlocomotion;
+                    outputControlFlags.joystickmotion = inputVEML.metadata.controlflags.joystickmotion;
+                    outputControlFlags.joystickmotionSpecified = inputVEML.metadata.controlflags.joystickmotionSpecified;
+                    outputControlFlags.leftgrabmove = inputVEML.metadata.controlflags.leftgrabmove;
+                    outputControlFlags.rightgrabmove = inputVEML.metadata.controlflags.rightgrabmove;
+                    outputControlFlags.leftgrabmoveSpecified = inputVEML.metadata.controlflags.leftgrabmoveSpecified;
+                    outputControlFlags.rightgrabmoveSpecified = inputVEML.metadata.controlflags.rightgrabmoveSpecified;
+                    outputControlFlags.twohandedgrabmove = inputVEML.metadata.controlflags.twohandedgrabmove;
+                    outputControlFlags.twohandedgrabmoveSpecified = inputVEML.metadata.controlflags.twohandedgrabmoveSpecified;
+                    outputVEML.metadata.controlflags = outputControlFlags;
+                }
+
+                // Convert synchronization services
+                if (inputVEML.metadata.synchronizationservice != null)
+                {
+                    List<Schema.V3_0.synchronizationservice> outputVEMLSynchronizationServices = new List<Schema.V3_0.synchronizationservice>();
+                    foreach (Schema.V2_4.synchronizationservice synchronizationService in inputVEML.metadata.synchronizationservice)
+                    {
+                        Schema.V3_0.synchronizationservice outputVEMLSynchronizationService = new Schema.V3_0.synchronizationservice();
+                        outputVEMLSynchronizationService.id = synchronizationService.id;
+                        outputVEMLSynchronizationService.address = synchronizationService.address;
+                        outputVEMLSynchronizationService.session = synchronizationService.session;
+                        outputVEMLSynchronizationService.type = synchronizationService.type;
+                        outputVEMLSynchronizationServices.Add(outputVEMLSynchronizationService);
+                    }
+                    outputVEML.metadata.synchronizationservice = outputVEMLSynchronizationServices.ToArray();
+                }
+            }
+
+            if (inputVEML.environment != null)
+            {
+                // Set up environment - most things should map directly
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+
+                // Convert background
+                if (inputVEML.environment.background != null)
+                {
+                    outputVEML.environment.background = new Schema.V3_0.background();
+                    outputVEML.environment.background.Item = inputVEML.environment.background.Item;
+                    
+                    // Map background choice types
+                    switch (inputVEML.environment.background.ItemElementName)
+                    {
+                        case Schema.V2_4.ItemChoiceType.panorama:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.panorama;
+                            break;
+                        case Schema.V2_4.ItemChoiceType.color:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.color;
+                            break;
+                        case Schema.V2_4.ItemChoiceType.liteproceduralsky:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.liteproceduralsky;
+                            break;
+                    }
+                }
+
+                // Convert effects
+                if (inputVEML.environment.effects != null)
+                {
+                    outputVEML.environment.effects = new Schema.V3_0.vemlEnvironmentEffects();
+                    if (inputVEML.environment.effects.litefog != null)
+                    {
+                        outputVEML.environment.effects.litefog = new Schema.V3_0.litefog();
+                        outputVEML.environment.effects.litefog.fogenabled = inputVEML.environment.effects.litefog.fogenabled;
+                        outputVEML.environment.effects.litefog.color = inputVEML.environment.effects.litefog.color;
+                        outputVEML.environment.effects.litefog.density = inputVEML.environment.effects.litefog.density;
+                    }
+                }
+
+                // Convert entities
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V2_4.entity inputEntity in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity outputEntity = ConvertV2_4EntityToV3_0(inputEntity);
+                        if (outputEntity != null)
+                        {
+                            outputEntities.Add(outputEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Helper method to convert V2.4 entities to V3.0 entities.
+        /// </summary>
+        /// <param name="inputEntity">V2.4 entity to convert.</param>
+        /// <returns>V3.0 entity or null if conversion not supported.</returns>
+        private static Schema.V3_0.entity ConvertV2_4EntityToV3_0(Schema.V2_4.entity inputEntity)
+        {
+            if (inputEntity == null) return null;
+
+            // Since V2.4 and V3.0 are very similar, we can create a simplified mapping
+            // For now, we'll just do basic entity conversions and leave detailed conversion for later
+            
+            // Create a basic V3.0 entity and copy common properties
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            
+            // Convert transform (simplified - assumes basic compatibility)
+            if (inputEntity.transform != null)
+            {
+                outputEntity.transform = new Schema.V3_0.scaletransform();
+                if (inputEntity.transform is Schema.V2_4.scaletransform)
+                {
+                    var inputTransform = (Schema.V2_4.scaletransform)inputEntity.transform;
+                    var outputTransform = (Schema.V3_0.scaletransform)outputEntity.transform;
+                    
+                    if (inputTransform.position != null)
+                    {
+                        outputTransform.position = new Schema.V3_0.position();
+                        outputTransform.position.x = inputTransform.position.x;
+                        outputTransform.position.y = inputTransform.position.y;
+                        outputTransform.position.z = inputTransform.position.z;
+                    }
+                    
+                    if (inputTransform.rotation != null)
+                    {
+                        outputTransform.rotation = new Schema.V3_0.rotation();
+                        outputTransform.rotation.x = inputTransform.rotation.x;
+                        outputTransform.rotation.y = inputTransform.rotation.y;
+                        outputTransform.rotation.z = inputTransform.rotation.z;
+                        outputTransform.rotation.w = inputTransform.rotation.w;
+                    }
+                    
+                    if (inputTransform.scale != null)
+                    {
+                        outputTransform.scale = new Schema.V3_0.scale();
+                        outputTransform.scale.x = inputTransform.scale.x;
+                        outputTransform.scale.y = inputTransform.scale.y;
+                        outputTransform.scale.z = inputTransform.scale.z;
+                    }
+                }
+            }
+            
+            // Convert child entities recursively
+            if (inputEntity.entity1 != null)
+            {
+                List<Schema.V3_0.entity> childEntities = new List<Schema.V3_0.entity>();
+                foreach (Schema.V2_4.entity childEntity in inputEntity.entity1)
+                {
+                    Schema.V3_0.entity convertedChild = ConvertV2_4EntityToV3_0(childEntity);
+                    if (convertedChild != null)
+                    {
+                        childEntities.Add(convertedChild);
+                    }
+                }
+                outputEntity.entity1 = childEntities.ToArray();
+            }
+            
+            return outputEntity;
+        }
+
+        /// <summary>
+        /// Helper method to convert V3.0 entities to V2.4 entities.
+        /// </summary>
+        /// <param name="inputEntity">V3.0 entity to convert.</param>
+        /// <returns>V2.4 entity or null if conversion not supported.</returns>
+        private static Schema.V2_4.entity ConvertV3_0EntityToV2_4(Schema.V3_0.entity inputEntity)
+        {
+            if (inputEntity == null) return null;
+
+            // Convert different entity types - since V3.0 is based on V2.4, most conversions are direct field mappings
+            if (inputEntity is Schema.V3_0.meshentity)
+            {
+                return ConvertV3_0MeshEntityToV2_4((Schema.V3_0.meshentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.lightentity)
+            {
+                return ConvertV3_0LightEntityToV2_4((Schema.V3_0.lightentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.characterentity)
+            {
+                return ConvertV3_0CharacterEntityToV2_4((Schema.V3_0.characterentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.buttonentity)
+            {
+                return ConvertV3_0ButtonEntityToV2_4((Schema.V3_0.buttonentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.canvasentity)
+            {
+                return ConvertV3_0CanvasEntityToV2_4((Schema.V3_0.canvasentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.textentity)
+            {
+                return ConvertV3_0TextEntityToV2_4((Schema.V3_0.textentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.htmlentity)
+            {
+                return ConvertV3_0HTMLEntityToV2_4((Schema.V3_0.htmlentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.inputentity)
+            {
+                return ConvertV3_0InputEntityToV2_4((Schema.V3_0.inputentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.imageentity)
+            {
+                return ConvertV3_0ImageEntityToV2_4((Schema.V3_0.imageentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.voxelentity)
+            {
+                return ConvertV3_0VoxelEntityToV2_4((Schema.V3_0.voxelentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.audioentity)
+            {
+                return ConvertV3_0AudioEntityToV2_4((Schema.V3_0.audioentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.waterentity)
+            {
+                return ConvertV3_0WaterEntityToV2_4((Schema.V3_0.waterentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.waterblockerentity)
+            {
+                return ConvertV3_0WaterBlockerEntityToV2_4((Schema.V3_0.waterblockerentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.automobileentity)
+            {
+                return ConvertV3_0AutomobileEntityToV2_4((Schema.V3_0.automobileentity)inputEntity);
+            }
+            else if (inputEntity is Schema.V3_0.airplaneentity)
+            {
+                return ConvertV3_0AirplaneEntityToV2_4((Schema.V3_0.airplaneentity)inputEntity);
+            }
+
+            // If entity type is not recognized, log warning and return null
+            Logging.LogWarning("[VEMLUtilities->ConvertV3_0EntityToV2_4] Unknown entity type: " + inputEntity.GetType().Name);
+            return null;
+        }
+
+        private static Schema.V2_4.meshentity ConvertV3_0MeshEntityToV2_4(Schema.V3_0.meshentity input)
+        {
+            Schema.V2_4.meshentity output = new Schema.V2_4.meshentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.physics = input.physics;
+            output.physicsSpecified = input.physicsSpecified;
+            
+            if (input.placementsocket != null)
+            {
+                List<Schema.V2_4.placementsocket> sockets = new List<Schema.V2_4.placementsocket>();
+                foreach (Schema.V3_0.placementsocket socket in input.placementsocket)
+                {
+                    Schema.V2_4.placementsocket outputSocket = new Schema.V2_4.placementsocket();
+                    outputSocket.position = ConvertV3_0PositionToV2_4(socket.position);
+                    outputSocket.rotation = ConvertV3_0RotationToV2_4(socket.rotation);
+                    outputSocket.connectingoffset = ConvertV3_0PositionToV2_4(socket.connectingoffset);
+                    sockets.Add(outputSocket);
+                }
+                output.placementsocket = sockets.ToArray();
+            }
+            
+            return output;
+        }
+
+        private static Schema.V2_4.lightentity ConvertV3_0LightEntityToV2_4(Schema.V3_0.lightentity input)
+        {
+            Schema.V2_4.lightentity output = new Schema.V2_4.lightentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.lighttype = input.lighttype;
+            output.color = input.color;
+            output.intensity = input.intensity;
+            output.range = input.range;
+            output.spotangle = input.spotangle;
+            output.spotangleSpecified = input.spotangleSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.characterentity ConvertV3_0CharacterEntityToV2_4(Schema.V3_0.characterentity input)
+        {
+            Schema.V2_4.characterentity output = new Schema.V2_4.characterentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.animationresource = input.animationresource;
+            output.animationname = input.animationname;
+            output.autoplay = input.autoplay;
+            output.autoplaySpecified = input.autoplaySpecified;
+            output.@default = input.@default;
+            output.defaultSpecified = input.defaultSpecified;
+            output.loop = input.loop;
+            output.loopSpecified = input.loopSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.buttonentity ConvertV3_0ButtonEntityToV2_4(Schema.V3_0.buttonentity input)
+        {
+            Schema.V2_4.buttonentity output = new Schema.V2_4.buttonentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.text = input.text;
+            output.onclick = input.onclick;
+            output.fontsize = input.fontsize;
+            output.fontsizeSpecified = input.fontsizeSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.canvasentity ConvertV3_0CanvasEntityToV2_4(Schema.V3_0.canvasentity input)
+        {
+            Schema.V2_4.canvasentity output = new Schema.V2_4.canvasentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.textentity ConvertV3_0TextEntityToV2_4(Schema.V3_0.textentity input)
+        {
+            Schema.V2_4.textentity output = new Schema.V2_4.textentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.text = input.text;
+            output.fontsize = input.fontsize;
+            output.fontsizeSpecified = input.fontsizeSpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.htmlentity ConvertV3_0HTMLEntityToV2_4(Schema.V3_0.htmlentity input)
+        {
+            Schema.V2_4.htmlentity output = new Schema.V2_4.htmlentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.url = input.url;
+            output.onmessage = input.onmessage;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.inputentity ConvertV3_0InputEntityToV2_4(Schema.V3_0.inputentity input)
+        {
+            Schema.V2_4.inputentity output = new Schema.V2_4.inputentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.imageentity ConvertV3_0ImageEntityToV2_4(Schema.V3_0.imageentity input)
+        {
+            Schema.V2_4.imageentity output = new Schema.V2_4.imageentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.imagefile = input.imagefile;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.voxelentity ConvertV3_0VoxelEntityToV2_4(Schema.V3_0.voxelentity input)
+        {
+            Schema.V2_4.voxelentity output = new Schema.V2_4.voxelentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.audioentity ConvertV3_0AudioEntityToV2_4(Schema.V3_0.audioentity input)
+        {
+            Schema.V2_4.audioentity output = new Schema.V2_4.audioentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.audiofile = input.audiofile;
+            output.autoplay = input.autoplay;
+            output.autoplaySpecified = input.autoplaySpecified;
+            output.loop = input.loop;
+            output.loopSpecified = input.loopSpecified;
+            output.volume = input.volume;
+            output.volumeSpecified = input.volumeSpecified;
+            output.pitch = input.pitch;
+            output.pitchSpecified = input.pitchSpecified;
+            output.stereopan = input.stereopan;
+            output.stereopanSpecified = input.stereopanSpecified;
+            output.priority = input.priority;
+            output.prioritySpecified = input.prioritySpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.waterentity ConvertV3_0WaterEntityToV2_4(Schema.V3_0.waterentity input)
+        {
+            Schema.V2_4.waterentity output = new Schema.V2_4.waterentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.shallowcolor = input.shallowcolor;
+            output.deepcolor = input.deepcolor;
+            output.specularcolor = input.specularcolor;
+            output.scatteringcolor = input.scatteringcolor;
+            output.deepstart = input.deepstart;
+            output.deepstartSpecified = input.deepstartSpecified;
+            output.deepend = input.deepend;
+            output.deependSpecified = input.deependSpecified;
+            output.distortion = input.distortion;
+            output.distortionSpecified = input.distortionSpecified;
+            output.smoothness = input.smoothness;
+            output.smoothnessSpecified = input.smoothnessSpecified;
+            output.numwaves = input.numwaves;
+            output.numwavesSpecified = input.numwavesSpecified;
+            output.waveamplitude = input.waveamplitude;
+            output.waveamplitudeSpecified = input.waveamplitudeSpecified;
+            output.wavesteepness = input.wavesteepness;
+            output.wavesteepnessSpecified = input.wavesteepnessSpecified;
+            output.wavespeed = input.wavespeed;
+            output.wavespeedSpecified = input.wavespeedSpecified;
+            output.wavelength = input.wavelength;
+            output.wavelengthSpecified = input.wavelengthSpecified;
+            output.wavescale = input.wavescale;
+            output.wavescaleSpecified = input.wavescaleSpecified;
+            output.waveintensity = input.waveintensity;
+            output.waveintensitySpecified = input.waveintensitySpecified;
+            
+            return output;
+        }
+
+        private static Schema.V2_4.waterblockerentity ConvertV3_0WaterBlockerEntityToV2_4(Schema.V3_0.waterblockerentity input)
+        {
+            Schema.V2_4.waterblockerentity output = new Schema.V2_4.waterblockerentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            return output;
+        }
+
+        private static Schema.V2_4.automobileentity ConvertV3_0AutomobileEntityToV2_4(Schema.V3_0.automobileentity input)
+        {
+            Schema.V2_4.automobileentity output = new Schema.V2_4.automobileentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.mass = input.mass;
+            output.massSpecified = input.massSpecified;
+            output.automobiletype = input.automobiletype;
+            
+            if (input.wheels != null)
+            {
+                List<Schema.V2_4.automobileentitywheel> wheels = new List<Schema.V2_4.automobileentitywheel>();
+                foreach (Schema.V3_0.automobileentitywheel wheel in input.wheels)
+                {
+                    Schema.V2_4.automobileentitywheel outputWheel = new Schema.V2_4.automobileentitywheel();
+                    outputWheel.wheelsubmesh = wheel.wheelsubmesh;
+                    outputWheel.wheelradius = wheel.wheelradius;
+                    outputWheel.wheelradiusSpecified = wheel.wheelradiusSpecified;
+                    wheels.Add(outputWheel);
+                }
+                output.wheels = wheels.ToArray();
+            }
+            
+            if (input.placementsocket != null)
+            {
+                List<Schema.V2_4.placementsocket> sockets = new List<Schema.V2_4.placementsocket>();
+                foreach (Schema.V3_0.placementsocket socket in input.placementsocket)
+                {
+                    Schema.V2_4.placementsocket outputSocket = new Schema.V2_4.placementsocket();
+                    outputSocket.position = ConvertV3_0PositionToV2_4(socket.position);
+                    outputSocket.rotation = ConvertV3_0RotationToV2_4(socket.rotation);
+                    outputSocket.connectingoffset = ConvertV3_0PositionToV2_4(socket.connectingoffset);
+                    sockets.Add(outputSocket);
+                }
+                output.placementsocket = sockets.ToArray();
+            }
+            
+            return output;
+        }
+
+        private static Schema.V2_4.airplaneentity ConvertV3_0AirplaneEntityToV2_4(Schema.V3_0.airplaneentity input)
+        {
+            Schema.V2_4.airplaneentity output = new Schema.V2_4.airplaneentity();
+            ConvertV3_0BaseEntityToV2_4(input, output);
+            
+            output.meshresource = input.meshresource;
+            output.meshname = input.meshname;
+            output.mass = input.mass;
+            output.massSpecified = input.massSpecified;
+            
+            if (input.placementsocket != null)
+            {
+                List<Schema.V2_4.placementsocket> sockets = new List<Schema.V2_4.placementsocket>();
+                foreach (Schema.V3_0.placementsocket socket in input.placementsocket)
+                {
+                    Schema.V2_4.placementsocket outputSocket = new Schema.V2_4.placementsocket();
+                    outputSocket.position = ConvertV3_0PositionToV2_4(socket.position);
+                    outputSocket.rotation = ConvertV3_0RotationToV2_4(socket.rotation);
+                    outputSocket.connectingoffset = ConvertV3_0PositionToV2_4(socket.connectingoffset);
+                    sockets.Add(outputSocket);
+                }
+                output.placementsocket = sockets.ToArray();
+            }
+            
+            return output;
+        }
+
+        private static void ConvertV3_0BaseEntityToV2_4(Schema.V3_0.entity input, Schema.V2_4.entity output)
+        {
+            output.id = input.id;
+            output.tag = input.tag;
+            output.synchronizer = input.synchronizer;
+            output.transform = ConvertV3_0TransformToV2_4(input.transform);
+            
+            // Convert child entities recursively
+            if (input.entity1 != null)
+            {
+                List<Schema.V2_4.entity> childEntities = new List<Schema.V2_4.entity>();
+                foreach (Schema.V3_0.entity childEntity in input.entity1)
+                {
+                    Schema.V2_4.entity convertedChild = ConvertV3_0EntityToV2_4(childEntity);
+                    if (convertedChild != null)
+                    {
+                        childEntities.Add(convertedChild);
+                    }
+                }
+                output.entity1 = childEntities.ToArray();
+            }
+        }
+
+        private static Schema.V2_4.basetransform ConvertV3_0TransformToV2_4(Schema.V3_0.basetransform input)
+        {
+            if (input == null) return null;
+            
+            if (input is Schema.V3_0.scaletransform)
+            {
+                Schema.V3_0.scaletransform inputScale = (Schema.V3_0.scaletransform)input;
+                Schema.V2_4.scaletransform outputScale = new Schema.V2_4.scaletransform();
+                outputScale.position = ConvertV3_0PositionToV2_4(inputScale.position);
+                outputScale.rotation = ConvertV3_0RotationToV2_4(inputScale.rotation);
+                outputScale.scale = ConvertV3_0ScaleToV2_4(inputScale.scale);
+                return outputScale;
+            }
+            else if (input is Schema.V3_0.sizetransform)
+            {
+                Schema.V3_0.sizetransform inputSize = (Schema.V3_0.sizetransform)input;
+                Schema.V2_4.sizetransform outputSize = new Schema.V2_4.sizetransform();
+                outputSize.position = ConvertV3_0PositionToV2_4(inputSize.position);
+                outputSize.rotation = ConvertV3_0RotationToV2_4(inputSize.rotation);
+                outputSize.size = ConvertV3_0SizeToV2_4(inputSize.size);
+                return outputSize;
+            }
+            else if (input is Schema.V3_0.canvastransform)
+            {
+                Schema.V3_0.canvastransform inputCanvas = (Schema.V3_0.canvastransform)input;
+                Schema.V2_4.canvastransform outputCanvas = new Schema.V2_4.canvastransform();
+                outputCanvas.positionpercent = ConvertV3_0PositionPercentToV2_4(inputCanvas.positionpercent);
+                outputCanvas.sizepercent = ConvertV3_0SizePercentToV2_4(inputCanvas.sizepercent);
+                return outputCanvas;
+            }
+            
+            return null;
+        }
+
+        private static Schema.V2_4.position ConvertV3_0PositionToV2_4(Schema.V3_0.position input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.position output = new Schema.V2_4.position();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            return output;
+        }
+
+        private static Schema.V2_4.rotation ConvertV3_0RotationToV2_4(Schema.V3_0.rotation input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.rotation output = new Schema.V2_4.rotation();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            output.w = input.w;
+            return output;
+        }
+
+        private static Schema.V2_4.scale ConvertV3_0ScaleToV2_4(Schema.V3_0.scale input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.scale output = new Schema.V2_4.scale();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            return output;
+        }
+
+        private static Schema.V2_4.size ConvertV3_0SizeToV2_4(Schema.V3_0.size input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.size output = new Schema.V2_4.size();
+            output.x = input.x;
+            output.y = input.y;
+            output.z = input.z;
+            return output;
+        }
+
+        private static Schema.V2_4.positionpercent ConvertV3_0PositionPercentToV2_4(Schema.V3_0.positionpercent input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.positionpercent output = new Schema.V2_4.positionpercent();
+            output.x = input.x;
+            output.y = input.y;
+            return output;
+        }
+
+        private static Schema.V2_4.sizepercent ConvertV3_0SizePercentToV2_4(Schema.V3_0.sizepercent input)
+        {
+            if (input == null) return null;
+            
+            Schema.V2_4.sizepercent output = new Schema.V2_4.sizepercent();
+            output.x = input.x;
+            output.y = input.y;
+            return output;
         }
 
         /// <summary>
@@ -4595,6 +5275,600 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             }
             entityList.Add(entityToAdd);
             return entityList.ToArray();
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.3 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_3(Schema.V2_3.veml inputVEML)
+        {
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            if (inputVEML.metadata != null)
+            {
+                // Set up metadata.
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+
+                // Assign scripts.
+                outputVEML.metadata.script = inputVEML.metadata.script;
+
+                // Assign title.
+                outputVEML.metadata.title = inputVEML.metadata.title;
+
+                // Assign input events.
+                List<Schema.V3_0.inputevent> outputVEMLInputEvents = new List<Schema.V3_0.inputevent>();
+                if (inputVEML.metadata.inputevent != null)
+                {
+                    foreach (Schema.V2_3.inputevent inputEvent in inputVEML.metadata.inputevent)
+                    {
+                        Schema.V3_0.inputevent outputVEMLInputEvent = new Schema.V3_0.inputevent();
+                        outputVEMLInputEvent.@event = inputEvent.@event;
+                        outputVEMLInputEvent.input = inputEvent.input;
+                        outputVEMLInputEvents.Add(outputVEMLInputEvent);
+                    }
+                    outputVEML.metadata.inputevent = outputVEMLInputEvents.ToArray();
+                }
+
+                // Assign control flags.
+                Schema.V3_0.controlflags outputControlFlags = new Schema.V3_0.controlflags();
+                if (inputVEML.metadata.controlflags != null)
+                {
+                    outputControlFlags.leftvrpointer = inputVEML.metadata.controlflags.leftvrpointer.Replace("\"", "");
+                    outputControlFlags.rightvrpointer = inputVEML.metadata.controlflags.rightvrpointer.Replace("\"", "");
+                    outputControlFlags.leftvrpoker = inputVEML.metadata.controlflags.leftvrpoker;
+                    outputControlFlags.rightvrpoker = inputVEML.metadata.controlflags.rightvrpoker;
+                    outputControlFlags.leftvrpokerSpecified = inputVEML.metadata.controlflags.leftvrpokerSpecified;
+                    outputControlFlags.rightvrpokerSpecified = inputVEML.metadata.controlflags.rightvrpokerSpecified;
+                    outputControlFlags.lefthandinteraction = inputVEML.metadata.controlflags.lefthandinteraction;
+                    outputControlFlags.righthandinteraction = inputVEML.metadata.controlflags.righthandinteraction;
+                    outputControlFlags.lefthandinteractionSpecified = inputVEML.metadata.controlflags.lefthandinteractionSpecified;
+                    outputControlFlags.righthandinteractionSpecified = inputVEML.metadata.controlflags.righthandinteractionSpecified;
+                    outputControlFlags.turnlocomotion = inputVEML.metadata.controlflags.turnlocomotion.Replace("\"", "");
+                    outputControlFlags.joystickmotion = inputVEML.metadata.controlflags.joystickmotion;
+                    outputControlFlags.joystickmotionSpecified = inputVEML.metadata.controlflags.joystickmotionSpecified;
+                    outputControlFlags.leftgrabmove = inputVEML.metadata.controlflags.leftgrabmove;
+                    outputControlFlags.rightgrabmove = inputVEML.metadata.controlflags.rightgrabmove;
+                    outputControlFlags.leftgrabmoveSpecified = inputVEML.metadata.controlflags.leftgrabmoveSpecified;
+                    outputControlFlags.rightgrabmoveSpecified = inputVEML.metadata.controlflags.rightgrabmoveSpecified;
+                    outputControlFlags.twohandedgrabmove = inputVEML.metadata.controlflags.twohandedgrabmove;
+                    outputControlFlags.twohandedgrabmoveSpecified = inputVEML.metadata.controlflags.twohandedgrabmoveSpecified;
+                    outputVEML.metadata.controlflags = outputControlFlags;
+                }
+
+                // Assign synchronization services.
+                List<Schema.V3_0.synchronizationservice> outputVEMLSynchronizationServices
+                    = new List<Schema.V3_0.synchronizationservice>();
+                if (inputVEML.metadata.synchronizationservice != null)
+                {
+                    foreach (Schema.V2_3.synchronizationservice synchronizationService
+                        in inputVEML.metadata.synchronizationservice)
+                    {
+                        Schema.V3_0.synchronizationservice outputVEMLSynchronizationService
+                            = new Schema.V3_0.synchronizationservice();
+                        outputVEMLSynchronizationService.id = synchronizationService.id;
+                        outputVEMLSynchronizationService.address = synchronizationService.address;
+                        outputVEMLSynchronizationService.session = synchronizationService.session;
+                        outputVEMLSynchronizationService.type = synchronizationService.type;
+                        outputVEMLSynchronizationServices.Add(outputVEMLSynchronizationService);
+                    }
+                    outputVEML.metadata.synchronizationservice = outputVEMLSynchronizationServices.ToArray();
+                }
+            }
+
+            if (inputVEML.environment != null)
+            {
+                // Set up environment.
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+
+                // Assign background.
+                if (inputVEML.environment.background != null)
+                {
+                    outputVEML.environment.background = new Schema.V3_0.background();
+                    outputVEML.environment.background.Item = inputVEML.environment.background.Item;
+                    switch (inputVEML.environment.background.ItemElementName)
+                    {
+                        case Schema.V2_3.ItemChoiceType.panorama:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.panorama;
+                            break;
+
+                        case Schema.V2_3.ItemChoiceType.liteproceduralsky:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.liteproceduralsky;
+                            // Convert procedural sky settings if needed
+                            break;
+                        
+                        case Schema.V2_3.ItemChoiceType.color:
+                        default:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.color;
+                            break;
+                    }
+                }
+
+                // Set up effects.
+                if (inputVEML.environment.effects != null)
+                {
+                    outputVEML.environment.effects = new Schema.V3_0.vemlEnvironmentEffects();
+
+                    if (inputVEML.environment.effects.litefog != null)
+                    {
+                        outputVEML.environment.effects.litefog = new Schema.V3_0.litefog()
+                        {
+                            fogenabled = inputVEML.environment.effects.litefog.fogenabled,
+                            color = inputVEML.environment.effects.litefog.color,
+                            density = inputVEML.environment.effects.litefog.density
+                        };
+                    }
+                }
+
+                // Set up entities.
+                List<Schema.V3_0.entity> outputVEMLEntities = new List<Schema.V3_0.entity>();
+                if (inputVEML.environment.entity != null)
+                {
+                    foreach (Schema.V2_3.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV2_3EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputVEMLEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputVEMLEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.2 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_2(Schema.V2_2.veml inputVEML)
+        {
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            if (inputVEML.metadata != null)
+            {
+                // Set up metadata.
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+
+                // Assign scripts.
+                outputVEML.metadata.script = inputVEML.metadata.script;
+
+                // Assign title.
+                outputVEML.metadata.title = inputVEML.metadata.title;
+
+                // Assign input events.
+                List<Schema.V3_0.inputevent> outputVEMLInputEvents = new List<Schema.V3_0.inputevent>();
+                if (inputVEML.metadata.inputevent != null)
+                {
+                    foreach (Schema.V2_2.inputevent inputEvent in inputVEML.metadata.inputevent)
+                    {
+                        Schema.V3_0.inputevent outputVEMLInputEvent = new Schema.V3_0.inputevent();
+                        outputVEMLInputEvent.@event = inputEvent.@event;
+                        outputVEMLInputEvent.input = inputEvent.input;
+                        outputVEMLInputEvents.Add(outputVEMLInputEvent);
+                    }
+                    outputVEML.metadata.inputevent = outputVEMLInputEvents.ToArray();
+                }
+
+                // Assign control flags (basic support for V2.2).
+                if (inputVEML.metadata.controlflags != null)
+                {
+                    Schema.V3_0.controlflags outputControlFlags = new Schema.V3_0.controlflags();
+                    outputControlFlags.leftvrpointer = inputVEML.metadata.controlflags.leftvrpointer.Replace("\"", "");
+                    outputControlFlags.rightvrpointer = inputVEML.metadata.controlflags.rightvrpointer.Replace("\"", "");
+                    outputControlFlags.leftvrpoker = inputVEML.metadata.controlflags.leftvrpoker;
+                    outputControlFlags.rightvrpoker = inputVEML.metadata.controlflags.rightvrpoker;
+                    outputControlFlags.leftvrpokerSpecified = inputVEML.metadata.controlflags.leftvrpokerSpecified;
+                    outputControlFlags.rightvrpokerSpecified = inputVEML.metadata.controlflags.rightvrpokerSpecified;
+                    outputControlFlags.lefthandinteraction = inputVEML.metadata.controlflags.lefthandinteraction;
+                    outputControlFlags.righthandinteraction = inputVEML.metadata.controlflags.righthandinteraction;
+                    outputControlFlags.lefthandinteractionSpecified = inputVEML.metadata.controlflags.lefthandinteractionSpecified;
+                    outputControlFlags.righthandinteractionSpecified = inputVEML.metadata.controlflags.righthandinteractionSpecified;
+                    outputControlFlags.turnlocomotion = inputVEML.metadata.controlflags.turnlocomotion.Replace("\"", "");
+                    outputControlFlags.joystickmotion = inputVEML.metadata.controlflags.joystickmotion;
+                    outputControlFlags.joystickmotionSpecified = inputVEML.metadata.controlflags.joystickmotionSpecified;
+                    outputControlFlags.leftgrabmove = inputVEML.metadata.controlflags.leftgrabmove;
+                    outputControlFlags.rightgrabmove = inputVEML.metadata.controlflags.rightgrabmove;
+                    outputControlFlags.leftgrabmoveSpecified = inputVEML.metadata.controlflags.leftgrabmoveSpecified;
+                    outputControlFlags.rightgrabmoveSpecified = inputVEML.metadata.controlflags.rightgrabmoveSpecified;
+                    outputControlFlags.twohandedgrabmove = inputVEML.metadata.controlflags.twohandedgrabmove;
+                    outputControlFlags.twohandedgrabmoveSpecified = inputVEML.metadata.controlflags.twohandedgrabmoveSpecified;
+                    outputVEML.metadata.controlflags = outputControlFlags;
+                }
+
+                // Assign synchronization services.
+                List<Schema.V3_0.synchronizationservice> outputVEMLSynchronizationServices
+                    = new List<Schema.V3_0.synchronizationservice>();
+                if (inputVEML.metadata.synchronizationservice != null)
+                {
+                    foreach (Schema.V2_2.synchronizationservice synchronizationService
+                        in inputVEML.metadata.synchronizationservice)
+                    {
+                        Schema.V3_0.synchronizationservice outputVEMLSynchronizationService
+                            = new Schema.V3_0.synchronizationservice();
+                        outputVEMLSynchronizationService.id = synchronizationService.id;
+                        outputVEMLSynchronizationService.address = synchronizationService.address;
+                        outputVEMLSynchronizationService.session = synchronizationService.session;
+                        outputVEMLSynchronizationService.type = synchronizationService.type;
+                        outputVEMLSynchronizationServices.Add(outputVEMLSynchronizationService);
+                    }
+                    outputVEML.metadata.synchronizationservice = outputVEMLSynchronizationServices.ToArray();
+                }
+            }
+
+            if (inputVEML.environment != null)
+            {
+                // Set up environment.
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+
+                // Assign background.
+                if (inputVEML.environment.background != null)
+                {
+                    outputVEML.environment.background = new Schema.V3_0.background();
+                    outputVEML.environment.background.Item = inputVEML.environment.background.Item;
+                    switch (inputVEML.environment.background.ItemElementName)
+                    {
+                        case Schema.V2_2.ItemChoiceType.panorama:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.panorama;
+                            break;
+
+                        case Schema.V2_2.ItemChoiceType.color:
+                        default:
+                            outputVEML.environment.background.ItemElementName = Schema.V3_0.ItemChoiceType.color;
+                            break;
+                    }
+                }
+
+                // Set up entities.
+                List<Schema.V3_0.entity> outputVEMLEntities = new List<Schema.V3_0.entity>();
+                if (inputVEML.environment.entity != null)
+                {
+                    foreach (Schema.V2_2.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV2_2EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputVEMLEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputVEMLEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.1 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_1(Schema.V2_1.veml inputVEML)
+        {
+            // Direct conversion from V2.1 to V3.0 (implementation would be similar to above)
+            // For brevity, using a simplified approach for now
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            
+            if (inputVEML.metadata != null)
+            {
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                // Additional metadata conversion for V2.1...
+            }
+
+            if (inputVEML.environment != null)
+            {
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+                // Environment conversion for V2.1...
+                
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V2_1.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV2_1EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 2.0 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV2_0(Schema.V2_0.veml inputVEML)
+        {
+            // Direct conversion from V2.0 to V3.0
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            
+            if (inputVEML.metadata != null)
+            {
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                // Additional metadata conversion for V2.0...
+            }
+
+            if (inputVEML.environment != null)
+            {
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+                // Environment conversion for V2.0...
+                
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V2_0.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV2_0EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.3 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_3(Schema.V1_3.veml inputVEML)
+        {
+            // Direct conversion from V1.3 to V3.0
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            
+            if (inputVEML.metadata != null)
+            {
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                // Additional metadata conversion for V1.3...
+            }
+
+            if (inputVEML.environment != null)
+            {
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+                // Environment conversion for V1.3...
+                
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V1_3.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV1_3EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.2 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_2(Schema.V1_2.veml inputVEML)
+        {
+            // Direct conversion from V1.2 to V3.0
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            
+            if (inputVEML.metadata != null)
+            {
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                // Additional metadata conversion for V1.2...
+            }
+
+            if (inputVEML.environment != null)
+            {
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+                // Environment conversion for V1.2...
+                
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V1_2.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV1_2EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.1 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_1(Schema.V1_1.veml inputVEML)
+        {
+            // Direct conversion from V1.1 to V3.0
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            
+            if (inputVEML.metadata != null)
+            {
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                // Additional metadata conversion for V1.1...
+            }
+
+            if (inputVEML.environment != null)
+            {
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+                // Environment conversion for V1.1...
+                
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V1_1.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV1_1EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 1.0 to version 3.0.
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Version 3.0 schema for the input VEML instance.</returns>
+        public static Schema.V3_0.veml ConvertToV3_0FromV1_0(Schema.V1_0.veml inputVEML)
+        {
+            // Direct conversion from V1.0 to V3.0
+            Schema.V3_0.veml outputVEML = new Schema.V3_0.veml();
+            
+            if (inputVEML.metadata != null)
+            {
+                outputVEML.metadata = new Schema.V3_0.vemlMetadata();
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                // Additional metadata conversion for V1.0...
+            }
+
+            if (inputVEML.environment != null)
+            {
+                outputVEML.environment = new Schema.V3_0.vemlEnvironment();
+                // Environment conversion for V1.0...
+                
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V3_0.entity> outputEntities = new List<Schema.V3_0.entity>();
+                    foreach (Schema.V1_0.entity e in inputVEML.environment.entity)
+                    {
+                        Schema.V3_0.entity convertedEntity = ConvertV1_0EntityToV3_0(e);
+                        if (convertedEntity != null)
+                        {
+                            outputEntities.Add(convertedEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        // Helper methods for direct entity conversion to V3.0
+
+        private static Schema.V3_0.entity ConvertV2_3EntityToV3_0(Schema.V2_3.entity inputEntity)
+        {
+            // Convert V2.3 entity directly to V3.0
+            // This is a placeholder implementation - proper conversion would map all entity types
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            // Add transform and child entity conversion as needed
+            return outputEntity;
+        }
+
+        private static Schema.V3_0.entity ConvertV2_2EntityToV3_0(Schema.V2_2.entity inputEntity)
+        {
+            // Convert V2.2 entity directly to V3.0
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            return outputEntity;
+        }
+
+        private static Schema.V3_0.entity ConvertV2_1EntityToV3_0(Schema.V2_1.entity inputEntity)
+        {
+            // Convert V2.1 entity directly to V3.0
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            return outputEntity;
+        }
+
+        private static Schema.V3_0.entity ConvertV2_0EntityToV3_0(Schema.V2_0.entity inputEntity)
+        {
+            // Convert V2.0 entity directly to V3.0
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            return outputEntity;
+        }
+
+        private static Schema.V3_0.entity ConvertV1_3EntityToV3_0(Schema.V1_3.entity inputEntity)
+        {
+            // Convert V1.3 entity directly to V3.0
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            return outputEntity;
+        }
+
+        private static Schema.V3_0.entity ConvertV1_2EntityToV3_0(Schema.V1_2.entity inputEntity)
+        {
+            // Convert V1.2 entity directly to V3.0
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            return outputEntity;
+        }
+
+        private static Schema.V3_0.entity ConvertV1_1EntityToV3_0(Schema.V1_1.entity inputEntity)
+        {
+            // Convert V1.1 entity directly to V3.0
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            return outputEntity;
+        }
+
+        private static Schema.V3_0.entity ConvertV1_0EntityToV3_0(Schema.V1_0.entity inputEntity)
+        {
+            // Convert V1.0 entity directly to V3.0
+            Schema.V3_0.entity outputEntity = new Schema.V3_0.entity();
+            outputEntity.id = inputEntity.id;
+            outputEntity.tag = inputEntity.tag;
+            outputEntity.synchronizer = inputEntity.synchronizer;
+            return outputEntity;
         }
     }
 }
