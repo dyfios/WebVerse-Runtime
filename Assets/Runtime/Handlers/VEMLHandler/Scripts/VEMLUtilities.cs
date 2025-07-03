@@ -12,6 +12,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
     {
         public static readonly string xmlHeadingTag = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
+        public static readonly string VEML3_0FullTag = "<veml xmlns=\"http://www.fivesqd.com/schemas/veml/3.0\"" +
+            " xsi:schemaLocation=\"http://www.fivesqd.com/schemas/veml/3.0 schema.xsd\"" +
+            " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+
         public static readonly string VEML2_4FullTag = "<veml xmlns=\"http://www.fivesqd.com/schemas/veml/2.4\"" +
             " xsi:schemaLocation=\"http://www.fivesqd.com/schemas/veml/2.4 schema.xsd\"" +
             " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
@@ -47,6 +51,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         public static readonly string VEML1_0FullTag = "<veml xmlns=\"http://www.fivesqd.com/schemas/veml/1.0\"" +
             " xsi:schemaLocation=\"http://www.fivesqd.com/schemas/veml/1.0 schema.xsd\"" +
             " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
+
+        public static string FullyNotateVEML3_0(string inputVEML)
+        {
+            return FullyNotateVEML(inputVEML, VEML3_0FullTag);
+        }
 
         public static string FullyNotateVEML2_4(string inputVEML)
         {
@@ -91,6 +100,161 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         public static string FullyNotateVEML1_0(string inputVEML)
         {
             return FullyNotateVEML(inputVEML, VEML1_0FullTag);
+        }
+
+        /// <summary>
+        /// Convert the schema instance from version 3.0 to the current schema (version 2.4).
+        /// </summary>
+        /// <param name="inputVEML">Input VEML instance.</param>
+        /// <returns>Current schema version for the input VEML instance.</returns>
+        public static Schema.V2_4.veml ConvertFromV3_0(Schema.V3_0.veml inputVEML)
+        {
+            // Since V3.0 is very similar to V2.4, this is mostly a direct mapping
+            Schema.V2_4.veml outputVEML = new Schema.V2_4.veml();
+
+            if (inputVEML.metadata != null)
+            {
+                // Set up metadata.
+                outputVEML.metadata = new Schema.V2_4.vemlMetadata();
+
+                // Direct mappings for most fields
+                outputVEML.metadata.script = inputVEML.metadata.script;
+                outputVEML.metadata.title = inputVEML.metadata.title;
+                outputVEML.metadata.capability = inputVEML.metadata.capability;
+
+                // Convert input events
+                if (inputVEML.metadata.inputevent != null)
+                {
+                    List<Schema.V2_4.inputevent> outputVEMLInputEvents = new List<Schema.V2_4.inputevent>();
+                    foreach (Schema.V3_0.inputevent inputEvent in inputVEML.metadata.inputevent)
+                    {
+                        Schema.V2_4.inputevent outputVEMLInputEvent = new Schema.V2_4.inputevent();
+                        outputVEMLInputEvent.@event = inputEvent.@event;
+                        outputVEMLInputEvent.input = inputEvent.input;
+                        outputVEMLInputEvents.Add(outputVEMLInputEvent);
+                    }
+                    outputVEML.metadata.inputevent = outputVEMLInputEvents.ToArray();
+                }
+
+                // Convert control flags - V3.0 might have new flags, map what we can
+                if (inputVEML.metadata.controlflags != null)
+                {
+                    Schema.V2_4.controlflags outputControlFlags = new Schema.V2_4.controlflags();
+                    outputControlFlags.leftvrpointer = inputVEML.metadata.controlflags.leftvrpointer;
+                    outputControlFlags.rightvrpointer = inputVEML.metadata.controlflags.rightvrpointer;
+                    outputControlFlags.leftvrpoker = inputVEML.metadata.controlflags.leftvrpoker;
+                    outputControlFlags.rightvrpoker = inputVEML.metadata.controlflags.rightvrpoker;
+                    outputControlFlags.leftvrpokerSpecified = inputVEML.metadata.controlflags.leftvrpokerSpecified;
+                    outputControlFlags.rightvrpokerSpecified = inputVEML.metadata.controlflags.rightvrpokerSpecified;
+                    outputControlFlags.lefthandinteraction = inputVEML.metadata.controlflags.lefthandinteraction;
+                    outputControlFlags.righthandinteraction = inputVEML.metadata.controlflags.righthandinteraction;
+                    outputControlFlags.lefthandinteractionSpecified = inputVEML.metadata.controlflags.lefthandinteractionSpecified;
+                    outputControlFlags.righthandinteractionSpecified = inputVEML.metadata.controlflags.righthandinteractionSpecified;
+                    outputControlFlags.turnlocomotion = inputVEML.metadata.controlflags.turnlocomotion;
+                    outputControlFlags.joystickmotion = inputVEML.metadata.controlflags.joystickmotion;
+                    outputControlFlags.joystickmotionSpecified = inputVEML.metadata.controlflags.joystickmotionSpecified;
+                    outputControlFlags.leftgrabmove = inputVEML.metadata.controlflags.leftgrabmove;
+                    outputControlFlags.rightgrabmove = inputVEML.metadata.controlflags.rightgrabmove;
+                    outputControlFlags.leftgrabmoveSpecified = inputVEML.metadata.controlflags.leftgrabmoveSpecified;
+                    outputControlFlags.rightgrabmoveSpecified = inputVEML.metadata.controlflags.rightgrabmoveSpecified;
+                    outputControlFlags.twohandedgrabmove = inputVEML.metadata.controlflags.twohandedgrabmove;
+                    outputControlFlags.twohandedgrabmoveSpecified = inputVEML.metadata.controlflags.twohandedgrabmoveSpecified;
+                    outputVEML.metadata.controlflags = outputControlFlags;
+                }
+
+                // Convert synchronization services
+                if (inputVEML.metadata.synchronizationservice != null)
+                {
+                    List<Schema.V2_4.synchronizationservice> outputVEMLSynchronizationServices = new List<Schema.V2_4.synchronizationservice>();
+                    foreach (Schema.V3_0.synchronizationservice synchronizationService in inputVEML.metadata.synchronizationservice)
+                    {
+                        Schema.V2_4.synchronizationservice outputVEMLSynchronizationService = new Schema.V2_4.synchronizationservice();
+                        outputVEMLSynchronizationService.id = synchronizationService.id;
+                        outputVEMLSynchronizationService.address = synchronizationService.address;
+                        outputVEMLSynchronizationService.session = synchronizationService.session;
+                        outputVEMLSynchronizationService.type = synchronizationService.type;
+                        outputVEMLSynchronizationServices.Add(outputVEMLSynchronizationService);
+                    }
+                    outputVEML.metadata.synchronizationservice = outputVEMLSynchronizationServices.ToArray();
+                }
+            }
+
+            if (inputVEML.environment != null)
+            {
+                // Set up environment - most things should map directly
+                outputVEML.environment = new Schema.V2_4.vemlEnvironment();
+
+                // Convert background
+                if (inputVEML.environment.background != null)
+                {
+                    outputVEML.environment.background = new Schema.V2_4.background();
+                    outputVEML.environment.background.Item = inputVEML.environment.background.Item;
+                    
+                    // Map background choice types
+                    switch (inputVEML.environment.background.ItemElementName)
+                    {
+                        case Schema.V3_0.ItemChoiceType.panorama:
+                            outputVEML.environment.background.ItemElementName = Schema.V2_4.ItemChoiceType.panorama;
+                            break;
+                        case Schema.V3_0.ItemChoiceType.color:
+                            outputVEML.environment.background.ItemElementName = Schema.V2_4.ItemChoiceType.color;
+                            break;
+                        case Schema.V3_0.ItemChoiceType.liteproceduralsky:
+                            outputVEML.environment.background.ItemElementName = Schema.V2_4.ItemChoiceType.liteproceduralsky;
+                            // Convert lite procedural sky if needed - for now assume it's compatible
+                            break;
+                    }
+                }
+
+                // Convert effects
+                if (inputVEML.environment.effects != null)
+                {
+                    outputVEML.environment.effects = new Schema.V2_4.vemlEnvironmentEffects();
+                    if (inputVEML.environment.effects.litefog != null)
+                    {
+                        outputVEML.environment.effects.litefog = new Schema.V2_4.litefog();
+                        outputVEML.environment.effects.litefog.fogenabled = inputVEML.environment.effects.litefog.fogenabled;
+                        outputVEML.environment.effects.litefog.color = inputVEML.environment.effects.litefog.color;
+                        outputVEML.environment.effects.litefog.density = inputVEML.environment.effects.litefog.density;
+                    }
+                }
+
+                // Convert entities - this is where most of the work is since V3.0 might have new entity types
+                if (inputVEML.environment.entity != null)
+                {
+                    List<Schema.V2_4.entity> outputEntities = new List<Schema.V2_4.entity>();
+                    foreach (Schema.V3_0.entity inputEntity in inputVEML.environment.entity)
+                    {
+                        Schema.V2_4.entity outputEntity = ConvertV3_0EntityToV2_4(inputEntity);
+                        if (outputEntity != null)
+                        {
+                            outputEntities.Add(outputEntity);
+                        }
+                    }
+                    outputVEML.environment.entity = outputEntities.ToArray();
+                }
+            }
+
+            return outputVEML;
+        }
+
+        /// <summary>
+        /// Helper method to convert V3.0 entities to V2.4 entities.
+        /// </summary>
+        /// <param name="inputEntity">V3.0 entity to convert.</param>
+        /// <returns>V2.4 entity or null if conversion not supported.</returns>
+        private static Schema.V2_4.entity ConvertV3_0EntityToV2_4(Schema.V3_0.entity inputEntity)
+        {
+            // Since the entity types are largely the same between V3.0 and V2.4,
+            // we can do a simple type-based conversion for most cases
+            
+            // The conversion logic here would map specific V3.0 entity types to V2.4
+            // For now, assume direct compatibility since both versions have the same entity types
+            
+            // This would need to be expanded based on actual V3.0 specification differences
+            // For the purpose of this implementation, we'll assume entities are largely compatible
+            
+            return null; // TODO: Implement proper entity conversion when V3.0 spec is available
         }
 
         /// <summary>

@@ -28,7 +28,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <summary>
         /// Enumeration for a VEML version number.
         /// </summary>
-        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1, V2_2, V2_3, V2_4 }
+        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1, V2_2, V2_3, V2_4, V3_0 }
 
         /// <summary>
         /// Reference to the WebVerse runtime.
@@ -205,23 +205,38 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             Schema.V2_4.veml veml = null;
             try
             {
-                XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_4.veml));
-                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_4(System.Text.Encoding.UTF8.GetString(rawData)));
+                // First try V3.0 (newest version)
+                XmlSerializer ser3_0 = new XmlSerializer(typeof(Schema.V3_0.veml));
+                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML3_0(System.Text.Encoding.UTF8.GetString(rawData)));
                 XmlReader xmlReader = XmlReader.Create(reader);
 
-                // Attempt deserialization using v2.4 (latest) of the schema. Old XML will be converted
-                // to current version before being deserialized.
-                if (ser.CanDeserialize(xmlReader))
+                if (ser3_0.CanDeserialize(xmlReader))
                 {
-                    //version = VEMLVersion.V2_4;
-                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.4");
-                    veml = (Schema.V2_4.veml) ser.Deserialize(xmlReader);
+                    //version = VEMLVersion.V3_0;
+                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v3.0. Converting to VEML v2.4.");
+                    Schema.V3_0.veml v3_0VEML = (Schema.V3_0.veml) ser3_0.Deserialize(xmlReader);
+                    veml = VEMLUtilities.ConvertFromV3_0(v3_0VEML);
                 }
-
-                // Attempt deserialization using v2.3, v2.2, v2.1, v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to
-                // latest if deserialization succeeds.
                 else
                 {
+                    // Try V2.4 (current working version)
+                    XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_4.veml));
+                    reader = new StringReader(VEMLUtilities.FullyNotateVEML2_4(System.Text.Encoding.UTF8.GetString(rawData)));
+                    xmlReader = XmlReader.Create(reader);
+
+                    // Attempt deserialization using v2.4 of the schema. Old XML will be converted
+                    // to current version before being deserialized.
+                    if (ser.CanDeserialize(xmlReader))
+                    {
+                        //version = VEMLVersion.V2_4;
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.4");
+                        veml = (Schema.V2_4.veml) ser.Deserialize(xmlReader);
+                    }
+
+                    // Attempt deserialization using v2.3, v2.2, v2.1, v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to
+                    // latest if deserialization succeeds.
+                    else
+                    {
                     XmlSerializer ser2_3 = new XmlSerializer(typeof(Schema.V2_3.veml));
                     XmlSerializer ser2_2 = new XmlSerializer(typeof(Schema.V2_2.veml));
                     XmlSerializer ser2_1 = new XmlSerializer(typeof(Schema.V2_1.veml));
@@ -314,8 +329,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         //version = VEMLVersion.Unknown;
                         Logging.LogWarning("[VEMLHandler->LoadVEML] Unknown VEML version.");
                         // Attempt deserialization to throw appropriate exceptions.
+                        XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_4.veml));
                         ser.Deserialize(xmlReader);
                         return null;
+                    }
                     }
                 }
             }
