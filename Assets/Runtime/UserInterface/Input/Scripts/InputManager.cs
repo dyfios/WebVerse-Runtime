@@ -731,6 +731,12 @@ namespace FiveSQD.WebVerse.Input
                 vRRig.Initialize();
             }
 
+            if (desktopRig != null)
+            {
+                desktopRig.Terminate();
+                desktopRig.Initialize();
+            }
+
             inputEnabled = false;
 
             moveFunctions = new List<string>();

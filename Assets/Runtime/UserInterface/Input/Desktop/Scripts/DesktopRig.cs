@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using FiveSQD.WebVerse.WorldEngine.Entity;
+using FiveSQD.WebVerse.Runtime;
 using UnityEngine;
 
 namespace FiveSQD.WebVerse.Input.Desktop
@@ -12,10 +13,10 @@ namespace FiveSQD.WebVerse.Input.Desktop
     public class DesktopRig : MonoBehaviour
     {
         /// <summary>
-        /// The character controller for movement.
+        /// The avatar entity for movement and character control.
         /// </summary>
-        [Tooltip("The character controller for movement.")]
-        public CharacterController characterController;
+        [Tooltip("The avatar entity for movement and character control.")]
+        public WorldEngine.Entity.CharacterEntity avatarEntity;
 
         /// <summary>
         /// The camera transform for mouse look.
@@ -111,10 +112,19 @@ namespace FiveSQD.WebVerse.Input.Desktop
             mouseLookEnabled = true;
             rigFollowers = new List<BaseEntity>();
             
-            // Find required components if not assigned
-            if (characterController == null)
+            // Try to find the avatar entity if not assigned
+            if (avatarEntity == null && WorldEngine.WorldEngine.ActiveWorld != null)
             {
-                characterController = GetComponent<CharacterController>();
+                // Look for the avatar entity in the world
+                foreach (var entity in WorldEngine.WorldEngine.ActiveWorld.entityManager.GetAllEntities())
+                {
+                    if (entity is WorldEngine.Entity.CharacterEntity characterEntity && 
+                        entity.entityTag == "avatar") // Assuming avatar entities are tagged as "avatar"
+                    {
+                        avatarEntity = characterEntity;
+                        break;
+                    }
+                }
             }
             
             if (cameraTransform == null && Camera.main != null)
@@ -142,7 +152,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
         /// <param name="moveInput">Movement input vector (x = horizontal, y = vertical)</param>
         public void ApplyMovement(Vector2 moveInput)
         {
-            if (!wasdMotionEnabled || characterController == null)
+            if (!wasdMotionEnabled || avatarEntity == null)
             {
                 return;
             }
@@ -160,26 +170,17 @@ namespace FiveSQD.WebVerse.Input.Desktop
             // Calculate movement vector
             Vector3 movement = (forward * moveInput.y + right * moveInput.x) * movementSpeed * Time.deltaTime;
 
-            // Apply gravity
+            // Apply gravity if enabled (handled by the character entity itself)
             if (gravityEnabled)
             {
-                if (characterController.isGrounded)
-                {
-                    verticalVelocity = 0f;
-                }
-                else
-                {
-                    verticalVelocity += gravityStrength * Time.deltaTime;
-                }
-                movement.y = verticalVelocity * Time.deltaTime;
+                // Use the character entity's built-in movement system which handles gravity
+                avatarEntity.Move(new UnityEngine.Vector3(movement.x, movement.y, movement.z));
             }
             else
             {
-                movement.y = 0f;
+                // For no gravity, only apply horizontal movement
+                avatarEntity.Move(new UnityEngine.Vector3(movement.x, 0f, movement.z));
             }
-
-            // Move the character
-            characterController.Move(movement);
         }
 
         /// <summary>
