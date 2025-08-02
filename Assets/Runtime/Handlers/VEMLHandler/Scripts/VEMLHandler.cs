@@ -1000,16 +1000,31 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     if (vemlDocument.metadata.controlflags.gravityenabledSpecified)
                     {
                         desktopInput.gravityEnabled = vemlDocument.metadata.controlflags.gravityenabled;
+                        // Also set on DesktopRig if available
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.gravityEnabled = vemlDocument.metadata.controlflags.gravityenabled;
+                        }
                     }
                     
                     if (vemlDocument.metadata.controlflags.wasdmotionenabledSpecified)
                     {
                         desktopInput.wasdMotionEnabled = vemlDocument.metadata.controlflags.wasdmotionenabled;
+                        // Also set on DesktopRig if available
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.wasdMotionEnabled = vemlDocument.metadata.controlflags.wasdmotionenabled;
+                        }
                     }
                     
                     if (vemlDocument.metadata.controlflags.mouselookenabled Specified)
                     {
                         desktopInput.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                        // Also set on DesktopRig if available
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                        }
                     }
                 }
             }

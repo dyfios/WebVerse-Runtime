@@ -1,6 +1,7 @@
 // Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using FiveSQD.WebVerse.Input.SteamVR;
+using FiveSQD.WebVerse.Input.Desktop;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System;
@@ -23,6 +24,11 @@ namespace FiveSQD.WebVerse.Input
         /// VR rig.
         /// </summary>
         public VRRig vRRig;
+
+        /// <summary>
+        /// Desktop rig.
+        /// </summary>
+        public DesktopRig desktopRig;
 
         /// <summary>
         /// Whether or not input is enabled.
