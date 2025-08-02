@@ -991,6 +991,27 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         WebVerseRuntime.Instance.vrRig.twoHandedGrabMoveEnabled = vemlDocument.metadata.controlflags.twohandedgrabmove;
                     }
                 }
+                
+                // Set up desktop control flags.
+                if (WebVerseRuntime.Instance.platformInput is Input.Desktop.DesktopInput)
+                {
+                    Input.Desktop.DesktopInput desktopInput = (Input.Desktop.DesktopInput)WebVerseRuntime.Instance.platformInput;
+                    
+                    if (vemlDocument.metadata.controlflags.gravityenabledSpecified)
+                    {
+                        desktopInput.gravityEnabled = vemlDocument.metadata.controlflags.gravityenabled;
+                    }
+                    
+                    if (vemlDocument.metadata.controlflags.wasdmotionenabledSpecified)
+                    {
+                        desktopInput.wasdMotionEnabled = vemlDocument.metadata.controlflags.wasdmotionenabled;
+                    }
+                    
+                    if (vemlDocument.metadata.controlflags.mouselookenabled Specified)
+                    {
+                        desktopInput.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                    }
+                }
             }
 
             return true;

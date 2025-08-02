@@ -3068,6 +3068,18 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
         
         private bool twohandedgrabmoveFieldSpecified;
         
+        private bool gravityenabledField;
+        
+        private bool gravityenabledFieldSpecified;
+        
+        private bool wasdmotionenabledField;
+        
+        private bool wasdmotionenabledFieldSpecified;
+        
+        private bool mouselookenabled Field;
+        
+        private bool mouselookenabled FieldSpecified;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("left-vr-pointer")]
         public string leftvrpointer {
@@ -3274,6 +3286,72 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
             }
             set {
                 this.twohandedgrabmoveFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("gravity-enabled")]
+        public bool gravityenabled {
+            get {
+                return this.gravityenabledField;
+            }
+            set {
+                this.gravityenabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool gravityenabledSpecified {
+            get {
+                return this.gravityenabledFieldSpecified;
+            }
+            set {
+                this.gravityenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("wasd-motion-enabled")]
+        public bool wasdmotionenabled {
+            get {
+                return this.wasdmotionenabledField;
+            }
+            set {
+                this.wasdmotionenabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool wasdmotionenabledSpecified {
+            get {
+                return this.wasdmotionenabledFieldSpecified;
+            }
+            set {
+                this.wasdmotionenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("mouse-look-enabled")]
+        public bool mouselookenabled {
+            get {
+                return this.mouselookenabled Field;
+            }
+            set {
+                this.mouselookenabled Field = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool mouselookenabled Specified {
+            get {
+                return this.mouselookenabled FieldSpecified;
+            }
+            set {
+                this.mouselookenabled FieldSpecified = value;
             }
         }
     }

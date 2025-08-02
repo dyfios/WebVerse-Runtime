@@ -15,6 +15,20 @@ namespace FiveSQD.WebVerse.Input.Desktop
     public class DesktopInput : BasePlatformInput
     {
         /// <summary>
+        /// Whether gravity is enabled for desktop locomotion.
+        /// </summary>
+        public bool gravityEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Whether WASD motion is enabled for desktop locomotion.
+        /// </summary>
+        public bool wasdMotionEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Whether mouse look is enabled for desktop locomotion.
+        /// </summary>
+        public bool mouseLookEnabled { get; set; } = true;
+        /// <summary>
         /// Translation of Unity keys to Javascript standard keys.
         /// </summary>
         private static readonly Dictionary<string, string> keyKeyTranslations = new Dictionary<string, string>()
@@ -226,6 +240,11 @@ namespace FiveSQD.WebVerse.Input.Desktop
         /// <param name="context">Callback context.</param>
         public void OnMove(InputAction.CallbackContext context)
         {
+            if (!wasdMotionEnabled)
+            {
+                return;
+            }
+
             Vector2 value = context.ReadValue<Vector2>();
             Vector2 lastValue = WebVerseRuntime.Instance.inputManager.moveValue;
             WebVerseRuntime.Instance.inputManager.moveValue = value;
@@ -253,6 +272,11 @@ namespace FiveSQD.WebVerse.Input.Desktop
         /// <param name="context">Callback context.</param>
         public void OnLook(InputAction.CallbackContext context)
         {
+            if (!mouseLookEnabled)
+            {
+                return;
+            }
+
             Vector2 value = context.ReadValue<Vector2>();
             WebVerseRuntime.Instance.inputManager.lookValue = value;
 
