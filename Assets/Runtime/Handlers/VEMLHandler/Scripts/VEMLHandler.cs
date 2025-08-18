@@ -1032,8 +1032,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     {
                         if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
                         {
-                            string entityId = vemlDocument.metadata.controlflags.avatarentity;
-                            WebVerseRuntime.Instance.inputManager.desktopRig.SetAvatarEntityById(entityId);
+                            string entityTag = vemlDocument.metadata.controlflags.avatarentity;
+                            WebVerseRuntime.Instance.inputManager.desktopRig.SetAvatarEntityByTag(entityTag);
                         }
                     }
                 }

@@ -148,21 +148,21 @@ namespace FiveSQD.WebVerse.Input.Desktop
         }
 
         /// <summary>
-        /// Set the avatar entity by ID.
+        /// Set the avatar entity by tag.
         /// </summary>
-        /// <param name="entityId">ID of the entity to use as avatar</param>
-        public void SetAvatarEntityById(string entityId)
+        /// <param name="entityTag">Tag of the entity to use as avatar</param>
+        public void SetAvatarEntityByTag(string entityTag)
         {
-            if (string.IsNullOrEmpty(entityId) || WorldEngine.WorldEngine.ActiveWorld == null)
+            if (string.IsNullOrEmpty(entityTag) || WorldEngine.WorldEngine.ActiveWorld == null)
             {
                 return;
             }
 
-            // Look for the entity with the specified ID
+            // Look for the entity with the specified tag
             foreach (var entity in WorldEngine.WorldEngine.ActiveWorld.entityManager.GetAllEntities())
             {
                 if (entity is WorldEngine.Entity.CharacterEntity characterEntity && 
-                    entity.id == entityId)
+                    entity.entityTag == entityTag)
                 {
                     avatarEntity = characterEntity;
                     break;
@@ -171,7 +171,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
             
             if (avatarEntity == null)
             {
-                Logging.LogWarning($"[DesktopRig->SetAvatarEntityById] Could not find character entity with ID: {entityId}");
+                Logging.LogWarning($"[DesktopRig->SetAvatarEntityByTag] Could not find character entity with tag: {entityTag}");
             }
         }
 
