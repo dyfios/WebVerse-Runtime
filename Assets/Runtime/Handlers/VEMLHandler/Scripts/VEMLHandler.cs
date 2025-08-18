@@ -1017,13 +1017,23 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         }
                     }
                     
-                    if (vemlDocument.metadata.controlflags.mouselookenabled Specified)
+                    if (vemlDocument.metadata.controlflags.mouselookenabledSpecified)
                     {
                         desktopInput.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
                         // Also set on DesktopRig if available
                         if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
                         {
                             WebVerseRuntime.Instance.inputManager.desktopRig.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                        }
+                    }
+                    
+                    // Set avatar entity if specified
+                    if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.avatarentity))
+                    {
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            string entityId = vemlDocument.metadata.controlflags.avatarentity;
+                            WebVerseRuntime.Instance.inputManager.desktopRig.SetAvatarEntityById(entityId);
                         }
                     }
                 }

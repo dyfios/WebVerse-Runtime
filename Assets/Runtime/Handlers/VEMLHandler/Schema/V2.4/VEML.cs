@@ -3076,9 +3076,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
         
         private bool wasdmotionenabledFieldSpecified;
         
-        private bool mouselookenabled Field;
+        private bool mouselookenabledField;
         
-        private bool mouselookenabled FieldSpecified;
+        private bool mouselookenabledFieldSpecified;
+        
+        private string avatarentityField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("left-vr-pointer")]
@@ -3337,21 +3339,32 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
         [System.Xml.Serialization.XmlElementAttribute("mouse-look-enabled")]
         public bool mouselookenabled {
             get {
-                return this.mouselookenabled Field;
+                return this.mouselookenabledField;
             }
             set {
-                this.mouselookenabled Field = value;
+                this.mouselookenabledField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool mouselookenabled Specified {
+        public bool mouselookenabledSpecified {
             get {
-                return this.mouselookenabled FieldSpecified;
+                return this.mouselookenabledFieldSpecified;
             }
             set {
-                this.mouselookenabled FieldSpecified = value;
+                this.mouselookenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("avatar-entity")]
+        public string avatarentity {
+            get {
+                return this.avatarentityField;
+            }
+            set {
+                this.avatarentityField = value;
             }
         }
     }

@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using FiveSQD.WebVerse.WorldEngine.Entity;
 using FiveSQD.WebVerse.Runtime;
+using FiveSQD.WebVerse.Utilities;
 using UnityEngine;
 
 namespace FiveSQD.WebVerse.Input.Desktop
@@ -144,6 +145,34 @@ namespace FiveSQD.WebVerse.Input.Desktop
         public void Terminate()
         {
             rigFollowers = null;
+        }
+
+        /// <summary>
+        /// Set the avatar entity by ID.
+        /// </summary>
+        /// <param name="entityId">ID of the entity to use as avatar</param>
+        public void SetAvatarEntityById(string entityId)
+        {
+            if (string.IsNullOrEmpty(entityId) || WorldEngine.WorldEngine.ActiveWorld == null)
+            {
+                return;
+            }
+
+            // Look for the entity with the specified ID
+            foreach (var entity in WorldEngine.WorldEngine.ActiveWorld.entityManager.GetAllEntities())
+            {
+                if (entity is WorldEngine.Entity.CharacterEntity characterEntity && 
+                    entity.id == entityId)
+                {
+                    avatarEntity = characterEntity;
+                    break;
+                }
+            }
+            
+            if (avatarEntity == null)
+            {
+                Logging.LogWarning($"[DesktopRig->SetAvatarEntityById] Could not find character entity with ID: {entityId}");
+            }
         }
 
         /// <summary>
