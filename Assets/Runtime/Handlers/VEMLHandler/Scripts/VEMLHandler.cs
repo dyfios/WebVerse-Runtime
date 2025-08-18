@@ -46,6 +46,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         private int loadingEntities = 0;
         
         private liteproceduralsky liteProceduralSkyToLoadOnLoadCompletion = null;
+        
+        /// <summary>
+        /// Avatar entity tag to be set after entities are loaded.
+        /// </summary>
+        private string pendingAvatarEntityTag = null;
 
         /// <summary>
         /// Initialize the VEML Handler.
@@ -53,6 +58,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         public override void Initialize()
         {
             liteProceduralSkyToLoadOnLoadCompletion = null;
+            pendingAvatarEntityTag = null;
             base.Initialize();
         }
 
@@ -624,6 +630,16 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 elapsedTime += 0.25f;
             }
 
+            // Set avatar entity now that all entities have been loaded
+            if (!string.IsNullOrEmpty(pendingAvatarEntityTag))
+            {
+                if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                {
+                    WebVerseRuntime.Instance.inputManager.desktopRig.SetAvatarEntityByTag(pendingAvatarEntityTag);
+                }
+                pendingAvatarEntityTag = null; // Clear the pending tag
+            }
+
             if (scripts != null)
             {
                 foreach (string script in scripts)
@@ -1027,14 +1043,10 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         }
                     }
                     
-                    // Set avatar entity if specified
+                    // Store avatar entity tag to be set after entities are loaded
                     if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.avatarentity))
                     {
-                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
-                        {
-                            string entityTag = vemlDocument.metadata.controlflags.avatarentity;
-                            WebVerseRuntime.Instance.inputManager.desktopRig.SetAvatarEntityByTag(entityTag);
-                        }
+                        pendingAvatarEntityTag = vemlDocument.metadata.controlflags.avatarentity;
                     }
                 }
             }
