@@ -94,6 +94,11 @@ namespace FiveSQD.WebVerse.Input.Desktop
         private Vector2 currentMovementInput = Vector2.zero;
 
         /// <summary>
+        /// Current jump input for continuous jumping.
+        /// </summary>
+        private bool currentJumpInput = false;
+
+        /// <summary>
         /// Whether gravity is enabled for desktop locomotion.
         /// </summary>
         public bool gravityEnabled
@@ -303,6 +308,16 @@ namespace FiveSQD.WebVerse.Input.Desktop
         }
 
         /// <summary>
+        /// Apply jump input state for continuous jumping.
+        /// </summary>
+        /// <param name="isJumping">Whether jump input is being held</param>
+        public void ApplyJumpInput(bool isJumping)
+        {
+            // Store the current jump input for continuous application
+            currentJumpInput = isJumping;
+        }
+
+        /// <summary>
         /// Apply the stored movement input. Called from Update() for continuous movement.
         /// </summary>
         private void ProcessMovement()
@@ -336,6 +351,20 @@ namespace FiveSQD.WebVerse.Input.Desktop
                 // For no gravity, only apply horizontal movement
                 avatarEntity.Move(new UnityEngine.Vector3(movement.x, 0f, movement.z));
             }
+        }
+
+        /// <summary>
+        /// Apply the stored jump input. Called from Update() for continuous jumping.
+        /// </summary>
+        private void ProcessJump()
+        {
+            if (!jumpEnabled || avatarEntity == null || !currentJumpInput)
+            {
+                return;
+            }
+
+            // Apply jump using the character entity's built-in jump system
+            avatarEntity.Jump(jumpStrength);
         }
 
         /// <summary>
@@ -373,6 +402,9 @@ namespace FiveSQD.WebVerse.Input.Desktop
         {
             // Process continuous movement
             ProcessMovement();
+
+            // Process continuous jumping
+            ProcessJump();
 
             // Update rig followers similar to VRRig
             if (followersUpdateCount++ >= cyclesPerRigFollowerUpdate)

@@ -339,7 +339,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
                 {
                     if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
                     {
-                        WebVerseRuntime.Instance.inputManager.desktopRig.ApplyJump();
+                        WebVerseRuntime.Instance.inputManager.desktopRig.ApplyJumpInput(true);
                     }
                 }
                 
@@ -353,6 +353,15 @@ namespace FiveSQD.WebVerse.Input.Desktop
             }
             else if (context.phase == InputActionPhase.Canceled)
             {
+                // Handle jump input release for space key
+                if (key == "space" && jumpEnabled)
+                {
+                    if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                    {
+                        WebVerseRuntime.Instance.inputManager.desktopRig.ApplyJumpInput(false);
+                    }
+                }
+                
                 WebVerseRuntime.Instance.inputManager.EndKey(keyKeyTranslations[key], keyCodeTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeys.Remove(keyKeyTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeyCodes.Remove(keyCodeTranslations[key]);
