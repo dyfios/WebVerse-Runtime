@@ -303,6 +303,12 @@ namespace FiveSQD.WebVerse.Input.Desktop
                 return;
             }
 
+            // Only allow jumping if the avatar is on the ground
+            if (!avatarEntity.IsOnSurface())
+            {
+                return;
+            }
+
             // Apply jump using the character entity's built-in jump system
             avatarEntity.Jump(jumpStrength);
         }
@@ -359,6 +365,12 @@ namespace FiveSQD.WebVerse.Input.Desktop
         private void ProcessJump()
         {
             if (!jumpEnabled || avatarEntity == null || !currentJumpInput)
+            {
+                return;
+            }
+
+            // Only allow jumping if the avatar is on the ground
+            if (!avatarEntity.IsOnSurface())
             {
                 return;
             }
