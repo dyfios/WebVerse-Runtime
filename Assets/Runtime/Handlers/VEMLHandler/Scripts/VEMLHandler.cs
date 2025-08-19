@@ -46,6 +46,16 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         private int loadingEntities = 0;
         
         private liteproceduralsky liteProceduralSkyToLoadOnLoadCompletion = null;
+        
+        /// <summary>
+        /// Avatar entity tag to be set after entities are loaded.
+        /// </summary>
+        private string pendingAvatarEntityTag = null;
+
+        /// <summary>
+        /// Rig offset to be set after entities are loaded.
+        /// </summary>
+        private string pendingRigOffset = null;
 
         /// <summary>
         /// Initialize the VEML Handler.
@@ -53,6 +63,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         public override void Initialize()
         {
             liteProceduralSkyToLoadOnLoadCompletion = null;
+            pendingAvatarEntityTag = null;
+            pendingRigOffset = null;
             base.Initialize();
         }
 
@@ -624,6 +636,32 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 elapsedTime += 0.25f;
             }
 
+            // Set avatar entity now that all entities have been loaded
+            if (!string.IsNullOrEmpty(pendingAvatarEntityTag))
+            {
+                if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                {
+                    WebVerseRuntime.Instance.inputManager.desktopRig.SetAvatarEntityByTag(pendingAvatarEntityTag);
+                }
+                pendingAvatarEntityTag = null; // Clear the pending tag
+            }
+
+            // Set rig offset now that the avatar entity has been set
+            if (!string.IsNullOrEmpty(pendingRigOffset))
+            {
+                if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                {
+                    WebVerseRuntime.Instance.inputManager.desktopRig.SetRigOffsetFromString(pendingRigOffset);
+                }
+                pendingRigOffset = null; // Clear the pending offset
+            }
+
+            // Apply rig parenting and offset now that both avatar entity and rig offset are set
+            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+            {
+                WebVerseRuntime.Instance.inputManager.desktopRig.ApplyRigParentingAndOffset();
+            }
+
             if (scripts != null)
             {
                 foreach (string script in scripts)
@@ -989,6 +1027,85 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     if (vemlDocument.metadata.controlflags.twohandedgrabmoveSpecified)
                     {
                         WebVerseRuntime.Instance.vrRig.twoHandedGrabMoveEnabled = vemlDocument.metadata.controlflags.twohandedgrabmove;
+                    }
+                }
+                
+                // Set up desktop control flags.
+                if (WebVerseRuntime.Instance.platformInput is Input.Desktop.DesktopInput)
+                {
+                    Input.Desktop.DesktopInput desktopInput = (Input.Desktop.DesktopInput)WebVerseRuntime.Instance.platformInput;
+                    
+                    if (vemlDocument.metadata.controlflags.gravityenabledSpecified)
+                    {
+                        desktopInput.gravityEnabled = vemlDocument.metadata.controlflags.gravityenabled;
+                        // Also set on DesktopRig if available
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.gravityEnabled = vemlDocument.metadata.controlflags.gravityenabled;
+                        }
+                    }
+                    
+                    if (vemlDocument.metadata.controlflags.wasdmotionenabledSpecified)
+                    {
+                        desktopInput.wasdMotionEnabled = vemlDocument.metadata.controlflags.wasdmotionenabled;
+                        // Also set on DesktopRig if available
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.wasdMotionEnabled = vemlDocument.metadata.controlflags.wasdmotionenabled;
+                        }
+                    }
+                    
+                    if (vemlDocument.metadata.controlflags.mouselookenabledSpecified)
+                    {
+                        desktopInput.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                        // Also set on DesktopRig if available
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                        }
+                    }
+                    
+                    // Store avatar entity tag to be set after entities are loaded
+                    if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.avatarentity))
+                    {
+                        pendingAvatarEntityTag = vemlDocument.metadata.controlflags.avatarentity;
+                    }
+
+                    // Process jump enabled flag
+                    if (vemlDocument.metadata.controlflags.jumpenabledSpecified)
+                    {
+                        desktopInput.jumpEnabled = vemlDocument.metadata.controlflags.jumpenabled;
+
+                        // Also apply to DesktopRig if it exists
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.jumpEnabled = vemlDocument.metadata.controlflags.jumpenabled;
+                        }
+                    }
+
+                    // Process movement speed flag
+                    if (vemlDocument.metadata.controlflags.movementspeedSpecified)
+                    {
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.movementSpeed = vemlDocument.metadata.controlflags.movementspeed;
+                        }
+                    }
+
+                    // Process look speed flag
+                    if (vemlDocument.metadata.controlflags.lookspeedSpecified)
+                    {
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.mouseSensitivity = vemlDocument.metadata.controlflags.lookspeed;
+                        }
+                    }
+
+                    // Process rig offset flag
+                    if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.rigoffset))
+                    {
+                        // Store the rig offset to be applied after entities are loaded
+                        pendingRigOffset = vemlDocument.metadata.controlflags.rigoffset;
                     }
                 }
             }

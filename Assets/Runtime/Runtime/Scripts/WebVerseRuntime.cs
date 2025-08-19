@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
 using FiveSQD.WebVerse.Input.SteamVR;
+using FiveSQD.WebVerse.Input.Desktop;
 using Vuplex.WebView;
 
 namespace FiveSQD.WebVerse.Runtime
@@ -352,6 +353,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The VR Rig.")]
         public VRRig vrRig;
+
+        /// <summary>
+        /// The Desktop Rig.
+        /// </summary>
+        [Tooltip("The Desktop Rig.")]
+        public DesktopRig desktopRig;
 
         /// <summary>
         /// The base path of the current world.
@@ -831,6 +838,7 @@ namespace FiveSQD.WebVerse.Runtime
             inputManager = inputManagerGO.AddComponent<InputManager>();
             inputManager.platformInput = platformInput;
             inputManager.vRRig = vrRig;
+            inputManager.desktopRig = desktopRig;
             inputManager.Initialize();
 
             // Set up Output Manager.

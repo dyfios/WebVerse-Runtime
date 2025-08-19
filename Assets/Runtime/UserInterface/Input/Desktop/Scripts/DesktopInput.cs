@@ -15,6 +15,25 @@ namespace FiveSQD.WebVerse.Input.Desktop
     public class DesktopInput : BasePlatformInput
     {
         /// <summary>
+        /// Whether gravity is enabled for desktop locomotion.
+        /// </summary>
+        public bool gravityEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Whether WASD motion is enabled for desktop locomotion.
+        /// </summary>
+        public bool wasdMotionEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Whether mouse look is enabled for desktop locomotion.
+        /// </summary>
+        public bool mouseLookEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Whether jump is enabled for desktop locomotion.
+        /// </summary>
+        public bool jumpEnabled { get; set; } = true;
+        /// <summary>
         /// Translation of Unity keys to Javascript standard keys.
         /// </summary>
         private static readonly Dictionary<string, string> keyKeyTranslations = new Dictionary<string, string>()
@@ -226,9 +245,20 @@ namespace FiveSQD.WebVerse.Input.Desktop
         /// <param name="context">Callback context.</param>
         public void OnMove(InputAction.CallbackContext context)
         {
+            if (!wasdMotionEnabled)
+            {
+                return;
+            }
+
             Vector2 value = context.ReadValue<Vector2>();
             Vector2 lastValue = WebVerseRuntime.Instance.inputManager.moveValue;
             WebVerseRuntime.Instance.inputManager.moveValue = value;
+
+            // Always apply movement to DesktopRig for continuous movement
+            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+            {
+                WebVerseRuntime.Instance.inputManager.desktopRig.ApplyMovement(value);
+            }
 
             if (context.phase == InputActionPhase.Started)
             {
@@ -253,8 +283,19 @@ namespace FiveSQD.WebVerse.Input.Desktop
         /// <param name="context">Callback context.</param>
         public void OnLook(InputAction.CallbackContext context)
         {
+            if (!mouseLookEnabled)
+            {
+                return;
+            }
+
             Vector2 value = context.ReadValue<Vector2>();
             WebVerseRuntime.Instance.inputManager.lookValue = value;
+
+            // Apply look to DesktopRig if available
+            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+            {
+                WebVerseRuntime.Instance.inputManager.desktopRig.ApplyLook(value);
+            }
 
             if (context.phase == InputActionPhase.Started)
             {
@@ -293,6 +334,15 @@ namespace FiveSQD.WebVerse.Input.Desktop
 
             if (context.phase == InputActionPhase.Started)
             {
+                // Handle jump input for space key
+                if (key == "space" && jumpEnabled)
+                {
+                    if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                    {
+                        WebVerseRuntime.Instance.inputManager.desktopRig.ApplyJumpInput(true);
+                    }
+                }
+                
                 WebVerseRuntime.Instance.inputManager.Key(keyKeyTranslations[key], keyCodeTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeys.Add(keyKeyTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeyCodes.Add(keyCodeTranslations[key]);
@@ -303,6 +353,15 @@ namespace FiveSQD.WebVerse.Input.Desktop
             }
             else if (context.phase == InputActionPhase.Canceled)
             {
+                // Handle jump input release for space key
+                if (key == "space" && jumpEnabled)
+                {
+                    if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                    {
+                        WebVerseRuntime.Instance.inputManager.desktopRig.ApplyJumpInput(false);
+                    }
+                }
+                
                 WebVerseRuntime.Instance.inputManager.EndKey(keyKeyTranslations[key], keyCodeTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeys.Remove(keyKeyTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeyCodes.Remove(keyCodeTranslations[key]);

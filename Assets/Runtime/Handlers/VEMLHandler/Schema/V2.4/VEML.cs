@@ -3068,6 +3068,34 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
         
         private bool twohandedgrabmoveFieldSpecified;
         
+        private bool gravityenabledField;
+        
+        private bool gravityenabledFieldSpecified;
+        
+        private bool wasdmotionenabledField;
+        
+        private bool wasdmotionenabledFieldSpecified;
+        
+        private bool mouselookenabledField;
+        
+        private bool mouselookenabledFieldSpecified;
+        
+        private string avatarentityField;
+        
+        private bool jumpenabledField;
+        
+        private bool jumpenabledFieldSpecified;
+        
+        private float movementspeedField;
+        
+        private bool movementspeedFieldSpecified;
+        
+        private float lookspeedField;
+        
+        private bool lookspeedFieldSpecified;
+        
+        private string rigoffsetField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("left-vr-pointer")]
         public string leftvrpointer {
@@ -3274,6 +3302,160 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
             }
             set {
                 this.twohandedgrabmoveFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("gravity-enabled")]
+        public bool gravityenabled {
+            get {
+                return this.gravityenabledField;
+            }
+            set {
+                this.gravityenabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool gravityenabledSpecified {
+            get {
+                return this.gravityenabledFieldSpecified;
+            }
+            set {
+                this.gravityenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("wasd-motion-enabled")]
+        public bool wasdmotionenabled {
+            get {
+                return this.wasdmotionenabledField;
+            }
+            set {
+                this.wasdmotionenabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool wasdmotionenabledSpecified {
+            get {
+                return this.wasdmotionenabledFieldSpecified;
+            }
+            set {
+                this.wasdmotionenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("mouse-look-enabled")]
+        public bool mouselookenabled {
+            get {
+                return this.mouselookenabledField;
+            }
+            set {
+                this.mouselookenabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool mouselookenabledSpecified {
+            get {
+                return this.mouselookenabledFieldSpecified;
+            }
+            set {
+                this.mouselookenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("avatar-entity")]
+        public string avatarentity {
+            get {
+                return this.avatarentityField;
+            }
+            set {
+                this.avatarentityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("jump-enabled")]
+        public bool jumpenabled {
+            get {
+                return this.jumpenabledField;
+            }
+            set {
+                this.jumpenabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool jumpenabledSpecified {
+            get {
+                return this.jumpenabledFieldSpecified;
+            }
+            set {
+                this.jumpenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("movement-speed")]
+        public float movementspeed {
+            get {
+                return this.movementspeedField;
+            }
+            set {
+                this.movementspeedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool movementspeedSpecified {
+            get {
+                return this.movementspeedFieldSpecified;
+            }
+            set {
+                this.movementspeedFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("look-speed")]
+        public float lookspeed {
+            get {
+                return this.lookspeedField;
+            }
+            set {
+                this.lookspeedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool lookspeedSpecified {
+            get {
+                return this.lookspeedFieldSpecified;
+            }
+            set {
+                this.lookspeedFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("rig-offset")]
+        public string rigoffset {
+            get {
+                return this.rigoffsetField;
+            }
+            set {
+                this.rigoffsetField = value;
             }
         }
     }
