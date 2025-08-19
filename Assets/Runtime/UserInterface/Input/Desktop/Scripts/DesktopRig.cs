@@ -62,6 +62,12 @@ namespace FiveSQD.WebVerse.Input.Desktop
         public float jumpStrength = 8.0f;
 
         /// <summary>
+        /// Offset position relative to the character entity.
+        /// </summary>
+        [Tooltip("Offset position relative to the character entity.")]
+        public Vector3 rigOffset = Vector3.zero;
+
+        /// <summary>
         /// Gravity strength when gravity is enabled.
         /// </summary>
         [Tooltip("Gravity strength when gravity is enabled.")]
@@ -140,6 +146,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
                         entity.entityTag == "avatar") // Assuming avatar entities are tagged as "avatar"
                     {
                         avatarEntity = characterEntity;
+                        SetupRigParenting();
                         break;
                     }
                 }
@@ -182,6 +189,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
                     entity.entityTag == entityTag)
                 {
                     avatarEntity = characterEntity;
+                    SetupRigParenting();
                     break;
                 }
             }
@@ -189,6 +197,76 @@ namespace FiveSQD.WebVerse.Input.Desktop
             if (avatarEntity == null)
             {
                 Logging.LogWarning($"[DesktopRig->SetAvatarEntityByTag] Could not find character entity with tag: {entityTag}");
+            }
+        }
+
+        /// <summary>
+        /// Set the rig offset relative to the character entity.
+        /// </summary>
+        /// <param name="offset">The offset vector</param>
+        public void SetRigOffset(Vector3 offset)
+        {
+            rigOffset = offset;
+            ApplyRigOffset();
+        }
+
+        /// <summary>
+        /// Set the rig offset from a string representation (e.g., "1.0,2.0,0.5").
+        /// </summary>
+        /// <param name="offsetString">String representation of the offset</param>
+        public void SetRigOffsetFromString(string offsetString)
+        {
+            if (string.IsNullOrEmpty(offsetString))
+            {
+                return;
+            }
+
+            try
+            {
+                string[] parts = offsetString.Split(',');
+                if (parts.Length == 3)
+                {
+                    float x = float.Parse(parts[0].Trim());
+                    float y = float.Parse(parts[1].Trim());
+                    float z = float.Parse(parts[2].Trim());
+                    SetRigOffset(new Vector3(x, y, z));
+                }
+                else
+                {
+                    Logging.LogWarning($"[DesktopRig->SetRigOffsetFromString] Invalid offset format: {offsetString}. Expected format: 'x,y,z'");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Logging.LogWarning($"[DesktopRig->SetRigOffsetFromString] Error parsing offset: {offsetString}. Error: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Setup parenting of the rig to the character entity.
+        /// </summary>
+        private void SetupRigParenting()
+        {
+            if (avatarEntity == null || avatarEntity.gameObject == null)
+            {
+                return;
+            }
+
+            // Parent the rig to the character entity
+            transform.SetParent(avatarEntity.transform, false);
+            
+            // Apply the offset
+            ApplyRigOffset();
+        }
+
+        /// <summary>
+        /// Apply the current rig offset relative to the character entity.
+        /// </summary>
+        private void ApplyRigOffset()
+        {
+            if (avatarEntity != null && transform.parent == avatarEntity.transform)
+            {
+                transform.localPosition = rigOffset;
             }
         }
 

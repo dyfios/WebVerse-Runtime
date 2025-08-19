@@ -3094,6 +3094,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
         
         private bool lookspeedFieldSpecified;
         
+        private string rigoffsetField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("left-vr-pointer")]
         public string leftvrpointer {
@@ -3443,6 +3445,17 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
             }
             set {
                 this.lookspeedFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("rig-offset")]
+        public string rigoffset {
+            get {
+                return this.rigoffsetField;
+            }
+            set {
+                this.rigoffsetField = value;
             }
         }
     }

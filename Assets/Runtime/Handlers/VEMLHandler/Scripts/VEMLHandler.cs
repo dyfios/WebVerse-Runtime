@@ -53,12 +53,18 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         private string pendingAvatarEntityTag = null;
 
         /// <summary>
+        /// Rig offset to be set after entities are loaded.
+        /// </summary>
+        private string pendingRigOffset = null;
+
+        /// <summary>
         /// Initialize the VEML Handler.
         /// </summary>
         public override void Initialize()
         {
             liteProceduralSkyToLoadOnLoadCompletion = null;
             pendingAvatarEntityTag = null;
+            pendingRigOffset = null;
             base.Initialize();
         }
 
@@ -640,6 +646,16 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 pendingAvatarEntityTag = null; // Clear the pending tag
             }
 
+            // Set rig offset now that the avatar entity has been set
+            if (!string.IsNullOrEmpty(pendingRigOffset))
+            {
+                if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                {
+                    WebVerseRuntime.Instance.inputManager.desktopRig.SetRigOffsetFromString(pendingRigOffset);
+                }
+                pendingRigOffset = null; // Clear the pending offset
+            }
+
             if (scripts != null)
             {
                 foreach (string script in scripts)
@@ -1077,6 +1093,13 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         {
                             WebVerseRuntime.Instance.inputManager.desktopRig.mouseSensitivity = vemlDocument.metadata.controlflags.lookspeed;
                         }
+                    }
+
+                    // Process rig offset flag
+                    if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.rigoffset))
+                    {
+                        // Store the rig offset to be applied after entities are loaded
+                        pendingRigOffset = vemlDocument.metadata.controlflags.rigoffset;
                     }
                 }
             }
