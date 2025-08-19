@@ -77,6 +77,11 @@ namespace FiveSQD.WebVerse.Input.Desktop
         private float xRotation = 0f;
 
         /// <summary>
+        /// Current movement input for continuous movement.
+        /// </summary>
+        private Vector2 currentMovementInput = Vector2.zero;
+
+        /// <summary>
         /// Whether gravity is enabled for desktop locomotion.
         /// </summary>
         public bool gravityEnabled
@@ -181,7 +186,16 @@ namespace FiveSQD.WebVerse.Input.Desktop
         /// <param name="moveInput">Movement input vector (x = horizontal, y = vertical)</param>
         public void ApplyMovement(Vector2 moveInput)
         {
-            if (!wasdMotionEnabled || avatarEntity == null)
+            // Store the current movement input for continuous application
+            currentMovementInput = moveInput;
+        }
+
+        /// <summary>
+        /// Apply the stored movement input. Called from Update() for continuous movement.
+        /// </summary>
+        private void ProcessMovement()
+        {
+            if (!wasdMotionEnabled || avatarEntity == null || currentMovementInput == Vector2.zero)
             {
                 return;
             }
@@ -197,7 +211,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
             right.Normalize();
 
             // Calculate movement vector
-            Vector3 movement = (forward * moveInput.y + right * moveInput.x) * movementSpeed * Time.deltaTime;
+            Vector3 movement = (forward * currentMovementInput.y + right * currentMovementInput.x) * movementSpeed * Time.deltaTime;
 
             // Apply gravity if enabled (handled by the character entity itself)
             if (gravityEnabled)
@@ -236,6 +250,9 @@ namespace FiveSQD.WebVerse.Input.Desktop
 
         void Update()
         {
+            // Process continuous movement
+            ProcessMovement();
+
             // Update rig followers similar to VRRig
             if (followersUpdateCount++ >= cyclesPerRigFollowerUpdate)
             {

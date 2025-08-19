@@ -249,7 +249,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
             Vector2 lastValue = WebVerseRuntime.Instance.inputManager.moveValue;
             WebVerseRuntime.Instance.inputManager.moveValue = value;
 
-            // Apply movement to DesktopRig if available
+            // Always apply movement to DesktopRig for continuous movement
             if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
             {
                 WebVerseRuntime.Instance.inputManager.desktopRig.ApplyMovement(value);
@@ -269,11 +269,6 @@ namespace FiveSQD.WebVerse.Input.Desktop
             else if (context.phase == InputActionPhase.Canceled)
             {
                 WebVerseRuntime.Instance.inputManager.EndMove();
-                // Stop movement when input is canceled
-                if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
-                {
-                    WebVerseRuntime.Instance.inputManager.desktopRig.ApplyMovement(Vector2.zero);
-                }
             }
         }
 
