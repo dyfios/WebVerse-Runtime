@@ -656,6 +656,12 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 pendingRigOffset = null; // Clear the pending offset
             }
 
+            // Apply rig parenting and offset now that both avatar entity and rig offset are set
+            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+            {
+                WebVerseRuntime.Instance.inputManager.desktopRig.ApplyRigParentingAndOffset();
+            }
+
             if (scripts != null)
             {
                 foreach (string script in scripts)

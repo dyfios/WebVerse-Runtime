@@ -146,7 +146,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
                         entity.entityTag == "avatar") // Assuming avatar entities are tagged as "avatar"
                     {
                         avatarEntity = characterEntity;
-                        SetupRigParenting();
+                        // Don't setup parenting here - it will be done after rig offset is set
                         break;
                     }
                 }
@@ -189,7 +189,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
                     entity.entityTag == entityTag)
                 {
                     avatarEntity = characterEntity;
-                    SetupRigParenting();
+                    // Don't setup parenting here - it will be done after rig offset is set
                     break;
                 }
             }
@@ -240,6 +240,14 @@ namespace FiveSQD.WebVerse.Input.Desktop
             {
                 Logging.LogWarning($"[DesktopRig->SetRigOffsetFromString] Error parsing offset: {offsetString}. Error: {e.Message}");
             }
+        }
+
+        /// <summary>
+        /// Apply rig parenting and offset. Should be called after both avatar entity and rig offset are set.
+        /// </summary>
+        public void ApplyRigParentingAndOffset()
+        {
+            SetupRigParenting();
         }
 
         /// <summary>
