@@ -1048,6 +1048,36 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     {
                         pendingAvatarEntityTag = vemlDocument.metadata.controlflags.avatarentity;
                     }
+
+                    // Process jump enabled flag
+                    if (vemlDocument.metadata.controlflags.jumpenabledSpecified)
+                    {
+                        desktopInput.jumpEnabled = vemlDocument.metadata.controlflags.jumpenabled;
+
+                        // Also apply to DesktopRig if it exists
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.jumpEnabled = vemlDocument.metadata.controlflags.jumpenabled;
+                        }
+                    }
+
+                    // Process movement speed flag
+                    if (vemlDocument.metadata.controlflags.movementspeedSpecified)
+                    {
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.movementSpeed = vemlDocument.metadata.controlflags.movementspeed;
+                        }
+                    }
+
+                    // Process look speed flag
+                    if (vemlDocument.metadata.controlflags.lookspeedSpecified)
+                    {
+                        if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                        {
+                            WebVerseRuntime.Instance.inputManager.desktopRig.mouseSensitivity = vemlDocument.metadata.controlflags.lookspeed;
+                        }
+                    }
                 }
             }
 

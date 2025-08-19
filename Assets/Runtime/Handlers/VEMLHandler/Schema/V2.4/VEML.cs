@@ -3082,6 +3082,18 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
         
         private string avatarentityField;
         
+        private bool jumpenabledField;
+        
+        private bool jumpenabledFieldSpecified;
+        
+        private float movementspeedField;
+        
+        private bool movementspeedFieldSpecified;
+        
+        private float lookspeedField;
+        
+        private bool lookspeedFieldSpecified;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("left-vr-pointer")]
         public string leftvrpointer {
@@ -3365,6 +3377,72 @@ namespace FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4
             }
             set {
                 this.avatarentityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("jump-enabled")]
+        public bool jumpenabled {
+            get {
+                return this.jumpenabledField;
+            }
+            set {
+                this.jumpenabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool jumpenabledSpecified {
+            get {
+                return this.jumpenabledFieldSpecified;
+            }
+            set {
+                this.jumpenabledFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("movement-speed")]
+        public float movementspeed {
+            get {
+                return this.movementspeedField;
+            }
+            set {
+                this.movementspeedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool movementspeedSpecified {
+            get {
+                return this.movementspeedFieldSpecified;
+            }
+            set {
+                this.movementspeedFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("look-speed")]
+        public float lookspeed {
+            get {
+                return this.lookspeedField;
+            }
+            set {
+                this.lookspeedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool lookspeedSpecified {
+            get {
+                return this.lookspeedFieldSpecified;
+            }
+            set {
+                this.lookspeedFieldSpecified = value;
             }
         }
     }

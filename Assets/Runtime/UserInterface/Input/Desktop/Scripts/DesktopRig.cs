@@ -56,6 +56,12 @@ namespace FiveSQD.WebVerse.Input.Desktop
         public float mouseSensitivity = 2.0f;
 
         /// <summary>
+        /// Jump strength when jumping is enabled.
+        /// </summary>
+        [Tooltip("Jump strength when jumping is enabled.")]
+        public float jumpStrength = 8.0f;
+
+        /// <summary>
         /// Gravity strength when gravity is enabled.
         /// </summary>
         [Tooltip("Gravity strength when gravity is enabled.")]
@@ -109,6 +115,11 @@ namespace FiveSQD.WebVerse.Input.Desktop
         public bool mouseLookEnabled { get; set; } = true;
 
         /// <summary>
+        /// Whether jump is enabled for desktop locomotion.
+        /// </summary>
+        public bool jumpEnabled { get; set; } = true;
+
+        /// <summary>
         /// Initialize the Desktop rig.
         /// </summary>
         public void Initialize()
@@ -116,6 +127,7 @@ namespace FiveSQD.WebVerse.Input.Desktop
             gravityEnabled = true;
             wasdMotionEnabled = true;
             mouseLookEnabled = true;
+            jumpEnabled = true;
             rigFollowers = new List<BaseEntity>();
             
             // Try to find the avatar entity if not assigned
@@ -191,6 +203,20 @@ namespace FiveSQD.WebVerse.Input.Desktop
         }
 
         /// <summary>
+        /// Apply jump input.
+        /// </summary>
+        public void ApplyJump()
+        {
+            if (!jumpEnabled || avatarEntity == null)
+            {
+                return;
+            }
+
+            // Apply jump using the character entity's built-in jump system
+            avatarEntity.Jump(jumpStrength);
+        }
+
+        /// <summary>
         /// Apply the stored movement input. Called from Update() for continuous movement.
         /// </summary>
         private void ProcessMovement()
@@ -237,9 +263,18 @@ namespace FiveSQD.WebVerse.Input.Desktop
                 return;
             }
 
-            // Apply horizontal rotation to the rig
+            // Apply horizontal rotation to both the rig and avatar entity
             float mouseX = lookInput.x * mouseSensitivity;
             transform.Rotate(Vector3.up * mouseX);
+            
+            // Also rotate the avatar entity left/right
+            if (avatarEntity != null)
+            {
+                // Get current avatar rotation and add horizontal rotation
+                UnityEngine.Quaternion currentRotation = avatarEntity.GetRotation();
+                UnityEngine.Quaternion horizontalRotation = UnityEngine.Quaternion.AngleAxis(mouseX, UnityEngine.Vector3.up);
+                avatarEntity.SetRotation(horizontalRotation * currentRotation, false, true);
+            }
 
             // Apply vertical rotation to the camera
             float mouseY = lookInput.y * mouseSensitivity;

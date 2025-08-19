@@ -28,6 +28,11 @@ namespace FiveSQD.WebVerse.Input.Desktop
         /// Whether mouse look is enabled for desktop locomotion.
         /// </summary>
         public bool mouseLookEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Whether jump is enabled for desktop locomotion.
+        /// </summary>
+        public bool jumpEnabled { get; set; } = true;
         /// <summary>
         /// Translation of Unity keys to Javascript standard keys.
         /// </summary>
@@ -329,6 +334,15 @@ namespace FiveSQD.WebVerse.Input.Desktop
 
             if (context.phase == InputActionPhase.Started)
             {
+                // Handle jump input for space key
+                if (key == "space" && jumpEnabled)
+                {
+                    if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                    {
+                        WebVerseRuntime.Instance.inputManager.desktopRig.ApplyJump();
+                    }
+                }
+                
                 WebVerseRuntime.Instance.inputManager.Key(keyKeyTranslations[key], keyCodeTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeys.Add(keyKeyTranslations[key]);
                 WebVerseRuntime.Instance.inputManager.pressedKeyCodes.Add(keyCodeTranslations[key]);
