@@ -1,7 +1,7 @@
 // Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 #if USE_WEBINTERFACE
-using FiveSQD.WebVerse.WorldEngine.Utilities;
+using FiveSQD.StraightFour.Utilities;
 using System;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities;
@@ -176,6 +176,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
             Action onJoinAction = null;
             if (!string.IsNullOrEmpty(callback))
             {
+                Logging.Log("huh");
                 onJoinAction = () => {
                     WebVerseRuntime.Instance.javascriptHandler.Run(callback);
                 };
@@ -282,7 +283,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 return false;
             }
 
-            WorldEngine.Entity.BaseEntity entityToSynchronize = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(uuid);
+            StraightFour.Entity.BaseEntity entityToSynchronize = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(uuid);
             if (entityToSynchronize == null)
             {
                 LogSystem.LogError("[VOSSynchronizationAPI->StartSynchronizingEntity] Unable to find entity to synchronize.");
@@ -316,7 +317,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.VOSSynchronization
                 return false;
             }
 
-            WorldEngine.Entity.BaseEntity entityToStopSynchronizing = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(uuid);
+            StraightFour.Entity.BaseEntity entityToStopSynchronizing = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(uuid);
             if (entityToStopSynchronizing == null)
             {
                 LogSystem.LogError("[VOSSynchronization:StopSynchronizingEntity] Unable to find entity to stop synchronizing.");

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 using FiveSQD.WebVerse.LocalStorage;
-using FiveSQD.WebVerse.WorldEngine;
+using FiveSQD.StraightFour;
 using System.IO;
 
 /// <summary>
@@ -36,7 +36,7 @@ public class FileHandlerTests
         runtime.voxelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/Voxel/Prefabs/Voxel.prefab");
         runtime.webVerseWebViewPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Runtime/WebView/Prefabs/WebViewPrefab.prefab");
         runtime.Initialize(LocalStorageManager.LocalStorageMode.Cache, 128, 128, 128, Path.Combine(Application.dataPath, "Files"));
-        WorldEngine.LoadWorld("test");
+        StraightFour.LoadWorld("test");
 
         // Create File in File Directory (byte array).
         byte[] fileData = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };

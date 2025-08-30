@@ -38,7 +38,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
             UnityEngine.Vector3 scl = new UnityEngine.Vector3(scale.x, scale.y, scale.z);
@@ -48,7 +48,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                ve.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                ve.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(ve.internalEntity, ve);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -56,14 +56,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(pBE, pos, rot, scl, guid, tag, onLoadAction);
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadVoxelEntity(pBE, pos, rot, scl, guid, tag, onLoadAction);
 
             return ve;
         }
 
         public VoxelEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.VoxelEntity);
+            internalEntityType = typeof(StraightFour.Entity.VoxelEntity);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return EntityAPIHelper.SetBlockInfoAsync(id, info, (WorldEngine.Entity.VoxelEntity) internalEntity);
+            return EntityAPIHelper.SetBlockInfoAsync(id, info, (StraightFour.Entity.VoxelEntity) internalEntity);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            ((WorldEngine.Entity.VoxelEntity) internalEntity).SetBlock(x, y, z, type, subType);
+            ((StraightFour.Entity.VoxelEntity) internalEntity).SetBlock(x, y, z, type, subType);
             return true;
         }
 
@@ -124,7 +124,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            return ((WorldEngine.Entity.VoxelEntity) internalEntity).GetBlock(x, y, z);
+            return ((StraightFour.Entity.VoxelEntity) internalEntity).GetBlock(x, y, z);
         }
 
         /// <summary>
@@ -142,7 +142,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.VoxelEntity) internalEntity).ContainsChunk(x, y, z);
+            return ((StraightFour.Entity.VoxelEntity) internalEntity).ContainsChunk(x, y, z);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>The value of the Query Parameter, or null.</returns>
         public static string GetQueryParam(string key)
         {
-            return WebVerseRuntime.Instance.worldEngine.GetParam(key);
+            return WebVerseRuntime.Instance.straightFour.GetParam(key);
         }
 
         /// <summary>

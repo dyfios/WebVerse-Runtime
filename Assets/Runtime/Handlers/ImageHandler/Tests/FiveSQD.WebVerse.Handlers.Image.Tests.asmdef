@@ -6,8 +6,8 @@
         "UnityEditor.TestRunner",
         "FiveSQD.WebVerse",
         "FiveSQD.WebVerse.Utilities",
-        "FiveSQD.WebVerse.WorldEngine",
-        "FiveSQD.WebVerse.LocalStorage"
+        "FiveSQD.WebVerse.LocalStorage",
+        "FiveSQD.StraightFour"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

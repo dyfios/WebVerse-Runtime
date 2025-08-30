@@ -38,7 +38,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
             UnityEngine.Vector3 scl = new UnityEngine.Vector3(scale.x, scale.y, scale.z);
@@ -48,7 +48,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
                 onLoadAction = () =>
                 {
-                    ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                    ce.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                     EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
                     if (ce.internalEntity != null)
                     {
@@ -60,14 +60,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     }
                 };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadContainerEntity(pBE, pos, rot, scl, guid, tag, isSize, onLoadAction);
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadContainerEntity(pBE, pos, rot, scl, guid, tag, isSize, onLoadAction);
 
             return ce;
         }
 
         internal ContainerEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.ContainerEntity);
+            internalEntityType = typeof(StraightFour.Entity.ContainerEntity);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <param name="value">Entry value.</param>
         public static void SetItem(string key, string value)
         {
-            WorldEngine.WorldEngine.ActiveWorld.storageManager.SetItem(key, value);
+            StraightFour.StraightFour.ActiveWorld.storageManager.SetItem(key, value);
         }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>The entry corresponding to the key, or null if none exist.</returns>
         public static string GetItem(string key)
         {
-            return WorldEngine.WorldEngine.ActiveWorld.storageManager.GetItem(key);
+            return StraightFour.StraightFour.ActiveWorld.storageManager.GetItem(key);
         }
     }
 }

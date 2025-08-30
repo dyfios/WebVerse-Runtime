@@ -538,8 +538,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 string[] _normalTextures, string[] _maskTextures,
                 string[] _specularValues, float[] _metallicValues,
                 float[] _smoothnessValues, string _layerMask, string _subType,
-                Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> _modifications,
+                Dictionary<Vector3Int, Tuple<StraightFour.Entity.HybridTerrainEntity.TerrainOperation,
+                    int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> _modifications,
                 int _mass, string _wheels, string _onChange, string[] _options, string _onMessage,
                 string _imageFile)
             {
@@ -584,8 +584,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 if (_modifications != null)
                 {
                     foreach (System.Collections.Generic.KeyValuePair<
-                        Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod
+                        Vector3Int, Tuple<StraightFour.Entity.HybridTerrainEntity.TerrainOperation,
+                        int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> mod
                         in _modifications)
                     {
                         if (mod.Key == null)
@@ -596,15 +596,15 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         string modName = "";
                         switch (mod.Value.Item1)
                         {
-                            case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Dig:
+                            case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Dig:
                                 modName = "dig";
                                 break;
 
-                            case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Build:
+                            case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Build:
                                 modName = "build";
                                 break;
 
-                            case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Unset:
+                            case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Unset:
                             default:
                                 modName = "unset";
                                 break;
@@ -613,11 +613,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         string bt = "";
                         switch (mod.Value.Item3)
                         {
-                            case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                            case StraightFour.Entity.Terrain.TerrainEntityBrushType.sphere:
                                 bt = "sphere";
                                 break;
 
-                            case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                            case StraightFour.Entity.Terrain.TerrainEntityBrushType.roundedCube:
                             default:
                                 bt = "roundedcube";
                                 break;
@@ -1965,10 +1965,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     Guid _sessionID, Guid _entityID, string _tag,
                     Guid? _parentID, Vector3 _position, Quaternion _rotation,
                     float _length, float _width, float _height, float[,] _heights,
-                    WorldEngine.Entity.Terrain.TerrainEntityLayer[] layers,
+                    StraightFour.Entity.Terrain.TerrainEntityLayer[] layers,
                     string _layerMask, string _type,
-                    Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                        int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> _modifications,
+                    Dictionary<Vector3Int, Tuple<StraightFour.Entity.HybridTerrainEntity.TerrainOperation,
+                        int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> _modifications,
                     bool _deleteWithClient)
                 {
                     messageID = _messageID.ToString();
@@ -1993,7 +1993,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         float[] _metallicValues = new float[layers.Length];
                         float[] _smoothnessValues = new float[layers.Length];
                         int idx = 0;
-                        foreach (WorldEngine.Entity.Terrain.TerrainEntityLayer layer in layers)
+                        foreach (StraightFour.Entity.Terrain.TerrainEntityLayer layer in layers)
                         {
                             _diffuseTextures[idx] = layer.diffusePath;
                             _normalTextures[idx] = layer.normalPath;
@@ -2017,8 +2017,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     if (_modifications != null)
                     {
                         foreach (System.Collections.Generic.KeyValuePair<
-                            Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod
+                            Vector3Int, Tuple<StraightFour.Entity.HybridTerrainEntity.TerrainOperation,
+                            int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> mod
                             in _modifications)
                         {
                             if (mod.Key == null)
@@ -2029,15 +2029,15 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             string modName = "";
                             switch (mod.Value.Item1)
                             {
-                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Dig:
+                                case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Dig:
                                     modName = "dig";
                                     break;
 
-                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Build:
+                                case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Build:
                                     modName = "build";
                                     break;
 
-                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Unset:
+                                case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Unset:
                                 default:
                                     modName = "unset";
                                     break;
@@ -2046,11 +2046,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             string bt = "";
                             switch (mod.Value.Item3)
                             {
-                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                                case StraightFour.Entity.Terrain.TerrainEntityBrushType.sphere:
                                     bt = "sphere";
                                     break;
 
-                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                                case StraightFour.Entity.Terrain.TerrainEntityBrushType.roundedCube:
                                 default:
                                     bt = "roundedcube";
                                     break;
@@ -4663,8 +4663,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     string[] _maskTextures, string[] _specularValues,
                     float[] _metallicValues, float[] _smoothnessValues,
                     string _layerMask, string _type,
-                    Dictionary<Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> _modifications)
+                    Dictionary<Vector3Int, Tuple<StraightFour.Entity.HybridTerrainEntity.TerrainOperation,
+                    int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> _modifications)
                 {
                     messageID = _messageID.ToString();
                     clientID = _clientID;
@@ -4692,8 +4692,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     if (_modifications != null)
                     {
                         foreach (System.Collections.Generic.KeyValuePair<
-                            Vector3Int, Tuple<WorldEngine.Entity.HybridTerrainEntity.TerrainOperation,
-                            int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod
+                            Vector3Int, Tuple<StraightFour.Entity.HybridTerrainEntity.TerrainOperation,
+                            int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> mod
                             in _modifications)
                         {
                             if (mod.Key == null)
@@ -4704,15 +4704,15 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             string modName = "";
                             switch (mod.Value.Item1)
                             {
-                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Dig:
+                                case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Dig:
                                     modName = "dig";
                                     break;
 
-                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Build:
+                                case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Build:
                                     modName = "build";
                                     break;
 
-                                case WorldEngine.Entity.HybridTerrainEntity.TerrainOperation.Unset:
+                                case StraightFour.Entity.HybridTerrainEntity.TerrainOperation.Unset:
                                 default:
                                     modName = "unset";
                                     break;
@@ -4721,11 +4721,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             string bt = "";
                             switch (mod.Value.Item3)
                             {
-                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                                case StraightFour.Entity.Terrain.TerrainEntityBrushType.sphere:
                                     bt = "sphere";
                                     break;
 
-                                case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                                case StraightFour.Entity.Terrain.TerrainEntityBrushType.roundedCube:
                                 default:
                                     bt = "roundedcube";
                                     break;

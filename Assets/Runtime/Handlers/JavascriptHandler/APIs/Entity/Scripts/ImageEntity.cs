@@ -38,13 +38,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pCE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pCE = EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[ImageEntity->Create] Invalid parent entity.");
                 return null;
             }
-            if (pCE is not WorldEngine.Entity.UIEntity)
+            if (pCE is not StraightFour.Entity.UIEntity)
             {
                 Logging.LogWarning("[ImageEntity->Create] Parent entity not UI element.");
                 return null;
@@ -58,7 +58,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                ie.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                ie.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(ie.internalEntity, ie);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -69,9 +69,69 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             return EntityAPIHelper.LoadImageEntityAsync(parent, imageFile, positionPercent, sizePercent, id, tag, onLoaded);
         }
 
+        /// <summary>
+        /// Stretch the image entity to fill its parent.
+        /// </summary>
+        /// <param name="stretch">Whether to stretch to parent. If false, restores normal sizing.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool StretchToParent(bool stretch = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[ImageEntity:StretchToParent] Unknown entity.");
+                return false;
+            }
+
+            return ((StraightFour.Entity.UIElementEntity) internalEntity).StretchToParent(stretch);
+        }
+
+        /// <summary>
+        /// Set the alignment of the image entity within its parent.
+        /// </summary>
+        /// <param name="alignment">Alignment to set.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool SetAlignment(UIElementAlignment alignment)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[ImageEntity:SetAlignment] Unknown entity.");
+                return false;
+            }
+            
+            StraightFour.Entity.UIElementAlignment convertedAlignment = StraightFour.Entity.UIElementAlignment.Center;
+            switch (alignment)
+            {
+                case UIElementAlignment.Center:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Center;
+                    break;
+
+                case UIElementAlignment.Left:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Left;
+                    break;
+
+                case UIElementAlignment.Right:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Right;
+                    break;
+
+                case UIElementAlignment.Top:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Top;
+                    break;
+
+                case UIElementAlignment.Bottom:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Bottom;
+                    break;
+
+                default:
+                    Logging.LogError("[ButtonEntity:SetAlignment] Invalid alignment.");
+                    return false;
+            }
+
+            return ((StraightFour.Entity.UIElementEntity)internalEntity).SetAlignment(convertedAlignment);
+        }
+
         internal ImageEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.ImageEntity);
+            internalEntityType = typeof(StraightFour.Entity.ImageEntity);
         }
     }
 }

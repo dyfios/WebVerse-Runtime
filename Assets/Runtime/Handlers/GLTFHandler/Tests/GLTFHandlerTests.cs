@@ -5,11 +5,11 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using System;
-using FiveSQD.WebVerse.WorldEngine.Entity;
+using FiveSQD.StraightFour.Entity;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.LocalStorage;
 using UnityEditor;
-using FiveSQD.WebVerse.WorldEngine;
+using FiveSQD.StraightFour;
 using FiveSQD.WebVerse.Handlers.File;
 using System.IO;
 
@@ -32,7 +32,7 @@ public class GLTFHandlerTests
         runtime.inputEntityPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/UI/UIElement/Input/Prefabs/InputEntity.prefab");
         runtime.voxelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/Voxel/Prefabs/Voxel.prefab");
         runtime.Initialize(LocalStorageManager.LocalStorageMode.Cache, 128, 128, 128, Path.Combine(Application.dataPath, "Files"));
-        WorldEngine.LoadWorld("test");
+        StraightFour.LoadWorld("test");
 
         // Load GLTF Resource as Mesh Entity.
         MeshEntity mEntity = null;

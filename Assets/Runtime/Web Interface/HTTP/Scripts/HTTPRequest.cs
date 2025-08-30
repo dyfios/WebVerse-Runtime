@@ -45,12 +45,16 @@ namespace FiveSQD.WebVerse.WebInterface.HTTP
         /// <param name="uri">URI to send the request to.</param>
         /// <param name="method">Method to use in the request.</param>
         /// <param name="onFinished">Action to perform upon completing the request.</param>
-        public HTTPRequest(string uri, HTTPMethod method, Action<int, Dictionary<string, string>, byte[]> onFinished)
+        public HTTPRequest(string uri, HTTPMethod method, Action<int, Dictionary<string, string>, byte[]> onFinished, string data = null, string dataType = null)
         {
             switch (method)
             {
                 case HTTPMethod.Get:
                     request = UnityWebRequest.Get(uri);
+                    break;
+
+                case HTTPMethod.Post:
+                    request = UnityWebRequest.Post(uri, data, dataType);
                     break;
 
                 case HTTPMethod.Head:

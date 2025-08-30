@@ -18,11 +18,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).loop;
+                return ((StraightFour.Entity.AudioEntity) internalEntity).loop;
             }
             set
             {
-                ((WorldEngine.Entity.AudioEntity) internalEntity).loop = value;
+                ((StraightFour.Entity.AudioEntity) internalEntity).loop = value;
             }
         }
 
@@ -33,11 +33,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).priority;
+                return ((StraightFour.Entity.AudioEntity) internalEntity).priority;
             }
             set
             {
-                ((WorldEngine.Entity.AudioEntity) internalEntity).priority = value;
+                ((StraightFour.Entity.AudioEntity) internalEntity).priority = value;
             }
         }
 
@@ -48,11 +48,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).volume;
+                return ((StraightFour.Entity.AudioEntity) internalEntity).volume;
             }
             set
             {
-                ((WorldEngine.Entity.AudioEntity) internalEntity).volume = value;
+                ((StraightFour.Entity.AudioEntity) internalEntity).volume = value;
             }
         }
 
@@ -63,11 +63,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).pitch;
+                return ((StraightFour.Entity.AudioEntity) internalEntity).pitch;
             }
             set
             {
-                ((WorldEngine.Entity.AudioEntity) internalEntity).pitch = value;
+                ((StraightFour.Entity.AudioEntity) internalEntity).pitch = value;
             }
         }
 
@@ -79,11 +79,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).stereoPan;
+                return ((StraightFour.Entity.AudioEntity) internalEntity).stereoPan;
             }
             set
             {
-                ((WorldEngine.Entity.AudioEntity) internalEntity).stereoPan = value;
+                ((StraightFour.Entity.AudioEntity) internalEntity).stereoPan = value;
             }
         }
 
@@ -112,7 +112,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
@@ -121,7 +121,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                ae.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                ae.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(ae.internalEntity, ae);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -129,14 +129,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAudioEntity(pBE, pos, rot, guid, tag, onLoadAction);
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadAudioEntity(pBE, pos, rot, guid, tag, onLoadAction);
 
             return ae;
         }
 
         internal AudioEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.AudioEntity);
+            internalEntityType = typeof(StraightFour.Entity.AudioEntity);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Whether or not the operation was successful.</returns>
         public bool LoadAudioClipFromWAV(string filePath)
         {
-            EntityAPIHelper.LoadAudioFromFileAsync(filePath, (WorldEngine.Entity.AudioEntity) internalEntity);
+            EntityAPIHelper.LoadAudioFromFileAsync(filePath, (StraightFour.Entity.AudioEntity) internalEntity);
             return true;
         }
 
@@ -156,7 +156,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Whether or not the operation was successful.</returns>
         public bool Play()
         {
-            ((WorldEngine.Entity.AudioEntity) internalEntity).Play();
+            ((StraightFour.Entity.AudioEntity) internalEntity).Play();
 
             return true;
         }
@@ -167,7 +167,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Whether or not the operation was successful.</returns>
         public bool Stop()
         {
-            ((WorldEngine.Entity.AudioEntity) internalEntity).Stop();
+            ((StraightFour.Entity.AudioEntity) internalEntity).Stop();
 
             return true;
         }
@@ -179,7 +179,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Whether or not the operation was successful.</returns>
         public bool TogglePause(bool pause)
         {
-            ((WorldEngine.Entity.AudioEntity) internalEntity).TogglePause(pause);
+            ((StraightFour.Entity.AudioEntity) internalEntity).TogglePause(pause);
 
             return true;
         }

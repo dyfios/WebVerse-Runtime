@@ -65,7 +65,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 mo = new UnityEngine.Vector3(meshOffset.x, meshOffset.y, meshOffset.z);
             UnityEngine.Quaternion mr = new UnityEngine.Quaternion(meshRotation.x, meshRotation.y, meshRotation.z, meshRotation.w);
             UnityEngine.Vector3 alo = new UnityEngine.Vector3(avatarLabelOffset.x, avatarLabelOffset.y, avatarLabelOffset.z);
@@ -78,7 +78,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                ce.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -86,8 +86,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            System.Action<WorldEngine.Entity.CharacterEntity> onEntityLoadedAction =
-                new System.Action<WorldEngine.Entity.CharacterEntity>((characterEntity) =>
+            System.Action<StraightFour.Entity.CharacterEntity> onEntityLoadedAction =
+                new System.Action<StraightFour.Entity.CharacterEntity>((characterEntity) =>
                 {
                     if (characterEntity == null)
                     {
@@ -100,7 +100,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                         characterEntity.SetRotation(rot, true);
                         characterEntity.entityTag = tag;
 
-                        ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                        ce.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                         EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
                         if (!string.IsNullOrEmpty(onLoaded))
                         {
@@ -112,7 +112,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             if (string.IsNullOrEmpty(meshObject))
             {
-                WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(pBE, null, UnityEngine.Vector3.zero,
+                StraightFour.StraightFour.ActiveWorld.entityManager.LoadCharacterEntity(pBE, null, UnityEngine.Vector3.zero,
                     UnityEngine.Quaternion.identity, UnityEngine.Vector3.zero,
                     pos, rot, scl, guid, tag, isSize, onLoadAction);
             }
@@ -127,7 +127,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal CharacterEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.CharacterEntity);
+            internalEntityType = typeof(StraightFour.Entity.CharacterEntity);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     return false;
                 }
 
-                return ((WorldEngine.Entity.CharacterEntity) internalEntity).fixHeight;
+                return ((StraightFour.Entity.CharacterEntity) internalEntity).fixHeight;
             }
 
             set
@@ -154,8 +154,86 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     return;
                 }
 
-                ((WorldEngine.Entity.CharacterEntity) internalEntity).fixHeight = value;
+                ((StraightFour.Entity.CharacterEntity) internalEntity).fixHeight = value;
             }
+        }
+
+        /// <summary>
+        /// Set the character model.
+        /// </summary>
+        /// <param name="newCharacterGO">The new character model to use.</param>
+        /// <param name="meshOffset">The offset to apply.</param>
+        /// <param name="meshRotation">The rotation to apply.</param>
+        /// <param name="newOffset">The offset to apply to the label.</param>
+        /// <returns>Whether or not the setting was successful.</returns>
+        public bool SetCharacterModel(string meshObject, Vector3 meshOffset, Quaternion meshRotation,
+            Vector3 labelOffset)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:SetCharacterModel] Unknown entity.");
+                return false;
+            }
+
+            return WebVerseRuntime.Instance.gltfHandler.ApplyGLTFResourceToCharacterEntity(
+                (StraightFour.Entity.CharacterEntity) internalEntity, meshObject, new string[] { meshObject },
+                new UnityEngine.Vector3(meshOffset.x, meshOffset.y, meshOffset.z),
+                new UnityEngine.Quaternion(meshRotation.x, meshRotation.y, meshRotation.z, meshRotation.w),
+                new UnityEngine.Vector3(labelOffset.x, labelOffset.y, labelOffset.z));
+        }
+
+        /// <summary>
+        /// Set the character model offset.
+        /// </summary>
+        /// <param name="newOffset">The new offset to apply.</param>
+        /// <param name="synchronize">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the setting was successful.</returns>
+        public bool SetCharacterModelOffset(Vector3 newOffset, bool synchronize = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:SetCharacterModelOffset] Unknown entity.");
+                return false;
+            }
+
+            return ((StraightFour.Entity.CharacterEntity) internalEntity).SetCharacterObjectOffset(
+                new UnityEngine.Vector3(newOffset.x, newOffset.y, newOffset.z), synchronize);
+        }
+
+        /// <summary>
+        /// Set the character model rotation.
+        /// </summary>
+        /// <param name="newRotation">The new rotation to apply.</param>
+        /// <param name="synchronize">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the setting was successful.</returns>
+        public bool SetCharacterModelRotation(Quaternion newRotation, bool synchronize = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:SetCharacterModelRotation] Unknown entity.");
+                return false;
+            }
+
+            return ((StraightFour.Entity.CharacterEntity) internalEntity).SetCharacterObjectRotation(
+                new UnityEngine.Quaternion(newRotation.x, newRotation.y, newRotation.z, newRotation.w), synchronize);
+        }
+
+        /// <summary>
+        /// Set the character label offset.
+        /// </summary>
+        /// <param name="newOffset">The new offset to apply.</param>
+        /// <param name="synchronize">Whether or not to synchronize the change.</param>
+        /// <returns>Whether or not the setting was successful.</returns>
+        public bool SetCharacterLabelOffset(Vector3 newOffset, bool synchronize = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[CharacterEntity:SetCharacterLabelOffset] Unknown entity.");
+                return false;
+            }
+
+            return ((StraightFour.Entity.CharacterEntity) internalEntity).SetCharacterLabelOffset(
+                new UnityEngine.Vector3(newOffset.x, newOffset.y, newOffset.z), synchronize);
         }
 
         /// <summary>
@@ -171,7 +249,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CharacterEntity) internalEntity).Move(
+            return ((StraightFour.Entity.CharacterEntity) internalEntity).Move(
                 new UnityEngine.Vector3(amount.x, amount.y, amount.z));
         }
 
@@ -189,7 +267,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CharacterEntity) internalEntity).Jump(amount);
+            return ((StraightFour.Entity.CharacterEntity) internalEntity).Jump(amount);
         }
 
         /// <summary>
@@ -204,7 +282,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CharacterEntity) internalEntity).IsOnSurface();
+            return ((StraightFour.Entity.CharacterEntity) internalEntity).IsOnSurface();
         }
 
         /// <summary>
@@ -221,7 +299,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetVisibility(visible, synchronize);
+            return ((StraightFour.Entity.CharacterEntity) internalEntity).SetVisibility(visible, synchronize);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.CanvasEntity pCE = (StraightFour.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[InputEntity->Create] Invalid parent entity.");
@@ -51,7 +51,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                ie.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                ie.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(ie.internalEntity, ie);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -59,14 +59,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadInputEntity(pCE, pos, size, guid, tag, onLoadAction);
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadInputEntity(pCE, pos, size, guid, tag, onLoadAction);
 
             return ie;
         }
 
         internal InputEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.InputEntity);
+            internalEntityType = typeof(StraightFour.Entity.InputEntity);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            return ((WorldEngine.Entity.InputEntity) internalEntity).GetText();
+            return ((StraightFour.Entity.InputEntity) internalEntity).GetText();
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.InputEntity) internalEntity).SetText(text);
+            return ((StraightFour.Entity.InputEntity) internalEntity).SetText(text);
         }
     }
 }

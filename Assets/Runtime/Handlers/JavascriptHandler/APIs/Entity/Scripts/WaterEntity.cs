@@ -56,7 +56,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
             UnityEngine.Vector3 scl = new UnityEngine.Vector3(scale.x, scale.y, scale.z);
@@ -66,7 +66,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                we.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                we.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(we.internalEntity, we);
                 we.internalEntity.SetScale(scl, false);
                 if (!string.IsNullOrEmpty(onLoaded))
@@ -75,7 +75,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadWaterBodyEntity(
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadWaterBodyEntity(
                 new UnityEngine.Color(shallowColor.r, shallowColor.g, shallowColor.b, shallowColor.a),
                 new UnityEngine.Color(deepColor.r, deepColor.g, deepColor.b, deepColor.a),
                 new UnityEngine.Color(specularColor.r, specularColor.g, specularColor.b, specularColor.a),
@@ -88,7 +88,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         public WaterEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.WaterBodyEntity);
+            internalEntityType = typeof(StraightFour.Entity.WaterBodyEntity);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetProperties(
+            return ((StraightFour.Entity.WaterBodyEntity) internalEntity).SetProperties(
                 new UnityEngine.Color(shallowColor.r, shallowColor.g, shallowColor.b, shallowColor.a),
                 new UnityEngine.Color(deepColor.r, deepColor.g, deepColor.b, deepColor.a),
                 new UnityEngine.Color(specularColor.r, specularColor.g, specularColor.b, specularColor.a),

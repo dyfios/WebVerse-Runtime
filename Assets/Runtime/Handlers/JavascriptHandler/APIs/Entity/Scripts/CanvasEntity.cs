@@ -39,7 +39,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
             UnityEngine.Vector3 scl = new UnityEngine.Vector3(scale.x, scale.y, scale.z);
@@ -49,7 +49,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                ce.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                ce.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(ce.internalEntity, ce);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -57,14 +57,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(pBE, pos, rot, scl, guid, isSize, tag, onLoadAction);
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadCanvasEntity(pBE, pos, rot, scl, guid, isSize, tag, onLoadAction);
 
             return ce;
         }
 
         internal CanvasEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.CanvasEntity);
+            internalEntityType = typeof(StraightFour.Entity.CanvasEntity);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CanvasEntity) internalEntity).MakeWorldCanvas();
+            return ((StraightFour.Entity.CanvasEntity) internalEntity).MakeWorldCanvas();
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CanvasEntity) internalEntity).MakeScreenCanvas();
+            return ((StraightFour.Entity.CanvasEntity) internalEntity).MakeScreenCanvas();
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CanvasEntity) internalEntity).IsScreenCanvas();
+            return ((StraightFour.Entity.CanvasEntity) internalEntity).IsScreenCanvas();
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.CanvasEntity) internalEntity).SetSize(new UnityEngine.Vector2(size.x, size.y), synchronizeChange);
+            return ((StraightFour.Entity.CanvasEntity) internalEntity).SetSize(new UnityEngine.Vector2(size.x, size.y), synchronizeChange);
         }
     }
 }

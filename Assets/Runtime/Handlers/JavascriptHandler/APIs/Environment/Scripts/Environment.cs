@@ -19,7 +19,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
         /// <param name="worldOffset">Offset.</param>
         public static void SetWorldOffset(WorldTypes.Vector3 worldOffset)
         {
-            WorldEngine.WorldEngine.ActiveWorld.worldOffset = new Vector3(
+            StraightFour.StraightFour.ActiveWorld.worldOffset = new Vector3(
                 worldOffset.x, worldOffset.y, worldOffset.z);
         }
 
@@ -29,7 +29,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
         /// <returns>Offset for the world.</returns>
         public static WorldTypes.Vector3 GetWorldOffset()
         {
-            Vector3 worldOffset = WorldEngine.WorldEngine.ActiveWorld.worldOffset;
+            Vector3 worldOffset = StraightFour.StraightFour.ActiveWorld.worldOffset;
                 return new WorldTypes.Vector3(worldOffset.x, worldOffset.y, worldOffset.z);
         }
 
@@ -45,7 +45,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                 {
                     Texture2D texture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                     texture.LoadImage(rawData);
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
+                    StraightFour.StraightFour.ActiveWorld.environmentManager.SetSkyTexture(texture);
                 }
             });
             WebVerseRuntime.Instance.vemlHandler.DownloadFileWithoutCache(
@@ -59,7 +59,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
         public static bool SetSolidColorSky(WorldTypes.Color color)
         {
             Color convertedColor = new Color(color.r, color.g, color.b, color.a);
-            return WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(convertedColor);
+            return StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(convertedColor);
         }
 
         /// <summary>
@@ -434,7 +434,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                 Texture2D starTexture;
                 if (rawData == null)
                 {
-                    starTexture = WebVerseRuntime.Instance.worldEngine.defaultStarTexture;
+                    starTexture = WebVerseRuntime.Instance.straightFour.defaultStarTexture;
                 }
                 else
                 {
@@ -447,7 +447,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                     Texture2D cloudsTexture;
                     if (rawData == null)
                     {
-                        cloudsTexture = WebVerseRuntime.Instance.worldEngine.defaultCloudTexture;
+                        cloudsTexture = WebVerseRuntime.Instance.straightFour.defaultCloudTexture;
                     }
                     else
                     {
@@ -455,7 +455,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                         cloudsTexture.LoadImage(rawData);
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.CreateDayNightLiteSky(sunEntity.internalEntity.gameObject,
+                    StraightFour.StraightFour.ActiveWorld.environmentManager.CreateDayNightLiteSky(sunEntity.internalEntity.gameObject,
                         enableGround, convertedGroundColor, groundHeight, groundFadeAmount, horizonSkyBlend, convertedDayHorizonColor,
                         convertedDaySkyColor, convertedNightHorizonColor, convertedNightSkyColor, horizonSaturationAmount,
                         horizonSaturationFalloff, enableSun, sunDiameter, convertedSunHorizonColor, convertedZenithColor,
@@ -843,7 +843,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                 Texture2D starTexture;
                 if (rawData == null)
                 {
-                    starTexture = WebVerseRuntime.Instance.worldEngine.defaultStarTexture;
+                    starTexture = WebVerseRuntime.Instance.straightFour.defaultStarTexture;
                 }
                 else
                 {
@@ -856,7 +856,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                     Texture2D cloudsTexture;
                     if (rawData == null)
                     {
-                        cloudsTexture = WebVerseRuntime.Instance.worldEngine.defaultCloudTexture;
+                        cloudsTexture = WebVerseRuntime.Instance.straightFour.defaultCloudTexture;
                     }
                     else
                     {
@@ -864,7 +864,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
                         cloudsTexture.LoadImage(rawData);
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.CreateConstantColorLiteSky(sunEntity.internalEntity.gameObject,
+                    StraightFour.StraightFour.ActiveWorld.environmentManager.CreateConstantColorLiteSky(sunEntity.internalEntity.gameObject,
                         enableGround, convertedGroundColor, groundHeight, groundFadeAmount, horizonSkyBlend, convertedHorizonColor,
                         convertedSkyColor, horizonSaturationAmount, horizonSaturationFalloff, enableSun, sunDiameter,
                         convertedSunHorizonColor, convertedZenithColor, enableSunSkyLighting, skyLightingFalloffAmount,
@@ -909,7 +909,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
         public static bool ActivateLiteFog(WorldTypes.Color color, float density)
         {
             Color convertedColor = new Color(color.r, color.g, color.b, color.a);
-            return WorldEngine.WorldEngine.ActiveWorld.environmentManager.ActivateLiteFog(convertedColor, density);
+            return StraightFour.StraightFour.ActiveWorld.environmentManager.ActivateLiteFog(convertedColor, density);
         }
 
         /// <summary>
@@ -918,7 +918,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Environment
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool DisableFog()
         {
-            return WorldEngine.WorldEngine.ActiveWorld.environmentManager.DisableFog();
+            return StraightFour.StraightFour.ActiveWorld.environmentManager.DisableFog();
         }
     }
 }

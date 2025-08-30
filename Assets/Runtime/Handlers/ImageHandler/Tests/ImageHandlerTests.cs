@@ -5,7 +5,7 @@ using System.Collections;
 using System.IO;
 using FiveSQD.WebVerse.LocalStorage;
 using FiveSQD.WebVerse.Runtime;
-using FiveSQD.WebVerse.WorldEngine;
+using FiveSQD.StraightFour;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -29,7 +29,7 @@ public class ImageHandlerTests
         runtime.inputEntityPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/UI/UIElement/Input/Prefabs/InputEntity.prefab");
         runtime.voxelPrefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/WebVerse-WorldEngine/Assets/WorldEngine/Entity/Voxel/Prefabs/Voxel.prefab");
         runtime.Initialize(LocalStorageManager.LocalStorageMode.Cache, 128, 128, 128, Path.Combine(Application.dataPath, "Files"));
-        WorldEngine.LoadWorld("test");
+        StraightFour.LoadWorld("test");
 
         // Load Image that does not exist.
         string imageURI = System.IO.Path.Combine(runtime.fileHandler.fileDirectory, "test/test.png");

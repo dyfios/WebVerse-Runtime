@@ -2582,6 +2582,7 @@ MonoBehaviour:
   vr: 0
   platformInput: {fileID: 337029771}
   vrRig: {fileID: 1445162058}
+  desktopRig: {fileID: 1240903277}
   cubeMeshPrefab: {fileID: 3388375122659042282, guid: cce1c394c3594db4791f1263b0360521, type: 3}
   capsuleMeshPrefab: {fileID: 8216447250987216031, guid: 355e6ec522eca6a41a2d00d9f6f08d9d, type: 3}
   coneMeshPrefab: {fileID: 3454873349283054063, guid: 892c4739e2959614b8a8317421c8fef0, type: 3}
@@ -4671,6 +4672,7 @@ GameObject:
   - component: {fileID: 1240903274}
   - component: {fileID: 1240903273}
   - component: {fileID: 1240903276}
+  - component: {fileID: 1240903277}
   m_Layer: 0
   m_Name: Desktop Rig
   m_TagString: MainCamera
@@ -4797,6 +4799,26 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &1240903277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240903272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d945fbc6b39e73c40bc5821a9da62e7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  avatarEntity: {fileID: 0}
+  cameraTransform: {fileID: 1240903275}
+  rigOrigin: {fileID: 1240903272}
+  rigFollowers: []
+  cyclesPerRigFollowerUpdate: 0
+  movementSpeed: 5
+  mouseSensitivity: 2
+  gravityStrength: -9.81
 --- !u!1 &1261021829 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5989535951047072672, guid: 3af4ddef22bd54542babd1a38ad56247, type: 3}

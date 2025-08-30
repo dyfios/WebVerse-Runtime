@@ -4,7 +4,7 @@ using System;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Utilities;
-using FiveSQD.WebVerse.WorldEngine.Entity;
+using FiveSQD.StraightFour.Entity;
 using System.Collections.Generic;
 
 namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
@@ -47,15 +47,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
-            List<WorldEngine.Entity.Terrain.TerrainEntityLayer> convertedLayers
-                            = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+            List<StraightFour.Entity.Terrain.TerrainEntityLayer> convertedLayers
+                            = new List<StraightFour.Entity.Terrain.TerrainEntityLayer>();
             foreach (TerrainEntityLayer layer in layers)
             {
-                convertedLayers.Add(new WorldEngine.Entity.Terrain.TerrainEntityLayer()
+                convertedLayers.Add(new StraightFour.Entity.Terrain.TerrainEntityLayer()
                 {
                     diffusePath = layer.diffuseTexture,
                     normalPath = layer.normalTexture,
@@ -78,7 +78,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             Action onLoadAction = null;
             onLoadAction = () =>
             {
-                te.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                te.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(te.internalEntity, te);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -86,7 +86,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(length, width, height, heights,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadTerrainEntity(length, width, height, heights,
                 convertedLayers.ToArray(), convertedLayerMasks, pBE, pos, rot, guid, tag, onLoadAction);
 
             return te;
@@ -142,16 +142,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            WorldEngine.Entity.Terrain.TerrainEntityBrushType internalBrushType;
+            StraightFour.Entity.Terrain.TerrainEntityBrushType internalBrushType;
             switch (brushType)
             {
                 case TerrainEntityBrushType.sphere:
-                    internalBrushType = WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere;
+                    internalBrushType = StraightFour.Entity.Terrain.TerrainEntityBrushType.sphere;
                     break;
 
                 case TerrainEntityBrushType.roundedCube:
                 default:
-                    internalBrushType = WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube;
+                    internalBrushType = StraightFour.Entity.Terrain.TerrainEntityBrushType.roundedCube;
                     break;
             }
             return ((HybridTerrainEntity) internalEntity).Build(
@@ -183,16 +183,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            WorldEngine.Entity.Terrain.TerrainEntityBrushType internalBrushType;
+            StraightFour.Entity.Terrain.TerrainEntityBrushType internalBrushType;
             switch (brushType)
             {
                 case TerrainEntityBrushType.sphere:
-                    internalBrushType = WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere;
+                    internalBrushType = StraightFour.Entity.Terrain.TerrainEntityBrushType.sphere;
                     break;
 
                 case TerrainEntityBrushType.roundedCube:
                 default:
-                    internalBrushType = WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube;
+                    internalBrushType = StraightFour.Entity.Terrain.TerrainEntityBrushType.roundedCube;
                     break;
             }
             return ((HybridTerrainEntity) internalEntity).Dig(
@@ -218,9 +218,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((HybridTerrainEntity) internalEntity).GetHeight(xIndex, yIndex);
             }
-            else if (internalEntity is WorldEngine.Entity.TerrainEntity)
+            else if (internalEntity is StraightFour.Entity.TerrainEntity)
             {
-                return ((WorldEngine.Entity.TerrainEntity) internalEntity).GetHeight(xIndex, yIndex);
+                return ((StraightFour.Entity.TerrainEntity) internalEntity).GetHeight(xIndex, yIndex);
             }
             else
             {
@@ -247,9 +247,9 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             {
                 return ((HybridTerrainEntity) internalEntity).GetLayerMask(index);
             }
-            else if (internalEntity is WorldEngine.Entity.TerrainEntity)
+            else if (internalEntity is StraightFour.Entity.TerrainEntity)
             {
-                return ((WorldEngine.Entity.TerrainEntity) internalEntity).GetLayerMask(index);
+                return ((StraightFour.Entity.TerrainEntity) internalEntity).GetLayerMask(index);
             }
             else
             {
@@ -278,7 +278,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            Tuple<HybridTerrainEntity.TerrainOperation, int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float> block
+            Tuple<HybridTerrainEntity.TerrainOperation, int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float> block
                 = ((HybridTerrainEntity) internalEntity).GetBlockAtPosition(
                 new UnityEngine.Vector3(position.x, position.y, position.z));
 
@@ -291,7 +291,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 (block.Item1 == HybridTerrainEntity.TerrainOperation.Build ? "build"
                 : block.Item1 == HybridTerrainEntity.TerrainOperation.Dig ? "dig" : "unset"),
                 block.Item2,
-                (block.Item3 == WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere ? "sphere"
+                (block.Item3 == StraightFour.Entity.Terrain.TerrainEntityBrushType.sphere ? "sphere"
                 : "roundedcube")
             };
         }
@@ -315,14 +315,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             Dictionary<UnityEngine.Vector3Int, Tuple<HybridTerrainEntity.TerrainOperation,
-                int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mods
+                int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> mods
                 = ((HybridTerrainEntity) internalEntity).GetTerrainModifications();
 
             List<TerrainEntityModification> outputMods = new List<TerrainEntityModification>();
             if (mods != null)
             {
                 foreach (KeyValuePair<UnityEngine.Vector3Int, Tuple<HybridTerrainEntity.TerrainOperation,
-                    int, WorldEngine.Entity.Terrain.TerrainEntityBrushType, float>> mod in mods)
+                    int, StraightFour.Entity.Terrain.TerrainEntityBrushType, float>> mod in mods)
                 {
                     if (mod.Key == null)
                     {
@@ -349,11 +349,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     TerrainEntityBrushType bt;
                     switch (mod.Value.Item3)
                     {
-                        case WorldEngine.Entity.Terrain.TerrainEntityBrushType.sphere:
+                        case StraightFour.Entity.Terrain.TerrainEntityBrushType.sphere:
                             bt = TerrainEntityBrushType.sphere;
                             break;
 
-                        case WorldEngine.Entity.Terrain.TerrainEntityBrushType.roundedCube:
+                        case StraightFour.Entity.Terrain.TerrainEntityBrushType.roundedCube:
                         default:
                             bt = TerrainEntityBrushType.roundedCube;
                             break;
@@ -371,7 +371,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             switch (t)
             {
                 case TerrainEntityType.heightmap:
-                    internalEntityType = typeof(WorldEngine.Entity.TerrainEntity);
+                    internalEntityType = typeof(StraightFour.Entity.TerrainEntity);
                     break;
 
                 case TerrainEntityType.voxel:
@@ -379,7 +379,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     break;
 
                 case TerrainEntityType.hybrid:
-                    internalEntityType = typeof(WorldEngine.Entity.HybridTerrainEntity);
+                    internalEntityType = typeof(StraightFour.Entity.HybridTerrainEntity);
                     break;
 
                 default:

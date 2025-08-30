@@ -41,7 +41,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.CanvasEntity pCE = (StraightFour.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[DropdownEntity->Create] Invalid parent entity.");
@@ -68,7 +68,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                de.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                de.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(de.internalEntity, de);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -76,7 +76,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadDropdownEntity(pCE, pos, size, onChangeAction,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadDropdownEntity(pCE, pos, size, onChangeAction,
                 options.ToList(), guid, tag, onLoadAction);
 
             return de;
@@ -84,7 +84,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal DropdownEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.DropdownEntity);
+            internalEntityType = typeof(StraightFour.Entity.DropdownEntity);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 };
             }
 
-            ((WorldEngine.Entity.DropdownEntity) internalEntity).SetOnChange(onChangeAction);
+            ((StraightFour.Entity.DropdownEntity) internalEntity).SetOnChange(onChangeAction);
 
             return true;
         }
@@ -130,7 +130,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            EntityAPIHelper.ApplyImageToDropdownAsync(imagePath, (WorldEngine.Entity.DropdownEntity) internalEntity);
+            EntityAPIHelper.ApplyImageToDropdownAsync(imagePath, (StraightFour.Entity.DropdownEntity) internalEntity);
 
             return true;
         }
@@ -148,7 +148,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            ((WorldEngine.Entity.DropdownEntity) internalEntity).SetBaseColor(
+            ((StraightFour.Entity.DropdownEntity) internalEntity).SetBaseColor(
                 new UnityEngine.Color(color.r, color.g, color.b, color.a));
 
             return true;
@@ -169,7 +169,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            ((WorldEngine.Entity.DropdownEntity) internalEntity).SetColors(
+            ((StraightFour.Entity.DropdownEntity) internalEntity).SetColors(
                 new UnityEngine.Color(defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a),
                 new UnityEngine.Color(hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a),
                 new UnityEngine.Color(clickColor.r, clickColor.g, clickColor.b, clickColor.a),
@@ -190,7 +190,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return -1;
             }
 
-            return ((WorldEngine.Entity.DropdownEntity) internalEntity).AddOption(option);
+            return ((StraightFour.Entity.DropdownEntity) internalEntity).AddOption(option);
         }
 
         /// <summary>
@@ -204,9 +204,69 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            ((WorldEngine.Entity.DropdownEntity) internalEntity).ClearOptions();
+            ((StraightFour.Entity.DropdownEntity) internalEntity).ClearOptions();
 
             return true;
+        }
+
+        /// <summary>
+        /// Stretch the dropdown entity to fill its parent.
+        /// </summary>
+        /// <param name="stretch">Whether to stretch to parent. If false, restores normal sizing.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool StretchToParent(bool stretch = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[DropdownEntity:StretchToParent] Unknown entity.");
+                return false;
+            }
+
+            return ((StraightFour.Entity.UIElementEntity) internalEntity).StretchToParent(stretch);
+        }
+
+        /// <summary>
+        /// Set the alignment of the dropdown entity within its parent.
+        /// </summary>
+        /// <param name="alignment">Alignment to set.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool SetAlignment(UIElementAlignment alignment)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[DropdownEntity:SetAlignment] Unknown entity.");
+                return false;
+            }
+            
+            StraightFour.Entity.UIElementAlignment convertedAlignment = StraightFour.Entity.UIElementAlignment.Center;
+            switch (alignment)
+            {
+                case UIElementAlignment.Center:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Center;
+                    break;
+
+                case UIElementAlignment.Left:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Left;
+                    break;
+
+                case UIElementAlignment.Right:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Right;
+                    break;
+
+                case UIElementAlignment.Top:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Top;
+                    break;
+
+                case UIElementAlignment.Bottom:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Bottom;
+                    break;
+
+                default:
+                    Logging.LogError("[ButtonEntity:SetAlignment] Invalid alignment.");
+                    return false;
+            }
+
+            return ((StraightFour.Entity.UIElementEntity)internalEntity).SetAlignment(convertedAlignment);
         }
     }
 }

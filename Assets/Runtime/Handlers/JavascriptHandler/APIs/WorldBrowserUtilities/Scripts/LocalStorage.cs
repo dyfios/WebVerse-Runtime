@@ -17,7 +17,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         public static void SetItem(string key, string value)
         {
             WebVerseRuntime.Instance.localStorageManager.SetItem(
-                WorldEngine.WorldEngine.ActiveWorld.siteName, key, value);
+                StraightFour.StraightFour.ActiveWorld.siteName, key, value);
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         public static string GetItem(string key)
         {
             return WebVerseRuntime.Instance.localStorageManager.GetItem(
-                WorldEngine.WorldEngine.ActiveWorld.siteName, key);
+                StraightFour.StraightFour.ActiveWorld.siteName, key);
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         public static void RemoveItem(string key)
         {
             WebVerseRuntime.Instance.localStorageManager.RemoveItem(
-                WorldEngine.WorldEngine.ActiveWorld.siteName, key);
+                StraightFour.StraightFour.ActiveWorld.siteName, key);
         }
     }
 }

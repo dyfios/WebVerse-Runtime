@@ -19,7 +19,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         {
             if (entityToAttachTo == null)
             {
-                WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetParent(null);
+                StraightFour.StraightFour.ActiveWorld.cameraManager.SetParent(null);
             }
             else
             {
@@ -37,7 +37,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
                 return false;
             }
 
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.AddFollower(EntityAPIHelper.GetPrivateEntity(entity));
+            StraightFour.StraightFour.ActiveWorld.cameraManager.AddFollower(EntityAPIHelper.GetPrivateEntity(entity));
             return true;
         }
 
@@ -49,7 +49,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
                 return false;
             }
 
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.RemoveFollower(EntityAPIHelper.GetPrivateEntity(entity));
+            StraightFour.StraightFour.ActiveWorld.cameraManager.RemoveFollower(EntityAPIHelper.GetPrivateEntity(entity));
             return true;
         }
 
@@ -61,7 +61,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetPosition(Vector3 position, bool local)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetPosition(
+            StraightFour.StraightFour.ActiveWorld.cameraManager.SetPosition(
                 new UnityEngine.Vector3(position.x, position.y, position.z), local);
 
             return true;
@@ -74,7 +74,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>The position of the camera.</returns>
         public static Vector3 GetPosition(bool local)
         {
-            UnityEngine.Vector3 pos = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetPosition(local);
+            UnityEngine.Vector3 pos = StraightFour.StraightFour.ActiveWorld.cameraManager.GetPosition(local);
             return new Vector3(pos.x, pos.y, pos.z);
         }
 
@@ -86,7 +86,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetRotation(Quaternion rotation, bool local)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetRotation(
+            StraightFour.StraightFour.ActiveWorld.cameraManager.SetRotation(
                 new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w), local);
 
             return true;
@@ -99,7 +99,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>The rotation of the camera.</returns>
         public static Quaternion GetRotation(bool local)
         {
-            UnityEngine.Quaternion rot = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetRotation(local);
+            UnityEngine.Quaternion rot = StraightFour.StraightFour.ActiveWorld.cameraManager.GetRotation(local);
             return new Quaternion(rot.x, rot.y, rot.z, rot.w);
         }
 
@@ -111,7 +111,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetEulerRotation(Vector3 rotation, bool local)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetEulerRotation(
+            StraightFour.StraightFour.ActiveWorld.cameraManager.SetEulerRotation(
                 new UnityEngine.Vector3(rotation.x, rotation.y, rotation.z), local);
 
             return true;
@@ -124,7 +124,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>The Euler rotation of the camera.</returns>
         public static Vector3 GetEulerRotation(bool local)
         {
-            UnityEngine.Vector3 rot = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetEulerRotation(local);
+            UnityEngine.Vector3 rot = StraightFour.StraightFour.ActiveWorld.cameraManager.GetEulerRotation(local);
             return new Vector3(rot.x, rot.y, rot.z);
         }
 
@@ -135,7 +135,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>Whether or not the operation was successful.</returns>
         public static bool SetScale(Vector3 scale)
         {
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetScale(
+            StraightFour.StraightFour.ActiveWorld.cameraManager.SetScale(
                 new UnityEngine.Vector3(scale.x, scale.y, scale.z));
 
             return true;
@@ -147,7 +147,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>The scale of the camera.</returns>
         public static Vector3 GetScale()
         {
-            UnityEngine.Vector3 scl = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetScale();
+            UnityEngine.Vector3 scl = StraightFour.StraightFour.ActiveWorld.cameraManager.GetScale();
             return new Vector3(scl.x, scl.y, scl.z);
         }
 
@@ -157,15 +157,15 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         /// <returns>A raycast from the camera, or null.</returns>
         public static RaycastHitInfo? GetRaycast()
         {
-            UnityEngine.RaycastHit? hit = WorldEngine.WorldEngine.ActiveWorld.cameraManager.GetRaycast();
+            UnityEngine.RaycastHit? hit = StraightFour.StraightFour.ActiveWorld.cameraManager.GetRaycast();
             if (hit == null)
             {
                 return null;
             }
             else
             {
-                WorldEngine.Entity.BaseEntity hitEntity = null;
-                if (hitEntity = hit.Value.collider.GetComponentInParent<WorldEngine.Entity.BaseEntity>())
+                StraightFour.Entity.BaseEntity hitEntity = null;
+                if (hitEntity = hit.Value.collider.GetComponentInParent<StraightFour.Entity.BaseEntity>())
                 {
                     BaseEntity hitPublicEntity = EntityAPIHelper.GetPublicEntity(hitEntity);
                     if (hitPublicEntity == null)
@@ -189,8 +189,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Utilities
         public static bool PlaceEntityInFrontOfCamera(BaseEntity entityToPlace, float distance)
         {
             UnityEngine.Vector3 newCamPos =
-                WorldEngine.WorldEngine.ActiveWorld.cameraManager.cam.transform.position +
-                WorldEngine.WorldEngine.ActiveWorld.cameraManager.cam.transform.forward * distance;
+                StraightFour.StraightFour.ActiveWorld.cameraManager.cam.transform.position +
+                StraightFour.StraightFour.ActiveWorld.cameraManager.cam.transform.forward * distance;
             return entityToPlace.SetPosition(new Vector3(newCamPos.x, newCamPos.y, newCamPos.z), false);
         }
     }

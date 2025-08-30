@@ -16,12 +16,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).throttle;
+                return ((StraightFour.Entity.AirplaneEntity) internalEntity).throttle;
             }
 
             set
             {
-                ((WorldEngine.Entity.AirplaneEntity) internalEntity).throttle = value;
+                ((StraightFour.Entity.AirplaneEntity) internalEntity).throttle = value;
             }
         }
 
@@ -29,12 +29,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).pitch;
+                return ((StraightFour.Entity.AirplaneEntity) internalEntity).pitch;
             }
 
             set
             {
-                ((WorldEngine.Entity.AirplaneEntity) internalEntity).pitch = value;
+                ((StraightFour.Entity.AirplaneEntity) internalEntity).pitch = value;
             }
         }
 
@@ -42,12 +42,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).roll;
+                return ((StraightFour.Entity.AirplaneEntity) internalEntity).roll;
             }
 
             set
             {
-                ((WorldEngine.Entity.AirplaneEntity) internalEntity).roll = value;
+                ((StraightFour.Entity.AirplaneEntity) internalEntity).roll = value;
             }
         }
 
@@ -55,23 +55,23 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).yaw;
+                return ((StraightFour.Entity.AirplaneEntity) internalEntity).yaw;
             }
 
             set
             {
-                ((WorldEngine.Entity.AirplaneEntity) internalEntity).yaw = value;
+                ((StraightFour.Entity.AirplaneEntity) internalEntity).yaw = value;
             }
         }
 
         public void StartEngine()
         {
-            ((WorldEngine.Entity.AirplaneEntity) internalEntity).StartEngine();
+            ((StraightFour.Entity.AirplaneEntity) internalEntity).StartEngine();
         }
 
         public void StopEngine()
         {
-            ((WorldEngine.Entity.AirplaneEntity) internalEntity).StopEngine();
+            ((StraightFour.Entity.AirplaneEntity) internalEntity).StopEngine();
         }
 
         /// <summary>
@@ -105,14 +105,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
             AirplaneEntity ae = new AirplaneEntity();
 
-            System.Action<WorldEngine.Entity.AirplaneEntity> onEntityLoadedAction =
-                new System.Action<WorldEngine.Entity.AirplaneEntity>((airplaneEntity) =>
+            System.Action<StraightFour.Entity.AirplaneEntity> onEntityLoadedAction =
+                new System.Action<StraightFour.Entity.AirplaneEntity>((airplaneEntity) =>
             {
                 if (airplaneEntity == null)
                 {
@@ -124,7 +124,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     airplaneEntity.SetPosition(pos, true);
                     airplaneEntity.SetRotation(rot, true);
 
-                    ae.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                    ae.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                     EntityAPIHelper.AddEntityMapping(ae.internalEntity, ae);
                     if (!string.IsNullOrEmpty(onLoaded))
                     {
@@ -142,7 +142,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal AirplaneEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.AirplaneEntity);
+            internalEntityType = typeof(StraightFour.Entity.AirplaneEntity);
         }
     }
 }

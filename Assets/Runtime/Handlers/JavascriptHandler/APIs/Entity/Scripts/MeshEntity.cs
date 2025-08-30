@@ -39,14 +39,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
             MeshEntity me = new MeshEntity();
 
-            System.Action<WorldEngine.Entity.MeshEntity> onEntityLoadedAction =
-                new System.Action<WorldEngine.Entity.MeshEntity>((meshEntity) =>
+            System.Action<StraightFour.Entity.MeshEntity> onEntityLoadedAction =
+                new System.Action<StraightFour.Entity.MeshEntity>((meshEntity) =>
             {
                 if (meshEntity == null)
                 {
@@ -58,7 +58,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     meshEntity.SetPosition(pos, true);
                     meshEntity.SetRotation(rot, true);
 
-                    me.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                    me.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                     EntityAPIHelper.AddEntityMapping(me.internalEntity, me);
                     if (!string.IsNullOrEmpty(onLoaded))
                     {
@@ -283,7 +283,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal MeshEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.MeshEntity);
+            internalEntityType = typeof(StraightFour.Entity.MeshEntity);
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
@@ -320,14 +320,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             System.Action onEntityLoadedAction = new System.Action(() =>
                 {
-                    WorldEngine.Entity.BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                    StraightFour.Entity.BaseEntity entity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                     if (entity == null)
                     {
                         Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsMeshEntity] Unable to find loaded entity.");
                         return;
                     }
 
-                    WorldEngine.Entity.MeshEntity meshEntity = (WorldEngine.Entity.MeshEntity) entity;
+                    StraightFour.Entity.MeshEntity meshEntity = (StraightFour.Entity.MeshEntity) entity;
 
                     if (meshEntity == null)
                     {
@@ -349,7 +349,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                             rend.material.SetColor("_Color", new UnityEngine.Color(color.r, color.g, color.b, color.a));
                         }
 
-                        me.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                        me.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                         EntityAPIHelper.AddEntityMapping(me.internalEntity, me);
                         if (!string.IsNullOrEmpty(onLoaded))
                         {
@@ -359,7 +359,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
                 });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadMeshEntity(
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadMeshEntity(
                 null, primitive, UnityEngine.Vector3.zero, UnityEngine.Quaternion.identity,
                 guid, null, onEntityLoadedAction);
 

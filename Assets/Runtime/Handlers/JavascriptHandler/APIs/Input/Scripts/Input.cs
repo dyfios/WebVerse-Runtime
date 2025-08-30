@@ -199,8 +199,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
 
             if (hitInfo != null)
             {
-                WorldEngine.Entity.BaseEntity hitEntity = null;
-                if (hitEntity = hitInfo.Item1.collider.GetComponentInParent<WorldEngine.Entity.BaseEntity>())
+                StraightFour.Entity.BaseEntity hitEntity = null;
+                if (hitEntity = hitInfo.Item1.collider.GetComponentInParent<StraightFour.Entity.BaseEntity>())
                 {
                     BaseEntity hitPublicEntity = EntityAPIHelper.GetPublicEntity(hitEntity);
                     if (hitPublicEntity != null)

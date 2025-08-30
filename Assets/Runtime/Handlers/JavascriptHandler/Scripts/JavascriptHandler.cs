@@ -2,7 +2,7 @@
 
 using Jint;
 using FiveSQD.WebVerse.Utilities;
-using FiveSQD.WebVerse.WorldEngine.Utilities;
+using FiveSQD.StraightFour.Utilities;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.WorldTypes;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity;
 using FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking;
@@ -95,7 +95,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript
             new System.Tuple<string, System.Type>("TerrainEntityLayerMaskCollection", typeof(TerrainEntityLayerMaskCollection)),
             new System.Tuple<string, System.Type>("TerrainEntityModification", typeof(TerrainEntityModification)),
             new System.Tuple<string, System.Type>("TerrainEntityOperation", typeof(TerrainEntityModification.TerrainEntityOperation)),
+            new System.Tuple<string, System.Type>("TextAlignment", typeof(TextAlignment)),
             new System.Tuple<string, System.Type>("TextEntity", typeof(TextEntity)),
+            new System.Tuple<string, System.Type>("TextWrapping", typeof(TextWrapping)),
+            new System.Tuple<string, System.Type>("UIElementAlignment", typeof(UIElementAlignment)),
             new System.Tuple<string, System.Type>("VoxelEntity", typeof(VoxelEntity)),
             new System.Tuple<string, System.Type>("WaterBlockerEntity", typeof(WaterBlockerEntity)),
             new System.Tuple<string, System.Type>("WaterEntity", typeof(WaterEntity)),

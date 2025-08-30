@@ -38,7 +38,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.CanvasEntity pCE = (StraightFour.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[ButtonEntity->Create] Invalid parent entity.");
@@ -65,7 +65,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                be.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                be.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(be.internalEntity, be);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -73,14 +73,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadButtonEntity(pCE, pos, size, onClickAction, guid, tag, onLoadAction);
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadButtonEntity(pCE, pos, size, onClickAction, guid, tag, onLoadAction);
 
             return be;
         }
 
         internal ButtonEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.ButtonEntity);
+            internalEntityType = typeof(StraightFour.Entity.ButtonEntity);
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 };
             }
 
-            ((WorldEngine.Entity.ButtonEntity) internalEntity).SetOnClick(onClickAction);
+            ((StraightFour.Entity.ButtonEntity) internalEntity).SetOnClick(onClickAction);
 
             return true;
         }
@@ -126,7 +126,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            EntityAPIHelper.ApplyImageToButtonAsync(imagePath, (WorldEngine.Entity.ButtonEntity) internalEntity);
+            EntityAPIHelper.ApplyImageToButtonAsync(imagePath, (StraightFour.Entity.ButtonEntity) internalEntity);
 
             return true;
         }
@@ -144,7 +144,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            ((WorldEngine.Entity.ButtonEntity) internalEntity).SetBaseColor(
+            ((StraightFour.Entity.ButtonEntity) internalEntity).SetBaseColor(
                 new UnityEngine.Color(color.r, color.g, color.b, color.a));
 
             return true;
@@ -165,13 +165,73 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            ((WorldEngine.Entity.ButtonEntity) internalEntity).SetColors(
+            ((StraightFour.Entity.ButtonEntity) internalEntity).SetColors(
                 new UnityEngine.Color(defaultColor.r, defaultColor.g, defaultColor.b, defaultColor.a),
                 new UnityEngine.Color(hoverColor.r, hoverColor.g, hoverColor.b, hoverColor.a),
                 new UnityEngine.Color(clickColor.r, clickColor.g, clickColor.b, clickColor.a),
                 new UnityEngine.Color(inactiveColor.r, inactiveColor.g, inactiveColor.b, inactiveColor.a));
 
             return true;
+        }
+
+        /// <summary>
+        /// Stretch the button entity to fill its parent.
+        /// </summary>
+        /// <param name="stretch">Whether to stretch to parent. If false, restores normal sizing.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool StretchToParent(bool stretch = true)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[ButtonEntity:StretchToParent] Unknown entity.");
+                return false;
+            }
+
+            return ((StraightFour.Entity.UIElementEntity) internalEntity).StretchToParent(stretch);
+        }
+
+        /// <summary>
+        /// Set the alignment of the button entity within its parent.
+        /// </summary>
+        /// <param name="alignment">Alignment to set.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool SetAlignment(UIElementAlignment alignment)
+        {
+            if (IsValid() == false)
+            {
+                Logging.LogError("[ButtonEntity:SetAlignment] Unknown entity.");
+                return false;
+            }
+
+            StraightFour.Entity.UIElementAlignment convertedAlignment = StraightFour.Entity.UIElementAlignment.Center;
+            switch (alignment)
+            {
+                case UIElementAlignment.Center:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Center;
+                    break;
+
+                case UIElementAlignment.Left:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Left;
+                    break;
+
+                case UIElementAlignment.Right:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Right;
+                    break;
+
+                case UIElementAlignment.Top:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Top;
+                    break;
+
+                case UIElementAlignment.Bottom:
+                    convertedAlignment = StraightFour.Entity.UIElementAlignment.Bottom;
+                    break;
+
+                default:
+                    Logging.LogError("[ButtonEntity:SetAlignment] Invalid alignment.");
+                    return false;
+            }
+
+            return ((StraightFour.Entity.UIElementEntity)internalEntity).SetAlignment(convertedAlignment);
         }
     }
 }

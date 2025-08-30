@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using FiveSQD.WebVerse.WebView;
 using FiveSQD.WebVerse.Output;
 using FiveSQD.WebVerse.Input.SteamVR;
+using FiveSQD.WebVerse.Input.Desktop;
 using Vuplex.WebView;
 
 namespace FiveSQD.WebVerse.Runtime
@@ -40,7 +41,7 @@ namespace FiveSQD.WebVerse.Runtime
             /// <summary>
             /// Type enum.
             /// </summary>
-            public WorldEngine.Entity.EntityManager.AutomobileEntityType type;
+            public StraightFour.Entity.EntityManager.AutomobileEntityType type;
 
             /// <summary>
             /// State settings.
@@ -139,7 +140,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// The World Engine.
         /// </summary>
         [Tooltip("The World Engine.")]
-        public WorldEngine.WorldEngine worldEngine { get; private set; }
+        public StraightFour.StraightFour straightFour { get; private set; }
 
         /// <summary>
         /// The File Handler
@@ -352,6 +353,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The VR Rig.")]
         public VRRig vrRig;
+
+        /// <summary>
+        /// The Desktop Rig.
+        /// </summary>
+        [Tooltip("The Desktop Rig.")]
+        public DesktopRig desktopRig;
 
         /// <summary>
         /// The base path of the current world.
@@ -579,13 +586,13 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="onLoaded">Action to perform on load. Provides string containing loaded world name.</param>
         public void LoadWorld(string url, Action<string> onLoaded)
         {
-            if (worldEngine == null)
+            if (straightFour == null)
             {
                 Logging.LogError("[WebVerseRuntime->LoadWorld] World Engine not initialized.");
                 return;
             }
 
-            if (WorldEngine.WorldEngine.ActiveWorld != null)
+            if (StraightFour.StraightFour.ActiveWorld != null)
             {
                 UnloadWorld();
             }
@@ -614,7 +621,7 @@ namespace FiveSQD.WebVerse.Runtime
 
                 if (onLoaded != null)
                 {
-                    onLoaded.Invoke(WorldEngine.WorldEngine.ActiveWorld.siteName);
+                    onLoaded.Invoke(StraightFour.StraightFour.ActiveWorld.siteName);
                 }
             });
 
@@ -622,7 +629,7 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 state = RuntimeState.LoadingWorld;
                 currentBasePath = VEMLUtilities.FormatURI(Path.GetDirectoryName(baseURL));
-                WorldEngine.WorldEngine.LoadWorld(title, queryParams);
+                StraightFour.StraightFour.LoadWorld(title, queryParams);
                 vemlHandler.LoadVEMLDocumentIntoWorld(baseURL, onLoadComplete);
             };
             
@@ -634,14 +641,14 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         public void UnloadWorld()
         {
-            if (WorldEngine.WorldEngine.ActiveWorld == null)
+            if (StraightFour.StraightFour.ActiveWorld == null)
             {
                 Logging.LogWarning("[WebVerseRuntime->UnloadWorld] No world to unload.");
                 return;
             }
 
             Logging.Log("[WebVerseRuntime->UnloadWorld] Unloading world: "
-                + WorldEngine.WorldEngine.ActiveWorld.siteName + ".");
+                + StraightFour.StraightFour.ActiveWorld.siteName + ".");
             
             Logging.Log("[WebVerseRuntime->UnloadWorld] Resetting Javascript Handler...");
 
@@ -673,7 +680,7 @@ namespace FiveSQD.WebVerse.Runtime
 #endif
             Logging.Log("[WebVerseRuntime->UnloadWorld] VOS Synchronization Manager reset. Unloading World...");
 
-            WorldEngine.WorldEngine.UnloadWorld();
+            StraightFour.StraightFour.UnloadWorld();
             state = RuntimeState.Unloaded;
 
             Logging.Log("[WebVerseRuntime->UnloadWorld] World Unloaded.");
@@ -730,42 +737,42 @@ namespace FiveSQD.WebVerse.Runtime
             #endif
 
             // Set up World Engine.
-            GameObject worldEngineGO = new GameObject("WorldEngine");
-            worldEngineGO.transform.SetParent(transform);
-            worldEngine = worldEngineGO.AddComponent<WorldEngine.WorldEngine>();
-            worldEngine.automobileEntityTypeMap
-                = new Dictionary<WorldEngine.Entity.EntityManager.AutomobileEntityType,
+            GameObject StraightFourGO = new GameObject("StraightFour");
+            StraightFourGO.transform.SetParent(transform);
+            straightFour = StraightFourGO.AddComponent<StraightFour.StraightFour>();
+            straightFour.automobileEntityTypeMap
+                = new Dictionary<StraightFour.Entity.EntityManager.AutomobileEntityType,
                         NWH.VehiclePhysics2.StateSettings>();
             foreach (SerializableAutomobileEntityType automobileEntityType in automobileEntityTypeMap)
             {
-                WorldEngine.Entity.EntityManager.AutomobileEntityType type;
+                StraightFour.Entity.EntityManager.AutomobileEntityType type;
                 switch(automobileEntityType.type)
                 {
-                    case WorldEngine.Entity.EntityManager.AutomobileEntityType.Default:
+                    case StraightFour.Entity.EntityManager.AutomobileEntityType.Default:
                     default:
-                        type = WorldEngine.Entity.EntityManager.AutomobileEntityType.Default;
+                        type = StraightFour.Entity.EntityManager.AutomobileEntityType.Default;
                         break;
                 }
-                worldEngine.automobileEntityTypeMap.Add(type, automobileEntityType.stateSettings);
+                straightFour.automobileEntityTypeMap.Add(type, automobileEntityType.stateSettings);
             }
-            worldEngine.airplaneEntityPrefab = airplaneEntityPrefab;
-            worldEngine.highlightMaterial = highlightMaterial;
-            worldEngine.skyMaterial = skyMaterial;
-            worldEngine.liteProceduralSkyMaterial = liteProceduralSkyMaterial;
-            worldEngine.liteProceduralSkyObject = liteProceduralSkyObject;
-            worldEngine.defaultCloudTexture = defaultCloudTexture;
-            worldEngine.defaultStarTexture = defaultStarTexture;
-            worldEngine.inputEntityPrefab = inputEntityPrefab;
-            worldEngine.characterControllerPrefab = characterControllerPrefab;
-            worldEngine.characterControllerLabelPrefab = characterControllerLabelPrefab;
-            worldEngine.voxelPrefab = voxelPrefab;
-            worldEngine.waterBodyPrefab = waterBodyPrefab;
-            worldEngine.waterBlockerPrefab = waterBlockerPrefab;
-            worldEngine.webViewPrefab = webViewPrefab;
-            worldEngine.canvasWebViewPrefab = canvasWebViewPrefab;
-            worldEngine.cameraOffset = cameraOffset;
-            worldEngine.vr = vr;
-            worldEngine.crosshair = crosshair;
+            straightFour.airplaneEntityPrefab = airplaneEntityPrefab;
+            straightFour.highlightMaterial = highlightMaterial;
+            straightFour.skyMaterial = skyMaterial;
+            straightFour.liteProceduralSkyMaterial = liteProceduralSkyMaterial;
+            straightFour.liteProceduralSkyObject = liteProceduralSkyObject;
+            straightFour.defaultCloudTexture = defaultCloudTexture;
+            straightFour.defaultStarTexture = defaultStarTexture;
+            straightFour.inputEntityPrefab = inputEntityPrefab;
+            straightFour.characterControllerPrefab = characterControllerPrefab;
+            straightFour.characterControllerLabelPrefab = characterControllerLabelPrefab;
+            straightFour.voxelPrefab = voxelPrefab;
+            straightFour.waterBodyPrefab = waterBodyPrefab;
+            straightFour.waterBlockerPrefab = waterBlockerPrefab;
+            straightFour.webViewPrefab = webViewPrefab;
+            straightFour.canvasWebViewPrefab = canvasWebViewPrefab;
+            straightFour.cameraOffset = cameraOffset;
+            straightFour.vr = vr;
+            straightFour.crosshair = crosshair;
 
             // Set up Handlers.
             GameObject handlersGO = new GameObject("Handlers");
@@ -831,6 +838,7 @@ namespace FiveSQD.WebVerse.Runtime
             inputManager = inputManagerGO.AddComponent<InputManager>();
             inputManager.platformInput = platformInput;
             inputManager.vRRig = vrRig;
+            inputManager.desktopRig = desktopRig;
             inputManager.Initialize();
 
             // Set up Output Manager.
@@ -909,11 +917,11 @@ namespace FiveSQD.WebVerse.Runtime
             Destroy(fileHandler.transform.parent.gameObject);
 
             // Terminate World Engine.
-            if (WorldEngine.WorldEngine.ActiveWorld != null)
+            if (StraightFour.StraightFour.ActiveWorld != null)
             {
-                WorldEngine.WorldEngine.UnloadWorld();
+                StraightFour.StraightFour.UnloadWorld();
             }
-            Destroy(worldEngine.gameObject);
+            Destroy(straightFour.gameObject);
 
             if (consoles != null)
             {

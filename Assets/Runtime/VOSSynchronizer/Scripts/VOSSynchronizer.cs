@@ -2,16 +2,16 @@
 
 #if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.MQTT;
-using FiveSQD.WebVerse.WorldEngine.Entity;
-using FiveSQD.WebVerse.WorldEngine.Synchronization;
-using FiveSQD.WebVerse.WorldEngine.Utilities;
+using FiveSQD.StraightFour.Entity;
+using FiveSQD.StraightFour.Synchronization;
+using FiveSQD.StraightFour.Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
-using FiveSQD.WebVerse.WorldEngine.Entity.Terrain;
+using FiveSQD.StraightFour.Entity.Terrain;
 using System.Linq;
 
 namespace FiveSQD.WebVerse.VOSSynchronization
@@ -1686,7 +1686,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     BaseEntity parent = null;
                     if (!string.IsNullOrEmpty(addContainerEntityMessage.parentID))
                     {
-                        parent = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        parent = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addContainerEntityMessage.parentID));
                     }
 
@@ -1705,17 +1705,17 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         return;
                     }
                     if (addContainerEntityMessage.id != null &&
-                        WorldEngine.WorldEngine.ActiveWorld.entityManager.Exists(Guid.Parse(addContainerEntityMessage.id)))
+                        StraightFour.StraightFour.ActiveWorld.entityManager.Exists(Guid.Parse(addContainerEntityMessage.id)))
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Entity " +
                             "already exists.");
                         return;
                     }
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadContainerEntity(parent,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadContainerEntity(parent,
                         ToOffsetPosition(addContainerEntityMessage.position.ToVector3()),
                         addContainerEntityMessage.rotation.ToQuaternion(), scaleSize,
                         Guid.Parse(addContainerEntityMessage.id));
-                    BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addContainerEntityMessage.id));
+                    BaseEntity ce = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addContainerEntityMessage.id));
                     if (ce == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -1735,7 +1735,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     BaseEntity parent = null;
                     if (!string.IsNullOrEmpty(addCharacterEntityMessage.parentID))
                     {
-                        parent = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        parent = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addCharacterEntityMessage.parentID));
                     }
 
@@ -1761,7 +1761,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         return;
                     }
                     if (addCharacterEntityMessage.id != null &&
-                        WorldEngine.WorldEngine.ActiveWorld.entityManager.Exists(Guid.Parse(addCharacterEntityMessage.id)))
+                        StraightFour.StraightFour.ActiveWorld.entityManager.Exists(Guid.Parse(addCharacterEntityMessage.id)))
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Entity " +
                             "already exists.");
@@ -1769,7 +1769,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     }
                     if (addCharacterEntityMessage.path == null)
                     {
-                        WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parent,
+                        StraightFour.StraightFour.ActiveWorld.entityManager.LoadCharacterEntity(parent,
                             null, Vector3.zero, Quaternion.identity, Vector3.zero,
                             ToOffsetPosition(addCharacterEntityMessage.position.ToVector3()),
                         addCharacterEntityMessage.rotation.ToQuaternion(), scaleSize,
@@ -1782,7 +1782,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             addCharacterEntityMessage.modelRotation.ToQuaternion(), addCharacterEntityMessage.labelOffset.ToVector3(),
                             Guid.Parse(addCharacterEntityMessage.id));
                     }
-                    BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addCharacterEntityMessage.id));
+                    BaseEntity ce = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addCharacterEntityMessage.id));
                     if (ce == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -1835,7 +1835,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             "createmeshentity message.");
                     }
                     WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsMeshEntity(addMeshEntityMessage.path, addMeshEntityMessage.resources, Guid.Parse(addMeshEntityMessage.parentID));
-                    BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addMeshEntityMessage.id));
+                    BaseEntity me = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addMeshEntityMessage.id));
                     if (me == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -1865,7 +1865,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     CanvasEntity parent = null;
                     if (!string.IsNullOrEmpty(addButtonEntityMessage.parentID))
                     {
-                        BaseEntity foundEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        BaseEntity foundEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addButtonEntityMessage.parentID));
                         if (foundEntity is CanvasEntity)
                         {
@@ -1886,10 +1886,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         });
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadButtonEntity(parent,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadButtonEntity(parent,
                         addButtonEntityMessage.positionPercent.ToVector2(), addButtonEntityMessage.sizePercent.ToVector2(),
                         onClickAction, Guid.Parse(addButtonEntityMessage.id), null);
-                    BaseEntity be = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addButtonEntityMessage.id));
+                    BaseEntity be = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addButtonEntityMessage.id));
                     if (be == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -1909,7 +1909,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     BaseEntity parent = null;
                     if (!string.IsNullOrEmpty(addCanvasEntityMessage.parentID))
                     {
-                        parent = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        parent = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addCanvasEntityMessage.parentID));
                     }
 
@@ -1931,11 +1931,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             "createcanvasentity message.");
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(parent,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadCanvasEntity(parent,
                         ToOffsetPosition(addCanvasEntityMessage.position.ToVector3()),
                         addCanvasEntityMessage.rotation.ToQuaternion(), scaleSize,
                         Guid.Parse(addCanvasEntityMessage.id), isSize, null);
-                    BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity ce = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                         Guid.Parse(addCanvasEntityMessage.id));
                     if (ce == null)
                     {
@@ -1956,7 +1956,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     CanvasEntity parent = null;
                     if (!string.IsNullOrEmpty(addInputEntityMessage.parentID))
                     {
-                        BaseEntity foundEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        BaseEntity foundEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addInputEntityMessage.parentID));
                         if (foundEntity is CanvasEntity)
                         {
@@ -1968,10 +1968,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         }
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadInputEntity(parent,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadInputEntity(parent,
                         addInputEntityMessage.positionPercent.ToVector2(), addInputEntityMessage.sizePercent.ToVector2(),
                         Guid.Parse(addInputEntityMessage.id), null);
-                    BaseEntity be = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addInputEntityMessage.id));
+                    BaseEntity be = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addInputEntityMessage.id));
                     if (be == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -1988,13 +1988,13 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         addLightEntityMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.StatusMessages.AddLightEntityMessage>(message);
 
-                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity parentEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addLightEntityMessage.parentID));
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(parentEntity,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadLightEntity(parentEntity,
                         ToOffsetPosition(addLightEntityMessage.position.ToVector3()),
                         addLightEntityMessage.rotation.ToQuaternion(), null);
-                    BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity me = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                         Guid.Parse(addLightEntityMessage.id));
                     if (me == null)
                     {
@@ -2012,7 +2012,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         addTerrainEntityMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.StatusMessages.AddTerrainEntityMessage>(message);
 
-                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity parentEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addTerrainEntityMessage.parentID));
 
                     if (addTerrainEntityMessage.type == "heightmap")
@@ -2050,7 +2050,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             }
                         }
 
-                        WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(addTerrainEntityMessage.length,
+                        StraightFour.StraightFour.ActiveWorld.entityManager.LoadTerrainEntity(addTerrainEntityMessage.length,
                             addTerrainEntityMessage.width, addTerrainEntityMessage.height, addTerrainEntityMessage.heights,
                             layers.ToArray(), Handlers.VEML.VEMLUtilities.ParseCSVLayerMasksToInternalFormat(addTerrainEntityMessage.layerMask),
                             parentEntity, ToOffsetPosition(addTerrainEntityMessage.position.ToVector3()),
@@ -2146,7 +2146,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Invalid createterrainentity message type.");
                     }
 
-                    BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addTerrainEntityMessage.id));
+                    BaseEntity me = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addTerrainEntityMessage.id));
                     if (me == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2166,7 +2166,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     CanvasEntity parent = null;
                     if (!string.IsNullOrEmpty(addTextEntityMessage.parentID))
                     {
-                        BaseEntity foundEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        BaseEntity foundEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addTextEntityMessage.parentID));
                         if (foundEntity is CanvasEntity)
                         {
@@ -2178,11 +2178,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         }
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTextEntity(addTextEntityMessage.text,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadTextEntity(addTextEntityMessage.text,
                         addTextEntityMessage.fontSize, parent,
                         addTextEntityMessage.positionPercent.ToVector2(), addTextEntityMessage.sizePercent.ToVector2(),
                         Guid.Parse(addTextEntityMessage.id), null);
-                    BaseEntity be = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addTextEntityMessage.id));
+                    BaseEntity be = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addTextEntityMessage.id));
                     if (be == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2199,14 +2199,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         addVoxelEntityMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.StatusMessages.AddVoxelEntityMessage>(message);
 
-                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity parentEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addVoxelEntityMessage.parentID));
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
                         ToOffsetPosition(addVoxelEntityMessage.position.ToVector3()),
                         addVoxelEntityMessage.rotation.ToQuaternion(), addVoxelEntityMessage.scale.ToVector3(),
                         Guid.Parse(addVoxelEntityMessage.id), null);
-                    BaseEntity ve = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addVoxelEntityMessage.id));
+                    BaseEntity ve = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addVoxelEntityMessage.id));
                     if (ve == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2247,7 +2247,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         addAirplaneEntityMessage.rotation.ToQuaternion(), addAirplaneEntityMessage.mass,
                         Guid.Parse(addAirplaneEntityMessage.id), null);
 
-                    BaseEntity ae = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAirplaneEntityMessage.id));
+                    BaseEntity ae = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAirplaneEntityMessage.id));
                     if (ae == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2274,14 +2274,14 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         addAudioEntityMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.StatusMessages.AddAudioEntityMessage>(message);
 
-                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity parentEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addAudioEntityMessage.parentID));
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAudioEntity(parentEntity,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadAudioEntity(parentEntity,
                         ToOffsetPosition(addAudioEntityMessage.position.ToVector3()),
                         addAudioEntityMessage.rotation.ToQuaternion(),
                         Guid.Parse(addAudioEntityMessage.id), null);
-                    BaseEntity ae = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAudioEntityMessage.id));
+                    BaseEntity ae = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAudioEntityMessage.id));
                     if (ae == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2331,7 +2331,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         at,
                         Guid.Parse(addAutomobileEntityMessage.id), null);
 
-                    BaseEntity ae = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAutomobileEntityMessage.id));
+                    BaseEntity ae = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addAutomobileEntityMessage.id));
                     if (ae == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2361,7 +2361,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     CanvasEntity parent = null;
                     if (!string.IsNullOrEmpty(addDropdownEntityMessage.parentID))
                     {
-                        BaseEntity foundEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                        BaseEntity foundEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addDropdownEntityMessage.parentID));
                         if (foundEntity is CanvasEntity)
                         {
@@ -2383,12 +2383,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         });
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadDropdownEntity(parent,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadDropdownEntity(parent,
                         addDropdownEntityMessage.positionPercent.ToVector2(),
                         addDropdownEntityMessage.sizePercent.ToVector2(),
                         onChangeAction, addDropdownEntityMessage.options.ToList(),
                         Guid.Parse(addDropdownEntityMessage.id), null);
-                    BaseEntity de = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addDropdownEntityMessage.id));
+                    BaseEntity de = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addDropdownEntityMessage.id));
                     if (de == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2423,7 +2423,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             "createhtmlentity message.");
                     }
 
-                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity parentEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addHTMLEntityMessage.parentID));
 
                     Action<string> onMessageAction = null;
@@ -2436,11 +2436,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         });
                     }
 
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLEntity(parentEntity,
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadHTMLEntity(parentEntity,
                         ToOffsetPosition(addHTMLEntityMessage.position.ToVector3()),
                         addHTMLEntityMessage.rotation.ToQuaternion(), addHTMLEntityMessage.scale.ToVector3(),
                         Guid.Parse(addHTMLEntityMessage.id), isSize, null, onMessageAction);
-                    BaseEntity he = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addHTMLEntityMessage.id));
+                    BaseEntity he = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addHTMLEntityMessage.id));
                     if (he == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2457,7 +2457,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         addImageEntityMessage = JsonConvert.DeserializeObject<
                         VOSSynchronizationMessages.StatusMessages.AddImageEntityMessage>(message);
 
-                    BaseEntity parentEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(
+                    BaseEntity parentEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(
                             Guid.Parse(addImageEntityMessage.parentID));
 
                     Handlers.Javascript.APIs.Entity.EntityAPIHelper.LoadImageEntityAsync(
@@ -2468,7 +2468,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         new Handlers.Javascript.APIs.WorldTypes.Vector2(
                             addImageEntityMessage.sizePercent.x, addImageEntityMessage.sizePercent.y),
                         addImageEntityMessage.id, null);
-                    BaseEntity ie = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(addImageEntityMessage.id));
+                    BaseEntity ie = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(addImageEntityMessage.id));
                     if (ie == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2552,7 +2552,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         VOSSynchronizationMessages.StatusMessages.DeleteEntityMessage
                             deleteEntityMessage = JsonConvert.DeserializeObject<
                             VOSSynchronizationMessages.StatusMessages.DeleteEntityMessage>(message);
-                        BaseEntity de = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(deleteEntityMessage.id));
+                        BaseEntity de = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(deleteEntityMessage.id));
                         if (de == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2571,7 +2571,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity pe = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntityPositionMessage.id));
+                        BaseEntity pe = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntityPositionMessage.id));
                         if (pe == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2590,7 +2590,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity re = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntityRotationMessage.id));
+                        BaseEntity re = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntityRotationMessage.id));
                         if (re == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2609,7 +2609,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity se = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntityScaleMessage.id));
+                        BaseEntity se = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntityScaleMessage.id));
                         if (se == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2628,7 +2628,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity se = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntitySizeMessage.id));
+                        BaseEntity se = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(updateEntitySizeMessage.id));
                         if (se == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2647,7 +2647,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity te = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(modifyTerrainEntityMessage.id));
+                        BaseEntity te = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(modifyTerrainEntityMessage.id));
                         if (te == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2695,7 +2695,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityCanvasTypeMessage.id));
+                        BaseEntity ce = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityCanvasTypeMessage.id));
                         if (ce == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2732,7 +2732,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity he = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityHighlightStateMessage.id));
+                        BaseEntity he = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityHighlightStateMessage.id));
                         if (he == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2751,7 +2751,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity me = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityMotionMessage.id));
+                        BaseEntity me = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityMotionMessage.id));
                         if (me == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2776,9 +2776,9 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity ce = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityParentMessage.id));
+                        BaseEntity ce = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityParentMessage.id));
                         BaseEntity pe = setEntityParentMessage.parentID == null ? null :
-                            WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityParentMessage.parentID));
+                            StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityParentMessage.parentID));
                         if (ce == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2798,7 +2798,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             return;
                         }
                         BaseEntity pe
-                            = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityPhysicalPropertiesMessage.id));
+                            = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityPhysicalPropertiesMessage.id));
                         if (pe == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2825,7 +2825,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         {
                             return;
                         }
-                        BaseEntity ve = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityVisibilityMessage.id));
+                        BaseEntity ve = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(setEntityVisibilityMessage.id));
                         if (ve == null)
                         {
                             LogSystem.LogWarning("[VOSSynchronizer->OnMessage] Could not find entity.");
@@ -2863,7 +2863,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
             BaseEntity parentEntity = null;
             if (entityInfo.parentID != null)
             {
-                WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.parentID));
+                StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.parentID));
             }
 
             CanvasEntity parentCE = null;
@@ -2877,7 +2877,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 case "mesh":
                     WebVerseRuntime.Instance.gltfHandler.LoadGLTFResourceAsMeshEntity(entityInfo.path, entityInfo.resources,
                         Guid.Parse(entityInfo.parentID));
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -2903,7 +2903,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                 case "character":
                     if (entityInfo.path == null)
                     {
-                        newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(parentEntity,
+                        newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadCharacterEntity(parentEntity,
                             null, Vector3.zero, Quaternion.identity, Vector3.zero,
                             ToOffsetPosition(new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z)),
                             new Quaternion(entityInfo.rotation.x, entityInfo.rotation.y,
@@ -2919,7 +2919,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             Guid.Parse(entityInfo.id));
                     }
 
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -2944,11 +2944,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "container":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadContainerEntity(parentEntity,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadContainerEntity(parentEntity,
                         ToOffsetPosition(new Vector3(entityInfo.position.x, entityInfo.position.y, entityInfo.position.z)),
                         new Quaternion(entityInfo.rotation.x, entityInfo.rotation.y,
                         entityInfo.rotation.z, entityInfo.rotation.w), scaleSize, Guid.Parse(entityInfo.id));
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -2970,10 +2970,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         });
                     }
 
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadButtonEntity(parentCE,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadButtonEntity(parentCE,
                         entityInfo.positionPercent.ToVector2(), entityInfo.sizePercent.ToVector2(), onClickAction,
                         Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -2985,10 +2985,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "canvas":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(parentEntity,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadCanvasEntity(parentEntity,
                         ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
                         scaleSize, Guid.Parse(entityInfo.id), isSize, null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3000,10 +3000,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "input":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadInputEntity(parentCE,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadInputEntity(parentCE,
                         entityInfo.positionPercent.ToVector2(), entityInfo.sizePercent.ToVector2(),
                         Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3015,10 +3015,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "light":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(parentEntity,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadLightEntity(parentEntity,
                         ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
                         Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3033,8 +3033,8 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     ne = null;
                     if (entityInfo.subType == "heightmap")
                     {
-                        List<WorldEngine.Entity.Terrain.TerrainEntityLayer> layers
-                            = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+                        List<StraightFour.Entity.Terrain.TerrainEntityLayer> layers
+                            = new List<StraightFour.Entity.Terrain.TerrainEntityLayer>();
                         if (entityInfo.normalTextures != null && entityInfo.maskTextures != null &&
                                 entityInfo.specularValues != null && entityInfo.metallicValues != null &&
                                 entityInfo.smoothnessValues != null)
@@ -3050,7 +3050,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                                 {
                                     Color spec = new Color(127, 127, 127, 127);
                                     ColorUtility.TryParseHtmlString(entityInfo.specularValues[idx], out spec);
-                                    layers.Add(new WorldEngine.Entity.Terrain.TerrainEntityLayer()
+                                    layers.Add(new StraightFour.Entity.Terrain.TerrainEntityLayer()
                                     {
                                         diffusePath = entityInfo.diffuseTextures[idx],
                                         normalPath = entityInfo.maskTextures[idx],
@@ -3067,12 +3067,12 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             }
                         }
 
-                        newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(entityInfo.length,
+                        newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadTerrainEntity(entityInfo.length,
                         entityInfo.width, entityInfo.height, entityInfo.heights, layers.ToArray(),
                             Handlers.VEML.VEMLUtilities.ParseCSVLayerMasksToInternalFormat(entityInfo.layerMask), parentEntity,
                             ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
                             Guid.Parse(entityInfo.id), null);
-                        ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                        ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     }
                     else if (entityInfo.subType == "voxel")
                     {
@@ -3159,7 +3159,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             new Handlers.Javascript.APIs.WorldTypes.Quaternion(entityInfo.rotation.x,
                                 entityInfo.rotation.y, entityInfo.rotation.z, entityInfo.rotation.w),
                             entityInfo.id, entityInfo.tag, null);
-                        ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                        ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     }
 
                     if (ne == null)
@@ -3173,10 +3173,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "text":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTextEntity(entityInfo.text,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadTextEntity(entityInfo.text,
                         entityInfo.fontSize, parentCE, entityInfo.positionPercent.ToVector2(),
                         entityInfo.sizePercent.ToVector2(), Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3188,10 +3188,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "voxel":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
                         ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
                         entityInfo.scale.ToVector3(), Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3208,7 +3208,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         entityInfo.path, new string[] { entityInfo.path },
                         ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
                         entityInfo.mass, newEntityID, null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3231,11 +3231,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                     return ne;
 
                 case "audio":
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAudioEntity(
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadAudioEntity(
                         parentEntity, ToOffsetPosition(entityInfo.position.ToVector3()),
                         entityInfo.rotation.ToQuaternion(),
                         Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3260,7 +3260,7 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         ToOffsetPosition(entityInfo.position.ToVector3()),
                         entityInfo.rotation.ToQuaternion(), wheels, entityInfo.mass, at,
                         Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3293,11 +3293,11 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         });
                     }
 
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadDropdownEntity(
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadDropdownEntity(
                         parentCE, entityInfo.positionPercent.ToVector2(),
                         entityInfo.sizePercent.ToVector2(), onChangeAction, entityInfo.options.ToList(),
                         Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3320,10 +3320,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                         });
                     }
 
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLEntity(parentEntity,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadHTMLEntity(parentEntity,
                         ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
                         entityInfo.scale.ToVector3(), Guid.Parse(entityInfo.id), isSize, null, onMessageAction);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");
@@ -3345,10 +3345,10 @@ namespace FiveSQD.WebVerse.VOSSynchronization
                             entityInfo.sizePercent.x, entityInfo.sizePercent.y),
                         entityInfo.id, null);
 
-                    newEntityID = WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
+                    newEntityID = StraightFour.StraightFour.ActiveWorld.entityManager.LoadVoxelEntity(parentEntity,
                         ToOffsetPosition(entityInfo.position.ToVector3()), entityInfo.rotation.ToQuaternion(),
                         entityInfo.scale.ToVector3(), Guid.Parse(entityInfo.id), null);
-                    ne = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
+                    ne = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityInfo.id));
                     if (ne == null)
                     {
                         LogSystem.LogWarning("[VOSSynchronizer->AddEntity] Could not find entity.");

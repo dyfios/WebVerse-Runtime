@@ -37,7 +37,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
@@ -46,7 +46,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                le.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                le.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(le.internalEntity, le);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -54,14 +54,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(pBE, pos, rot, guid, tag, onLoadAction);
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadLightEntity(pBE, pos, rot, guid, tag, onLoadAction);
 
             return le;
         }
 
         internal LightEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.LightEntity);
+            internalEntityType = typeof(StraightFour.Entity.LightEntity);
         }
 
         /// <summary>
@@ -80,14 +80,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             switch (type)
             {
                 case LightType.Spot:
-                    return ((WorldEngine.Entity.LightEntity) internalEntity).SetLightType(WorldEngine.Entity.LightEntity.LightType.Spot);
+                    return ((StraightFour.Entity.LightEntity) internalEntity).SetLightType(StraightFour.Entity.LightEntity.LightType.Spot);
 
 
                 case LightType.Directional:
-                    return ((WorldEngine.Entity.LightEntity) internalEntity).SetLightType(WorldEngine.Entity.LightEntity.LightType.Directional);
+                    return ((StraightFour.Entity.LightEntity) internalEntity).SetLightType(StraightFour.Entity.LightEntity.LightType.Directional);
 
                 case LightType.Point:
-                    return ((WorldEngine.Entity.LightEntity) internalEntity).SetLightType(WorldEngine.Entity.LightEntity.LightType.Point);
+                    return ((StraightFour.Entity.LightEntity) internalEntity).SetLightType(StraightFour.Entity.LightEntity.LightType.Point);
 
                 default:
                     Logging.LogError("[LightEntity:SetLightType] Unknown light type.");
@@ -111,7 +111,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             UnityEngine.Color32 col = new UnityEngine.Color(color.r, color.g, color.b, color.a);
-            return ((WorldEngine.Entity.LightEntity) internalEntity).SetLightProperties(col, temperature, intensity);
+            return ((StraightFour.Entity.LightEntity) internalEntity).SetLightProperties(col, temperature, intensity);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             UnityEngine.Color32 col = new UnityEngine.Color(color.r, color.g, color.b, color.a);
-            return ((WorldEngine.Entity.LightEntity) internalEntity).SetLightProperties(
+            return ((StraightFour.Entity.LightEntity) internalEntity).SetLightProperties(
                 range, innerSpotAngle, outerSpotAngle, col, temperature, intensity);
         }
 
@@ -152,7 +152,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            return ((WorldEngine.Entity.LightEntity) internalEntity).SetLightProperties(range, intensity);
+            return ((StraightFour.Entity.LightEntity) internalEntity).SetLightProperties(range, intensity);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 { color = Color.black, innerSpotAngle = 0, intensity = 0, outerSpotAngle = 0, range = 0, temperature = 0 };
             }
 
-            WorldEngine.Entity.LightEntity.LightProperties props = ((WorldEngine.Entity.LightEntity) internalEntity).GetLightProperties();
+            StraightFour.Entity.LightEntity.LightProperties props = ((StraightFour.Entity.LightEntity) internalEntity).GetLightProperties();
 
             return new LightProperties()
             {

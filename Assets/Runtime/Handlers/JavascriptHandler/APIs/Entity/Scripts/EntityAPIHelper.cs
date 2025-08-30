@@ -145,7 +145,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <summary>
         /// Dictionary of Entity API references and internal entity references.
         /// </summary>
-        private static Dictionary<WorldEngine.Entity.BaseEntity, BaseEntity> loadedEntities;
+        private static Dictionary<StraightFour.Entity.BaseEntity, BaseEntity> loadedEntities;
 
         /// <summary>
         /// Instance of the Entity API Helper.
@@ -167,7 +167,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// </summary>
         public static void InitializeEntityMapping()
         {
-            loadedEntities = new Dictionary<WorldEngine.Entity.BaseEntity, BaseEntity>();
+            loadedEntities = new Dictionary<StraightFour.Entity.BaseEntity, BaseEntity>();
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// </summary>
         /// <param name="internalEntity">Internal entity reference.</param>
         /// <param name="publicEntity">API entity reference.</param>
-        public static void AddEntityMapping(WorldEngine.Entity.BaseEntity internalEntity, BaseEntity publicEntity)
+        public static void AddEntityMapping(StraightFour.Entity.BaseEntity internalEntity, BaseEntity publicEntity)
         {
             if (loadedEntities.ContainsKey(internalEntity))
             {
@@ -189,7 +189,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// Remove an entity mapping.
         /// </summary>
         /// <param name="internalEntity">Internal entity reference.</param>
-        public static void RemoveEntityMapping(WorldEngine.Entity.BaseEntity internalEntity)
+        public static void RemoveEntityMapping(StraightFour.Entity.BaseEntity internalEntity)
         {
             if (!loadedEntities.ContainsKey(internalEntity))
             {
@@ -204,7 +204,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// Get the API entity reference for an internal entity.
         /// </summary>
         /// <param name="internalEntity">Internal entity reference.</param>
-        public static BaseEntity GetPublicEntity(WorldEngine.Entity.BaseEntity internalEntity)
+        public static BaseEntity GetPublicEntity(StraightFour.Entity.BaseEntity internalEntity)
         {
             if (internalEntity == null)
             {
@@ -223,7 +223,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// Get the internal entity reference for an API entity.
         /// </summary>
         /// <param name="publicEntity">API entity reference.</param>
-        public static WorldEngine.Entity.BaseEntity GetPrivateEntity(BaseEntity publicEntity)
+        public static StraightFour.Entity.BaseEntity GetPrivateEntity(BaseEntity publicEntity)
         {
             if (publicEntity == null)
             {
@@ -241,7 +241,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="info">Information to apply to voxel block type.</param>
         /// <param name="internalEntity">Internal entity reference.</param>
         /// <returns>Whether or not the operation was successful.</returns>
-        public static bool SetBlockInfoAsync(int id, VoxelBlockInfo info, WorldEngine.Entity.VoxelEntity internalEntity)
+        public static bool SetBlockInfoAsync(int id, VoxelBlockInfo info, StraightFour.Entity.VoxelEntity internalEntity)
         {
             if (info == null)
             {
@@ -295,7 +295,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             Vector3 pos = new Vector3(position.x, position.y, position.z);
             Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
@@ -320,7 +320,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             Action onLoadAction = null;
             onLoadAction = () =>
             {
-                te.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                te.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 AddEntityMapping(te.internalEntity, te);
                 if (modifications != null)
                 {
@@ -388,7 +388,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             Vector3 pos = new Vector3(position.x, position.y, position.z);
             Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
@@ -413,7 +413,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             Action onLoadAction = null;
             onLoadAction = () =>
             {
-                te.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                te.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 AddEntityMapping(te.internalEntity, te);
                 if (modifications != null)
                 {
@@ -481,7 +481,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             Vector3 pos = new Vector3(position.x, position.y, position.z);
             Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
@@ -534,13 +534,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pCE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pCE = EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[ImageEntity->LoadImageEntityAsync] Invalid parent entity.");
                 return null;
             }
-            if (pCE is not WorldEngine.Entity.UIEntity)
+            if (pCE is not StraightFour.Entity.UIEntity)
             {
                 Logging.LogWarning("[ImageEntity->LoadImageEntityAsync] Parent entity not UI element.");
                 return null;
@@ -554,7 +554,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             System.Action onLoadAction = null;
             onLoadAction = () =>
             {
-                ie.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                ie.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(ie.internalEntity, ie);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -562,7 +562,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            instance.StartCoroutine(instance.LoadImageEntityAsync(ie, (WorldEngine.Entity.UIEntity) pCE,
+            instance.StartCoroutine(instance.LoadImageEntityAsync(ie, (StraightFour.Entity.UIEntity) pCE,
                 guid, imageFile, pos, size, tag, onLoadAction));
 
             return ie;
@@ -573,7 +573,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// </summary>
         /// <param name="file">Audio file.</param>
         /// <param name="audioEntity">Audio entity to play audio in.</param>
-        public static void LoadAudioFromFileAsync(string file, WorldEngine.Entity.AudioEntity audioEntity)
+        public static void LoadAudioFromFileAsync(string file, StraightFour.Entity.AudioEntity audioEntity)
         {
             instance.StartCoroutine(instance.LoadAudioFromFile(file, audioEntity));
         }
@@ -583,7 +583,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// </summary>
         /// <param name="file">Image file.</param>
         /// <param name="buttonEntity">Button entity to apply image to.</param>
-        public static void ApplyImageToButtonAsync(string file, WorldEngine.Entity.ButtonEntity buttonEntity)
+        public static void ApplyImageToButtonAsync(string file, StraightFour.Entity.ButtonEntity buttonEntity)
         {
             instance.StartCoroutine(instance.ApplyImageToButton(file, buttonEntity));
         }
@@ -593,7 +593,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// </summary>
         /// <param name="file">Image file.</param>
         /// <param name="buttonEntity">Dropdown entity to apply image to.</param>
-        public static void ApplyImageToDropdownAsync(string file, WorldEngine.Entity.DropdownEntity dropdownEntity)
+        public static void ApplyImageToDropdownAsync(string file, StraightFour.Entity.DropdownEntity dropdownEntity)
         {
             instance.StartCoroutine(instance.ApplyImageToDropdown(file, dropdownEntity));
         }
@@ -603,157 +603,157 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// </summary>
         /// <param name="entityToRegister">Entity to register.</param>
         /// <returns>Whether or not the operation was successful.</returns>
-        public static bool RegisterPrivateEntity(WorldEngine.Entity.BaseEntity entityToRegister)
+        public static bool RegisterPrivateEntity(StraightFour.Entity.BaseEntity entityToRegister)
         {
-            if (entityToRegister is WorldEngine.Entity.AirplaneEntity)
+            if (entityToRegister is StraightFour.Entity.AirplaneEntity)
             {
                 AirplaneEntity ae = new AirplaneEntity();
                 ae.internalEntity = entityToRegister;
-                ae.internalEntityType = typeof(WorldEngine.Entity.AirplaneEntity);
+                ae.internalEntityType = typeof(StraightFour.Entity.AirplaneEntity);
                 AddEntityMapping(entityToRegister, ae);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.AudioEntity)
+            else if (entityToRegister is StraightFour.Entity.AudioEntity)
             {
                 AudioEntity ae = new AudioEntity();
                 ae.internalEntity = entityToRegister;
-                ae.internalEntityType = typeof(WorldEngine.Entity.AudioEntity);
+                ae.internalEntityType = typeof(StraightFour.Entity.AudioEntity);
                 AddEntityMapping(entityToRegister, ae);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.AutomobileEntity)
+            else if (entityToRegister is StraightFour.Entity.AutomobileEntity)
             {
                 AutomobileEntity ae = new AutomobileEntity();
                 ae.internalEntity = entityToRegister;
-                ae.internalEntityType = typeof(WorldEngine.Entity.AutomobileEntity);
+                ae.internalEntityType = typeof(StraightFour.Entity.AutomobileEntity);
                 AddEntityMapping(entityToRegister, ae);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.ButtonEntity)
+            else if (entityToRegister is StraightFour.Entity.ButtonEntity)
             {
                 ButtonEntity be = new ButtonEntity();
                 be.internalEntity = entityToRegister;
-                be.internalEntityType = typeof(WorldEngine.Entity.ButtonEntity);
+                be.internalEntityType = typeof(StraightFour.Entity.ButtonEntity);
                 AddEntityMapping(entityToRegister, be);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.CanvasEntity)
+            else if (entityToRegister is StraightFour.Entity.CanvasEntity)
             {
                 CanvasEntity ce = new CanvasEntity();
                 ce.internalEntity = entityToRegister;
-                ce.internalEntityType = typeof(WorldEngine.Entity.CanvasEntity);
+                ce.internalEntityType = typeof(StraightFour.Entity.CanvasEntity);
                 AddEntityMapping(entityToRegister, ce);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.CharacterEntity)
+            else if (entityToRegister is StraightFour.Entity.CharacterEntity)
             {
                 CharacterEntity ce = new CharacterEntity();
                 ce.internalEntity = entityToRegister;
-                ce.internalEntityType = typeof(WorldEngine.Entity.CanvasEntity);
+                ce.internalEntityType = typeof(StraightFour.Entity.CanvasEntity);
                 AddEntityMapping(entityToRegister, ce);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.ContainerEntity)
+            else if (entityToRegister is StraightFour.Entity.ContainerEntity)
             {
                 ContainerEntity ce = new ContainerEntity();
                 ce.internalEntity = entityToRegister;
-                ce.internalEntityType = typeof(WorldEngine.Entity.ContainerEntity);
+                ce.internalEntityType = typeof(StraightFour.Entity.ContainerEntity);
                 AddEntityMapping(entityToRegister, ce);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.HTMLEntity)
+            else if (entityToRegister is StraightFour.Entity.HTMLEntity)
             {
                 HTMLEntity he = new HTMLEntity(false);
                 he.internalEntity = entityToRegister;
-                he.internalEntityType = typeof(WorldEngine.Entity.HTMLEntity);
+                he.internalEntityType = typeof(StraightFour.Entity.HTMLEntity);
                 AddEntityMapping(entityToRegister, he);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.HTMLUIElementEntity)
+            else if (entityToRegister is StraightFour.Entity.HTMLUIElementEntity)
             {
                 HTMLEntity he = new HTMLEntity(false);
                 he.internalEntity = entityToRegister;
-                he.internalEntityType = typeof(WorldEngine.Entity.HTMLUIElementEntity);
+                he.internalEntityType = typeof(StraightFour.Entity.HTMLUIElementEntity);
                 AddEntityMapping(entityToRegister, he);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.ImageEntity)
+            else if (entityToRegister is StraightFour.Entity.ImageEntity)
             {
                 ImageEntity ie = new ImageEntity();
                 ie.internalEntity = entityToRegister;
-                ie.internalEntityType = typeof(WorldEngine.Entity.ImageEntity);
+                ie.internalEntityType = typeof(StraightFour.Entity.ImageEntity);
                 AddEntityMapping(entityToRegister, ie);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.InputEntity)
+            else if (entityToRegister is StraightFour.Entity.InputEntity)
             {
                 InputEntity ie = new InputEntity();
                 ie.internalEntity = entityToRegister;
-                ie.internalEntityType = typeof(WorldEngine.Entity.InputEntity);
+                ie.internalEntityType = typeof(StraightFour.Entity.InputEntity);
                 AddEntityMapping(entityToRegister, ie);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.LightEntity)
+            else if (entityToRegister is StraightFour.Entity.LightEntity)
             {
                 LightEntity le = new LightEntity();
                 le.internalEntity = entityToRegister;
-                le.internalEntityType = typeof(WorldEngine.Entity.LightEntity);
+                le.internalEntityType = typeof(StraightFour.Entity.LightEntity);
                 AddEntityMapping(entityToRegister, le);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.MeshEntity)
+            else if (entityToRegister is StraightFour.Entity.MeshEntity)
             {
                 MeshEntity me = new MeshEntity();
                 me.internalEntity = entityToRegister;
-                me.internalEntityType = typeof(WorldEngine.Entity.MeshEntity);
+                me.internalEntityType = typeof(StraightFour.Entity.MeshEntity);
                 AddEntityMapping(entityToRegister, me);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.TerrainEntity)
+            else if (entityToRegister is StraightFour.Entity.TerrainEntity)
             {
                 TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.heightmap);
                 te.internalEntity = entityToRegister;
-                te.internalEntityType = typeof(WorldEngine.Entity.TerrainEntity);
+                te.internalEntityType = typeof(StraightFour.Entity.TerrainEntity);
                 AddEntityMapping(entityToRegister, te);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.HybridTerrainEntity)
+            else if (entityToRegister is StraightFour.Entity.HybridTerrainEntity)
             {
                 TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
                 te.internalEntity = entityToRegister;
-                te.internalEntityType = typeof(WorldEngine.Entity.HybridTerrainEntity);
+                te.internalEntityType = typeof(StraightFour.Entity.HybridTerrainEntity);
                 AddEntityMapping(entityToRegister, te);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.TextEntity)
+            else if (entityToRegister is StraightFour.Entity.TextEntity)
             {
                 TextEntity te = new TextEntity();
                 te.internalEntity = entityToRegister;
-                te.internalEntityType = typeof(WorldEngine.Entity.TextEntity);
+                te.internalEntityType = typeof(StraightFour.Entity.TextEntity);
                 AddEntityMapping(entityToRegister, te);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.VoxelEntity)
+            else if (entityToRegister is StraightFour.Entity.VoxelEntity)
             {
                 VoxelEntity ve = new VoxelEntity();
                 ve.internalEntity = entityToRegister;
-                ve.internalEntityType = typeof(WorldEngine.Entity.VoxelEntity);
+                ve.internalEntityType = typeof(StraightFour.Entity.VoxelEntity);
                 AddEntityMapping(entityToRegister, ve);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.WaterBlockerEntity)
+            else if (entityToRegister is StraightFour.Entity.WaterBlockerEntity)
             {
                 WaterBlockerEntity we = new WaterBlockerEntity();
                 we.internalEntity = entityToRegister;
-                we.internalEntityType = typeof(WorldEngine.Entity.WaterBlockerEntity);
+                we.internalEntityType = typeof(StraightFour.Entity.WaterBlockerEntity);
                 AddEntityMapping(entityToRegister, we);
                 return true;
             }
-            else if (entityToRegister is WorldEngine.Entity.WaterBodyEntity)
+            else if (entityToRegister is StraightFour.Entity.WaterBodyEntity)
             {
                 WaterEntity we = new WaterEntity();
                 we.internalEntity = entityToRegister;
-                we.internalEntityType = typeof(WorldEngine.Entity.WaterBodyEntity);
+                we.internalEntityType = typeof(StraightFour.Entity.WaterBodyEntity);
                 AddEntityMapping(entityToRegister, we);
                 return true;
             }
@@ -790,7 +790,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="info">Information to apply to voxel block type.</param>
         /// <param name="internalEntity">Internal entity reference.</param>
         /// <param name="timeout">Timeout period after which to abort setting the block information.</param>
-        private IEnumerator SetBlockInfoCoroutine(int id, VoxelBlockInfo info, WorldEngine.Entity.VoxelEntity internalEntity, float timeout = 10)
+        private IEnumerator SetBlockInfoCoroutine(int id, VoxelBlockInfo info, StraightFour.Entity.VoxelEntity internalEntity, float timeout = 10)
         {
             if (info == null)
             {
@@ -798,7 +798,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 yield return null;
             }
 
-            WorldEngine.Entity.Voxels.BlockInfo blockInfo = new WorldEngine.Entity.Voxels.BlockInfo(info.id);
+            StraightFour.Entity.Voxels.BlockInfo blockInfo = new StraightFour.Entity.Voxels.BlockInfo(info.id);
 
             foreach (int key in blockInfo.subTypes.Keys)
             {
@@ -892,7 +892,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// terrain entity object.</param>
         /// <param name="timeout">Timeout for PNG loads.</param>
         /// <returns>Coroutine.</returns>
-        private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, WorldEngine.Entity.BaseEntity pBE, Guid guid,
+        private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, StraightFour.Entity.BaseEntity pBE, Guid guid,
             float length, float width, float height, float[,] heights, TerrainEntityLayer[] layers, float[][,] layerMasks,
             Vector3 pos, Quaternion rot, string tag = null, Action onLoaded = null, float timeout = 10)
         {
@@ -906,16 +906,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             }
 
-            List<WorldEngine.Entity.Terrain.TerrainEntityLayer> formattedLayers
-                    = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+            List<StraightFour.Entity.Terrain.TerrainEntityLayer> formattedLayers
+                    = new List<StraightFour.Entity.Terrain.TerrainEntityLayer>();
             if (layers != null)
             {
                 foreach (TerrainEntityLayer layer in layers)
                 {
                     uint completedRequests = 0;
 
-                    WorldEngine.Entity.Terrain.TerrainEntityLayer newFormattedLayer
-                        = new WorldEngine.Entity.Terrain.TerrainEntityLayer();
+                    StraightFour.Entity.Terrain.TerrainEntityLayer newFormattedLayer
+                        = new StraightFour.Entity.Terrain.TerrainEntityLayer();
                     newFormattedLayer.metallic = layer.metallic;
                     newFormattedLayer.smoothness = layer.smoothness;
                     newFormattedLayer.specular = new Color(layer.specular.r,
@@ -986,7 +986,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             }
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, heights,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, heights,
                 formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, guid, tag, onLoaded);
         }
 
@@ -1009,7 +1009,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// terrain entity object.</param>
         /// <param name="timeout">Timeout for PNG loads.</param>
         /// <returns>Coroutine.</returns>
-        private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, WorldEngine.Entity.BaseEntity pBE, Guid guid,
+        private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, StraightFour.Entity.BaseEntity pBE, Guid guid,
             float length, float width, float height, float[][] heights, TerrainEntityLayer[] layers, float[][,] layerMasks,
             Vector3 pos, Quaternion rot, string tag = null, Action onLoaded = null, float timeout = 10)
         {
@@ -1033,16 +1033,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 yield return null;
             }
 
-            List<WorldEngine.Entity.Terrain.TerrainEntityLayer> formattedLayers
-                    = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
+            List<StraightFour.Entity.Terrain.TerrainEntityLayer> formattedLayers
+                    = new List<StraightFour.Entity.Terrain.TerrainEntityLayer>();
             if (layers != null)
             {
                 foreach (TerrainEntityLayer layer in layers)
                 {
                     uint completedRequests = 0;
 
-                    WorldEngine.Entity.Terrain.TerrainEntityLayer newFormattedLayer
-                        = new WorldEngine.Entity.Terrain.TerrainEntityLayer();
+                    StraightFour.Entity.Terrain.TerrainEntityLayer newFormattedLayer
+                        = new StraightFour.Entity.Terrain.TerrainEntityLayer();
                     newFormattedLayer.metallic = layer.metallic;
                     newFormattedLayer.smoothness = layer.smoothness;
                     newFormattedLayer.specular = new Color(layer.specular.r,
@@ -1113,7 +1113,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             }
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, processedHeights,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, processedHeights,
                 formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, guid, tag, onLoaded);
         }
 
@@ -1129,7 +1129,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="tag">Tag.</param>
         /// <param name="onLoaded">Action to perform on load.</param>
         /// <returns></returns>
-        private IEnumerator LoadImageEntityAsync(ImageEntity ie, WorldEngine.Entity.UIEntity pCE, Guid id, string imageFile,
+        private IEnumerator LoadImageEntityAsync(ImageEntity ie, StraightFour.Entity.UIEntity pCE, Guid id, string imageFile,
             Vector2 positionPercent, Vector2 sizePercent, string tag = null, Action onLoaded = null)
         {
             if (!string.IsNullOrEmpty(imageFile))
@@ -1138,7 +1138,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     VEML.VEMLUtilities.FullyQualifyURI(imageFile, WebVerseRuntime.Instance.currentBasePath),
                 new Action<Texture2D>((tex) =>
                 {
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadImageEntity(
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadImageEntity(
                         tex, pCE, positionPercent, sizePercent, id, tag, onLoaded);
                 }));
             }
@@ -1152,7 +1152,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="file">Audio file to load.</param>
         /// <param name="audioEntity">Audio entity to load audio in.</param>
         /// <returns>Coroutine.</returns>
-        private IEnumerator LoadAudioFromFile(string file, WorldEngine.Entity.AudioEntity audioEntity)
+        private IEnumerator LoadAudioFromFile(string file, StraightFour.Entity.AudioEntity audioEntity)
         {
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip(file, AudioType.UNKNOWN);
             yield return request.SendWebRequest();
@@ -1173,7 +1173,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="file">Image file.</param>
         /// <param name="buttonEntity">Button entity to apply image to.</param>
         /// <returns>Coroutine.</returns>
-        private IEnumerator ApplyImageToButton(string file, WorldEngine.Entity.ButtonEntity buttonEntity)
+        private IEnumerator ApplyImageToButton(string file, StraightFour.Entity.ButtonEntity buttonEntity)
         {
             if (!string.IsNullOrEmpty(file))
             {
@@ -1195,7 +1195,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <param name="file">Image file.</param>
         /// <param name="dropdownEntity">Dropdown entity to apply image to.</param>
         /// <returns>Coroutine.</returns>
-        private IEnumerator ApplyImageToDropdown(string file, WorldEngine.Entity.DropdownEntity dropdownEntity)
+        private IEnumerator ApplyImageToDropdown(string file, StraightFour.Entity.DropdownEntity dropdownEntity)
         {
             if (!string.IsNullOrEmpty(file))
             {
@@ -1237,14 +1237,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = GetPrivateEntity(parent);
             Vector3 pos = new Vector3(position.x, position.y, position.z);
             Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
             MeshEntity me = new MeshEntity();
 
-            Action<WorldEngine.Entity.MeshEntity> onEntityLoadedAction =
-                new Action<WorldEngine.Entity.MeshEntity>((meshEntity) =>
+            Action<StraightFour.Entity.MeshEntity> onEntityLoadedAction =
+                new Action<StraightFour.Entity.MeshEntity>((meshEntity) =>
             {
                 if (meshEntity == null)
                 {
@@ -1256,7 +1256,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     meshEntity.SetPosition(pos, true);
                     meshEntity.SetRotation(rot, true);
 
-                    me.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                    me.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                     AddEntityMapping(me.internalEntity, me);
                     if (onLoaded != null)
                     {

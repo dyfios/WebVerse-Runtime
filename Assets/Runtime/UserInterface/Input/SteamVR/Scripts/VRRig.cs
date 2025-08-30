@@ -1,7 +1,7 @@
 // Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
 using System.Collections.Generic;
-using FiveSQD.WebVerse.WorldEngine.Entity;
+using FiveSQD.StraightFour.Entity;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Inputs;

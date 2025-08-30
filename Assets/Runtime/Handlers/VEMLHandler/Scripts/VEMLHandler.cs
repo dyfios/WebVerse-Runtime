@@ -12,10 +12,10 @@ using System.Xml.Serialization;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using FiveSQD.WebVerse.Handlers.VEML.Schema.V2_4;
+using FiveSQD.WebVerse.Handlers.VEML.Schema.V3_0;
 using FiveSQD.WebVerse.VOSSynchronization;
-using FiveSQD.WebVerse.WorldEngine.Utilities;
-using FiveSQD.WebVerse.WorldEngine.Entity;
+using FiveSQD.StraightFour.Utilities;
+using FiveSQD.StraightFour.Entity;
 using System.Xml;
 
 namespace FiveSQD.WebVerse.Handlers.VEML
@@ -28,7 +28,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <summary>
         /// Enumeration for a VEML version number.
         /// </summary>
-        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1, V2_2, V2_3, V2_4 }
+        public enum VEMLVersion { Unknown, v1_0, v1_1, v1_2, v1_3, v2_0, v2_1, V2_2, V2_3, V2_4, V3_0 }
 
         /// <summary>
         /// Reference to the WebVerse runtime.
@@ -48,11 +48,23 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         private liteproceduralsky liteProceduralSkyToLoadOnLoadCompletion = null;
 
         /// <summary>
+        /// Avatar entity tag to be set after entities are loaded.
+        /// </summary>
+        private string pendingAvatarEntityTag = null;
+
+        /// <summary>
+        /// Rig offset to be set after entities are loaded.
+        /// </summary>
+        private string pendingRigOffset = null;
+
+        /// <summary>
         /// Initialize the VEML Handler.
         /// </summary>
         public override void Initialize()
         {
             liteProceduralSkyToLoadOnLoadCompletion = null;
+            pendingAvatarEntityTag = null;
+            pendingRigOffset = null;
             base.Initialize();
         }
 
@@ -75,7 +87,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V2_4.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V3_0.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -111,7 +123,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         {
             Action onDownloaded = () =>
             {
-                Schema.V2_4.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
+                Schema.V3_0.veml veml = LoadVEML(Path.Combine(runtime.fileHandler.fileDirectory,
                     FileHandler.ToFileURI(resourceURI)));
 
                 if (veml == null)
@@ -197,31 +209,34 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// </summary>
         /// <param name="path">Path to load the document from.</param>
         /// <returns>A loaded VEML class, or null.</returns>
-        public Schema.V2_4.veml LoadVEML(string path)
+        public Schema.V3_0.veml LoadVEML(string path)
         {
             byte[] rawData = System.IO.File.ReadAllBytes(path);
 
-            //VEMLVersion version = VEMLVersion.V2_4;
-            Schema.V2_4.veml veml = null;
+            //VEMLVersion version = VEMLVersion.V3_0;
+            Schema.V3_0.veml veml = null;
             try
             {
-                XmlSerializer ser = new XmlSerializer(typeof(Schema.V2_4.veml));
-                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML2_4(System.Text.Encoding.UTF8.GetString(rawData)));
+                XmlSerializer ser = new XmlSerializer(typeof(Schema.V3_0.veml));
+                TextReader reader = new StringReader(VEMLUtilities.FullyNotateVEML3_0(System.Text.Encoding.UTF8.GetString(rawData)));
                 XmlReader xmlReader = XmlReader.Create(reader);
 
-                // Attempt deserialization using v2.4 (latest) of the schema. Old XML will be converted
+                // Attempt deserialization using v3.0 (latest) of the schema. Old XML will be converted
                 // to current version before being deserialized.
-                if (ser.CanDeserialize(xmlReader))
+                if (ser.CanDeserialize(xmlReader) && !VEMLUtilities.IsPreVEML3_0(System.Text.Encoding.UTF8.GetString(rawData)))
                 {
-                    //version = VEMLVersion.V2_4;
-                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.4");
-                    veml = (Schema.V2_4.veml) ser.Deserialize(xmlReader);
+                    //version = VEMLVersion.V3_0;
+                    Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v3.0");
+                    veml = (Schema.V3_0.veml) ser.Deserialize(xmlReader);
                 }
 
-                // Attempt deserialization using v2.3, v2.2, v2.1, v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to
+                // Attempt deserialization using v2.4, v2.3, v2.2, v2.1, v2.0, v1.3, v1.2, v1.1, or v1.0 of the schema. Convert to
                 // latest if deserialization succeeds.
                 else
                 {
+                    XmlSerializer ser2_4 = new XmlSerializer(typeof(Schema.V2_4.veml));
+                    TextReader reader2_4 = new StringReader(VEMLUtilities.FullyNotateVEML2_4(System.Text.Encoding.UTF8.GetString(rawData)));
+                    XmlReader xmlReader2_4 = XmlReader.Create(reader2_4);
                     XmlSerializer ser2_3 = new XmlSerializer(typeof(Schema.V2_3.veml));
                     XmlSerializer ser2_2 = new XmlSerializer(typeof(Schema.V2_2.veml));
                     XmlSerializer ser2_1 = new XmlSerializer(typeof(Schema.V2_1.veml));
@@ -231,28 +246,37 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     XmlSerializer ser1_1 = new XmlSerializer(typeof(Schema.V1_1.veml));
                     XmlSerializer ser1_0 = new XmlSerializer(typeof(Schema.V1_0.veml));
 
-                    if (ser2_3.CanDeserialize(xmlReader))
+                    if (ser2_4.CanDeserialize(xmlReader2_4))
                     {
-                        //version = VEMLVersion.v2_2;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.3. Upgrading to VEML v2.4.");
+                        //version = VEMLVersion.v2_4;
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.4. Upgrading to VEML v3.0.");
+                        reader = new StringReader(VEMLUtilities.FullyNotateVEML2_4(System.Text.Encoding.UTF8.GetString(rawData)));
+                        xmlReader = XmlReader.Create(reader);
+                        Schema.V2_4.veml v2_4VEML = (Schema.V2_4.veml) ser2_4.Deserialize(xmlReader);
+                        veml = VEMLUtilities.ConvertFromV2_4(v2_4VEML);
+                    }
+                    else if (ser2_3.CanDeserialize(xmlReader))
+                    {
+                        //version = VEMLVersion.v2_3;
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.3. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML2_3(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
-                        Schema.V2_3.veml v2_3VEML = (Schema.V2_3.veml) ser2_3.Deserialize(xmlReader);
+                        Schema.V2_3.veml v2_3VEML = (Schema.V2_3.veml)ser2_3.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV2_3(v2_3VEML);
                     }
                     else if (ser2_2.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v2_2;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.2. Upgrading to VEML v2.4.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.2. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML2_2(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
-                        Schema.V2_2.veml v2_2VEML = (Schema.V2_2.veml) ser2_2.Deserialize(xmlReader);
+                        Schema.V2_2.veml v2_2VEML = (Schema.V2_2.veml)ser2_2.Deserialize(xmlReader);
                         veml = VEMLUtilities.ConvertFromV2_2(v2_2VEML);
                     }
-                    if (ser2_1.CanDeserialize(xmlReader))
+                    else if (ser2_1.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v2_1;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.1. Upgrading to VEML v2.4.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.1. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML2_1(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V2_1.veml v2_1VEML = (Schema.V2_1.veml) ser2_1.Deserialize(xmlReader);
@@ -261,7 +285,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     else if (ser2_0.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v2_0;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.0. Upgrading to VEML v2.4.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v2.0. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML2_0(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V2_0.veml v2_0VEML = (Schema.V2_0.veml) ser2_0.Deserialize(xmlReader);
@@ -271,7 +295,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     else if (ser1_3.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_3;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.3. Upgrading to VEML v2.4.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.3. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_3(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_3.veml v1_3VEML = (Schema.V1_3.veml) ser1_3.Deserialize(xmlReader);
@@ -281,7 +305,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     else if (ser1_2.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_2;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.2. Upgrading to VEML v2.4.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.2. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_2(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_2.veml v1_2VEML = (Schema.V1_2.veml) ser1_2.Deserialize(xmlReader);
@@ -291,7 +315,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     else if (ser1_1.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_1;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.1. Upgrading to VEML v2.4.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.1. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_1(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_1.veml v1_1VEML = (Schema.V1_1.veml) ser1_1.Deserialize(xmlReader);
@@ -301,7 +325,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     else if (ser1_0.CanDeserialize(xmlReader))
                     {
                         //version = VEMLVersion.v1_1;
-                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.0. Upgrading to VEML v2.4.");
+                        Logging.Log("[VEMLHandler->LoadVEML] Document is VEML v1.0. Upgrading to VEML v3.0.");
                         reader = new StringReader(VEMLUtilities.FullyNotateVEML1_0(System.Text.Encoding.UTF8.GetString(rawData)));
                         xmlReader = XmlReader.Create(reader);
                         Schema.V1_0.veml v1_0VEML = (Schema.V1_0.veml) ser1_0.Deserialize(xmlReader);
@@ -581,7 +605,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <param name="onComplete">Action to invoke upon completion of world loading.
         /// Provides a success/fail indication.</param>
-        private IEnumerator ApplyVEMLDocument(Schema.V2_4.veml vemlDocument, string baseURI, Action<bool> onComplete)
+        private IEnumerator ApplyVEMLDocument(Schema.V3_0.veml vemlDocument, string baseURI, Action<bool> onComplete)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -624,6 +648,32 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 elapsedTime += 0.25f;
             }
 
+            // Set avatar entity now that all entities have been loaded
+            if (!string.IsNullOrEmpty(pendingAvatarEntityTag))
+            {
+                if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                {
+                    WebVerseRuntime.Instance.inputManager.desktopRig.SetAvatarEntityByTag(pendingAvatarEntityTag);
+                }
+                pendingAvatarEntityTag = null; // Clear the pending tag
+            }
+
+            // Apply rig parenting and offset now that both avatar entity and rig offset are set
+            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+            {
+                WebVerseRuntime.Instance.inputManager.desktopRig.ApplyRigParentingAndOffset();
+            }
+
+            // Set rig offset now that the avatar entity has been set
+            if (!string.IsNullOrEmpty(pendingRigOffset))
+            {
+                if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                {
+                    WebVerseRuntime.Instance.inputManager.desktopRig.SetRigOffsetFromString(pendingRigOffset);
+                }
+                pendingRigOffset = null; // Clear the pending offset
+            }
+
             if (scripts != null)
             {
                 foreach (string script in scripts)
@@ -645,7 +695,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="onScriptsProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessMetadata(Schema.V2_4.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
+        private bool ProcessMetadata(Schema.V3_0.veml vemlDocument, string baseURI, Action<string[]> onScriptsProcessed)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -702,7 +752,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEnvironment(Schema.V2_4.veml vemlDocument, string baseURI)
+        private bool ProcessEnvironment(Schema.V3_0.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -763,7 +813,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <param name="onProcessed">Action to invoke when scripts are processed. Provides an array of
         /// strings containing the script contents.</param>
-        private IEnumerator ProcessScripts(Schema.V2_4.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
+        private IEnumerator ProcessScripts(Schema.V3_0.veml vemlDocument, string baseURI, Action<string[]> onProcessed)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -829,7 +879,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessCapabilities(Schema.V2_4.veml vemlDocument, string baseURI)
+        private bool ProcessCapabilities(Schema.V3_0.veml vemlDocument, string baseURI)
         {
             // Check capabilities.
             if (vemlDocument.metadata.capability != null)
@@ -871,7 +921,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessInputEvents(Schema.V2_4.veml vemlDocument, string baseURI)
+        private bool ProcessInputEvents(Schema.V3_0.veml vemlDocument, string baseURI)
         {
             // Set up input events.
             if (vemlDocument.metadata.inputevent != null)
@@ -891,7 +941,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessControlFlags(Schema.V2_4.veml vemlDocument, string baseURI)
+        private bool ProcessControlFlags(Schema.V3_0.veml vemlDocument, string baseURI)
         {
             // Set up control flags.
             if (vemlDocument.metadata.controlflags != null)
@@ -990,6 +1040,85 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     {
                         WebVerseRuntime.Instance.vrRig.twoHandedGrabMoveEnabled = vemlDocument.metadata.controlflags.twohandedgrabmove;
                     }
+
+                    // Set up desktop control flags.
+                    if (WebVerseRuntime.Instance.platformInput is Input.Desktop.DesktopInput)
+                    {
+                        Input.Desktop.DesktopInput desktopInput = (Input.Desktop.DesktopInput)WebVerseRuntime.Instance.platformInput;
+
+                        if (vemlDocument.metadata.controlflags.gravityenabledSpecified)
+                        {
+                            desktopInput.gravityEnabled = vemlDocument.metadata.controlflags.gravityenabled;
+                            // Also set on DesktopRig if available
+                            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                            {
+                                WebVerseRuntime.Instance.inputManager.desktopRig.gravityEnabled = vemlDocument.metadata.controlflags.gravityenabled;
+                            }
+                        }
+
+                        if (vemlDocument.metadata.controlflags.wasdmotionenabledSpecified)
+                        {
+                            desktopInput.wasdMotionEnabled = vemlDocument.metadata.controlflags.wasdmotionenabled;
+                            // Also set on DesktopRig if available
+                            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                            {
+                                WebVerseRuntime.Instance.inputManager.desktopRig.wasdMotionEnabled = vemlDocument.metadata.controlflags.wasdmotionenabled;
+                            }
+                        }
+
+                        if (vemlDocument.metadata.controlflags.mouselookenabledSpecified)
+                        {
+                            desktopInput.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                            // Also set on DesktopRig if available
+                            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                            {
+                                WebVerseRuntime.Instance.inputManager.desktopRig.mouseLookEnabled = vemlDocument.metadata.controlflags.mouselookenabled;
+                            }
+                        }
+
+                        // Store avatar entity tag to be set after entities are loaded
+                        if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.avatarentity))
+                        {
+                            pendingAvatarEntityTag = vemlDocument.metadata.controlflags.avatarentity;
+                        }
+
+                        // Process jump enabled flag
+                        if (vemlDocument.metadata.controlflags.jumpenabledSpecified)
+                        {
+                            desktopInput.jumpEnabled = vemlDocument.metadata.controlflags.jumpenabled;
+
+                            // Also apply to DesktopRig if it exists
+                            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                            {
+                                WebVerseRuntime.Instance.inputManager.desktopRig.jumpEnabled = vemlDocument.metadata.controlflags.jumpenabled;
+                            }
+                        }
+
+                        // Process movement speed flag
+                        if (vemlDocument.metadata.controlflags.movementspeedSpecified)
+                        {
+                            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                            {
+                                WebVerseRuntime.Instance.inputManager.desktopRig.movementSpeed = vemlDocument.metadata.controlflags.movementspeed;
+                            }
+                        }
+
+                        // Process look speed flag
+                        if (vemlDocument.metadata.controlflags.lookspeedSpecified)
+                        {
+                            if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
+                            {
+                                WebVerseRuntime.Instance.inputManager.desktopRig.mouseSensitivity = vemlDocument.metadata.controlflags.lookspeed;
+                            }
+                        }
+                        
+                        // Process rig offset flag
+                        if (!string.IsNullOrEmpty(vemlDocument.metadata.controlflags.rigoffset))
+                        {
+                            // Store the rig offset to be applied after entities are loaded
+                            pendingRigOffset = vemlDocument.metadata.controlflags.rigoffset;
+                        }
+                    }
                 }
             }
 
@@ -1002,7 +1131,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessSynchronizers(Schema.V2_4.veml vemlDocument, string baseURI)
+        private bool ProcessSynchronizers(Schema.V3_0.veml vemlDocument, string baseURI)
         {
             // Set up synchronizers.
             if (vemlDocument.metadata.synchronizationservice != null)
@@ -1082,40 +1211,40 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 switch (entry.ToLower())
                 {
                     case "white":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.white);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.white);
                         break;
 
                     case "black":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.black);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.black);
                         break;
 
                     case "grey":
                     case "gray":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.gray);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.gray);
                         break;
 
                     case "red":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.red);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.red);
                         break;
 
                     case "yellow":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.yellow);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.yellow);
                         break;
 
                     case "blue":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.blue);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.blue);
                         break;
 
                     case "cyan":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.cyan);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.cyan);
                         break;
 
                     case "magenta":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.magenta);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.magenta);
                         break;
 
                     case "green":
-                        WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(Color.green);
+                        StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(Color.green);
                         break;
 
                     default:
@@ -1137,7 +1266,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                                 {
                                     Texture2D texture = new Texture2D(2, 2, TextureFormat.RGB24, false);
                                     texture.LoadImage(rawData);
-                                    WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSkyTexture(texture);
+                                    StraightFour.StraightFour.ActiveWorld.environmentManager.SetSkyTexture(texture);
                                 }
                             });
                             DownloadFileWithoutCache(VEMLUtilities.FullyQualifyURI(entry, uri), onDownloaded);
@@ -1145,7 +1274,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                         else
                         {
                             // Assume color code.
-                            WorldEngine.WorldEngine.ActiveWorld.environmentManager.SetSolidColorSky(FromHex(entry));
+                            StraightFour.StraightFour.ActiveWorld.environmentManager.SetSolidColorSky(FromHex(entry));
                         }
                         break;
                 }
@@ -1239,7 +1368,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEffects(Schema.V2_4.veml vemlDocument, string baseURI)
+        private bool ProcessEffects(Schema.V3_0.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -1262,7 +1391,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="vemlDocument">The VEML document.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessEntities(Schema.V2_4.veml vemlDocument, string baseURI)
+        private bool ProcessEntities(Schema.V3_0.veml vemlDocument, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -1392,124 +1521,124 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     }
 
                     // Handle entity specific properties.
-                    if (entity is meshentity)
+                    if (entity is mesh)
                     {
                         loadingEntities++;
-                        if (ProcessMeshEntity((meshentity) entity, baseURI) == false)
+                        if (ProcessMeshEntity((mesh) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing mesh entity.");
                             return false;
                         }
                     }
-                    else if (entity is containerentity)
+                    else if (entity is container)
                     {
                         loadingEntities++;
-                        if (ProcessContainerEntity((containerentity) entity, baseURI) == false)
+                        if (ProcessContainerEntity((container) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing container entity.");
                             return false;
                         }
                     }
-                    else if (entity is characterentity)
+                    else if (entity is character)
                     {
                         loadingEntities++;
-                        if (ProcessCharacterEntity((characterentity) entity, baseURI) == false)
+                        if (ProcessCharacterEntity((character) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing character entity.");
                             return false;
                         }
                     }
-                    else if (entity is lightentity)
+                    else if (entity is light)
                     {
                         loadingEntities++;
-                        if (ProcessLightEntity((lightentity) entity, baseURI) == false)
+                        if (ProcessLightEntity((light) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing light entity.");
                             return false;
                         }
                     }
-                    else if (entity is terrainentity)
+                    else if (entity is terrain)
                     {
                         loadingEntities++;
-                        if (ProcessTerrainEntity((terrainentity) entity, baseURI) == false)
+                        if (ProcessTerrainEntity((terrain) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing terrain entity.");
                             return false;
                         }
                     }
-                    else if (entity is textentity)
+                    else if (entity is text)
                     {
                         loadingEntities++;
-                        if (ProcessTextEntity((textentity) entity, baseURI) == false)
+                        if (ProcessTextEntity((text) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing text entity.");
                             return false;
                         }
                     }
-                    else if (entity is buttonentity)
+                    else if (entity is button)
                     {
                         loadingEntities++;
-                        if (ProcessButtonEntity((buttonentity) entity, baseURI) == false)
+                        if (ProcessButtonEntity((button) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing button entity.");
                             return false;
                         }
                     }
-                    else if (entity is canvasentity)
+                    else if (entity is canvas)
                     {
                         loadingEntities++;
-                        if (ProcessCanvasEntity((canvasentity) entity, baseURI) == false)
+                        if (ProcessCanvasEntity((canvas) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing canvas entity.");
                             return false;
                         }
                     }
-                    else if (entity is htmlentity)
+                    else if (entity is html)
                     {
                         loadingEntities++;
-                        if (ProcessHTMLEntity((htmlentity) entity, baseURI) == false)
+                        if (ProcessHTMLEntity((html) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing HTML entity.");
                             return false;
                         }
                     }
-                    else if (entity is inputentity)
+                    else if (entity is input)
                     {
                         loadingEntities++;
-                        if (ProcessInputEntity((inputentity) entity, baseURI) == false)
+                        if (ProcessInputEntity((input) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing input entity.");
                             return false;
                         }
                     }
-                    else if (entity is voxelentity)
+                    else if (entity is voxel)
                     {
                         loadingEntities++;
-                        if (ProcessVoxelEntity((voxelentity) entity, baseURI) == false)
+                        if (ProcessVoxelEntity((voxel) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing voxel entity.");
                             return false;
                         }
                     }
-                    else if (entity is audioentity)
+                    else if (entity is audio)
                     {
                         loadingEntities++;
-                        if (ProcessAudioEntity((audioentity) entity, baseURI) == false)
+                        if (ProcessAudioEntity((audio) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing audio entity.");
                             return false;
                         }
                     }
-                    else if (entity is imageentity)
+                    else if (entity is image)
                     {
                         loadingEntities++;
-                        if (ProcessImageEntity((imageentity) entity, baseURI) == false)
+                        if (ProcessImageEntity((image) entity, baseURI) == false)
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing image entity.");
                             return false;
                         }
                     }
-                    else if (entity is cubemeshentity)
+                    else if (entity is cubemesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.cubeMeshPrefab, baseURI))
@@ -1518,7 +1647,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is spheremeshentity)
+                    else if (entity is spheremesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.sphereMeshPrefab, baseURI))
@@ -1527,7 +1656,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is capsulemeshentity)
+                    else if (entity is capsulemesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.capsuleMeshPrefab, baseURI))
@@ -1536,7 +1665,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is cylindermeshentity)
+                    else if (entity is cylindermesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.cylinderMeshPrefab, baseURI))
@@ -1545,7 +1674,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is planemeshentity)
+                    else if (entity is planemesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.planeMeshPrefab, baseURI))
@@ -1554,7 +1683,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is torusmeshentity)
+                    else if (entity is torusmesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.torusMeshPrefab, baseURI))
@@ -1563,7 +1692,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is conemeshentity)
+                    else if (entity is conemesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.coneMeshPrefab, baseURI))
@@ -1572,7 +1701,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is rectangularpyramidmeshentity)
+                    else if (entity is rectangularpyramidmesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.rectangularPyramidMeshPrefab, baseURI))
@@ -1581,7 +1710,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is tetrahedronmeshentity)
+                    else if (entity is tetrahedronmesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.tetrahedronMeshPrefab, baseURI))
@@ -1590,7 +1719,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is prismmeshentity)
+                    else if (entity is prismmesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.prismMeshPrefab, baseURI))
@@ -1599,7 +1728,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is archmeshentity)
+                    else if (entity is archmesh)
                     {
                         loadingEntities++;
                         if (ProcessMeshPrimitiveEntity(entity, Javascript.APIs.Entity.EntityAPIHelper.archMeshPrefab, baseURI))
@@ -1608,37 +1737,37 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                             return false;
                         }
                     }
-                    else if (entity is waterentity)
+                    else if (entity is water)
                     {
                         loadingEntities++;
-                        if (ProcessWaterEntity((waterentity) entity, baseURI))
+                        if (ProcessWaterEntity((water) entity, baseURI))
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing water entity.");
                             return false;
                         }
                     }
-                    else if (entity is waterblockerentity)
+                    else if (entity is waterblocker)
                     {
                         loadingEntities++;
-                        if (ProcessWaterBlockerEntity((waterblockerentity) entity, baseURI))
+                        if (ProcessWaterBlockerEntity((waterblocker) entity, baseURI))
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing water blocker entity.");
                             return false;
                         }
                     }
-                    else if (entity is automobileentity)
+                    else if (entity is automobile)
                     {
                         loadingEntities++;
-                        if (ProcessAutomobileEntity((automobileentity) entity, baseURI))
+                        if (ProcessAutomobileEntity((automobile) entity, baseURI))
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing automobile entity.");
                             return false;
                         }
                     }
-                    else if (entity is airplaneentity)
+                    else if (entity is airplane)
                     {
                         loadingEntities++;
-                        if (ProcessAirplaneEntity((airplaneentity) entity, baseURI))
+                        if (ProcessAirplaneEntity((airplane) entity, baseURI))
                         {
                             LogSystem.LogWarning("[VEMLHandler->ProcessEntity] Error processing airplane entity.");
                             return false;
@@ -1662,7 +1791,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The mesh entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessMeshEntity(meshentity entity, string baseURI)
+        private bool ProcessMeshEntity(mesh entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -1689,8 +1818,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 entity.id = Guid.NewGuid().ToString();
             }
 
-            Action<WorldEngine.Entity.MeshEntity> onLoadedAction
-                = new Action<WorldEngine.Entity.MeshEntity>((meshEntity) =>
+            Action<StraightFour.Entity.MeshEntity> onLoadedAction
+                = new Action<StraightFour.Entity.MeshEntity>((meshEntity) =>
                 {
                     meshEntity.entityTag = entity.tag;
                     meshEntity.SetVisibility(true);
@@ -1748,7 +1877,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The container entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessContainerEntity(containerentity entity, string baseURI)
+        private bool ProcessContainerEntity(container entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -1797,7 +1926,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessContainerEntity] Error finding entity to synchronize.");
@@ -1822,7 +1951,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadContainerEntity(null, positionValue, rotationValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadContainerEntity(null, positionValue, rotationValue,
                 sizeValue, Guid.Parse(entity.id), entity.tag, false, onLoadEvent);
 
             return true;
@@ -1834,7 +1963,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The character entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessCharacterEntity(characterentity entity, string baseURI)
+        private bool ProcessCharacterEntity(character entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -1894,7 +2023,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action<CharacterEntity> onLoadEvent = new Action<CharacterEntity>((ce) =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessCharacterEntity] Error finding entity to synchronize.");
@@ -1924,7 +2053,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadDefaultEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessCharacterEntity] Error finding entity to synchronize.");
@@ -1952,7 +2081,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             if (entity.meshname == null)
             {
-                WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(null, null, Vector3.zero, Quaternion.identity,
+                StraightFour.StraightFour.ActiveWorld.entityManager.LoadCharacterEntity(null, null, Vector3.zero, Quaternion.identity,
                     Vector3.zero, positionValue, rotationValue, sizeValue, Guid.Parse(entity.id), entity.tag, isSize, onLoadDefaultEvent);
             }
             else
@@ -1977,7 +2106,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The light entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessLightEntity(lightentity entity, string baseURI)
+        private bool ProcessLightEntity(light entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
             {
@@ -2020,7 +2149,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessLightEntity] Error finding entity to synchronize.");
@@ -2045,7 +2174,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadLightEntity(null, positionValue, rotationValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadLightEntity(null, positionValue, rotationValue,
                 Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
@@ -2057,7 +2186,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The terrain entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessTerrainEntity(terrainentity entity, string baseURI)
+        private bool ProcessTerrainEntity(terrain entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
             {
@@ -2112,7 +2241,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessTerrainEntity] Error finding entity to synchronize.");
@@ -2145,13 +2274,13 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     return false;
                 }
 
-                List<WorldEngine.Entity.Terrain.TerrainEntityLayer> layers
-                    = new List<WorldEngine.Entity.Terrain.TerrainEntityLayer>();
-                foreach (terrainentitylayer layer in entity.layer)
+                List<StraightFour.Entity.Terrain.TerrainEntityLayer> layers
+                    = new List<StraightFour.Entity.Terrain.TerrainEntityLayer>();
+                foreach (terrainlayer layer in entity.layer)
                 {
                     Color specValue = ProcessColor(layer.specular);
-                    WorldEngine.Entity.Terrain.TerrainEntityLayer tel
-                        = new WorldEngine.Entity.Terrain.TerrainEntityLayer();
+                    StraightFour.Entity.Terrain.TerrainEntityLayer tel
+                        = new StraightFour.Entity.Terrain.TerrainEntityLayer();
                     tel.normalPath = layer.normaltexture;
                     tel.maskPath = layer.masktexture;
                     tel.diffusePath = layer.diffusetexture;
@@ -2163,7 +2292,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
                 float[,] heights = Handlers.VEML.VEMLUtilities.ParseCSVHeights(entity.heights);
 
-                WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTerrainEntity(
+                StraightFour.StraightFour.ActiveWorld.entityManager.LoadTerrainEntity(
                     (float) entity.length, (float) entity.width, (float) entity.height,
                     heights, layers.ToArray(), VEMLUtilities.ParseCSVLayerMasksToInternalFormat(entity.layermasks), null, positionValue, rotationValue, Guid.Parse(entity.id),
                     entity.tag, onLoadEvent);
@@ -2182,7 +2311,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 List<Javascript.APIs.Entity.TerrainEntityLayer> layers = new List<Javascript.APIs.Entity.TerrainEntityLayer>();
-                foreach (terrainentitylayer layer in entity.layer)
+                foreach (terrainlayer layer in entity.layer)
                 {
                     Color specValue = ProcessColor(layer.specular);
                     Javascript.APIs.Entity.TerrainEntityLayer tel
@@ -2221,7 +2350,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The text entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessTextEntity(textentity entity, string baseURI)
+        private bool ProcessTextEntity(text entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -2265,7 +2394,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessTextEntity] Error finding entity to synchronize.");
@@ -2286,11 +2415,81 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                TextEntity textEntity = loadedEntity as TextEntity;
+                if (textEntity != null)
+                {
+                    if (entity.boldSpecified && entity.bold)
+                    {
+                        textEntity.SetBold(true);
+                    }
+                    if (entity.italicSpecified && entity.italic)
+                    {
+                        textEntity.SetItalic(true);
+                    }
+                    if (entity.underlineSpecified && entity.underline)
+                    {
+                        textEntity.SetUnderline(true);
+                    }
+                    if (entity.strikethroughSpecified && entity.strikethrough)
+                    {
+                        textEntity.SetStrikethrough(true);
+                    }
+                    if (!string.IsNullOrEmpty(entity.font))
+                    {
+                        textEntity.SetFont(entity.font);
+                    }
+                    if (!string.IsNullOrEmpty(entity.color))
+                    {
+                        Color col = ProcessColor(entity.color);
+                        textEntity.SetColor(col);
+                    }
+                    if (!string.IsNullOrEmpty(entity.textwrap))
+                    {
+                        if (entity.textwrap == "no-wrap")
+                        {
+                            textEntity.SetTextWrapping(TextWrapping.NoWrap);
+                        }
+                        else if (entity.textwrap == "wrap")
+                        {
+                            textEntity.SetTextWrapping(TextWrapping.Wrap);
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(entity.textalignhorizontal))
+                    {
+                        if (entity.textalignhorizontal == "left")
+                        {
+                            textEntity.SetTextAlignment(StraightFour.Entity.TextAlignment.Left);
+                        }
+                        else if (entity.textalignhorizontal == "center")
+                        {
+                            textEntity.SetTextAlignment(StraightFour.Entity.TextAlignment.Center);
+                        }
+                        else if (entity.textalignhorizontal == "right")
+                        {
+                            textEntity.SetTextAlignment(StraightFour.Entity.TextAlignment.Right);
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(entity.textalignvertical))
+                    {
+                        if (entity.textalignvertical == "top")
+                        {
+                            textEntity.SetTextAlignment(StraightFour.Entity.TextAlignment.Top);
+                        }
+                        else if (entity.textalignvertical == "middle")
+                        {
+                            textEntity.SetTextAlignment(StraightFour.Entity.TextAlignment.Middle);
+                        }
+                        else if (entity.textalignvertical == "bottom")
+                        {
+                            textEntity.SetTextAlignment(StraightFour.Entity.TextAlignment.Bottom);
+                        }
+                    }
+                }
                 Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadTextEntity(entity.text, (int) entity.fontsize,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadTextEntity(entity.text1, (int) entity.fontsize,
                 null, positionPercentValue, sizePercentValue, Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
@@ -2302,7 +2501,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The button entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessButtonEntity(buttonentity entity, string baseURI)
+        private bool ProcessButtonEntity(button entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -2357,7 +2556,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessButtonEntity] Error finding entity to synchronize.");
@@ -2378,11 +2577,16 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     synchronizer.Item1.AddSynchronizedEntity(loadedEntity, false);
                 }
 #endif
+                if (!string.IsNullOrEmpty(entity.color))
+                {
+                    Color col = ProcessColor(entity.color);
+                    ((ButtonEntity) loadedEntity).SetBaseColor(col);
+                }
                 Javascript.APIs.Entity.EntityAPIHelper.RegisterPrivateEntity(loadedEntity);
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadButtonEntity(null, positionPercentValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadButtonEntity(null, positionPercentValue,
                 sizePercentValue, onClickEvent, Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
@@ -2394,7 +2598,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The canvas entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessCanvasEntity(canvasentity entity, string baseURI)
+        private bool ProcessCanvasEntity(canvas entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -2454,7 +2658,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessCanvasEntity] Error finding entity to synchronize.");
@@ -2483,7 +2687,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCanvasEntity(null, positionValue, rotationValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadCanvasEntity(null, positionValue, rotationValue,
                 sizeValue, Guid.Parse(entity.id), isSize, entity.tag, onLoadEvent);
 
             return true;
@@ -2495,7 +2699,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The canvas entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessHTMLEntity(htmlentity entity, string baseURI)
+        private bool ProcessHTMLEntity(html entity, string baseURI)
         {
 #if NON_CANVAS_HTML_ENTITY
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
@@ -2556,7 +2760,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
             
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessHTMLEntity] Error finding entity to synchronize.");
@@ -2587,7 +2791,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLEntity(null, positionValue, rotationValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadHTMLEntity(null, positionValue, rotationValue,
                 sizeValue, Guid.Parse(entity.id), isSize, entity.tag, onLoadEvent);
 
             return true;
@@ -2643,7 +2847,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessHTMLEntity] Error finding entity to synchronize.");
@@ -2674,13 +2878,13 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
                 WebVerseRuntime.Instance.outputManager.RegisterScreenSizeChangeAction(new Action<int, int>((width, height) =>
                 {
-                    ((WorldEngine.Entity.HTMLUIElementEntity) loadedEntity).CorrectSizeAndPosition(width, height);
+                    ((StraightFour.Entity.HTMLUIElementEntity) loadedEntity).CorrectSizeAndPosition(width, height);
                 }));
 
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLUIElementEntity(null, positionPercentValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadHTMLUIElementEntity(null, positionPercentValue,
                 sizePercentValue, Guid.Parse(entity.id), entity.tag, onMessageEvent, onLoadEvent);
 
             return true;
@@ -2692,7 +2896,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The input entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessInputEntity(inputentity entity, string baseURI)
+        private bool ProcessInputEntity(input entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -2736,7 +2940,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessInputEntity] Error finding entity to synchronize.");
@@ -2761,7 +2965,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadInputEntity(null, positionPercentValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadInputEntity(null, positionPercentValue,
                 sizePercentValue, Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
@@ -2773,7 +2977,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The voxel entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessVoxelEntity(voxelentity entity, string baseURI)
+        private bool ProcessVoxelEntity(voxel entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
             {
@@ -2820,7 +3024,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessVoxelEntity] Error finding entity to synchronize.");
@@ -2845,7 +3049,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadVoxelEntity(null, positionValue, rotationValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadVoxelEntity(null, positionValue, rotationValue,
                 sizeValue, Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
@@ -2857,7 +3061,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The audio entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessAudioEntity(audioentity entity, string baseURI)
+        private bool ProcessAudioEntity(audio entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -2902,7 +3106,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessAudioEntity] Error finding entity to synchronize.");
@@ -2941,7 +3145,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAudioEntity(null, positionValue, rotationValue,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadAudioEntity(null, positionValue, rotationValue,
                 Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
@@ -2953,7 +3157,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The image entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessImageEntity(imageentity entity, string baseURI)
+        private bool ProcessImageEntity(image entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -2997,7 +3201,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessImageEntity] Error finding entity to synchronize.");
@@ -3026,7 +3230,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     VEML.VEMLUtilities.FullyQualifyURI(entity.imagefile, formattedBaseURI),
                 new Action<Texture2D>((tex) =>
                 {
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadImageEntity(
+                    StraightFour.StraightFour.ActiveWorld.entityManager.LoadImageEntity(
                         tex, null, positionPercentValue, sizePercentValue,
                         Guid.Parse(entity.id), entity.tag, onLoadEvent);
                 }));
@@ -3058,7 +3262,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadedAction = new Action(() =>
             {
-                BaseEntity rawEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity rawEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (rawEntity == null)
                 {
                     Logging.LogError("[VEMLHandler->ProcessMeshPrimitiveEntity] Unable to find loaded entity.");
@@ -3103,7 +3307,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadMeshEntity(null, primitive, Vector3.zero, Quaternion.identity,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadMeshEntity(null, primitive, Vector3.zero, Quaternion.identity,
                 Guid.Parse(entity.id), null, onLoadedAction);
 
             return true;
@@ -3115,7 +3319,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The water entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessWaterEntity(waterentity entity, string baseURI)
+        private bool ProcessWaterEntity(water entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
             {
@@ -3162,7 +3366,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessWaterEntity] Error finding entity to synchronize.");
@@ -3187,7 +3391,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadWaterBodyEntity(
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadWaterBodyEntity(
                 ProcessColor(entity.shallowcolor), ProcessColor(entity.deepcolor), ProcessColor(entity.specularcolor),
                 ProcessColor(entity.scatteringcolor), entity.deepstart, entity.deepend, entity.distortion, entity.smoothness,
                 entity.numwaves, entity.waveamplitude, entity.wavesteepness, entity.wavespeed, entity.wavelength, entity.wavescale,
@@ -3202,7 +3406,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The water blocker entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessWaterBlockerEntity(waterblockerentity entity, string baseURI)
+        private bool ProcessWaterBlockerEntity(waterblocker entity, string baseURI)
         {
             if (string.IsNullOrEmpty(entity.tag))
             {
@@ -3249,7 +3453,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
 
             Action onLoadEvent = new Action(() =>
             {
-                BaseEntity loadedEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
+                BaseEntity loadedEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entity.id));
                 if (loadedEntity == null)
                 {
                     LogSystem.LogError("[VEMLHandler->ProcessWaterBlockerEntity] Error finding entity to synchronize.");
@@ -3274,7 +3478,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 loadingEntities--;
             });
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadWaterBlockerEntity(null,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadWaterBlockerEntity(null,
                 positionValue, rotationValue, Guid.Parse(entity.id), entity.tag, onLoadEvent);
 
             return true;
@@ -3286,7 +3490,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The automobile entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessAutomobileEntity(automobileentity entity, string baseURI)
+        private bool ProcessAutomobileEntity(automobile entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -3313,8 +3517,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 entity.id = Guid.NewGuid().ToString();
             }
 
-            Action<WorldEngine.Entity.AutomobileEntity> onLoadedAction
-                = new Action<WorldEngine.Entity.AutomobileEntity>((automobileEntity) =>
+            Action<StraightFour.Entity.AutomobileEntity> onLoadedAction
+                = new Action<StraightFour.Entity.AutomobileEntity>((automobileEntity) =>
                 {
                     automobileEntity.entityTag = entity.tag;
                     automobileEntity.SetVisibility(true);
@@ -3365,7 +3569,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 = new List<Javascript.APIs.Entity.AutomobileEntityWheel>();
             if (entity.wheels != null)
             {
-                foreach (automobileentitywheel wheel in entity.wheels)
+                foreach (automobilewheel wheel in entity.wheels)
                 {
                     convertedWheels.Add(new Javascript.APIs.Entity.AutomobileEntityWheel(
                         wheel.wheelsubmesh, wheel.wheelradius));
@@ -3399,7 +3603,7 @@ namespace FiveSQD.WebVerse.Handlers.VEML
         /// <param name="entity">The airplane entity.</param>
         /// <param name="baseURI">Base URI of the VEML document.</param>
         /// <returns>Whether or not the operation succeeded.</returns>
-        private bool ProcessAirplaneEntity(airplaneentity entity, string baseURI)
+        private bool ProcessAirplaneEntity(airplane entity, string baseURI)
         {
             string formattedBaseURI = VEMLUtilities.FormatURI(baseURI);
 
@@ -3426,8 +3630,8 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 entity.id = Guid.NewGuid().ToString();
             }
 
-            Action<WorldEngine.Entity.AirplaneEntity> onLoadedAction
-                = new Action<WorldEngine.Entity.AirplaneEntity>((airplaneEntity) =>
+            Action<StraightFour.Entity.AirplaneEntity> onLoadedAction
+                = new Action<StraightFour.Entity.AirplaneEntity>((airplaneEntity) =>
                 {
                     airplaneEntity.entityTag = entity.tag;
                     airplaneEntity.SetVisibility(true);
@@ -3521,11 +3725,11 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                 }
 
                 BaseEntity entityToSet =
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityParentRelationship.Key.id));
+                    StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityParentRelationship.Key.id));
 
                 BaseEntity entityParent = entityParentRelationship.Value == null ? null :
                     string.IsNullOrEmpty(entityParentRelationship.Value.id) ? null :
-                    WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityParentRelationship.Value.id));
+                    StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(Guid.Parse(entityParentRelationship.Value.id));
 
                 if (entityToSet == null)
                 {
@@ -3814,6 +4018,55 @@ namespace FiveSQD.WebVerse.Handlers.VEML
                     (float) ((canvastransform) tf).positionpercent.y), false);
                 ((UIElementEntity) entity).SetSizePercent(new Vector3((float) ((canvastransform) tf).sizepercent.x,
                     (float) ((canvastransform) tf).sizepercent.y), false);
+                if (!string.IsNullOrEmpty(((canvastransform) tf).alignhorizontal))
+                {
+                    if (((canvastransform) tf).alignhorizontal == "left")
+                    {
+                        ((UIElementEntity) entity).SetAlignment(UIElementAlignment.Left);
+                    }
+                    else if (((canvastransform) tf).alignhorizontal == "center")
+                    {
+                        ((UIElementEntity) entity).SetAlignment(UIElementAlignment.Center);
+                    }
+                    else if (((canvastransform) tf).alignhorizontal == "right")
+                    {
+                        ((UIElementEntity) entity).SetAlignment(UIElementAlignment.Right);
+                    }
+                    else
+                    {
+                        LogSystem.LogWarning("[VEMLHandler->ApplyTransform] Unknown horizontal alignment.");
+                    }
+                }
+                if (!string.IsNullOrEmpty(((canvastransform) tf).alignvertical))
+                {
+                    if (((canvastransform) tf).alignvertical == "top")
+                    {
+                        ((UIElementEntity) entity).SetAlignment(UIElementAlignment.Top);
+                    }
+                    else if (((canvastransform) tf).alignvertical == "middle")
+                    {
+                        ((UIElementEntity) entity).SetAlignment(UIElementAlignment.Middle);
+                    }
+                    else if (((canvastransform) tf).alignvertical == "bottom")
+                    {
+                        ((UIElementEntity) entity).SetAlignment(UIElementAlignment.Bottom);
+                    }
+                    else
+                    {
+                        LogSystem.LogWarning("[VEMLHandler->ApplyTransform] Unknown vertical alignment.");
+                    }
+                }
+                if (((canvastransform) tf).stretchtoparentSpecified)
+                {
+                    if (((canvastransform) tf).stretchtoparent)
+                    {
+                        ((UIElementEntity) entity).StretchToParent(true, false);
+                    }
+                    else
+                    {
+                        ((UIElementEntity) entity).StretchToParent(false, false);
+                    }
+                }
             }
             else
             {

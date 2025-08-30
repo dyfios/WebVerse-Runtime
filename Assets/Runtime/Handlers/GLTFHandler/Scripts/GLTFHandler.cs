@@ -9,7 +9,7 @@ using FiveSQD.WebVerse.Runtime;
 #if USE_WEBINTERFACE
 using FiveSQD.WebVerse.WebInterface.HTTP;
 #endif
-using FiveSQD.WebVerse.WorldEngine.Entity;
+using FiveSQD.StraightFour.Entity;
 using System.Collections;
 using UnityEditor;
 
@@ -374,6 +374,80 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         }
 
         /// <summary>
+        /// Apply a GLTF resource to a character entity.
+        /// </summary>
+        /// <param name="entity">Entity to apply the GLTF resource to.
+        /// <param name="gltfResourceURI">URI of the top-level GLTF resource.</param>
+        /// <param name="resourceURIs">URIs of resources needed by the top-level GLTF.</param>
+        /// <param name="meshOffset">Offset for the mesh character entity object.</param>
+        /// <param name="meshRotation">Rotation for the mesh character entity object.</param>
+        /// <param name="avatarLabelOffset">Offset for the avatar label.</param>
+        /// <param name="timeout">Timeout period after which loading will be aborted.</param>
+        /// <param name="checkForUpdateIfCached">Whether or not to check for update if in cache.</param>
+        /// <returns>Whether or not the operation was successful.</returns>
+        public bool ApplyGLTFResourceToCharacterEntity(CharacterEntity entity, string gltfResourceURI,
+            string[] resourceURIs, Vector3 meshOffset, Quaternion meshRotation, Vector3 avatarLabelOffset,
+            float timeout = 10, bool checkForUpdateIfCached = true)
+        {
+#if !UNITY_WEBGL
+            Dictionary<string, bool> downloadedState = new Dictionary<string, bool>();
+
+            if (resourceURIs != null)
+            {
+                foreach (string resourceURI in resourceURIs)
+                {
+                    if (!string.IsNullOrEmpty(resourceURI))
+                    {
+                        downloadedState.Add(resourceURI, false);
+                        Action onResouceDownloaded = () =>
+                        {
+                            downloadedState[resourceURI] = true;
+                        };
+
+                        DownloadGLTFResource(VEML.VEMLUtilities.FullyQualifyURI(resourceURI,
+                            WebVerseRuntime.Instance.currentBasePath), onResouceDownloaded,
+                            !checkForUpdateIfCached);
+                    }
+                }
+            }
+            Action onDownloaded = () =>
+            {
+                LoadGLTF(
+                    System.IO.Path.Combine(runtime.fileHandler.fileDirectory,
+                    FileHandler.ToFileURI(VEML.VEMLUtilities.FullyQualifyURI(
+                        gltfResourceURI, WebVerseRuntime.Instance.currentBasePath))),
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        entity.SetCharacterGO(meshObject);
+                        entity.SetCharacterObjectOffset(meshOffset);
+                        entity.SetCharacterObjectRotation(meshRotation);
+                        entity.SetCharacterLabelOffset(avatarLabelOffset);
+                        CleanUpExtraPrefabs();
+                    }));
+            };
+
+            DownloadGLTFResource(gltfResourceURI, onDownloaded, !checkForUpdateIfCached);
+            return true;
+#else
+            Action<byte[]> onDownloaded = (data) =>
+            {
+                LoadGLTF(gltfResourceURI.Substring(gltfResourceURI.LastIndexOf("/")), data,
+                    new Action<GameObject>((meshObject) =>
+                    {
+                        entity.SetCharacterGO(meshObject);
+                        entity.SetCharacterObjectOffset(meshOffset);
+                        entity.SetCharacterObjectRotation(meshRotation);
+                        entity.SetCharacterLabelOffset(avatarLabelOffset);
+                        CleanUpExtraPrefabs();
+                    }));
+            };
+
+            DownloadGLTFDirect(gltfResourceURI, onDownloaded);
+            return true;
+#endif
+        }
+
+        /// <summary>
         /// Download a GLTF resource.
         /// </summary>
         /// <param name="uri">URI of the GLTF resource.</param>
@@ -600,7 +674,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                     mcGO.transform.localScale = Vector3.one;
                     MeshCollider meshCollider = mcGO.AddComponent<MeshCollider>();
                     meshCollider.sharedMesh = meshFilter.mesh;
-                    meshCollider.tag = WorldEngine.Tags.TagManager.meshColliderTag;
+                    meshCollider.tag = StraightFour.Tags.TagManager.meshColliderTag;
                 }
             }
             else
@@ -622,7 +696,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
             bcGO.transform.SetParent(prefab.transform);
             bcGO.transform.localPosition = Vector3.zero;
             BoxCollider boxCollider = bcGO.AddComponent<BoxCollider>();
-            boxCollider.tag = WorldEngine.Tags.TagManager.physicsColliderTag;
+            boxCollider.tag = StraightFour.Tags.TagManager.physicsColliderTag;
             boxCollider.center = bounds.center;
             boxCollider.size = bounds.size;
 
@@ -641,7 +715,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         {
             Action onLoad = () =>
             {
-                BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                BaseEntity entity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 if (entity == null)
                 {
                     Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsMeshEntity] Unable to find loaded entity.");
@@ -654,7 +728,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadMeshEntity(
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadMeshEntity(
                 null, loadedMesh, Vector3.zero, Quaternion.identity, guid, null, onLoad);
         }
 
@@ -673,7 +747,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         {
             Action onLoad = () =>
             {
-                BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                BaseEntity entity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 if (entity == null)
                 {
                     Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsCharacterEntity] Unable to find loaded entity.");
@@ -686,7 +760,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadCharacterEntity(
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadCharacterEntity(
                 null, loadedMesh, meshOffset, meshRotation, avatarLabelOffset, Vector3.zero, Quaternion.identity,
                 Vector3.one, guid, null, false, onLoad);
         }
@@ -710,7 +784,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         {
             Action onLoad = () =>
             {
-                BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                BaseEntity entity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 if (entity == null)
                 {
                     Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsAutomobileEntity] Unable to find loaded entity.");
@@ -723,7 +797,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAutomobileEntity(
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadAutomobileEntity(
                 null, meshPosition, meshRotation, loadedMesh, wheels, mass, type, guid, tag, onLoad);
         }
 
@@ -744,7 +818,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
         {
             Action onLoad = () =>
             {
-                BaseEntity entity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                BaseEntity entity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 if (entity == null)
                 {
                     Logging.LogError("[GLTFHandler->SetUpLoadedGLTFMeshAsAirplaneEntity] Unable to find loaded entity.");
@@ -757,7 +831,7 @@ namespace FiveSQD.WebVerse.Handlers.GLTF
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadAirplaneEntity(
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadAirplaneEntity(
                 null, meshPosition, meshRotation, loadedMesh, mass, guid, tag, onLoad);
         }
 

@@ -37,7 +37,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
             UnityEngine.Vector3 scl = new UnityEngine.Vector3(scale.x, scale.y, scale.z);
@@ -56,7 +56,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             Action onLoadAction = null;
             onLoadAction = () =>
             {
-                he.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                he.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(he.internalEntity, he);
                 if (!string.IsNullOrEmpty(onLoaded))
                 {
@@ -64,7 +64,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
 
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLEntity(pBE, pos, rot, scl, guid, isSize, tag,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadHTMLEntity(pBE, pos, rot, scl, guid, isSize, tag,
                 onMessageAction, onLoadAction);
 
             return he;
@@ -95,7 +95,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.CanvasEntity pCE = (WorldEngine.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.CanvasEntity pCE = (StraightFour.Entity.CanvasEntity) EntityAPIHelper.GetPrivateEntity(parent);
             if (pCE == null)
             {
                 Logging.LogWarning("[HTMLEntity->Create] Invalid parent entity.");
@@ -119,12 +119,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             Action onLoadAction = null;
             onLoadAction = () =>
             {
-                he.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                he.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                 EntityAPIHelper.AddEntityMapping(he.internalEntity, he);
 
                 WebVerseRuntime.Instance.outputManager.RegisterScreenSizeChangeAction(new Action<int, int>((width, height) =>
                 {
-                    ((WorldEngine.Entity.HTMLUIElementEntity) he.internalEntity).CorrectSizeAndPosition(width, height);
+                    ((StraightFour.Entity.HTMLUIElementEntity) he.internalEntity).CorrectSizeAndPosition(width, height);
                 }));
 
                 if (!string.IsNullOrEmpty(onLoaded))
@@ -133,7 +133,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 }
             };
             
-            WorldEngine.WorldEngine.ActiveWorld.entityManager.LoadHTMLUIElementEntity(pCE, pos, scl, guid, tag,
+            StraightFour.StraightFour.ActiveWorld.entityManager.LoadHTMLUIElementEntity(pCE, pos, scl, guid, tag,
                 onMessageAction, onLoadAction);
 
             return he;
@@ -143,11 +143,11 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             if (canvasEntity)
             {
-                internalEntityType = typeof(WorldEngine.Entity.HTMLUIElementEntity);
+                internalEntityType = typeof(StraightFour.Entity.HTMLUIElementEntity);
             }
             else
             {
-                internalEntityType = typeof(WorldEngine.Entity.HTMLEntity);
+                internalEntityType = typeof(StraightFour.Entity.HTMLEntity);
             }
         }
 
@@ -164,14 +164,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            if (internalEntity is WorldEngine.Entity.HTMLEntity)
+            if (internalEntity is StraightFour.Entity.HTMLEntity)
             {
-                return ((WorldEngine.Entity.HTMLEntity) internalEntity).LoadFromURL(
+                return ((StraightFour.Entity.HTMLEntity) internalEntity).LoadFromURL(
                     VEML.VEMLUtilities.FullyQualifyURI(url, WebVerseRuntime.Instance.currentBasePath));
             }
-            else if (internalEntity is WorldEngine.Entity.HTMLUIElementEntity)
+            else if (internalEntity is StraightFour.Entity.HTMLUIElementEntity)
             {
-                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).LoadFromURL(
+                return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).LoadFromURL(
                     VEML.VEMLUtilities.FullyQualifyURI(url, WebVerseRuntime.Instance.currentBasePath));
             }
             else
@@ -194,13 +194,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            if (internalEntity is WorldEngine.Entity.HTMLEntity)
+            if (internalEntity is StraightFour.Entity.HTMLEntity)
             {
-                return ((WorldEngine.Entity.HTMLEntity) internalEntity).LoadHTML(html);
+                return ((StraightFour.Entity.HTMLEntity) internalEntity).LoadHTML(html);
             }
-            else if (internalEntity is WorldEngine.Entity.HTMLUIElementEntity)
+            else if (internalEntity is StraightFour.Entity.HTMLUIElementEntity)
             {
-                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).LoadHTML(html);
+                return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).LoadHTML(html);
             }
             else
             {
@@ -221,13 +221,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            if (internalEntity is WorldEngine.Entity.HTMLEntity)
+            if (internalEntity is StraightFour.Entity.HTMLEntity)
             {
-                return ((WorldEngine.Entity.HTMLEntity) internalEntity).GetURL();
+                return ((StraightFour.Entity.HTMLEntity) internalEntity).GetURL();
             }
-            else if (internalEntity is WorldEngine.Entity.HTMLUIElementEntity)
+            else if (internalEntity is StraightFour.Entity.HTMLUIElementEntity)
             {
-                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).GetURL();
+                return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).GetURL();
             }
             else
             {
@@ -263,13 +263,13 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 };
             }
             
-            if (internalEntity is WorldEngine.Entity.HTMLEntity)
+            if (internalEntity is StraightFour.Entity.HTMLEntity)
             {
-                return ((WorldEngine.Entity.HTMLEntity) internalEntity).ExecuteJavaScript(logic, onCompleteAction);
+                return ((StraightFour.Entity.HTMLEntity) internalEntity).ExecuteJavaScript(logic, onCompleteAction);
             }
-            else if (internalEntity is WorldEngine.Entity.HTMLUIElementEntity)
+            else if (internalEntity is StraightFour.Entity.HTMLUIElementEntity)
             {
-                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).ExecuteJavaScript(logic, onCompleteAction);
+                return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).ExecuteJavaScript(logic, onCompleteAction);
             }
             else
             {

@@ -235,7 +235,24 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
             }
 
             Fetch(new Request(resource), onFinished);
-            
+        }
+
+        /// <summary>
+        /// Perform a Fetch.
+        /// </summary>
+        /// <param name="resource">URI of the resource to fetch.</param>
+        /// <param name="onFinished">Logic to execute when the request has finished.</param>
+        public static void Post(string resource, string data, string dataType, string onFinished)
+        {
+            if (string.IsNullOrEmpty(resource))
+            {
+                Logging.LogWarning("[HTTPNetworking:Fetch] Invalid Resource");
+                return;
+            }
+
+            Request req = new Request(resource);
+            req.method = "POST";
+            Fetch(req, onFinished, data, dataType);
         }
 
         /// <summary>
@@ -260,7 +277,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
         /// </summary>
         /// <param name="request">Request to fetch.</param>
         /// <param name="onFinished">Logic to execute when the request has finished.</param>
-        public static void Fetch(Request request, string onFinished)
+        public static void Fetch(Request request, string onFinished, string data = null, string dataType = null)
         {
 #if USE_WEBINTERFACE
             WebInterface.HTTP.HTTPRequest.HTTPMethod method = WebInterface.HTTP.HTTPRequest.HTTPMethod.Get;
@@ -325,7 +342,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Networking
                 }
             });
 
-            WebInterface.HTTP.HTTPRequest httpReq = new WebInterface.HTTP.HTTPRequest(request.resourceURI, method, onFinishedAction);
+            WebInterface.HTTP.HTTPRequest httpReq = new WebInterface.HTTP.HTTPRequest(request.resourceURI, method, onFinishedAction, data, dataType);
             httpReq.Send();
 #endif
         }

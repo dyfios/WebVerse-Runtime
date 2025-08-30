@@ -21,12 +21,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).engineStartStop;
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).engineStartStop;
             }
 
             set
             {
-                ((WorldEngine.Entity.AutomobileEntity) internalEntity).engineStartStop = value;
+                ((StraightFour.Entity.AutomobileEntity) internalEntity).engineStartStop = value;
             }
         }
 
@@ -34,12 +34,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).brake;
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).brake;
             }
 
             set
             {
-                ((WorldEngine.Entity.AutomobileEntity) internalEntity).brake = value;
+                ((StraightFour.Entity.AutomobileEntity) internalEntity).brake = value;
             }
         }
 
@@ -47,12 +47,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).handBrake;
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).handBrake;
             }
 
             set
             {
-                ((WorldEngine.Entity.AutomobileEntity) internalEntity).handBrake = value;
+                ((StraightFour.Entity.AutomobileEntity) internalEntity).handBrake = value;
             }
         }
 
@@ -60,12 +60,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).horn;
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).horn;
             }
 
             set
             {
-                ((WorldEngine.Entity.AutomobileEntity) internalEntity).horn = value;
+                ((StraightFour.Entity.AutomobileEntity) internalEntity).horn = value;
             }
         }
 
@@ -73,12 +73,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).throttle;
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).throttle;
             }
 
             set
             {
-                ((WorldEngine.Entity.AutomobileEntity) internalEntity).throttle = value;
+                ((StraightFour.Entity.AutomobileEntity) internalEntity).throttle = value;
             }
         }
 
@@ -86,12 +86,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).steer;
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).steer;
             }
 
             set
             {
-                ((WorldEngine.Entity.AutomobileEntity) internalEntity).steer = value;
+                ((StraightFour.Entity.AutomobileEntity) internalEntity).steer = value;
             }
         }
 
@@ -99,12 +99,12 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         {
             get
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).gear;
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).gear;
             }
 
             set
             {
-                ((WorldEngine.Entity.AutomobileEntity) internalEntity).gear = value;
+                ((StraightFour.Entity.AutomobileEntity) internalEntity).gear = value;
             }
         }
 
@@ -139,14 +139,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 guid = Guid.Parse(id);
             }
 
-            WorldEngine.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
             UnityEngine.Vector3 pos = new UnityEngine.Vector3(position.x, position.y, position.z);
             UnityEngine.Quaternion rot = new UnityEngine.Quaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 
             AutomobileEntity ae = new AutomobileEntity();
 
-            System.Action<WorldEngine.Entity.AutomobileEntity> onEntityLoadedAction =
-                new System.Action<WorldEngine.Entity.AutomobileEntity>((automobileEntity) =>
+            System.Action<StraightFour.Entity.AutomobileEntity> onEntityLoadedAction =
+                new System.Action<StraightFour.Entity.AutomobileEntity>((automobileEntity) =>
             {
                 if (automobileEntity == null)
                 {
@@ -158,7 +158,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     automobileEntity.SetPosition(pos, true);
                     automobileEntity.SetRotation(rot, true);
 
-                    ae.internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(guid);
+                    ae.internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(guid);
                     EntityAPIHelper.AddEntityMapping(ae.internalEntity, ae);
                     if (!string.IsNullOrEmpty(onLoaded))
                     {
@@ -176,7 +176,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
         internal AutomobileEntity()
         {
-            internalEntityType = typeof(WorldEngine.Entity.AutomobileEntity);
+            internalEntityType = typeof(StraightFour.Entity.AutomobileEntity);
         }
     }
 }

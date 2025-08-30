@@ -102,7 +102,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The entity corresponding to the tag, or null.</returns>
         public static object GetByTag(string tag)
         {
-            foreach (WorldEngine.Entity.BaseEntity entity in WorldEngine.WorldEngine.ActiveWorld.entityManager.GetAllEntities())
+            foreach (StraightFour.Entity.BaseEntity entity in StraightFour.StraightFour.ActiveWorld.entityManager.GetAllEntities())
             {
                 if (entity.entityTag == tag)
                 {

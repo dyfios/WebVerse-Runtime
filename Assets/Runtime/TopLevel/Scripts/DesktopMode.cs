@@ -155,7 +155,7 @@ namespace FiveSQD.WebVerse.Runtime
         /// Sky sphere follower.
         /// </summary>
         [Tooltip("Sky sphere follower.")]
-        public WorldEngine.Environment.SkySphereFollower skySphereFollower;
+        public StraightFour.Environment.SkySphereFollower skySphereFollower;
 
         /// <summary>
         /// Whether or not VR is enabled.
@@ -327,13 +327,13 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="eventCamera">Event camera to set all canvas entities' event camera to.</param>
         private void SetCanvasEventCamera(Camera eventCamera)
         {
-            if (WorldEngine.WorldEngine.ActiveWorld != null)
+            if (StraightFour.StraightFour.ActiveWorld != null)
             {
-                foreach (WorldEngine.Entity.BaseEntity entity in WorldEngine.WorldEngine.ActiveWorld.entityManager.GetAllEntities())
+                foreach (StraightFour.Entity.BaseEntity entity in StraightFour.StraightFour.ActiveWorld.entityManager.GetAllEntities())
                 {
-                    if (entity is WorldEngine.Entity.CanvasEntity)
+                    if (entity is StraightFour.Entity.CanvasEntity)
                     {
-                        ((WorldEngine.Entity.CanvasEntity) entity).canvasObject.worldCamera = eventCamera;
+                        ((StraightFour.Entity.CanvasEntity) entity).canvasObject.worldCamera = eventCamera;
                     }
                 }
             }

@@ -61,19 +61,19 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <summary>
         /// Internal entity reference.
         /// </summary>
-        internal WorldEngine.Entity.BaseEntity internalEntity = null;
+        internal StraightFour.Entity.BaseEntity internalEntity = null;
 
         /// <summary>
         /// Type of the entity.
         /// </summary>
-        internal Type internalEntityType = typeof(WorldEngine.Entity.BaseEntity);
+        internal Type internalEntityType = typeof(StraightFour.Entity.BaseEntity);
 
         /// <summary>
         /// Constructor for the entity.
         /// </summary>
         public BaseEntity()
         {
-            if (WorldEngine.WorldEngine.ActiveWorld == null)
+            if (StraightFour.StraightFour.ActiveWorld == null)
             {
                 Logging.LogError("[BaseEntity] Could not find active world.");
                 return;
@@ -87,7 +87,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The entity corresponding to the ID, or null.</returns>
         public static BaseEntity Get(Guid id)
         {
-            WorldEngine.Entity.BaseEntity internalEntity = WorldEngine.WorldEngine.ActiveWorld.entityManager.FindEntity(id);
+            StraightFour.Entity.BaseEntity internalEntity = StraightFour.StraightFour.ActiveWorld.entityManager.FindEntity(id);
             if (internalEntity == null)
             {
                 Logging.Log("[BaseEntity->Get] Could not find entity.");
@@ -122,77 +122,77 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                     return false;
                 }
 
-                if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+                if (internalEntityType == typeof(StraightFour.Entity.AirplaneEntity))
                 {
-                    return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.AirplaneEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.AudioEntity))
                 {
-                    return ((WorldEngine.Entity.AudioEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.AudioEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.AutomobileEntity))
                 {
-                    return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.AutomobileEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.ButtonEntity))
                 {
-                    return ((WorldEngine.Entity.ButtonEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.ButtonEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.CanvasEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.CanvasEntity))
                 {
-                    return ((WorldEngine.Entity.CanvasEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.CanvasEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.CharacterEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.CharacterEntity))
                 {
-                    return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.CharacterEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.HTMLEntity))
                 {
-                    return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.HTMLEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.HTMLUIElementEntity))
                 {
-                    return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.ImageEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.ImageEntity))
                 {
-                    return ((WorldEngine.Entity.ImageEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.ImageEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.InputEntity))
                 {
-                    return ((WorldEngine.Entity.InputEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.InputEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.LightEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.LightEntity))
                 {
-                    return ((WorldEngine.Entity.LightEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.LightEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.MeshEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.MeshEntity))
                 {
-                    return ((WorldEngine.Entity.MeshEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.MeshEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.TerrainEntity))
                 {
-                    return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.TerrainEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.HybridTerrainEntity))
                 {
-                    return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.HybridTerrainEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.TextEntity))
                 {
-                    return ((WorldEngine.Entity.TextEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.TextEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.VoxelEntity))
                 {
-                    return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.VoxelEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
                 {
-                    return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.WaterBlockerEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
-                else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+                else if (internalEntityType == typeof(StraightFour.Entity.WaterBodyEntity))
                 {
-                    return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
+                    return ((StraightFour.Entity.WaterBodyEntity) internalEntity).SetParent(EntityAPIHelper.GetPrivateEntity(parent));
                 }
                 else
                 {
@@ -214,19 +214,19 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return null;
             }
 
-            if (WorldEngine.WorldEngine.ActiveWorld == null)
+            if (StraightFour.StraightFour.ActiveWorld == null)
             {
                 Logging.LogError("[BaseEntity:GetParent] Could not find active world.");
                 return null;
             }
 
-            if (WorldEngine.WorldEngine.ActiveWorld.entityManager == null)
+            if (StraightFour.StraightFour.ActiveWorld.entityManager == null)
             {
                 Logging.LogError("[BaseEntity:GetParent] Could not find entity manager.");
                 return null;
             }
 
-            WorldEngine.Entity.BaseEntity parentEntity = internalEntity.GetParent();
+            StraightFour.Entity.BaseEntity parentEntity = internalEntity.GetParent();
             if (parentEntity == null)
             {
                 return null;
@@ -247,7 +247,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            WorldEngine.WorldEngine.ActiveWorld.cameraManager.SetParent(internalEntity.gameObject);
+            StraightFour.StraightFour.ActiveWorld.cameraManager.SetParent(internalEntity.gameObject);
 
             return true;
         }
@@ -265,8 +265,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             List<BaseEntity> children = new List<BaseEntity>();
-            WorldEngine.Entity.BaseEntity[] childEntities = internalEntity.GetChildren();
-            foreach (WorldEngine.Entity.BaseEntity childEntity in childEntities)
+            StraightFour.Entity.BaseEntity[] childEntities = internalEntity.GetChildren();
+            foreach (StraightFour.Entity.BaseEntity childEntity in childEntities)
             {
                 BaseEntity child = EntityAPIHelper.GetPublicEntity(childEntity);
                 if (child != null)
@@ -291,7 +291,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             UnityEngine.Transform transform = internalEntity.transform;
             Transform t = new Transform();
-            UnityEngine.Vector3 worldOffset = WorldEngine.WorldEngine.ActiveWorld.worldOffset;
+            UnityEngine.Vector3 worldOffset = StraightFour.StraightFour.ActiveWorld.worldOffset;
             t.position = new Vector3(transform.position.x - worldOffset.x, transform.position.y - worldOffset.y,
                 transform.position.z - worldOffset.z);
             t.rotation = new Quaternion(transform.rotation.x, transform.rotation.y, transform.rotation.z, transform.rotation.w);
@@ -565,7 +565,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            WorldEngine.Entity.BaseEntity otherEntity = EntityAPIHelper.GetPrivateEntity(other);
+            StraightFour.Entity.BaseEntity otherEntity = EntityAPIHelper.GetPrivateEntity(other);
             return otherEntity == internalEntity;
         }
 
@@ -582,84 +582,84 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            WorldEngine.Entity.BaseEntity.EntityMotion eMotion = new WorldEngine.Entity.BaseEntity.EntityMotion()
+            StraightFour.Entity.BaseEntity.EntityMotion eMotion = new StraightFour.Entity.BaseEntity.EntityMotion()
             {
                 angularVelocity = new UnityEngine.Vector3(motion.angularVelocity.x, motion.angularVelocity.y, motion.angularVelocity.z),
                 stationary = motion.stationary,
                 velocity = new UnityEngine.Vector3(motion.velocity.x, motion.velocity.y, motion.velocity.z)
             };
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            if (internalEntityType == typeof(StraightFour.Entity.AirplaneEntity))
             {
-                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.AirplaneEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AudioEntity))
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.AudioEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AutomobileEntity))
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ButtonEntity))
             {
-                return ((WorldEngine.Entity.ButtonEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.ButtonEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CanvasEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CanvasEntity))
             {
-                return ((WorldEngine.Entity.CanvasEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.CanvasEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CharacterEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CharacterEntity))
             {
-                return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.CharacterEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLEntity))
             {
-                return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.HTMLEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLUIElementEntity))
             {
-                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ImageEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ImageEntity))
             {
-                return ((WorldEngine.Entity.ImageEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.ImageEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.InputEntity))
             {
-                return ((WorldEngine.Entity.InputEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.InputEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.LightEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.LightEntity))
             {
-                return ((WorldEngine.Entity.LightEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.LightEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.MeshEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.MeshEntity))
             {
-                return ((WorldEngine.Entity.MeshEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.MeshEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TerrainEntity))
             {
-                return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.TerrainEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HybridTerrainEntity))
             {
-                return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.HybridTerrainEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TextEntity))
             {
-                return ((WorldEngine.Entity.TextEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.TextEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.VoxelEntity))
             {
-                return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.VoxelEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
             {
-                return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.WaterBlockerEntity) internalEntity).SetMotion(eMotion);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBodyEntity))
             {
-                return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetMotion(eMotion);
+                return ((StraightFour.Entity.WaterBodyEntity) internalEntity).SetMotion(eMotion);
             }
             else
             {
@@ -680,78 +680,78 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return new EntityMotion { angularVelocity = Vector3.zero, stationary = true, velocity = Vector3.zero };
             }
 
-            WorldEngine.Entity.BaseEntity.EntityMotion? eMotion = null;
-            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            StraightFour.Entity.BaseEntity.EntityMotion? eMotion = null;
+            if (internalEntityType == typeof(StraightFour.Entity.AirplaneEntity))
             {
-                eMotion = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.AirplaneEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AudioEntity))
             {
-                eMotion = ((WorldEngine.Entity.AudioEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.AudioEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AutomobileEntity))
             {
-                eMotion = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.AutomobileEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ButtonEntity))
             {
-                eMotion = ((WorldEngine.Entity.ButtonEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.ButtonEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CanvasEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CanvasEntity))
             {
-                eMotion = ((WorldEngine.Entity.CanvasEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.CanvasEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CharacterEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CharacterEntity))
             {
-                eMotion = ((WorldEngine.Entity.CharacterEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.CharacterEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLEntity))
             {
-                eMotion = ((WorldEngine.Entity.HTMLEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.HTMLEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLUIElementEntity))
             {
-                eMotion = ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ImageEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ImageEntity))
             {
-                eMotion = ((WorldEngine.Entity.ImageEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.ImageEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.InputEntity))
             {
-                eMotion = ((WorldEngine.Entity.InputEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.InputEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.LightEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.LightEntity))
             {
-                eMotion = ((WorldEngine.Entity.LightEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.LightEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.MeshEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.MeshEntity))
             {
-                eMotion = ((WorldEngine.Entity.MeshEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.MeshEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TerrainEntity))
             {
-                eMotion = ((WorldEngine.Entity.TerrainEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.TerrainEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HybridTerrainEntity))
             {
-                eMotion = ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.HybridTerrainEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TextEntity))
             {
-                eMotion = ((WorldEngine.Entity.TextEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.TextEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.VoxelEntity))
             {
-                eMotion = ((WorldEngine.Entity.VoxelEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.VoxelEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
             {
-                eMotion = ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.WaterBlockerEntity) internalEntity).GetMotion();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBodyEntity))
             {
-                eMotion = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetMotion();
+                eMotion = ((StraightFour.Entity.WaterBodyEntity) internalEntity).GetMotion();
             }
             else
             {
@@ -797,7 +797,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 Logging.LogError("[BaseEntity:SetPhysicalProperties] Unknown entity.");
                 return false;
             }
-            WorldEngine.Entity.BaseEntity.EntityPhysicalProperties props = new WorldEngine.Entity.BaseEntity.EntityPhysicalProperties()
+            StraightFour.Entity.BaseEntity.EntityPhysicalProperties props = new StraightFour.Entity.BaseEntity.EntityPhysicalProperties()
             {
                 angularDrag = properties.angularDrag,
                 centerOfMass = properties.centerOfMass is null ? null :
@@ -807,77 +807,77 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 mass = properties.mass
             };
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            if (internalEntityType == typeof(StraightFour.Entity.AirplaneEntity))
             {
-                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.AirplaneEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AudioEntity))
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.AudioEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AutomobileEntity))
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ButtonEntity))
             {
-                return ((WorldEngine.Entity.ButtonEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.ButtonEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CanvasEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CanvasEntity))
             {
-                return ((WorldEngine.Entity.CanvasEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.CanvasEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CharacterEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CharacterEntity))
             {
-                return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.CharacterEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLEntity))
             {
-                return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.HTMLEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLUIElementEntity))
             {
-                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ImageEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ImageEntity))
             {
-                return ((WorldEngine.Entity.ImageEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.ImageEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.InputEntity))
             {
-                return ((WorldEngine.Entity.InputEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.InputEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.LightEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.LightEntity))
             {
-                return ((WorldEngine.Entity.LightEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.LightEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.MeshEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.MeshEntity))
             {
-                return ((WorldEngine.Entity.MeshEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.MeshEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TerrainEntity))
             {
-                return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.TerrainEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HybridTerrainEntity))
             {
-                return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.HybridTerrainEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TextEntity))
             {
-                return ((WorldEngine.Entity.TextEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.TextEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.VoxelEntity))
             {
-                return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.VoxelEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
             {
-                return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.WaterBlockerEntity) internalEntity).SetPhysicalProperties(props);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBodyEntity))
             {
-                return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetPhysicalProperties(props);
+                return ((StraightFour.Entity.WaterBodyEntity) internalEntity).SetPhysicalProperties(props);
             }
             else
             {
@@ -898,78 +898,78 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return new EntityPhysicalProperties(0, Vector3.zero, 0, false, 0);
             }
 
-            WorldEngine.Entity.BaseEntity.EntityPhysicalProperties? props = null;
-            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            StraightFour.Entity.BaseEntity.EntityPhysicalProperties? props = null;
+            if (internalEntityType == typeof(StraightFour.Entity.AirplaneEntity))
             {
-                props = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.AirplaneEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AudioEntity))
             {
-                props = ((WorldEngine.Entity.AudioEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.AudioEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AutomobileEntity))
             {
-                props = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.AutomobileEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ButtonEntity))
             {
-                props = ((WorldEngine.Entity.ButtonEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.ButtonEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CanvasEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CanvasEntity))
             {
-                props = ((WorldEngine.Entity.CanvasEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.CanvasEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CharacterEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CharacterEntity))
             {
-                props = ((WorldEngine.Entity.CharacterEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.CharacterEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLEntity))
             {
-                props = ((WorldEngine.Entity.HTMLEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.HTMLEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLUIElementEntity))
             {
-                props = ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ImageEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ImageEntity))
             {
-                props = ((WorldEngine.Entity.ImageEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.ImageEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.InputEntity))
             {
-                props = ((WorldEngine.Entity.InputEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.InputEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.LightEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.LightEntity))
             {
-                props = ((WorldEngine.Entity.LightEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.LightEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.MeshEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.MeshEntity))
             {
-                props = ((WorldEngine.Entity.MeshEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.MeshEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TerrainEntity))
             {
-                props = ((WorldEngine.Entity.TerrainEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.TerrainEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HybridTerrainEntity))
             {
-                props = ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.HybridTerrainEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TextEntity))
             {
-                props = ((WorldEngine.Entity.TextEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.TextEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.VoxelEntity))
             {
-                props = ((WorldEngine.Entity.VoxelEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.VoxelEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
             {
-                props = ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.WaterBlockerEntity) internalEntity).GetPhysicalProperties();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBodyEntity))
             {
-                props = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetPhysicalProperties();
+                props = ((StraightFour.Entity.WaterBodyEntity) internalEntity).GetPhysicalProperties();
             }
             else
             {
@@ -1005,98 +1005,98 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            WorldEngine.Entity.BaseEntity.InteractionState iState = WorldEngine.Entity.BaseEntity.InteractionState.Hidden;
+            StraightFour.Entity.BaseEntity.InteractionState iState = StraightFour.Entity.BaseEntity.InteractionState.Hidden;
             switch (state)
             {
                 case InteractionState.Hidden:
-                    iState = WorldEngine.Entity.BaseEntity.InteractionState.Hidden;
+                    iState = StraightFour.Entity.BaseEntity.InteractionState.Hidden;
                     break;
 
                 case InteractionState.Static:
-                    iState = WorldEngine.Entity.BaseEntity.InteractionState.Static;
+                    iState = StraightFour.Entity.BaseEntity.InteractionState.Static;
                     break;
 
                 case InteractionState.Placing:
-                    iState = WorldEngine.Entity.BaseEntity.InteractionState.Placing;
+                    iState = StraightFour.Entity.BaseEntity.InteractionState.Placing;
                     break;
 
                 case InteractionState.Physical:
-                    iState = WorldEngine.Entity.BaseEntity.InteractionState.Physical;
+                    iState = StraightFour.Entity.BaseEntity.InteractionState.Physical;
                     break;
 
             }
 
-            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            if (internalEntityType == typeof(StraightFour.Entity.AirplaneEntity))
             {
-                return ((WorldEngine.Entity.AirplaneEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.AirplaneEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AudioEntity))
             {
-                return ((WorldEngine.Entity.AudioEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.AudioEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AutomobileEntity))
             {
-                return ((WorldEngine.Entity.AutomobileEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.AutomobileEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ButtonEntity))
             {
-                return ((WorldEngine.Entity.ButtonEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.ButtonEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CanvasEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CanvasEntity))
             {
-                return ((WorldEngine.Entity.CanvasEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.CanvasEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CharacterEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CharacterEntity))
             {
-                return ((WorldEngine.Entity.CharacterEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.CharacterEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLEntity))
             {
-                return ((WorldEngine.Entity.HTMLEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.HTMLEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLUIElementEntity))
             {
-                return ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ImageEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ImageEntity))
             {
-                return ((WorldEngine.Entity.ImageEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.ImageEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.InputEntity))
             {
-                return ((WorldEngine.Entity.InputEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.InputEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.LightEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.LightEntity))
             {
-                return ((WorldEngine.Entity.LightEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.LightEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.MeshEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.MeshEntity))
             {
-                return ((WorldEngine.Entity.MeshEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.MeshEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TerrainEntity))
             {
-                return ((WorldEngine.Entity.TerrainEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.TerrainEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HybridTerrainEntity))
             {
-                return ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.HybridTerrainEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TextEntity))
             {
-                return ((WorldEngine.Entity.TextEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.TextEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.VoxelEntity))
             {
-                return ((WorldEngine.Entity.VoxelEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.VoxelEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
             {
-                return ((WorldEngine.Entity.WaterBlockerEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.WaterBlockerEntity) internalEntity).SetInteractionState(iState);
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBodyEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBodyEntity))
             {
-                return ((WorldEngine.Entity.WaterBodyEntity) internalEntity).SetInteractionState(iState);
+                return ((StraightFour.Entity.WaterBodyEntity) internalEntity).SetInteractionState(iState);
             }
             else
             {
@@ -1117,79 +1117,79 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return InteractionState.Hidden;
             }
 
-            WorldEngine.Entity.BaseEntity.InteractionState iState
-                = WorldEngine.Entity.BaseEntity.InteractionState.Hidden;
-            if (internalEntityType == typeof(WorldEngine.Entity.AirplaneEntity))
+            StraightFour.Entity.BaseEntity.InteractionState iState
+                = StraightFour.Entity.BaseEntity.InteractionState.Hidden;
+            if (internalEntityType == typeof(StraightFour.Entity.AirplaneEntity))
             {
-                iState = ((WorldEngine.Entity.AirplaneEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.AirplaneEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AudioEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AudioEntity))
             {
-                iState = ((WorldEngine.Entity.AudioEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.AudioEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.AutomobileEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.AutomobileEntity))
             {
-                iState = ((WorldEngine.Entity.AutomobileEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.AutomobileEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ButtonEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ButtonEntity))
             {
-               iState = ((WorldEngine.Entity.ButtonEntity) internalEntity).GetInteractionState();
+               iState = ((StraightFour.Entity.ButtonEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CanvasEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CanvasEntity))
             {
-                iState = ((WorldEngine.Entity.CanvasEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.CanvasEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.CharacterEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.CharacterEntity))
             {
-                iState = ((WorldEngine.Entity.CharacterEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.CharacterEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLEntity))
             {
-                iState = ((WorldEngine.Entity.HTMLEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.HTMLEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HTMLUIElementEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HTMLUIElementEntity))
             {
-                iState = ((WorldEngine.Entity.HTMLUIElementEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.HTMLUIElementEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.ImageEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.ImageEntity))
             {
-                iState = ((WorldEngine.Entity.ImageEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.ImageEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.InputEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.InputEntity))
             {
-                iState = ((WorldEngine.Entity.InputEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.InputEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.LightEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.LightEntity))
             {
-                iState = ((WorldEngine.Entity.LightEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.LightEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.MeshEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.MeshEntity))
             {
-                iState = ((WorldEngine.Entity.MeshEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.MeshEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TerrainEntity))
             {
-                iState = ((WorldEngine.Entity.TerrainEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.TerrainEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.HybridTerrainEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.HybridTerrainEntity))
             {
-                iState = ((WorldEngine.Entity.HybridTerrainEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.HybridTerrainEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.TextEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.TextEntity))
             {
-                iState = ((WorldEngine.Entity.TextEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.TextEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.VoxelEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.VoxelEntity))
             {
-                iState = ((WorldEngine.Entity.VoxelEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.VoxelEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
             {
-                iState = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.WaterBodyEntity) internalEntity).GetInteractionState();
             }
-            else if (internalEntityType == typeof(WorldEngine.Entity.WaterBlockerEntity))
+            else if (internalEntityType == typeof(StraightFour.Entity.WaterBlockerEntity))
             {
-                iState = ((WorldEngine.Entity.WaterBodyEntity) internalEntity).GetInteractionState();
+                iState = ((StraightFour.Entity.WaterBodyEntity) internalEntity).GetInteractionState();
             }
             else
             {
@@ -1199,16 +1199,16 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
 
             switch (iState)
             {
-                case WorldEngine.Entity.BaseEntity.InteractionState.Hidden:
+                case StraightFour.Entity.BaseEntity.InteractionState.Hidden:
                     return InteractionState.Hidden;
 
-                case WorldEngine.Entity.BaseEntity.InteractionState.Static:
+                case StraightFour.Entity.BaseEntity.InteractionState.Static:
                     return InteractionState.Static;
 
-                case WorldEngine.Entity.BaseEntity.InteractionState.Placing:
+                case StraightFour.Entity.BaseEntity.InteractionState.Placing:
                     return InteractionState.Placing;
 
-                case WorldEngine.Entity.BaseEntity.InteractionState.Physical:
+                case StraightFour.Entity.BaseEntity.InteractionState.Physical:
                     return InteractionState.Physical;
 
                 default:
@@ -1242,8 +1242,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             if (UnityEngine.Physics.Raycast(internalEntity.transform.position,
                 new UnityEngine.Vector3(direction.x, direction.y, direction.z), out hit))
             {
-                WorldEngine.Entity.BaseEntity hitEntity = null;
-                if (hitEntity = hit.collider.GetComponentInParent<WorldEngine.Entity.BaseEntity>())
+                StraightFour.Entity.BaseEntity hitEntity = null;
+                if (hitEntity = hit.collider.GetComponentInParent<StraightFour.Entity.BaseEntity>())
                 {
                     BaseEntity hitPublicEntity = EntityAPIHelper.GetPublicEntity(hitEntity);
                     if (hitPublicEntity == null)
@@ -1251,7 +1251,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                         return null;
                     }
 
-                    UnityEngine.Vector3 worldOffset = WebVerse.WorldEngine.WorldEngine.ActiveWorld.worldOffset;
+                    UnityEngine.Vector3 worldOffset = StraightFour.StraightFour.ActiveWorld.worldOffset;
                     return new RaycastHitInfo()
                     {
                         entity = hitPublicEntity,
@@ -1280,7 +1280,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 return false;
             }
 
-            if (internalEntityType != typeof(WorldEngine.Entity.MeshEntity))
+            if (internalEntityType != typeof(StraightFour.Entity.MeshEntity))
             {
                 Logging.LogWarning("[BaseEntity:AddSocket] Sockets only supported on mesh entities.");
                 return false;
