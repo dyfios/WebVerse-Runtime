@@ -89,12 +89,14 @@ Run tests through Unity Test Runner or CI/CD pipeline.
 ```
 Assets/Runtime/UserInterface/Input/Mobile/
 ├── Scripts/
-│   └── MobileInput.cs
+│   ├── MobileInput.cs                        # Main mobile input implementation
+│   └── MobileInputSetupExample.cs           # Usage example and setup guide
 ├── Assets/
-│   └── Mobile.inputactions
-└── Tests/
-    ├── MobileInputTests.cs
-    └── FiveSQD.WebVerse.Input.Mobile.Tests.asmdef
+│   └── Mobile.inputactions                   # Unity Input System actions
+├── Tests/
+│   ├── MobileInputTests.cs                   # Unit tests
+│   └── FiveSQD.WebVerse.Input.Mobile.Tests.asmdef  # Test assembly definition
+└── README.md                                 # This documentation
 ```
 
 ## Compatibility
