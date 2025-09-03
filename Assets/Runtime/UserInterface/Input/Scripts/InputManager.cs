@@ -2,6 +2,7 @@
 
 using FiveSQD.WebVerse.Input.SteamVR;
 using FiveSQD.WebVerse.Input.Desktop;
+using FiveSQD.WebVerse.Input.Mobile;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System;
