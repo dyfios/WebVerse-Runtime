@@ -139,47 +139,44 @@ Processes Virtual Environment Markup Language documents.
 ```csharp
 public class VEMLHandler : BaseHandler
 {
-    public bool enableSchemaValidation { get; set; }
-    public bool autoConvertLegacyVersions { get; set; }
+    public WebVerseRuntime runtime;
+    public float timeout { get; set; }
     
-    public void LoadVEMLDocument(string filePath, Action<bool> onComplete);
-    public void LoadVEMLFromString(string vemlContent, Action<bool> onComplete);
-    public bool ValidateVEMLDocument(string vemlContent);
-    public string ConvertToLatestVersion(string vemlContent, string currentVersion);
-    public VEMLDocument ParseVEMLDocument(string vemlContent);
+    public void LoadVEMLDocumentIntoWorld(string resourceURI, Action<bool> onComplete);
+    public void GetWorldName(string resourceURI, Action<string> onComplete);
 }
 ```
 
 #### Properties
 
-##### enableSchemaValidation
-Controls whether VEML documents are validated against the schema.
+##### runtime
+Reference to the WebVerse runtime instance.
 
-**Type**: `bool`
-**Default**: `true`
+**Type**: `WebVerseRuntime`
+**Access**: Public
 
-##### autoConvertLegacyVersions
-Controls whether legacy VEML versions are automatically converted.
+##### timeout
+Timeout for VEML loading requests in seconds.
 
-**Type**: `bool`
-**Default**: `true`
+**Type**: `float`
+**Default**: `10`
 
 #### Methods
 
-##### LoadVEMLDocument(string filePath, Action<bool> onComplete)
-Loads a VEML document from a file path.
+##### LoadVEMLDocumentIntoWorld(string resourceURI, Action<bool> onComplete)
+Loads a VEML document from a resource URI into the current world.
 
 **Parameters**:
-- `filePath` (string): Path to the VEML file
+- `resourceURI` (string): URI of the VEML resource to load
 - `onComplete` (Action<bool>): Callback executed when loading completes
 
 **Example**:
 ```csharp
-vemlHandler.LoadVEMLDocument("scenes/main.veml", (success) =>
+vemlHandler.LoadVEMLDocumentIntoWorld("https://example.com/scenes/main.veml", (success) =>
 {
     if (success)
     {
-        Debug.Log("VEML document loaded successfully");
+        Debug.Log("VEML document loaded successfully into world");
     }
     else
     {
@@ -188,29 +185,22 @@ vemlHandler.LoadVEMLDocument("scenes/main.veml", (success) =>
 });
 ```
 
-##### LoadVEMLFromString(string vemlContent, Action<bool> onComplete)
-Loads VEML content from a string.
+##### GetWorldName(string resourceURI, Action<string> onComplete)
+Gets the name of a world from a VEML resource URI.
 
 **Parameters**:
-- `vemlContent` (string): VEML document content as string
-- `onComplete` (Action<bool>): Callback executed when loading completes
-
-##### ValidateVEMLDocument(string vemlContent)
-Validates a VEML document against the schema.
-
-**Parameters**:
-- `vemlContent` (string): VEML document content
-
-**Returns**: `bool` - True if valid, false otherwise
+- `resourceURI` (string): URI of the VEML resource
+- `onComplete` (Action<string>): Callback executed with the world name
 
 **Example**:
 ```csharp
-string vemlContent = File.ReadAllText("test.veml");
-if (vemlHandler.ValidateVEMLDocument(vemlContent))
+vemlHandler.GetWorldName("https://example.com/scenes/main.veml", (worldName) =>
 {
-    // Document is valid, proceed with loading
-}
+    Debug.Log("World name: " + worldName);
+});
 ```
+
+**Note**: The VEMLHandler automatically handles schema validation and legacy version conversion (from versions 1.0 through 2.4 to 3.0) without requiring configuration. This behavior is built into the loading process and cannot be disabled.
 
 ## JavaScriptHandler API
 
