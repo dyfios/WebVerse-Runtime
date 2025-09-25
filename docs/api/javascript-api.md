@@ -390,8 +390,6 @@ meshEntity.vertexCount;     // Number of vertices
 meshEntity.triangleCount;   // Number of triangles
 
 // Rendering properties
-meshEntity.castShadows;     // Shadow casting mode
-meshEntity.receiveShadows;  // Receive shadows
 meshEntity.lightmapIndex;   // Lightmap index
 meshEntity.sortingOrder;    // Rendering order
 ```
@@ -406,8 +404,6 @@ meshEntity.setMaterials(materials);     // Set multiple materials
 meshEntity.getMaterial(index);          // Get material by index
 
 // Rendering operations
-meshEntity.setCastShadows(mode);        // Set shadow casting
-meshEntity.setReceiveShadows(enabled);  // Set shadow receiving
 meshEntity.updateBounds();              // Recalculate bounds
 
 // Mesh generation
@@ -427,10 +423,6 @@ meshEntity.setMesh("models/character.gltf");
 var material1 = { color: Color.red, metallic: 0.5 };
 var material2 = { color: Color.blue, roughness: 0.3 };
 meshEntity.setMaterials([material1, material2]);
-
-// Configure rendering
-meshEntity.setCastShadows(true);
-meshEntity.setReceiveShadows(true);
 ```
 
 ## Light Entities
@@ -444,11 +436,6 @@ lightEntity.color;          // Light color
 lightEntity.intensity;      // Light intensity
 lightEntity.range;          // Light range (point/spot lights)
 lightEntity.angle;          // Spot light angle
-
-// Shadow properties
-lightEntity.shadows;        // Shadow type
-lightEntity.shadowStrength; // Shadow strength
-lightEntity.shadowBias;     // Shadow bias
 ```
 
 ### LightEntity Methods
@@ -460,10 +447,6 @@ lightEntity.setColor(color);           // Set light color
 lightEntity.setIntensity(intensity);   // Set intensity
 lightEntity.setRange(range);           // Set range
 lightEntity.setAngle(angle);           // Set spot angle
-
-// Shadow configuration
-lightEntity.setShadows(shadowType);    // Set shadow type
-lightEntity.setShadowStrength(strength); // Set shadow strength
 ```
 
 **Example Usage:**

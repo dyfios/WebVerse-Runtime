@@ -399,7 +399,6 @@ function createLighting() {
     sun.setType("Directional");
     sun.setColor(new Color(1, 0.95, 0.8, 1));
     sun.setIntensity(1.2);
-    sun.setShadows("Hard");
     sun.rotation = Quaternion.Euler(50, -30, 0);
     
     // Create ambient lighting
