@@ -1,5 +1,6 @@
 // Copyright (c) 2019-2025 Five Squared Interactive. All rights reserved.
 
+using FiveSQD.WebVerse.Handlers.VEML.Schema.V3_0;
 using FiveSQD.WebVerse.Runtime;
 using FiveSQD.WebVerse.Utilities;
 using System;
@@ -280,7 +281,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         public static TerrainEntity LoadHybridTerrainEntityAsync(BaseEntity parent, float length, float width,
             float height, float[,] heights, TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks,
             TerrainEntityModification[] modifications, WorldTypes.Vector3 position, WorldTypes.Quaternion rotation,
-            string id = null, string tag = null, string onLoaded = null,
+            bool stitchTerrains, string id = null, string tag = null, string onLoaded = null,
             float timeout = 10)
         {
             TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
@@ -332,6 +333,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                         }
                         else if (mod.operation == TerrainEntityModification.TerrainEntityOperation.Dig)
                         {
+                            Logging.Log("bs " + mod.size);
                             te.Dig(mod.position, mod.brushType, mod.layer, mod.size, false);
                         }
                         else
@@ -347,7 +349,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             };
 
             instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, heights, layers,
-                layerMasks.ToFloatArrays(), pos, rot, tag, onLoadAction, timeout));
+                layerMasks.ToFloatArrays(), pos, rot, stitchTerrains, tag, onLoadAction, timeout));
 
             return te;
         }
@@ -374,7 +376,8 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         public static TerrainEntity LoadHybridTerrainEntityAsync(BaseEntity parent, float length, float width,
             float height, float[][] heights, TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks,
             TerrainEntityModification[] modifications, WorldTypes.Vector3 position, WorldTypes.Quaternion rotation,
-            string id = null, string tag = null, string onLoaded = null, float timeout = 10)
+            bool stitchTerrains, string id = null, string tag = null, string onLoaded = null, float timeout = 10,
+            System.Action<TerrainEntity> onLoadedAction = null)
         {
             TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
 
@@ -437,10 +440,14 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
                 {
                     WebVerseRuntime.Instance.javascriptHandler.CallWithParams(onLoaded, new object[] { te });
                 }
+                if (onLoadedAction != null)
+                {
+                    onLoadedAction.Invoke(te);
+                }
             };
 
             instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, heights, layers,
-                layerMasks.ToFloatArrays(), pos, rot, tag, onLoadAction, timeout));
+                layerMasks.ToFloatArrays(), pos, rot, stitchTerrains, tag, onLoadAction, timeout));
 
             return te;
         }
@@ -466,7 +473,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         public static TerrainEntity LoadHybridTerrainEntityAsync(BaseEntity parent, float length, float width,
         float height, float[][] heights, TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks,
         TerrainEntityModification[] modifications, WorldTypes.Vector3 position, WorldTypes.Quaternion rotation,
-        string id = null, string tag = null, Action onLoaded = null,
+        bool stitchTerrains, string id = null, string tag = null, Action onLoaded = null,
         float timeout = 10)
         {
             TerrainEntity te = new TerrainEntity(TerrainEntity.TerrainEntityType.hybrid);
@@ -504,7 +511,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             instance.StartCoroutine(instance.LoadHybridTerrainEntityCoroutine(te, pBE, guid, length, width, height, heights, layers,
-                layerMasks.ToFloatArrays(), pos, rot, tag, onLoaded, timeout));
+                layerMasks.ToFloatArrays(), pos, rot, stitchTerrains, tag, onLoaded, timeout));
 
             return te;
         }
@@ -894,7 +901,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Coroutine.</returns>
         private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, StraightFour.Entity.BaseEntity pBE, Guid guid,
             float length, float width, float height, float[,] heights, TerrainEntityLayer[] layers, float[][,] layerMasks,
-            Vector3 pos, Quaternion rot, string tag = null, Action onLoaded = null, float timeout = 10)
+            Vector3 pos, Quaternion rot, bool stitchTerrains, string tag = null, Action onLoaded = null, float timeout = 10)
         {
             Dictionary<int, float[,]> formattedMasks = new Dictionary<int, float[,]>();
             if (layerMasks != null)
@@ -987,7 +994,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             StraightFour.StraightFour.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, heights,
-                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, guid, tag, onLoaded);
+                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, stitchTerrains, guid, tag, onLoaded);
         }
 
         /// <summary>
@@ -1011,7 +1018,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>Coroutine.</returns>
         private IEnumerator LoadHybridTerrainEntityCoroutine(TerrainEntity te, StraightFour.Entity.BaseEntity pBE, Guid guid,
             float length, float width, float height, float[][] heights, TerrainEntityLayer[] layers, float[][,] layerMasks,
-            Vector3 pos, Quaternion rot, string tag = null, Action onLoaded = null, float timeout = 10)
+            Vector3 pos, Quaternion rot, bool stitchTerrains, string tag = null, Action onLoaded = null, float timeout = 10)
         {
             Dictionary<int, float[,]> formattedMasks = new Dictionary<int, float[,]>();
             if (layerMasks != null)
@@ -1114,7 +1121,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             }
 
             StraightFour.StraightFour.ActiveWorld.entityManager.LoadHybridTerrainEntity(length, width, height, processedHeights,
-                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, guid, tag, onLoaded);
+                formattedLayers.ToArray(), formattedMasks, pBE, pos, rot, stitchTerrains, guid, tag, onLoaded);
         }
 
         /// <summary>

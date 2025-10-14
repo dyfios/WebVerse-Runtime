@@ -65,7 +65,37 @@ namespace FiveSQD.WebVerse.Runtime
         /// Tutorial State to use in Unity Editor tests.
         /// </summary>
         [Tooltip("Tutorial State to use in Unity Editor tests.")]
-        public DesktopSettings.TutorialState testTutorialState = DesktopSettings.TutorialState.UNINITIALIZED;
+        public NativeSettings.TutorialState testTutorialState = NativeSettings.TutorialState.UNINITIALIZED;
+
+        /// <summary>
+        /// Logging Configuration to use in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Logging Configuration to use in Unity Editor tests.")]
+        public bool testLoggingEnableConsoleOutput = true;
+
+        /// <summary>
+        /// Enable default logging in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Enable default logging in Unity Editor tests.")]
+        public bool testLoggingEnableDefault = true;
+
+        /// <summary>
+        /// Enable debug logging in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Enable debug logging in Unity Editor tests.")]
+        public bool testLoggingEnableDebug = true;
+
+        /// <summary>
+        /// Enable warning logging in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Enable warning logging in Unity Editor tests.")]
+        public bool testLoggingEnableWarning = true;
+
+        /// <summary>
+        /// Enable error logging in Unity Editor tests.
+        /// </summary>
+        [Tooltip("Enable error logging in Unity Editor tests.")]
+        public bool testLoggingEnableError = true;
 
         /// <summary>
         /// WebVerse Runtime.
@@ -89,13 +119,13 @@ namespace FiveSQD.WebVerse.Runtime
         /// Desktop Settings.
         /// </summary>
         [Tooltip("Desktop Settings.")]
-        public DesktopSettings desktopSettings;
+        public NativeSettings desktopSettings;
 
         /// <summary>
         /// Desktop History.
         /// </summary>
         [Tooltip("Desktop History.")]
-        public DesktopHistory desktopHistory;
+        public NativeHistory desktopHistory;
 
         /// <summary>
         /// The Desktop Rig.
@@ -227,8 +257,8 @@ namespace FiveSQD.WebVerse.Runtime
             desktopMultibar.Initialize(Multibar.MultibarMode.Desktop, desktopSettings);
             vrMultibar.Initialize(Multibar.MultibarMode.VR, desktopSettings);
 
-            DesktopSettings.TutorialState tutorialState = GetTutorialState();
-            if (tutorialState != DesktopSettings.TutorialState.DO_NOT_SHOW)
+            NativeSettings.TutorialState tutorialState = GetTutorialState();
+            if (tutorialState != NativeSettings.TutorialState.DO_NOT_SHOW)
             {
                 desktopMultibar.Tutorial();
             }
@@ -289,8 +319,10 @@ namespace FiveSQD.WebVerse.Runtime
                 worldLoadTimeout = 120;
             }
 
+            LoggingConfiguration loggingConfig = GetLoggingConfiguration();
+
             runtime.Initialize(storageMode, (int) maxEntries, (int) maxEntryLength, (int) maxKeyLength,
-                filesDirectory, worldLoadTimeout);
+                filesDirectory, worldLoadTimeout, loggingConfig);
         }
 
         /// <summary>
@@ -443,12 +475,38 @@ namespace FiveSQD.WebVerse.Runtime
         /// variable in Editor mode.
         /// </summary>
         /// <returns>Tutorial State.</returns>
-        private DesktopSettings.TutorialState GetTutorialState()
+        private NativeSettings.TutorialState GetTutorialState()
         {
 #if UNITY_EDITOR
             return testTutorialState;
 #else
             return desktopSettings.GetTutorialState();
+#endif
+        }
+
+        /// <summary>
+        /// Get the Logging Configuration, provided by settings file in built app, and by test variables
+        /// in Editor mode.
+        /// </summary>
+        /// <returns>Logging Configuration.</returns>
+        private LoggingConfiguration GetLoggingConfiguration()
+        {
+#if UNITY_EDITOR
+            return new LoggingConfiguration
+            {
+                enableConsoleOutput = testLoggingEnableConsoleOutput,
+                enableDefault = testLoggingEnableDefault,
+                enableDebug = testLoggingEnableDebug,
+                enableWarning = testLoggingEnableWarning,
+                enableError = testLoggingEnableError,
+                enableScriptDefault = testLoggingEnableDefault,
+                enableScriptDebug = testLoggingEnableDebug,
+                enableScriptWarning = testLoggingEnableWarning,
+                enableScriptError = testLoggingEnableError
+            };
+#else
+            // In production, use a more conservative configuration
+            return LoggingConfiguration.CreateProduction();
 #endif
         }
     }

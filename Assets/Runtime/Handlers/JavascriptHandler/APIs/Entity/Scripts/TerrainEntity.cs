@@ -35,7 +35,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The heightmap terrain entity object.</returns>
         public static TerrainEntity CreateHeightmap(BaseEntity parent, float length, float width, float height, float[][] heights,
             TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, Vector3 position, Quaternion rotation,
-            string id = null, string tag = null, string onLoaded = null)
+            string id = null, string tag = null, string onLoaded = null, bool stitchTerrains = false)
         {
             Guid guid;
             if (string.IsNullOrEmpty(id))
@@ -87,7 +87,7 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
             };
 
             StraightFour.StraightFour.ActiveWorld.entityManager.LoadTerrainEntity(length, width, height, heights,
-                convertedLayers.ToArray(), convertedLayerMasks, pBE, pos, rot, guid, tag, onLoadAction);
+                convertedLayers.ToArray(), convertedLayerMasks, pBE, pos, rot, stitchTerrains, guid, tag, onLoadAction);
 
             return te;
         }
@@ -112,10 +112,65 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Entity
         /// <returns>The hybrid terrain entity object.</returns>
         public static TerrainEntity CreateHybrid(BaseEntity parent, float length, float width, float height, float[][] heights,
             TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, TerrainEntityModification[] modifications,
-            Vector3 position, Quaternion rotation, string id = null, string tag = null, string onLoaded = null)
+            Vector3 position, Quaternion rotation, string id = null, string tag = null, string onLoaded = null, bool stitchTerrains = false)
         {
             return EntityAPIHelper.LoadHybridTerrainEntityAsync(parent, length, width, height, heights,
-                layers, layerMasks, modifications, position, rotation, id, tag, onLoaded);
+                layers, layerMasks, modifications, position, rotation, stitchTerrains, id, tag, onLoaded);
+        }
+        
+        public static TerrainEntity CreateHybrid(BaseEntity parent, float length, float width, float height, float[][] heights,
+            TerrainEntityLayer[] layers, TerrainEntityLayerMaskCollection layerMasks, TerrainEntityModification[] modifications,
+            Vector3 position, Quaternion rotation, string id = null, string tag = null, System.Action<TerrainEntity> onLoaded = null,
+            bool stitchTerrains = false)
+        {
+            return EntityAPIHelper.LoadHybridTerrainEntityAsync(parent, length, width, height, heights,
+                layers, layerMasks, modifications, position, rotation, stitchTerrains, id, tag, null, 10, onLoaded);
+        }
+        
+        /// <summary>
+        /// Create a terrain entity from a JSON string.
+        /// </summary>
+        /// <param name="jsonEntity">JSON string containing the terrain entity configuration.</param>
+        /// <param name="parent">Parent entity for the terrain entity. If null, the entity will be created at the world root.</param>
+        /// <param name="onLoaded">JavaScript callback function to execute when the entity is created. The callback will receive the created terrain entity as a parameter.</param>
+        public static void Create(string jsonEntity, BaseEntity parent = null, string onLoaded = null)
+        {
+            StraightFour.Entity.BaseEntity pBE = EntityAPIHelper.GetPrivateEntity(parent);
+
+            Action<bool, Guid?, StraightFour.Entity.BaseEntity> onComplete =
+                new Action<bool, Guid?, StraightFour.Entity.BaseEntity>((success, entityId, terrainEntity) =>
+            {
+                if (!success || terrainEntity == null ||
+                    !(terrainEntity is StraightFour.Entity.TerrainEntity || terrainEntity is HybridTerrainEntity))
+                {
+                    Logging.LogError("[TerrainEntity:Create] Error loading terrain entity from JSON.");
+                    if (!string.IsNullOrEmpty(onLoaded))
+                    {
+                        WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                            onLoaded, new object[] { null });
+                    }
+                    return;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(onLoaded))
+                    {
+                        if (terrainEntity is HybridTerrainEntity)
+                        {
+                            WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                                onLoaded, new object[] { EntityAPIHelper.GetPublicEntity(
+                                    (HybridTerrainEntity) terrainEntity) });
+                        }
+                        else if (terrainEntity is StraightFour.Entity.TerrainEntity)
+                        {
+                            WebVerseRuntime.Instance.javascriptHandler.CallWithParams(
+                                onLoaded, new object[] { EntityAPIHelper.GetPublicEntity(
+                                    (StraightFour.Entity.TerrainEntity) terrainEntity) });
+                        }
+                    }
+                }
+            });
+            WebVerseRuntime.Instance.jsonEntityHandler.LoadTerrainEntityFromJSON(jsonEntity, pBE, onComplete);
         }
 
         /// <summary>

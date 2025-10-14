@@ -23,6 +23,7 @@ using FiveSQD.WebVerse.Output;
 using FiveSQD.WebVerse.Input.SteamVR;
 using FiveSQD.WebVerse.Input.Desktop;
 using Vuplex.WebView;
+using FiveSQD.WebVerse.Handlers.JSONEntity;
 
 namespace FiveSQD.WebVerse.Runtime
 {
@@ -114,12 +115,17 @@ namespace FiveSQD.WebVerse.Runtime
             /// World Load Timeout.
             /// </summary>
             public float timeout;
+
+            /// <summary>
+            /// Logging configuration.
+            /// </summary>
+            public LoggingConfiguration loggingConfiguration;
         }
 
         /// <summary>
         /// WebVerse version.
         /// </summary>
-        public static readonly string versionString = "v2.1.4";
+        public static readonly string versionString = "v2.2.0";
 
         /// <summary>
         /// WebVerse codename.
@@ -177,6 +183,12 @@ namespace FiveSQD.WebVerse.Runtime
         /// </summary>
         [Tooltip("The Time Handler.")]
         public TimeHandler timeHandler { get; private set; }
+
+        /// <summary>
+        /// The JSON Entity Handler.
+        /// </summary>
+        [Tooltip("The JSON Entity Handler.")]
+        public JSONEntityHandler jsonEntityHandler { get; private set; }
 
 #if USE_WEBINTERFACE
         /// <summary>
@@ -450,6 +462,9 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="settings">The runtime settings to use.</param>
         public void Initialize(RuntimeSettings settings)
         {
+            // Apply logging configuration first
+            Logging.SetConfiguration(settings.loggingConfiguration);
+
             LocalStorageManager.LocalStorageMode mode = LocalStorageManager.LocalStorageMode.Uninitialized;
             if (settings.storageMode.ToLower() == "cache")
             {
@@ -495,9 +510,10 @@ namespace FiveSQD.WebVerse.Runtime
         /// <param name="maxKeyLength">Maximum length of a storage entry key.</param>
         /// <param name="filesDirectory">Directory to use for files.</param>
         /// <param name="timeout">World Load Timeout.</param>
+        /// <param name="loggingConfiguration">Logging configuration to use. If not provided, uses default configuration.</param>
         public void Initialize(LocalStorageManager.LocalStorageMode storageMode,
             int maxEntries, int maxEntryLength, int maxKeyLength, string filesDirectory,
-            float timeout = 120)
+            float timeout = 120, LoggingConfiguration? loggingConfiguration = null)
         {
             if (Instance != null)
             {
@@ -506,6 +522,16 @@ namespace FiveSQD.WebVerse.Runtime
             }
 
             Instance = this;
+
+            // Apply logging configuration
+            if (loggingConfiguration.HasValue)
+            {
+                Logging.SetConfiguration(loggingConfiguration.Value);
+            }
+            else
+            {
+                Logging.SetConfiguration(LoggingConfiguration.CreateDefault());
+            }
 
             InitializeComponents(storageMode, maxEntries, maxEntryLength,
                 maxKeyLength, filesDirectory, timeout);
@@ -629,6 +655,13 @@ namespace FiveSQD.WebVerse.Runtime
             {
                 state = RuntimeState.LoadingWorld;
                 currentBasePath = VEMLUtilities.FormatURI(Path.GetDirectoryName(baseURL));
+                StraightFour.Utilities.LoggingConfig loggingConfig = new StraightFour.Utilities.LoggingConfig()
+                {
+                    enableDebug = Logging.GetConfiguration().enableDebug,
+                    enableError = Logging.GetConfiguration().enableError,
+                    enableWarning = Logging.GetConfiguration().enableWarning,
+                    enableDefault = Logging.GetConfiguration().enableDefault
+                };
                 StraightFour.StraightFour.LoadWorld(title, queryParams);
                 vemlHandler.LoadVEMLDocumentIntoWorld(baseURL, onLoadComplete);
             };
@@ -817,6 +850,10 @@ namespace FiveSQD.WebVerse.Runtime
             timeHandlerGO.transform.SetParent(handlersGO.transform);
             timeHandler = timeHandlerGO.AddComponent<TimeHandler>();
             timeHandler.Initialize();
+            GameObject jsonEntityHandlerGO = new GameObject("JSONEntity");
+            jsonEntityHandlerGO.transform.SetParent(handlersGO.transform);
+            jsonEntityHandler = jsonEntityHandlerGO.AddComponent<JSONEntityHandler>();
+            jsonEntityHandler.Initialize();
 
             // Set up VOS Synchronization Manager.
             GameObject vosSynchronizationManagerGO = new GameObject("VOSSynchronizationManager");
@@ -908,6 +945,7 @@ namespace FiveSQD.WebVerse.Runtime
 #endif
 
             // Terminate Handlers.
+            jsonEntityHandler.Terminate();
             timeHandler.Terminate();
             vemlHandler.Terminate();
             gltfHandler.Terminate();
