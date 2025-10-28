@@ -67,16 +67,14 @@ declare class Color {
  * Struct for raycast hit information.
  */
 declare interface RaycastHitInfo {
-    /** Whether or not the raycast hit anything. */
-    hit: boolean;
-    /** Distance to the hit. */
-    distance: number;
-    /** Point of contact. */
-    point: Vector3;
-    /** Normal at the point of contact. */
-    normal: Vector3;
     /** Entity that was hit. */
     entity: BaseEntity | null;
+    /** Origin from which the ray was cast. */
+    origin: Vector3;
+    /** Point (in world coordinates) at which entity was hit. */
+    hitPoint: Vector3;
+    /** Normal of the hit point. */
+    hitPointNormal: Vector3;
 }
 
 /**
@@ -1587,8 +1585,8 @@ declare class AsyncJSON {
  * VOS Synchronization transport enum.
  */
 declare enum VSSTransport {
-    WebSocket = 0,
-    MQTT = 1
+    TCP = 0,
+    WebSocket = 1
 }
 
 /**
@@ -1596,25 +1594,29 @@ declare enum VSSTransport {
  */
 declare class VOSSynchronization {
     /**
-     * Initialize VOS synchronization.
-     * @param sessionID Session ID.
-     * @param transport Transport type.
-     * @param host Host address.
-     * @param port Port number.
-     * @param onComplete Callback function name.
+     * Create a VOS Synchronization Session.
+     * @param host Host of the connection to create the session on.
+     * @param port Port of the connection to create the session on.
+     * @param tls Whether to use TLS.
+     * @param id RFC 4122-encoded UUID identifier for the session.
+     * @param tag Tag for the session.
+     * @param transport Transport to use.
+     * @returns Whether or not the operation was successful.
      */
-    static Initialize(sessionID: string, transport: VSSTransport, host: string, port: number, onComplete: string): void;
+    static CreateSession(host: string, port: number, tls: boolean, id: string, tag: string, transport?: VSSTransport): boolean;
 
     /**
-     * Terminate VOS synchronization.
+     * Create a VOS Synchronization Session with position.
+     * @param host Host of the connection to create the session on.
+     * @param port Port of the connection to create the session on.
+     * @param tls Whether to use TLS.
+     * @param id RFC 4122-encoded UUID identifier for the session.
+     * @param tag Tag for the session.
+     * @param position Initial position for the session.
+     * @param transport Transport to use.
+     * @returns Whether or not the operation was successful.
      */
-    static Terminate(): void;
-
-    /**
-     * Send a synchronization message.
-     * @param message Message to send.
-     */
-    static SendMessage(message: string): void;
+    static CreateSession(host: string, port: number, tls: boolean, id: string, tag: string, position: Vector3, transport?: VSSTransport): boolean;
 }
 
 // ============================================================================
@@ -1682,27 +1684,120 @@ declare class Camera {
  */
 declare class Context {
     /**
-     * Get the current context.
-     * @returns The current context.
+     * Set a context.
+     * @param contextName Name of the context.
+     * @param context Context.
      */
-    static GetCurrent(): any;
+    static DefineContext(contextName: string, context: any): void;
+
+    /**
+     * Get a context.
+     * @param contextName Name of the context.
+     * @returns Context.
+     */
+    static GetContext(contextName: string): any;
 }
 
 /**
  * Class for date and time operations.
  */
 declare class Date {
-    /**
-     * Get the current date and time.
-     * @returns Date string.
-     */
-    static Now(): string;
+    /** Get a Date for the current millisecond. */
+    static readonly now: Date;
+
+    /** Year. */
+    readonly year: number;
+    /** Month. */
+    readonly month: number;
+    /** Day. */
+    readonly day: number;
+    /** Day of week (0=Sunday, 6=Saturday). */
+    readonly dayOfWeek: number;
+    /** Day of year. */
+    readonly dayOfYear: number;
+    /** Hour. */
+    readonly hour: number;
+    /** Minute. */
+    readonly minute: number;
+    /** Second. */
+    readonly second: number;
+    /** Millisecond. */
+    readonly millisecond: number;
 
     /**
-     * Get the current UTC date and time.
-     * @returns UTC date string.
+     * Constructor for a Date.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
      */
-    static UtcNow(): string;
+    constructor(year: number, month: number, day: number);
+    /**
+     * Constructor for a Date.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
+     * @param hours Hours.
+     */
+    constructor(year: number, month: number, day: number, hours: number);
+    /**
+     * Constructor for a Date.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
+     * @param hours Hours.
+     * @param minutes Minutes.
+     */
+    constructor(year: number, month: number, day: number, hours: number, minutes: number);
+    /**
+     * Constructor for a Date.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
+     * @param hours Hours.
+     * @param minutes Minutes.
+     * @param seconds Seconds.
+     */
+    constructor(year: number, month: number, day: number, hours: number, minutes: number, seconds: number);
+    /**
+     * Constructor for a Date.
+     * @param year Year.
+     * @param month Month.
+     * @param day Day.
+     * @param hours Hours.
+     * @param minutes Minutes.
+     * @param seconds Seconds.
+     * @param milliseconds Milliseconds.
+     */
+    constructor(year: number, month: number, day: number, hours: number, minutes: number, seconds: number, milliseconds: number);
+    /**
+     * Constructor for a Date.
+     * @param dateString Date string.
+     */
+    constructor(dateString: string);
+
+    /**
+     * Get a string representation of the complete date and time.
+     * @returns A string representation of the complete date and time.
+     */
+    ToString(): string;
+
+    /**
+     * Get a string representation of the date.
+     * @returns A string representation of the date.
+     */
+    ToDateString(): string;
+
+    /**
+     * Get a string representation of the time.
+     * @returns A string representation of the time.
+     */
+    ToTimeString(): string;
+
+    /**
+     * Get a string representation of the complete UTC date and time.
+     * @returns A string representation of the complete UTC date and time.
+     */
+    ToUTCString(): string;
 }
 
 /**
@@ -1713,9 +1808,8 @@ declare class LocalStorage {
      * Set an item in local storage.
      * @param key Storage key.
      * @param value Value to store.
-     * @returns Whether or not the operation was successful.
      */
-    static SetItem(key: string, value: string): boolean;
+    static SetItem(key: string, value: string): void;
 
     /**
      * Get an item from local storage.
@@ -1727,15 +1821,18 @@ declare class LocalStorage {
     /**
      * Remove an item from local storage.
      * @param key Storage key.
-     * @returns Whether or not the operation was successful.
      */
-    static RemoveItem(key: string): boolean;
+    static RemoveItem(key: string): void;
+}
 
-    /**
-     * Clear all items from local storage.
-     * @returns Whether or not the operation was successful.
-     */
-    static Clear(): boolean;
+/**
+ * Logging message type enum.
+ */
+declare enum LoggingType {
+    Default = 0,
+    Debug = 1,
+    Warning = 2,
+    Error = 3
 }
 
 /**
@@ -1745,8 +1842,15 @@ declare class Logging {
     /**
      * Log a message.
      * @param message Message to log.
+     * @param type Type of the message.
      */
-    static Log(message: string): void;
+    static Log(message: string, type?: LoggingType): void;
+
+    /**
+     * Log a debug message.
+     * @param message Debug message to log.
+     */
+    static LogDebug(message: string): void;
 
     /**
      * Log a warning message.
@@ -1767,9 +1871,9 @@ declare class Logging {
 declare class Scripting {
     /**
      * Run a script.
-     * @param script Script to run.
+     * @param scriptToRun Script to run.
      */
-    static Run(script: string): void;
+    static RunScript(scriptToRun: string): void;
 }
 
 /**
@@ -1777,28 +1881,34 @@ declare class Scripting {
  */
 declare class Time {
     /**
-     * Get the current time.
-     * @returns Current time in seconds.
+     * Set interval at which to run a function.
+     * @param functionName Function to run.
+     * @param interval Interval at which to run the function.
+     * @returns ID of the registered function, or null.
      */
-    static GetTime(): number;
+    static SetInterval(functionName: string, interval: number): UUID | null;
 
     /**
-     * Get the delta time.
-     * @returns Delta time in seconds.
+     * Call a function asynchronously.
+     * @param functionName Function to call.
+     * @returns Whether or not the operation was successful.
      */
-    static GetDeltaTime(): number;
+    static CallAsynchronously(functionName: string): boolean;
 
     /**
-     * Get the unscaled time.
-     * @returns Unscaled time in seconds.
+     * Stop running a registered function.
+     * @param id ID of the registered function to stop running.
+     * @returns Whether or not the operation was successful.
      */
-    static GetUnscaledTime(): number;
+    static StopInterval(id: string): boolean;
 
     /**
-     * Get the unscaled delta time.
-     * @returns Unscaled delta time in seconds.
+     * Set timeout after which to run logic.
+     * @param logic Logic to run.
+     * @param timeout Timeout after which to run the specified logic.
+     * @returns Whether or not the operation was successful.
      */
-    static GetUnscaledDeltaTime(): number;
+    static SetTimeout(logic: string, timeout: number): boolean;
 }
 
 /**
@@ -1806,22 +1916,29 @@ declare class Time {
  */
 declare class World {
     /**
-     * Get the world name.
-     * @returns World name.
+     * Get a URL Query Parameter.
+     * @param key Key of the Query Parameter.
+     * @returns The value of the Query Parameter, or null.
      */
-    static GetName(): string;
+    static GetQueryParam(key: string): string | null;
 
     /**
-     * Set the world name.
-     * @param name World name.
+     * Get the current World Load State.
+     * @returns One of: unloaded, loadingworld, loadedworld, webpage, error.
      */
-    static SetName(name: string): void;
+    static GetWorldLoadState(): "unloaded" | "loadingworld" | "loadedworld" | "webpage" | "error";
 
     /**
-     * Load a world.
-     * @param url World URL.
+     * Load a World from a URL.
+     * @param url The URL of the World to load.
      */
-    static Load(url: string): void;
+    static LoadWorld(url: string): void;
+
+    /**
+     * Load a Web Page from a URL.
+     * @param url The URL of the Web Page to load.
+     */
+    static LoadWebPage(url: string): void;
 }
 
 /**
@@ -1832,9 +1949,8 @@ declare class WorldStorage {
      * Set an item in world storage.
      * @param key Storage key.
      * @param value Value to store.
-     * @returns Whether or not the operation was successful.
      */
-    static SetItem(key: string, value: string): boolean;
+    static SetItem(key: string, value: string): void;
 
     /**
      * Get an item from world storage.
@@ -1842,17 +1958,4 @@ declare class WorldStorage {
      * @returns The stored value, or null.
      */
     static GetItem(key: string): string | null;
-
-    /**
-     * Remove an item from world storage.
-     * @param key Storage key.
-     * @returns Whether or not the operation was successful.
-     */
-    static RemoveItem(key: string): boolean;
-
-    /**
-     * Clear all items from world storage.
-     * @returns Whether or not the operation was successful.
-     */
-    static Clear(): boolean;
 }
