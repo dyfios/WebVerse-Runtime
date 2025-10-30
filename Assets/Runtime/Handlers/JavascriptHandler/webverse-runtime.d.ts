@@ -1010,16 +1010,50 @@ declare class AirplaneEntity extends BaseEntity {
 /**
  * Class for an audio entity.
  */
+/**
+ * Class for an audio entity.
+ */
 declare class AudioEntity extends BaseEntity {
     /** Constructor for audio entity. */
     constructor();
 
+    /** Whether or not to loop the audio clip. */
+    loop: boolean;
+    /** Priority for the audio clip. Values between 0 and 256, with 0 being highest priority. */
+    priority: number;
+    /** Volume for the audio clip. Values between 0 and 1, with 1 being highest volume. */
+    volume: number;
+    /** Pitch for the audio clip. Values between -3 and 3. */
+    pitch: number;
+    /** Audio pan for the audio clip if playing in stereo. Values between -1 and 1, with -1 being furthest to the left and 1 being furthest to the right. */
+    stereoPan: number;
+
     /**
-     * Set the audio clip for the entity.
-     * @param url URL of the audio clip.
+     * Create an audio entity.
+     * @param parent Parent of the entity to create.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created audio entity object.
+     * @returns The audio entity object.
+     */
+    static Create(parent: BaseEntity, position: Vector3, rotation: Quaternion, id?: string, tag?: string, onLoaded?: string): AudioEntity;
+
+    /**
+     * Create an audio entity from a JSON string.
+     * @param jsonEntity JSON string containing the audio entity configuration.
+     * @param parent Parent entity for the audio entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created audio entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Load an audio clip from a .wav file.
+     * @param filePath Path to audio clip file.
      * @returns Whether or not the operation was successful.
      */
-    SetAudioClip(url: string): boolean;
+    LoadAudioClipFromWAV(filePath: string): boolean;
 
     /**
      * Play the audio.
@@ -1028,30 +1062,17 @@ declare class AudioEntity extends BaseEntity {
     Play(): boolean;
 
     /**
-     * Pause the audio.
-     * @returns Whether or not the operation was successful.
-     */
-    Pause(): boolean;
-
-    /**
-     * Stop the audio.
+     * Stop playing the audio.
      * @returns Whether or not the operation was successful.
      */
     Stop(): boolean;
 
     /**
-     * Set whether the audio should loop.
-     * @param loop Whether to loop.
+     * Toggle pausing the audio.
+     * @param pause Whether or not to pause.
      * @returns Whether or not the operation was successful.
      */
-    SetLoop(loop: boolean): boolean;
-
-    /**
-     * Set the volume of the audio.
-     * @param volume Volume (0-1).
-     * @returns Whether or not the operation was successful.
-     */
-    SetVolume(volume: number): boolean;
+    TogglePause(pause: boolean): boolean;
 }
 
 /**
@@ -1111,24 +1132,70 @@ declare class ButtonEntity extends BaseEntity {
     constructor();
 
     /**
-     * Set the text of the button.
-     * @param text Text to set.
-     * @returns Whether or not the operation was successful.
+     * Create a button entity.
+     * @param parent Parent canvas of the entity to create.
+     * @param onClick Action to perform on button click.
+     * @param positionPercent Position of the entity within its canvas.
+     * @param sizePercent Size of the entity relative to its canvas.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created button entity object.
+     * @returns The button entity object.
      */
-    SetText(text: string): boolean;
+    static Create(parent: CanvasEntity, onClick: string, positionPercent: Vector2, sizePercent: Vector2, id?: string, tag?: string, onLoaded?: string): ButtonEntity;
 
     /**
-     * Get the text of the button.
-     * @returns The text of the button.
+     * Create a button entity from a JSON string.
+     * @param jsonEntity JSON string containing the button entity configuration.
+     * @param parent Parent entity for the button entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created button entity as a parameter.
      */
-    GetText(): string;
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
 
     /**
-     * Set the on click callback.
-     * @param callback Callback function name.
+     * Set the onClick event for the button entity.
+     * @param onClick Action to perform on click.
+     * @returns Whether or not the setting was successful.
+     */
+    SetOnClick(onClick: string): boolean;
+
+    /**
+     * Set the background image for the button entity.
+     * @param imagePath Path to the image to set the background to.
+     * @returns Whether or not the setting was successful.
+     */
+    SetBackground(imagePath: string): boolean;
+
+    /**
+     * Set the base color for the button entity.
+     * @param color Color to set the button entity to.
+     * @returns Whether or not the setting was successful.
+     */
+    SetBaseColor(color: Color): boolean;
+
+    /**
+     * Set the colors for the button entity.
+     * @param defaultColor Color to set the default color for the button entity to.
+     * @param hoverColor Color to set the hover color for the button entity to.
+     * @param clickColor Color to set the click color for the button entity to.
+     * @param inactiveColor Color to set the inactive color for the button entity to.
+     * @returns Whether or not the setting was successful.
+     */
+    SetColors(defaultColor: Color, hoverColor: Color, clickColor: Color, inactiveColor: Color): boolean;
+
+    /**
+     * Stretch the button entity to fill its parent.
+     * @param stretch Whether to stretch to parent. If false, restores normal sizing.
      * @returns Whether or not the operation was successful.
      */
-    SetOnClick(callback: string): boolean;
+    StretchToParent(stretch?: boolean): boolean;
+
+    /**
+     * Set the alignment of the button entity within its parent.
+     * @param alignment Alignment to set.
+     * @returns Whether or not the operation was successful.
+     */
+    SetAlignment(alignment: UIElementAlignment): boolean;
 }
 
 /**
@@ -1317,6 +1384,94 @@ declare class ContainerEntity extends BaseEntity {
 }
 
 /**
+ * Class for a dropdown entity.
+ */
+declare class DropdownEntity extends BaseEntity {
+    /** Constructor for dropdown entity. */
+    constructor();
+
+    /**
+     * Create a dropdown entity.
+     * @param parent Parent canvas of the entity to create.
+     * @param onChange Action to perform on dropdown change. Takes integer parameter which corresponds to index of selected option.
+     * @param positionPercent Position of the entity within its canvas.
+     * @param sizePercent Size of the entity relative to its canvas.
+     * @param options Options to apply to the dropdown entity.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created dropdown entity object.
+     * @returns The dropdown entity object.
+     */
+    static Create(parent: CanvasEntity, onChange: string, positionPercent: Vector2, sizePercent: Vector2, options?: string[], id?: string, tag?: string, onLoaded?: string): DropdownEntity;
+
+    /**
+     * Create a dropdown entity from a JSON string.
+     * @param jsonEntity JSON string containing the dropdown entity configuration.
+     * @param parent Parent entity for the dropdown entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created dropdown entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Set the onChange event for the dropdown entity.
+     * @param onChange Action to perform on change.
+     * @returns Whether or not the setting was successful.
+     */
+    SetOnChange(onChange: string): boolean;
+
+    /**
+     * Set the background image for the dropdown entity.
+     * @param imagePath Path to the image to set the background to.
+     * @returns Whether or not the setting was successful.
+     */
+    SetBackground(imagePath: string): boolean;
+
+    /**
+     * Set the base color for the dropdown entity.
+     * @param color Color to set the dropdown entity to.
+     * @returns Whether or not the setting was successful.
+     */
+    SetBaseColor(color: Color): boolean;
+
+    /**
+     * Set the colors for the dropdown entity.
+     * @param defaultColor Color to set the default color for the dropdown entity to.
+     * @param hoverColor Color to set the hover color for the dropdown entity to.
+     * @param clickColor Color to set the click color for the dropdown entity to.
+     * @param inactiveColor Color to set the inactive color for the dropdown entity to.
+     * @returns Whether or not the setting was successful.
+     */
+    SetColors(defaultColor: Color, hoverColor: Color, clickColor: Color, inactiveColor: Color): boolean;
+
+    /**
+     * Add an option to the dropdown entity.
+     * @param option Option to add.
+     * @returns Index of added option, or -1 on failure.
+     */
+    AddOption(option: string): number;
+
+    /**
+     * Clear options from the dropdown entity.
+     * @returns Whether or not the operation was successful.
+     */
+    ClearOptions(): boolean;
+
+    /**
+     * Stretch the dropdown entity to fill its parent.
+     * @param stretch Whether to stretch to parent. If false, restores normal sizing.
+     * @returns Whether or not the operation was successful.
+     */
+    StretchToParent(stretch?: boolean): boolean;
+
+    /**
+     * Set the alignment of the dropdown entity within its parent.
+     * @param alignment Alignment to set.
+     * @returns Whether or not the operation was successful.
+     */
+    SetAlignment(alignment: UIElementAlignment): boolean;
+}
+
+/**
  * Class for an HTML entity.
  */
 declare class HTMLEntity extends BaseEntity {
@@ -1442,30 +1597,37 @@ declare class InputEntity extends BaseEntity {
     constructor();
 
     /**
-     * Set the placeholder text.
-     * @param text Placeholder text.
+     * Create an input entity.
+     * @param parent Parent canvas of the entity to create.
+     * @param positionPercent Position of the entity within its canvas.
+     * @param sizePercent Size of the entity relative to its canvas.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created input entity object.
+     * @returns The input entity object.
+     */
+    static Create(parent: CanvasEntity, positionPercent: Vector2, sizePercent: Vector2, id?: string, tag?: string, onLoaded?: string): InputEntity;
+
+    /**
+     * Create an input entity from a JSON string.
+     * @param jsonEntity JSON string containing the input entity configuration.
+     * @param parent Parent entity for the input entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created input entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Get the text for the input entity.
+     * @returns Text of the input entity.
+     */
+    GetText(): string | null;
+
+    /**
+     * Set the text for the input entity.
+     * @param text Text for the input entity.
      * @returns Whether or not the operation was successful.
      */
-    SetPlaceholder(text: string): boolean;
-
-    /**
-     * Get the placeholder text.
-     * @returns The placeholder text.
-     */
-    GetPlaceholder(): string;
-
-    /**
-     * Set the value.
-     * @param value Value to set.
-     * @returns Whether or not the operation was successful.
-     */
-    SetValue(value: string): boolean;
-
-    /**
-     * Get the value.
-     * @returns The value.
-     */
-    GetValue(): string;
+    SetText(text: string): boolean;
 }
 
 /**
@@ -1476,15 +1638,64 @@ declare class LightEntity extends BaseEntity {
     constructor();
 
     /**
-     * Set the light properties.
-     * @param properties Light properties.
-     * @returns Whether or not the operation was successful.
+     * Create a light entity.
+     * @param parent Parent of the entity to create.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created light entity object.
+     * @returns The light entity object.
      */
-    SetLightProperties(properties: LightProperties): boolean;
+    static Create(parent: BaseEntity, position: Vector3, rotation: Quaternion, id?: string, tag?: string, onLoaded?: string): LightEntity;
 
     /**
-     * Get the light properties.
-     * @returns The light properties.
+     * Create a light entity from a JSON string.
+     * @param jsonEntity JSON string containing the light entity configuration.
+     * @param parent Parent entity for the light entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created light entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Set the light type for the light entity.
+     * @param type Light type to apply.
+     * @returns Whether or not the setting was successful.
+     */
+    SetLightType(type: LightType): boolean;
+
+    /**
+     * Set the properties for the light.
+     * @param color Color to apply to the light.
+     * @param temperature Temperature to apply to the light.
+     * @param intensity Intensity to apply to the light.
+     * @returns Whether or not the setting was successful.
+     */
+    SetLightProperties(color: Color, temperature: number, intensity: number): boolean;
+
+    /**
+     * Set the properties for the light.
+     * @param range Range to apply to the light.
+     * @param innerSpotAngle Inner spot angle to apply to the light.
+     * @param outerSpotAngle Outer spot angle to apply to the light.
+     * @param color Color to apply to the light.
+     * @param temperature Temperature to apply to the light.
+     * @param intensity Intensity to apply to the light.
+     * @returns Whether or not the setting was successful.
+     */
+    SetLightProperties(range: number, innerSpotAngle: number, outerSpotAngle: number, color: Color, temperature: number, intensity: number): boolean;
+
+    /**
+     * Set the properties for the light.
+     * @param range Range to apply to the light.
+     * @param intensity Intensity to apply to the light.
+     * @returns Whether or not the setting was successful.
+     */
+    SetLightProperties(range: number, intensity: number): boolean;
+
+    /**
+     * Get the properties for the light.
+     * @returns The light properties of the light.
      */
     GetLightProperties(): LightProperties;
 }
@@ -1788,43 +1999,183 @@ declare class TextEntity extends BaseEntity {
     constructor();
 
     /**
-     * Set the text.
-     * @param text Text to set.
+     * Create a text entity.
+     * @param parent Parent canvas of the entity to create.
+     * @param text Text to apply to the new text entity.
+     * @param fontSize Font size to apply to the new text entity.
+     * @param positionPercent Position of the entity within its canvas.
+     * @param sizePercent Size of the entity relative to its canvas.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created text entity object.
+     * @returns The text entity object.
+     */
+    static Create(parent: BaseEntity, text: string, fontSize: number, positionPercent: Vector2, sizePercent: Vector2, id?: string, tag?: string, onLoaded?: string): TextEntity;
+
+    /**
+     * Create a text entity from a JSON string.
+     * @param jsonEntity JSON string containing the text entity configuration.
+     * @param parent Parent entity for the text entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created text entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Get the text for the text entity.
+     * @returns The text for the text entity.
+     */
+    GetText(): string | null;
+
+    /**
+     * Set the text for the text entity.
+     * @param text Text to apply to the text entity.
      * @returns Whether or not the operation was successful.
      */
     SetText(text: string): boolean;
 
     /**
-     * Get the text.
-     * @returns The text.
+     * Get the font size for the text entity.
+     * @returns The font size for the text entity.
      */
-    GetText(): string;
+    GetFontSize(): number;
 
     /**
-     * Set the font size.
-     * @param size Font size.
+     * Set the font size for the text entity.
+     * @param size Size to apply to the text entity.
      * @returns Whether or not the operation was successful.
      */
     SetFontSize(size: number): boolean;
 
     /**
-     * Get the font size.
-     * @returns The font size.
+     * Get the color for the text entity.
+     * @returns The color for the text entity.
      */
-    GetFontSize(): number;
+    GetColor(): Color | null;
 
     /**
-     * Set the text color.
-     * @param color Text color.
+     * Set the color for the text entity.
+     * @param color Color to apply to the text entity.
      * @returns Whether or not the operation was successful.
      */
     SetColor(color: Color): boolean;
 
     /**
-     * Get the text color.
-     * @returns The text color.
+     * Set the margins for the text entity.
+     * @param margins Margins to apply to the text entity.
+     * @returns Whether or not the operation was successful.
      */
-    GetColor(): Color;
+    SetMargins(margins: Vector4): boolean;
+
+    /**
+     * Get the margins for the text entity.
+     * @returns The margins for the text entity.
+     */
+    GetMargins(): Vector4 | null;
+
+    /**
+     * Set the font for the text entity.
+     * @param fontName Name of the font to apply.
+     * @returns Whether or not the operation was successful.
+     */
+    SetFont(fontName: string): boolean;
+
+    /**
+     * Get the current font name for the text entity.
+     * @returns The current font name.
+     */
+    GetFont(): string | null;
+
+    /**
+     * Set the bold style for the text entity.
+     * @param bold Whether to enable bold.
+     * @returns Whether or not the operation was successful.
+     */
+    SetBold(bold: boolean): boolean;
+
+    /**
+     * Get whether the text entity is bold.
+     * @returns Whether the text is bold.
+     */
+    GetBold(): boolean;
+
+    /**
+     * Set the italic style for the text entity.
+     * @param italic Whether to enable italic.
+     * @returns Whether or not the operation was successful.
+     */
+    SetItalic(italic: boolean): boolean;
+
+    /**
+     * Get whether the text entity is italic.
+     * @returns Whether the text is italic.
+     */
+    GetItalic(): boolean;
+
+    /**
+     * Set the underline style for the text entity.
+     * @param underline Whether to enable underline.
+     * @returns Whether or not the operation was successful.
+     */
+    SetUnderline(underline: boolean): boolean;
+
+    /**
+     * Get whether the text entity is underlined.
+     * @returns Whether the text is underlined.
+     */
+    GetUnderline(): boolean;
+
+    /**
+     * Set the strikethrough style for the text entity.
+     * @param strikethrough Whether to enable strikethrough.
+     * @returns Whether or not the operation was successful.
+     */
+    SetStrikethrough(strikethrough: boolean): boolean;
+
+    /**
+     * Get whether the text entity has strikethrough.
+     * @returns Whether the text has strikethrough.
+     */
+    GetStrikethrough(): boolean;
+
+    /**
+     * Set the text alignment for the text entity.
+     * @param alignment Text alignment to set.
+     * @returns Whether or not the operation was successful.
+     */
+    SetTextAlignment(alignment: TextAlignment): boolean;
+
+    /**
+     * Get the text alignment for the text entity.
+     * @returns The current text alignment.
+     */
+    GetTextAlignment(): TextAlignment;
+
+    /**
+     * Set the text wrapping for the text entity.
+     * @param wrapping Text wrapping to set.
+     * @returns Whether or not the operation was successful.
+     */
+    SetTextWrapping(wrapping: TextWrapping): boolean;
+
+    /**
+     * Get the text wrapping for the text entity.
+     * @returns The current text wrapping setting.
+     */
+    GetTextWrapping(): TextWrapping;
+
+    /**
+     * Stretch the text entity to fill its parent.
+     * @param stretch Whether to stretch to parent. If false, restores normal sizing.
+     * @returns Whether or not the operation was successful.
+     */
+    StretchToParent(stretch?: boolean): boolean;
+
+    /**
+     * Set the alignment of the text entity within its parent.
+     * @param alignment Alignment to set.
+     * @returns Whether or not the operation was successful.
+     */
+    SetAlignment(alignment: UIElementAlignment): boolean;
 }
 
 /**
@@ -1899,9 +2250,33 @@ declare class VoxelEntity extends BaseEntity {
 /**
  * Class for a water blocker entity.
  */
+/**
+ * Class for a water blocker entity.
+ */
 declare class WaterBlockerEntity extends BaseEntity {
     /** Constructor for water blocker entity. */
     constructor();
+
+    /**
+     * Create a water blocker entity.
+     * @param parent Parent of the entity to create.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param scale Scale of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created water blocker entity object.
+     * @returns The water blocker entity object.
+     */
+    static CreateWaterBlocker(parent: BaseEntity, position: Vector3, rotation: Quaternion, scale: Vector3, id?: string, tag?: string, onLoaded?: string): WaterBlockerEntity;
+
+    /**
+     * Create a water blocker entity from a JSON string.
+     * @param jsonEntity JSON string containing the water blocker entity configuration.
+     * @param parent Parent entity for the water blocker entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created water blocker entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
 }
 
 /**
@@ -1910,6 +2285,63 @@ declare class WaterBlockerEntity extends BaseEntity {
 declare class WaterEntity extends BaseEntity {
     /** Constructor for water entity. */
     constructor();
+
+    /**
+     * Create a water entity.
+     * @param parent Parent of the entity to create.
+     * @param shallowColor Color for the shallow zone.
+     * @param deepColor Color for the deep zone.
+     * @param specularColor Specular color.
+     * @param scatteringColor Scattering color.
+     * @param deepStart Start of deep zone.
+     * @param deepEnd End of deep zone.
+     * @param distortion Distortion factor (range 0-128).
+     * @param smoothness Smoothness factor (range 0-1).
+     * @param numWaves Number of waves (range 1-32).
+     * @param waveAmplitude Wave amplitude (range 0-1).
+     * @param waveSteepness Wave steepness (range 0-1).
+     * @param waveSpeed Wave speed.
+     * @param waveLength Wave length.
+     * @param waveScale Scale of the waves.
+     * @param intensity Intensity factor (range 0-1).
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param scale Scale of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created water entity object.
+     * @returns The water entity object.
+     */
+    static CreateWaterBody(parent: BaseEntity, shallowColor: Color, deepColor: Color, specularColor: Color, scatteringColor: Color, deepStart: number, deepEnd: number, distortion: number, smoothness: number, numWaves: number, waveAmplitude: number, waveSteepness: number, waveSpeed: number, waveLength: number, waveScale: number, intensity: number, position: Vector3, rotation: Quaternion, scale: Vector3, id?: string, tag?: string, onLoaded?: string): WaterEntity;
+
+    /**
+     * Create a water entity from a JSON string.
+     * @param jsonEntity JSON string containing the water entity configuration.
+     * @param parent Parent entity for the water entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created water entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Set properties for the water body.
+     * @param shallowColor Color for the shallow zone.
+     * @param deepColor Color for the deep zone.
+     * @param specularColor Specular color.
+     * @param scatteringColor Scattering color.
+     * @param deepStart Start of deep zone.
+     * @param deepEnd End of deep zone.
+     * @param distortion Distortion factor (range 0-128).
+     * @param smoothness Smoothness factor (range 0-1).
+     * @param numWaves Number of waves (range 1-32).
+     * @param waveAmplitude Wave amplitude (range 0-1).
+     * @param waveSteepness Wave steepness (range 0-1).
+     * @param waveSpeed Wave speed.
+     * @param waveLength Wave length.
+     * @param scale Scale of the waves.
+     * @param intensity Intensity factor (range 0-1).
+     * @returns Whether or not the operation was successful.
+     */
+    SetProperties(shallowColor: Color, deepColor: Color, specularColor: Color, scatteringColor: Color, deepStart: number, deepEnd: number, distortion: number, smoothness: number, numWaves: number, waveAmplitude: number, waveSteepness: number, waveSpeed: number, waveLength: number, scale: number, intensity: number): boolean;
 }
 
 // ============================================================================
