@@ -1306,52 +1306,134 @@ declare class WaterEntity extends BaseEntity {
 // ============================================================================
 
 /**
- * Fetch request options interface.
- */
-declare interface FetchRequestOptions {
-    /** Request body. */
-    body?: string;
-    /** Cache mode. */
-    cache?: string;
-    /** Credentials mode. */
-    credentials?: string;
-    /** Request headers. */
-    headers?: string[];
-    /** Keep alive flag. */
-    keepalive?: boolean;
-    /** HTTP method (GET, POST, PUT, DELETE, PATCH, MERGE, OPTIONS, CONNECT, QUERY). */
-    method?: string;
-    /** Request mode. */
-    mode?: string;
-    /** Request priority. */
-    priority?: string;
-    /** Redirect mode. */
-    redirect?: string;
-    /** Referrer. */
-    referrer?: string;
-    /** Referrer policy. */
-    referrerPolicy?: string;
-}
-
-/**
  * Class for HTTP networking.
  */
 declare class HTTPNetworking {
     /**
-     * Class for HTTP request.
+     * Fetch request options struct.
      */
-    static Request: {
-        new(input: string, options?: FetchRequestOptions): any;
+    static FetchRequestOptions: {
+        /** Request body. */
+        body: string;
+        /** Cache mode. */
+        cache: string;
+        /** Credentials mode. */
+        credentials: string;
+        /** Request headers. */
+        headers: string[];
+        /** Keep alive flag. */
+        keepalive: boolean;
+        /** HTTP method (GET, POST, PUT, DELETE, PATCH, MERGE, OPTIONS, CONNECT, QUERY). */
+        method: string;
+        /** Request mode. */
+        mode: string;
+        /** Request priority. */
+        priority: string;
+        /** Redirect mode. */
+        redirect: string;
+        /** Referrer. */
+        referrer: string;
+        /** Referrer policy. */
+        referrerPolicy: string;
     };
 
     /**
-     * Fetch a resource.
-     * @param input URL or Request object.
-     * @param options Request options.
-     * @param onComplete Callback function name.
-     * @param onError Error callback function name.
+     * Class for HTTP request.
      */
-    static Fetch(input: string | any, options: FetchRequestOptions | null, onComplete: string, onError?: string): void;
+    static Request: {
+        /** Body. */
+        body: string;
+        /** Cache. */
+        cache: string;
+        /** Credentials. */
+        credentials: string;
+        /** Headers. */
+        headers: string[];
+        /** Keepalive. */
+        keepalive: boolean;
+        /** Integrity. */
+        integrity: string;
+        /** HTTP Method to use (GET, POST, PUT, DELETE, PATCH, MERGE, OPTIONS, CONNECT, QUERY). */
+        method: string;
+        /** Mode. */
+        mode: string;
+        /** Priority. */
+        priority: string;
+        /** Redirect. */
+        redirect: string;
+        /** Referrer. */
+        referrer: string;
+        /** Referrer Policy. */
+        referrerPolicy: string;
+        /** Resource URIs. */
+        resourceURI: string;
+
+        /**
+         * Constructor for an HTTP Request.
+         * @param input URI to use.
+         */
+        new(input: string): HTTPNetworking.Request;
+
+        /**
+         * Constructor for an HTTP Request.
+         * @param input URI to use.
+         * @param options Fetch Request Options.
+         */
+        new(input: string, options: HTTPNetworking.FetchRequestOptions): HTTPNetworking.Request;
+    };
+
+    /**
+     * Class for an HTTP Response.
+     */
+    static Response: {
+        /** Status code. */
+        status: number;
+        /** Status text. */
+        statusText: string;
+        /** Data. */
+        data: Uint8Array;
+
+        /**
+         * Constructor for an HTTP Response.
+         * @param status Status code.
+         * @param statusText Status text.
+         * @param data Data.
+         */
+        new(status: number, statusText: string, data: Uint8Array): HTTPNetworking.Response;
+    };
+
+    /**
+     * Perform a Fetch.
+     * @param resource URI of the resource to fetch.
+     * @param onFinished Logic to execute when the request has finished.
+     */
+    static Fetch(resource: string, onFinished: string): void;
+
+    /**
+     * Perform a Fetch.
+     * @param resource URI of the resource to fetch.
+     * @param options Fetch Request Options.
+     * @param onFinished Logic to execute when the request has finished.
+     */
+    static Fetch(resource: string, options: HTTPNetworking.FetchRequestOptions, onFinished: string): void;
+
+    /**
+     * Perform a Fetch.
+     * @param request Request to fetch.
+     * @param onFinished Logic to execute when the request has finished.
+     * @param data Optional data to send.
+     * @param dataType Optional data type.
+     */
+    static Fetch(request: HTTPNetworking.Request, onFinished: string, data?: string, dataType?: string): void;
+
+    /**
+     * Perform a POST request.
+     * @param resource URI of the resource to fetch.
+     * @param data Data to post.
+     * @param dataType Data type.
+     * @param onFinished Logic to execute when the request has finished.
+     */
+    static Post(resource: string, data: string, dataType: string, onFinished: string): void;
 }
 
 /**
