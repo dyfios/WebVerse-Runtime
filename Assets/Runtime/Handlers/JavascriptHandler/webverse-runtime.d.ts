@@ -1039,9 +1039,61 @@ declare class ButtonEntity extends BaseEntity {
 /**
  * Class for a canvas entity.
  */
+/**
+ * Class for a canvas entity.
+ */
 declare class CanvasEntity extends BaseEntity {
     /** Constructor for canvas entity. */
     constructor();
+
+    /**
+     * Create a canvas entity.
+     * @param parent Parent of the entity to create.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param scale Scale of the entity relative to its parent.
+     * @param isSize Whether or not the scale parameter is a size.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created canvas entity object.
+     * @returns The canvas entity object.
+     */
+    static Create(parent: BaseEntity, position: Vector3, rotation: Quaternion, scale: Vector3, isSize?: boolean, id?: string, tag?: string, onLoaded?: string): CanvasEntity;
+
+    /**
+     * Create a canvas entity from a JSON string.
+     * @param jsonEntity JSON string containing the canvas entity configuration.
+     * @param parent Parent entity for the canvas entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created canvas entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Make the canvas a world canvas.
+     * @returns Whether or not the setting was successful.
+     */
+    MakeWorldCanvas(): boolean;
+
+    /**
+     * Make the canvas a screen canvas.
+     * @param synchronize Whether or not to synchronize the setting.
+     * @returns Whether or not the setting was successful.
+     */
+    MakeScreenCanvas(synchronize?: boolean): boolean;
+
+    /**
+     * Returns whether or not the canvas entity is a screen canvas.
+     * @returns Whether or not the canvas entity is a screen canvas.
+     */
+    IsScreenCanvas(): boolean;
+
+    /**
+     * Set the size for the screen canvas.
+     * @param size Size to set the screen canvas to.
+     * @param synchronizeChange Whether or not to synchronize the change.
+     * @returns Whether or not the operation was successful.
+     */
+    SetSize(size: Vector2, synchronizeChange?: boolean): boolean;
 }
 
 /**
@@ -1094,17 +1146,68 @@ declare class HTMLEntity extends BaseEntity {
     constructor();
 
     /**
-     * Set the HTML content.
-     * @param html HTML content.
-     * @returns Whether or not the operation was successful.
+     * Create an HTML entity.
+     * @param parent Parent of the entity to create.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param scale Scale of the entity relative to its parent.
+     * @param isSize Whether or not the scale parameter is a size.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onMessage Action to invoke upon receiving a world message.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created HTML entity object.
+     * @returns The HTML entity object.
      */
-    SetHTML(html: string): boolean;
+    static Create(parent: BaseEntity, position: Vector3, rotation: Quaternion, scale: Vector3, isSize?: boolean, id?: string, tag?: string, onMessage?: string, onLoaded?: string): HTMLEntity;
 
     /**
-     * Get the HTML content.
-     * @returns The HTML content.
+     * Create an HTML entity.
+     * @param parent Parent of the entity to create.
+     * @param positionPercent Position of the entity as a percentage of its parent canvas.
+     * @param sizePercent Size of the entity as a percentage of its parent canvas.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onMessage Action to invoke upon receiving a world message.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created HTML entity object.
+     * @returns The HTML entity object.
      */
-    GetHTML(): string;
+    static Create(parent: BaseEntity, positionPercent: Vector2, sizePercent: Vector2, id?: string, tag?: string, onMessage?: string, onLoaded?: string): HTMLEntity;
+
+    /**
+     * Create an HTML entity from a JSON string.
+     * @param jsonEntity JSON string containing the HTML entity configuration.
+     * @param parent Parent entity for the HTML entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created HTML entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Load content from a URL.
+     * @param url URL to load content from.
+     * @returns Whether or not the setting was successful.
+     */
+    LoadFromURL(url: string): boolean;
+
+    /**
+     * Load HTML content.
+     * @param html HTML content to load.
+     * @returns Whether or not the setting was successful.
+     */
+    LoadHTML(html: string): boolean;
+
+    /**
+     * Get the current URL.
+     * @returns The current URL, or null.
+     */
+    GetURL(): string | null;
+
+    /**
+     * Execute JavaScript logic.
+     * @param logic Logic to execute.
+     * @param onComplete Action to invoke upon completion. Provides return from JavaScript as string.
+     * @returns Whether or not the operation was successful.
+     */
+    ExecuteJavaScript(logic: string, onComplete: string): boolean;
 }
 
 /**
