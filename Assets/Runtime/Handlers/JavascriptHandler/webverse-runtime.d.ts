@@ -527,10 +527,18 @@ declare class UUID {
 /**
  * Interaction state enum.
  */
+/**
+ * Interaction state for an entity.
+ * Hidden: Visibly hidden and not interactable.
+ * Static: Visible but not interactable.
+ * Physical: Visible and interactable.
+ * Placing: Visible and in a placing interaction mode.
+ */
 declare enum InteractionState {
-    Idle = 0,
-    Highlighted = 1,
-    Pressed = 2
+    Hidden = 0,
+    Static = 1,
+    Physical = 2,
+    Placing = 3
 }
 
 /**
