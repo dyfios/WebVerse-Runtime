@@ -98,6 +98,130 @@ declare class Vector2 {
      * @param y Y component.
      */
     constructor(x: number, y: number);
+
+    /** Get a down (0, -1) vector. */
+    static readonly down: Vector2;
+    /** Get an up (0, 1) vector. */
+    static readonly up: Vector2;
+    /** Get a left (-1, 0) vector. */
+    static readonly left: Vector2;
+    /** Get a right (1, 0) vector. */
+    static readonly right: Vector2;
+    /** Get a vector with both components set to 0. */
+    static readonly zero: Vector2;
+    /** Get a vector with both components set to 1. */
+    static readonly one: Vector2;
+    /** Get a vector with both components set to +infinity. */
+    static readonly positiveInfinity: Vector2;
+    /** Get a vector with both components set to -infinity. */
+    static readonly negativeInfinity: Vector2;
+
+    /**
+     * Get the angle between two Vector2s.
+     * @param vector1 First Vector2.
+     * @param vector2 Second Vector2.
+     * @returns The angle between the two vectors.
+     */
+    static GetAngle(vector1: Vector2, vector2: Vector2): number;
+
+    /**
+     * Get a Vector2 clamped to a certain length.
+     * @param vector Vector2 to clamp.
+     * @param maxLength Maximum length for the Vector2.
+     * @returns A Vector2 clamped to a certain length.
+     */
+    static GetClampedVector2(vector: Vector2, maxLength: number): Vector2;
+
+    /**
+     * Get the distance between two Vector2s.
+     * @param vector1 First Vector2.
+     * @param vector2 Second Vector2.
+     * @returns The distance between two Vector2s.
+     */
+    static GetDistance(vector1: Vector2, vector2: Vector2): number;
+
+    /**
+     * Get the dot product between two Vector2s.
+     * @param leftHand Left hand Vector2.
+     * @param rightHand Right hand Vector2.
+     * @returns The dot product between two Vector2s.
+     */
+    static GetDotProduct(leftHand: Vector2, rightHand: Vector2): number;
+
+    /**
+     * Linearly interpolate between two Vector2s percentage-wise.
+     * @param vector1 First Vector2.
+     * @param vector2 Second Vector2.
+     * @param percent Percent between first and second Vector2.
+     * @returns A linearly interpolated Vector2 between the two Vector2s.
+     */
+    static LinearlyInterpolatePercent(vector1: Vector2, vector2: Vector2, percent: number): Vector2;
+
+    /**
+     * Linearly interpolate between two Vector2s distance-wise.
+     * @param vector1 First Vector2.
+     * @param vector2 Second Vector2.
+     * @param maxDistance Maximum distance between first and second Vector2.
+     * @returns A linearly interpolated Vector2 between the two Vector2s.
+     */
+    static LinearlyInterpolate(vector1: Vector2, vector2: Vector2, maxDistance: number): Vector2;
+
+    /**
+     * Get the minimum of two Vector2s.
+     * @param vector1 First Vector2.
+     * @param vector2 Second Vector2.
+     * @returns The minimum of the two Vector2s.
+     */
+    static GetMin(vector1: Vector2, vector2: Vector2): Vector2;
+
+    /**
+     * Get the maximum of two Vector2s.
+     * @param vector1 First Vector2.
+     * @param vector2 Second Vector2.
+     * @returns The maximum of the two Vector2s.
+     */
+    static GetMax(vector1: Vector2, vector2: Vector2): Vector2;
+
+    /**
+     * Get a perpendicular vector to the provided vector.
+     * @param vector Vector for which to get perpendicular.
+     * @returns A perpendicular vector.
+     */
+    static GetPerpendicularVector(vector: Vector2): Vector2;
+
+    /**
+     * Get a vector reflected about a normal.
+     * @param vector Vector to reflect.
+     * @param normal Normal about which to reflect.
+     * @returns A reflected vector.
+     */
+    static GetReflectedVector(vector: Vector2, normal: Vector2): Vector2;
+
+    /**
+     * Get the signed angle between two Vector2s.
+     * @param vector1 First Vector2.
+     * @param vector2 Second Vector2.
+     * @returns The signed angle between the two vectors.
+     */
+    static GetSignedAngle(vector1: Vector2, vector2: Vector2): number;
+
+    /**
+     * Get the normalized vector.
+     * @returns The normalized vector.
+     */
+    GetNormalized(): Vector2;
+
+    /**
+     * Normalize this vector.
+     */
+    Normalize(): void;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector2): boolean;
 }
 
 /**
@@ -121,6 +245,130 @@ declare class Vector2D {
      * @param y Y component.
      */
     constructor(x: number, y: number);
+
+    /** Get a down (0, -1) vector. */
+    static readonly down: Vector2D;
+    /** Get an up (0, 1) vector. */
+    static readonly up: Vector2D;
+    /** Get a left (-1, 0) vector. */
+    static readonly left: Vector2D;
+    /** Get a right (1, 0) vector. */
+    static readonly right: Vector2D;
+    /** Get a vector with both components set to 0. */
+    static readonly zero: Vector2D;
+    /** Get a vector with both components set to 1. */
+    static readonly one: Vector2D;
+    /** Get a vector with both components set to +infinity. */
+    static readonly positiveInfinity: Vector2D;
+    /** Get a vector with both components set to -infinity. */
+    static readonly negativeInfinity: Vector2D;
+
+    /**
+     * Get the angle between two Vector2Ds.
+     * @param vector1 First Vector2D.
+     * @param vector2 Second Vector2D.
+     * @returns The angle between the two vectors.
+     */
+    static GetAngle(vector1: Vector2D, vector2: Vector2D): number;
+
+    /**
+     * Get a Vector2D clamped to a certain length.
+     * @param vector Vector2D to clamp.
+     * @param maxLength Maximum length for the Vector2D.
+     * @returns A Vector2D clamped to a certain length.
+     */
+    static GetClampedVector2D(vector: Vector2D, maxLength: number): Vector2D;
+
+    /**
+     * Get the distance between two Vector2Ds.
+     * @param vector1 First Vector2D.
+     * @param vector2 Second Vector2D.
+     * @returns The distance between two Vector2Ds.
+     */
+    static GetDistance(vector1: Vector2D, vector2: Vector2D): number;
+
+    /**
+     * Get the dot product between two Vector2Ds.
+     * @param leftHand Left hand Vector2D.
+     * @param rightHand Right hand Vector2D.
+     * @returns The dot product between two Vector2Ds.
+     */
+    static GetDotProduct(leftHand: Vector2D, rightHand: Vector2D): number;
+
+    /**
+     * Linearly interpolate between two Vector2Ds percentage-wise.
+     * @param vector1 First Vector2D.
+     * @param vector2 Second Vector2D.
+     * @param percent Percent between first and second Vector2D.
+     * @returns A linearly interpolated Vector2D between the two Vector2Ds.
+     */
+    static LinearlyInterpolatePercent(vector1: Vector2D, vector2: Vector2D, percent: number): Vector2D;
+
+    /**
+     * Linearly interpolate between two Vector2Ds distance-wise.
+     * @param vector1 First Vector2D.
+     * @param vector2 Second Vector2D.
+     * @param maxDistance Maximum distance between first and second Vector2D.
+     * @returns A linearly interpolated Vector2D between the two Vector2Ds.
+     */
+    static LinearlyInterpolate(vector1: Vector2D, vector2: Vector2D, maxDistance: number): Vector2D;
+
+    /**
+     * Get the minimum of two Vector2Ds.
+     * @param vector1 First Vector2D.
+     * @param vector2 Second Vector2D.
+     * @returns The minimum of the two Vector2Ds.
+     */
+    static GetMin(vector1: Vector2D, vector2: Vector2D): Vector2D;
+
+    /**
+     * Get the maximum of two Vector2Ds.
+     * @param vector1 First Vector2D.
+     * @param vector2 Second Vector2D.
+     * @returns The maximum of the two Vector2Ds.
+     */
+    static GetMax(vector1: Vector2D, vector2: Vector2D): Vector2D;
+
+    /**
+     * Get a perpendicular vector to the provided vector.
+     * @param vector Vector for which to get perpendicular.
+     * @returns A perpendicular vector.
+     */
+    static GetPerpendicularVector(vector: Vector2D): Vector2D;
+
+    /**
+     * Get a vector reflected about a normal.
+     * @param vector Vector to reflect.
+     * @param normal Normal about which to reflect.
+     * @returns A reflected vector.
+     */
+    static GetReflectedVector(vector: Vector2D, normal: Vector2D): Vector2D;
+
+    /**
+     * Get the signed angle between two Vector2Ds.
+     * @param vector1 First Vector2D.
+     * @param vector2 Second Vector2D.
+     * @returns The signed angle between the two vectors.
+     */
+    static GetSignedAngle(vector1: Vector2D, vector2: Vector2D): number;
+
+    /**
+     * Get the normalized vector.
+     * @returns The normalized vector.
+     */
+    GetNormalized(): Vector2D;
+
+    /**
+     * Normalize this vector.
+     */
+    Normalize(): void;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector2D): boolean;
 }
 
 /**
@@ -140,6 +388,50 @@ declare class Vector2Int {
      * @param y Y component.
      */
     constructor(x: number, y: number);
+
+    /** Get a down (0, -1) vector. */
+    static readonly down: Vector2Int;
+    /** Get an up (0, 1) vector. */
+    static readonly up: Vector2Int;
+    /** Get a left (-1, 0) vector. */
+    static readonly left: Vector2Int;
+    /** Get a right (1, 0) vector. */
+    static readonly right: Vector2Int;
+    /** Get a vector with both components set to 0. */
+    static readonly zero: Vector2Int;
+    /** Get a vector with both components set to 1. */
+    static readonly one: Vector2Int;
+
+    /**
+     * Get the distance between two Vector2Ints.
+     * @param vector1 First Vector2Int.
+     * @param vector2 Second Vector2Int.
+     * @returns The distance between two Vector2Ints.
+     */
+    static GetDistance(vector1: Vector2Int, vector2: Vector2Int): number;
+
+    /**
+     * Get the minimum of two Vector2Ints.
+     * @param vector1 First Vector2Int.
+     * @param vector2 Second Vector2Int.
+     * @returns The minimum of the two Vector2Ints.
+     */
+    static GetMin(vector1: Vector2Int, vector2: Vector2Int): Vector2Int;
+
+    /**
+     * Get the maximum of two Vector2Ints.
+     * @param vector1 First Vector2Int.
+     * @param vector2 Second Vector2Int.
+     * @returns The maximum of the two Vector2Ints.
+     */
+    static GetMax(vector1: Vector2Int, vector2: Vector2Int): Vector2Int;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector2Int): boolean;
 }
 
 /**
@@ -166,6 +458,152 @@ declare class Vector3 {
      * @param z Z component.
      */
     constructor(x: number, y: number, z: number);
+
+    /** Get a down (0, -1, 0) vector. */
+    static readonly down: Vector3;
+    /** Get an up (0, 1, 0) vector. */
+    static readonly up: Vector3;
+    /** Get a left (-1, 0, 0) vector. */
+    static readonly left: Vector3;
+    /** Get a right (1, 0, 0) vector. */
+    static readonly right: Vector3;
+    /** Get a forward (0, 0, 1) vector. */
+    static readonly forward: Vector3;
+    /** Get a back (0, 0, -1) vector. */
+    static readonly back: Vector3;
+    /** Get a vector with all components set to 0. */
+    static readonly zero: Vector3;
+    /** Get a vector with all components set to 1. */
+    static readonly one: Vector3;
+    /** Get a vector with all components set to +infinity. */
+    static readonly positiveInfinity: Vector3;
+    /** Get a vector with all components set to -infinity. */
+    static readonly negativeInfinity: Vector3;
+
+    /**
+     * Get the angle between two Vector3s.
+     * @param vector1 First Vector3.
+     * @param vector2 Second Vector3.
+     * @returns The angle between the two vectors.
+     */
+    static GetAngle(vector1: Vector3, vector2: Vector3): number;
+
+    /**
+     * Get a Vector3 clamped to a certain length.
+     * @param vector Vector3 to clamp.
+     * @param maxLength Maximum length for the Vector3.
+     * @returns A Vector3 clamped to a certain length.
+     */
+    static GetClampedVector3(vector: Vector3, maxLength: number): Vector3;
+
+    /**
+     * Get the distance between two Vector3s.
+     * @param vector1 First Vector3.
+     * @param vector2 Second Vector3.
+     * @returns The distance between two Vector3s.
+     */
+    static GetDistance(vector1: Vector3, vector2: Vector3): number;
+
+    /**
+     * Get the dot product between two Vector3s.
+     * @param leftHand Left hand Vector3.
+     * @param rightHand Right hand Vector3.
+     * @returns The dot product between two Vector3s.
+     */
+    static GetDotProduct(leftHand: Vector3, rightHand: Vector3): number;
+
+    /**
+     * Get the cross product between two Vector3s.
+     * @param leftHand Left hand Vector3.
+     * @param rightHand Right hand Vector3.
+     * @returns The cross product between two Vector3s.
+     */
+    static GetCrossProduct(leftHand: Vector3, rightHand: Vector3): Vector3;
+
+    /**
+     * Linearly interpolate between two Vector3s percentage-wise.
+     * @param vector1 First Vector3.
+     * @param vector2 Second Vector3.
+     * @param percent Percent between first and second Vector3.
+     * @returns A linearly interpolated Vector3 between the two Vector3s.
+     */
+    static LinearlyInterpolatePercent(vector1: Vector3, vector2: Vector3, percent: number): Vector3;
+
+    /**
+     * Linearly interpolate between two Vector3s distance-wise.
+     * @param vector1 First Vector3.
+     * @param vector2 Second Vector3.
+     * @param maxDistance Maximum distance between first and second Vector3.
+     * @returns A linearly interpolated Vector3 between the two Vector3s.
+     */
+    static LinearlyInterpolate(vector1: Vector3, vector2: Vector3, maxDistance: number): Vector3;
+
+    /**
+     * Get the minimum of two Vector3s.
+     * @param vector1 First Vector3.
+     * @param vector2 Second Vector3.
+     * @returns The minimum of the two Vector3s.
+     */
+    static GetMin(vector1: Vector3, vector2: Vector3): Vector3;
+
+    /**
+     * Get the maximum of two Vector3s.
+     * @param vector1 First Vector3.
+     * @param vector2 Second Vector3.
+     * @returns The maximum of the two Vector3s.
+     */
+    static GetMax(vector1: Vector3, vector2: Vector3): Vector3;
+
+    /**
+     * Project one vector onto another.
+     * @param vector Vector to project.
+     * @param onNormal Normal onto which to project.
+     * @returns Projected vector.
+     */
+    static ProjectVectorOnNormal(vector: Vector3, onNormal: Vector3): Vector3;
+
+    /**
+     * Project one vector onto a plane defined by a normal.
+     * @param vector Vector to project.
+     * @param planeNormal Plane normal onto which to project.
+     * @returns Projected vector.
+     */
+    static ProjectVectorOnPlane(vector: Vector3, planeNormal: Vector3): Vector3;
+
+    /**
+     * Get a vector reflected about a normal.
+     * @param vector Vector to reflect.
+     * @param normal Normal about which to reflect.
+     * @returns A reflected vector.
+     */
+    static GetReflectedVector(vector: Vector3, normal: Vector3): Vector3;
+
+    /**
+     * Get the signed angle between two Vector3s around an axis.
+     * @param vector1 First Vector3.
+     * @param vector2 Second Vector3.
+     * @param axis Axis around which to measure angle.
+     * @returns The signed angle between the two vectors.
+     */
+    static GetSignedAngle(vector1: Vector3, vector2: Vector3, axis: Vector3): number;
+
+    /**
+     * Get the normalized vector.
+     * @returns The normalized vector.
+     */
+    GetNormalized(): Vector3;
+
+    /**
+     * Normalize this vector.
+     */
+    Normalize(): void;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector3): boolean;
 }
 
 /**
@@ -192,6 +630,152 @@ declare class Vector3D {
      * @param z Z component.
      */
     constructor(x: number, y: number, z: number);
+
+    /** Get a down (0, -1, 0) vector. */
+    static readonly down: Vector3D;
+    /** Get an up (0, 1, 0) vector. */
+    static readonly up: Vector3D;
+    /** Get a left (-1, 0, 0) vector. */
+    static readonly left: Vector3D;
+    /** Get a right (1, 0, 0) vector. */
+    static readonly right: Vector3D;
+    /** Get a forward (0, 0, 1) vector. */
+    static readonly forward: Vector3D;
+    /** Get a back (0, 0, -1) vector. */
+    static readonly back: Vector3D;
+    /** Get a vector with all components set to 0. */
+    static readonly zero: Vector3D;
+    /** Get a vector with all components set to 1. */
+    static readonly one: Vector3D;
+    /** Get a vector with all components set to +infinity. */
+    static readonly positiveInfinity: Vector3D;
+    /** Get a vector with all components set to -infinity. */
+    static readonly negativeInfinity: Vector3D;
+
+    /**
+     * Get the angle between two Vector3Ds.
+     * @param vector1 First Vector3D.
+     * @param vector2 Second Vector3D.
+     * @returns The angle between the two vectors.
+     */
+    static GetAngle(vector1: Vector3D, vector2: Vector3D): number;
+
+    /**
+     * Get a Vector3D clamped to a certain length.
+     * @param vector Vector3D to clamp.
+     * @param maxLength Maximum length for the Vector3D.
+     * @returns A Vector3D clamped to a certain length.
+     */
+    static GetClampedVector3D(vector: Vector3D, maxLength: number): Vector3D;
+
+    /**
+     * Get the distance between two Vector3Ds.
+     * @param vector1 First Vector3D.
+     * @param vector2 Second Vector3D.
+     * @returns The distance between two Vector3Ds.
+     */
+    static GetDistance(vector1: Vector3D, vector2: Vector3D): number;
+
+    /**
+     * Get the dot product between two Vector3Ds.
+     * @param leftHand Left hand Vector3D.
+     * @param rightHand Right hand Vector3D.
+     * @returns The dot product between two Vector3Ds.
+     */
+    static GetDotProduct(leftHand: Vector3D, rightHand: Vector3D): number;
+
+    /**
+     * Get the cross product between two Vector3Ds.
+     * @param leftHand Left hand Vector3D.
+     * @param rightHand Right hand Vector3D.
+     * @returns The cross product between two Vector3Ds.
+     */
+    static GetCrossProduct(leftHand: Vector3D, rightHand: Vector3D): Vector3D;
+
+    /**
+     * Linearly interpolate between two Vector3Ds percentage-wise.
+     * @param vector1 First Vector3D.
+     * @param vector2 Second Vector3D.
+     * @param percent Percent between first and second Vector3D.
+     * @returns A linearly interpolated Vector3D between the two Vector3Ds.
+     */
+    static LinearlyInterpolatePercent(vector1: Vector3D, vector2: Vector3D, percent: number): Vector3D;
+
+    /**
+     * Linearly interpolate between two Vector3Ds distance-wise.
+     * @param vector1 First Vector3D.
+     * @param vector2 Second Vector3D.
+     * @param maxDistance Maximum distance between first and second Vector3D.
+     * @returns A linearly interpolated Vector3D between the two Vector3Ds.
+     */
+    static LinearlyInterpolate(vector1: Vector3D, vector2: Vector3D, maxDistance: number): Vector3D;
+
+    /**
+     * Get the minimum of two Vector3Ds.
+     * @param vector1 First Vector3D.
+     * @param vector2 Second Vector3D.
+     * @returns The minimum of the two Vector3Ds.
+     */
+    static GetMin(vector1: Vector3D, vector2: Vector3D): Vector3D;
+
+    /**
+     * Get the maximum of two Vector3Ds.
+     * @param vector1 First Vector3D.
+     * @param vector2 Second Vector3D.
+     * @returns The maximum of the two Vector3Ds.
+     */
+    static GetMax(vector1: Vector3D, vector2: Vector3D): Vector3D;
+
+    /**
+     * Project one vector onto another.
+     * @param vector Vector to project.
+     * @param onNormal Normal onto which to project.
+     * @returns Projected vector.
+     */
+    static ProjectVectorOnNormal(vector: Vector3D, onNormal: Vector3D): Vector3D;
+
+    /**
+     * Project one vector onto a plane defined by a normal.
+     * @param vector Vector to project.
+     * @param planeNormal Plane normal onto which to project.
+     * @returns Projected vector.
+     */
+    static ProjectVectorOnPlane(vector: Vector3D, planeNormal: Vector3D): Vector3D;
+
+    /**
+     * Get a vector reflected about a normal.
+     * @param vector Vector to reflect.
+     * @param normal Normal about which to reflect.
+     * @returns A reflected vector.
+     */
+    static GetReflectedVector(vector: Vector3D, normal: Vector3D): Vector3D;
+
+    /**
+     * Get the signed angle between two Vector3Ds around an axis.
+     * @param vector1 First Vector3D.
+     * @param vector2 Second Vector3D.
+     * @param axis Axis around which to measure angle.
+     * @returns The signed angle between the two vectors.
+     */
+    static GetSignedAngle(vector1: Vector3D, vector2: Vector3D, axis: Vector3D): number;
+
+    /**
+     * Get the normalized vector.
+     * @returns The normalized vector.
+     */
+    GetNormalized(): Vector3D;
+
+    /**
+     * Normalize this vector.
+     */
+    Normalize(): void;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector3D): boolean;
 }
 
 /**
@@ -214,6 +798,54 @@ declare class Vector3Int {
      * @param z Z component.
      */
     constructor(x: number, y: number, z: number);
+
+    /** Get a down (0, -1, 0) vector. */
+    static readonly down: Vector3Int;
+    /** Get an up (0, 1, 0) vector. */
+    static readonly up: Vector3Int;
+    /** Get a left (-1, 0, 0) vector. */
+    static readonly left: Vector3Int;
+    /** Get a right (1, 0, 0) vector. */
+    static readonly right: Vector3Int;
+    /** Get a forward (0, 0, 1) vector. */
+    static readonly forward: Vector3Int;
+    /** Get a back (0, 0, -1) vector. */
+    static readonly back: Vector3Int;
+    /** Get a vector with all components set to 0. */
+    static readonly zero: Vector3Int;
+    /** Get a vector with all components set to 1. */
+    static readonly one: Vector3Int;
+
+    /**
+     * Get the distance between two Vector3Ints.
+     * @param vector1 First Vector3Int.
+     * @param vector2 Second Vector3Int.
+     * @returns The distance between two Vector3Ints.
+     */
+    static GetDistance(vector1: Vector3Int, vector2: Vector3Int): number;
+
+    /**
+     * Get the minimum of two Vector3Ints.
+     * @param vector1 First Vector3Int.
+     * @param vector2 Second Vector3Int.
+     * @returns The minimum of the two Vector3Ints.
+     */
+    static GetMin(vector1: Vector3Int, vector2: Vector3Int): Vector3Int;
+
+    /**
+     * Get the maximum of two Vector3Ints.
+     * @param vector1 First Vector3Int.
+     * @param vector2 Second Vector3Int.
+     * @returns The maximum of the two Vector3Ints.
+     */
+    static GetMax(vector1: Vector3Int, vector2: Vector3Int): Vector3Int;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector3Int): boolean;
 }
 
 /**
@@ -243,6 +875,74 @@ declare class Vector4 {
      * @param w W component.
      */
     constructor(x: number, y: number, z: number, w: number);
+
+    /** Get a vector with all components set to 0. */
+    static readonly zero: Vector4;
+    /** Get a vector with all components set to 1. */
+    static readonly one: Vector4;
+    /** Get a vector with all components set to +infinity. */
+    static readonly positiveInfinity: Vector4;
+    /** Get a vector with all components set to -infinity. */
+    static readonly negativeInfinity: Vector4;
+
+    /**
+     * Get the distance between two Vector4s.
+     * @param vector1 First Vector4.
+     * @param vector2 Second Vector4.
+     * @returns The distance between two Vector4s.
+     */
+    static GetDistance(vector1: Vector4, vector2: Vector4): number;
+
+    /**
+     * Get the dot product between two Vector4s.
+     * @param leftHand Left hand Vector4.
+     * @param rightHand Right hand Vector4.
+     * @returns The dot product between two Vector4s.
+     */
+    static GetDotProduct(leftHand: Vector4, rightHand: Vector4): number;
+
+    /**
+     * Linearly interpolate between two Vector4s percentage-wise.
+     * @param vector1 First Vector4.
+     * @param vector2 Second Vector4.
+     * @param percent Percent between first and second Vector4.
+     * @returns A linearly interpolated Vector4 between the two Vector4s.
+     */
+    static LinearlyInterpolatePercent(vector1: Vector4, vector2: Vector4, percent: number): Vector4;
+
+    /**
+     * Get the minimum of two Vector4s.
+     * @param vector1 First Vector4.
+     * @param vector2 Second Vector4.
+     * @returns The minimum of the two Vector4s.
+     */
+    static GetMin(vector1: Vector4, vector2: Vector4): Vector4;
+
+    /**
+     * Get the maximum of two Vector4s.
+     * @param vector1 First Vector4.
+     * @param vector2 Second Vector4.
+     * @returns The maximum of the two Vector4s.
+     */
+    static GetMax(vector1: Vector4, vector2: Vector4): Vector4;
+
+    /**
+     * Get the normalized vector.
+     * @returns The normalized vector.
+     */
+    GetNormalized(): Vector4;
+
+    /**
+     * Normalize this vector.
+     */
+    Normalize(): void;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector4): boolean;
 }
 
 /**
@@ -272,6 +972,74 @@ declare class Vector4D {
      * @param w W component.
      */
     constructor(x: number, y: number, z: number, w: number);
+
+    /** Get a vector with all components set to 0. */
+    static readonly zero: Vector4D;
+    /** Get a vector with all components set to 1. */
+    static readonly one: Vector4D;
+    /** Get a vector with all components set to +infinity. */
+    static readonly positiveInfinity: Vector4D;
+    /** Get a vector with all components set to -infinity. */
+    static readonly negativeInfinity: Vector4D;
+
+    /**
+     * Get the distance between two Vector4Ds.
+     * @param vector1 First Vector4D.
+     * @param vector2 Second Vector4D.
+     * @returns The distance between two Vector4Ds.
+     */
+    static GetDistance(vector1: Vector4D, vector2: Vector4D): number;
+
+    /**
+     * Get the dot product between two Vector4Ds.
+     * @param leftHand Left hand Vector4D.
+     * @param rightHand Right hand Vector4D.
+     * @returns The dot product between two Vector4Ds.
+     */
+    static GetDotProduct(leftHand: Vector4D, rightHand: Vector4D): number;
+
+    /**
+     * Linearly interpolate between two Vector4Ds percentage-wise.
+     * @param vector1 First Vector4D.
+     * @param vector2 Second Vector4D.
+     * @param percent Percent between first and second Vector4D.
+     * @returns A linearly interpolated Vector4D between the two Vector4Ds.
+     */
+    static LinearlyInterpolatePercent(vector1: Vector4D, vector2: Vector4D, percent: number): Vector4D;
+
+    /**
+     * Get the minimum of two Vector4Ds.
+     * @param vector1 First Vector4D.
+     * @param vector2 Second Vector4D.
+     * @returns The minimum of the two Vector4Ds.
+     */
+    static GetMin(vector1: Vector4D, vector2: Vector4D): Vector4D;
+
+    /**
+     * Get the maximum of two Vector4Ds.
+     * @param vector1 First Vector4D.
+     * @param vector2 Second Vector4D.
+     * @returns The maximum of the two Vector4Ds.
+     */
+    static GetMax(vector1: Vector4D, vector2: Vector4D): Vector4D;
+
+    /**
+     * Get the normalized vector.
+     * @returns The normalized vector.
+     */
+    GetNormalized(): Vector4D;
+
+    /**
+     * Normalize this vector.
+     */
+    Normalize(): void;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector4D): boolean;
 }
 
 /**
@@ -297,6 +1065,42 @@ declare class Vector4Int {
      * @param w W component.
      */
     constructor(x: number, y: number, z: number, w: number);
+
+    /** Get a vector with all components set to 0. */
+    static readonly zero: Vector4Int;
+    /** Get a vector with all components set to 1. */
+    static readonly one: Vector4Int;
+
+    /**
+     * Get the distance between two Vector4Ints.
+     * @param vector1 First Vector4Int.
+     * @param vector2 Second Vector4Int.
+     * @returns The distance between two Vector4Ints.
+     */
+    static GetDistance(vector1: Vector4Int, vector2: Vector4Int): number;
+
+    /**
+     * Get the minimum of two Vector4Ints.
+     * @param vector1 First Vector4Int.
+     * @param vector2 Second Vector4Int.
+     * @returns The minimum of the two Vector4Ints.
+     */
+    static GetMin(vector1: Vector4Int, vector2: Vector4Int): Vector4Int;
+
+    /**
+     * Get the maximum of two Vector4Ints.
+     * @param vector1 First Vector4Int.
+     * @param vector2 Second Vector4Int.
+     * @returns The maximum of the two Vector4Ints.
+     */
+    static GetMax(vector1: Vector4Int, vector2: Vector4Int): Vector4Int;
+
+    /**
+     * Check if this vector is equal to another.
+     * @param other Other vector to compare to.
+     * @returns Whether the vectors are equal.
+     */
+    AreEqual(other: Vector4Int): boolean;
 }
 
 /**
@@ -460,6 +1264,14 @@ declare class Quaternion {
      * @returns The combination of the two Quaternions.
      */
     static Combine(quaternion1: Quaternion, quaternion2: Quaternion): Quaternion;
+
+    /**
+     * Check if two quaternions are equal.
+     * @param first First quaternion.
+     * @param second Second quaternion.
+     * @returns Whether the quaternions are equal.
+     */
+    static AreEqual(first: Quaternion, second: Quaternion): boolean;
 }
 
 /**
@@ -488,6 +1300,149 @@ declare class QuaternionD {
      * @param w W component.
      */
     constructor(x: number, y: number, z: number, w: number);
+    /**
+     * Constructor for a QuaternionD using an angle axis input.
+     * @param angle Angle.
+     * @param axis Axis.
+     */
+    constructor(angle: number, axis: Vector3D);
+
+    /**
+     * Get the angle between two QuaternionDs.
+     * @param quaternion1 First QuaternionD.
+     * @param quaternion2 Second QuaternionD.
+     * @returns The angle between the two quaternions.
+     */
+    static GetAngle(quaternion1: QuaternionD, quaternion2: QuaternionD): number;
+
+    /**
+     * Get a QuaternionD from Euler angles.
+     * @param x Rotation around x axis.
+     * @param y Rotation around y axis.
+     * @param z Rotation around z axis.
+     * @returns QuaternionD from provided Euler angles.
+     */
+    static FromEulerAngles(x: number, y: number, z: number): QuaternionD;
+
+    /**
+     * Get the inverse of a QuaternionD.
+     * @param quaternion The quaternion.
+     * @returns The inverse of the quaternion.
+     */
+    static GetInverse(quaternion: QuaternionD): QuaternionD;
+
+    /**
+     * Linearly interpolate between two QuaternionDs percentage-wise.
+     * @param quaternion1 First QuaternionD.
+     * @param quaternion2 Second QuaternionD.
+     * @param percent Percent between first and second QuaternionD.
+     * @returns A linearly interpolated QuaternionD between the two QuaternionDs.
+     */
+    static LinearlyInterpolatePercent(quaternion1: QuaternionD, quaternion2: QuaternionD, percent: number): QuaternionD;
+
+    /**
+     * Linearly interpolate between two QuaternionDs distance-wise.
+     * @param quaternion1 First QuaternionD.
+     * @param quaternion2 Second QuaternionD.
+     * @param maxDistance Maximum distance between first and second QuaternionD.
+     * @returns A linearly interpolated QuaternionD between the two QuaternionDs.
+     */
+    static LinearlyInterpolate(quaternion1: QuaternionD, quaternion2: QuaternionD, maxDistance: number): QuaternionD;
+
+    /**
+     * Linearly interpolate unclamped between two QuaternionDs percentage-wise.
+     * @param quaternion1 First QuaternionD.
+     * @param quaternion2 Second QuaternionD.
+     * @param percent Percent between first and second QuaternionD.
+     * @returns A linearly interpolated unclamped QuaternionD between the two QuaternionDs.
+     */
+    static LinearlyInterpolatePercentUnclamped(quaternion1: QuaternionD, quaternion2: QuaternionD, percent: number): QuaternionD;
+
+    /**
+     * Create a quaternion with a given forward and up direction.
+     * @param forward Forward direction.
+     * @param up Up direction.
+     * @returns A quaternion with a given forward and up direction.
+     */
+    static CreateLookRotation(forward: Vector3D, up?: Vector3D): QuaternionD;
+
+    /**
+     * Get Euler angle representation of the quaternion.
+     * @returns Euler angle representation of the quaternion.
+     */
+    GetEulerAngles(): Vector3D;
+
+    /**
+     * Get the dot product between two QuaternionDs.
+     * @param first First QuaternionD.
+     * @param second Second QuaternionD.
+     * @returns The dot product between two QuaternionDs.
+     */
+    static GetDotProduct(first: QuaternionD, second: QuaternionD): number;
+
+    /**
+     * Get the rotation from one Vector3D to another Vector3D.
+     * @param from First Vector3D.
+     * @param to Second Vector3D.
+     * @returns The rotation from one Vector3D to another Vector3D.
+     */
+    static GetRotationFromToVector3Ds(from: Vector3D, to: Vector3D): QuaternionD;
+
+    /**
+     * Get a normalized QuaternionD (with a magnitude of 1).
+     * @param quaternion Input QuaternionD.
+     * @returns A normalized QuaternionD.
+     */
+    static GetNormalized(quaternion: QuaternionD): QuaternionD;
+
+    /**
+     * Interpolate between two QuaternionDs.
+     * @param quaternion1 First QuaternionD.
+     * @param quaternion2 Second QuaternionD.
+     * @param maxDegrees Maximum degrees between first and second QuaternionD.
+     * @returns An interpolated QuaternionD between the two QuaternionDs.
+     */
+    static Interpolate(quaternion1: QuaternionD, quaternion2: QuaternionD, maxDegrees: number): QuaternionD;
+
+    /**
+     * Spherically interpolate between two QuaternionDs.
+     * @param quaternion1 First QuaternionD.
+     * @param quaternion2 Second QuaternionD.
+     * @param percent Percentage between the two quaternions to interpolate.
+     * @returns A spherically interpolated QuaternionD between the two QuaternionDs.
+     */
+    static SphericallyInterpolate(quaternion1: QuaternionD, quaternion2: QuaternionD, percent: number): QuaternionD;
+
+    /**
+     * Spherically interpolate unclamped between two QuaternionDs.
+     * @param quaternion1 First QuaternionD.
+     * @param quaternion2 Second QuaternionD.
+     * @param percent Percentage between the two quaternions to interpolate.
+     * @returns A spherically interpolated unclamped QuaternionD between the two QuaternionDs.
+     */
+    static SphericallyInterpolateUnclamped(quaternion1: QuaternionD, quaternion2: QuaternionD, percent: number): QuaternionD;
+
+    /**
+     * Get angle axis representation of the quaternion.
+     * @returns Tuple containing angle and axis.
+     */
+    GetAngleAxis(): [number, Vector3D];
+
+    /**
+     * Combine two QuaternionDs.
+     * @param quaternion1 First quaternion.
+     * @param quaternion2 Second quaternion.
+     * @returns The combination of the two QuaternionDs.
+     */
+    static Combine(quaternion1: QuaternionD, quaternion2: QuaternionD): QuaternionD;
+
+    /**
+     * Check if two quaternions are equal.
+     * @param first First quaternion.
+     * @param second Second quaternion.
+     * @returns Whether the quaternions are equal.
+     */
+    static AreEqual(first: QuaternionD, second: QuaternionD): boolean;
 }
 
 /**
