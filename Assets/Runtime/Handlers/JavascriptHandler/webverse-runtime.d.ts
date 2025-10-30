@@ -948,9 +948,55 @@ declare class BaseEntity {
 /**
  * Class for an airplane entity.
  */
+/**
+ * Class for an airplane entity.
+ */
 declare class AirplaneEntity extends BaseEntity {
     /** Constructor for airplane entity. */
     constructor();
+
+    /** Throttle. */
+    throttle: number;
+    /** Pitch. */
+    pitch: number;
+    /** Roll. */
+    roll: number;
+    /** Yaw. */
+    yaw: number;
+
+    /**
+     * Create an airplane entity.
+     * @param parent Parent of the entity to create.
+     * @param meshObject Path to the mesh object to load for this entity.
+     * @param meshResources Paths to mesh resources for this entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param mass Mass of the airplane entity.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created airplane entity object.
+     * @param checkForUpdateIfCached Whether or not to check for update if in cache.
+     * @returns The airplane entity object.
+     */
+    static Create(parent: BaseEntity, meshObject: string, meshResources: string[], position: Vector3, rotation: Quaternion, mass: number, id?: string, tag?: string, onLoaded?: string, checkForUpdateIfCached?: boolean): AirplaneEntity;
+
+    /**
+     * Create an airplane entity from a JSON string.
+     * @param jsonEntity JSON string containing the airplane entity configuration.
+     * @param parent Parent entity for the airplane entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created airplane entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Start the engine.
+     */
+    StartEngine(): void;
+
+    /**
+     * Stop the engine.
+     */
+    StopEngine(): void;
 }
 
 /**
@@ -1006,6 +1052,47 @@ declare class AudioEntity extends BaseEntity {
 declare class AutomobileEntity extends BaseEntity {
     /** Constructor for automobile entity. */
     constructor();
+
+    /** Engine start/stop. */
+    engineStartStop: boolean;
+    /** Brake. */
+    brake: number;
+    /** Hand brake. */
+    handBrake: number;
+    /** Horn. */
+    horn: boolean;
+    /** Throttle. */
+    throttle: number;
+    /** Steer. */
+    steer: number;
+    /** Gear. */
+    gear: number;
+
+    /**
+     * Create an automobile entity.
+     * @param parent Parent of the entity to create.
+     * @param meshObject Path to the mesh object to load for this entity.
+     * @param meshResources Paths to mesh resources for this entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param wheels Wheels for the automobile entity.
+     * @param mass Mass of the automobile entity.
+     * @param type Type of automobile entity.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created automobile entity object.
+     * @param checkForUpdateIfCached Whether or not to check for update if in cache.
+     * @returns The automobile entity object.
+     */
+    static Create(parent: BaseEntity, meshObject: string, meshResources: string[], position: Vector3, rotation: Quaternion, wheels: AutomobileEntityWheel[], mass: number, type: AutomobileType, id?: string, tag?: string, onLoaded?: string, checkForUpdateIfCached?: boolean): AutomobileEntity;
+
+    /**
+     * Create an automobile entity from a JSON string.
+     * @param jsonEntity JSON string containing the automobile entity configuration.
+     * @param parent Parent entity for the automobile entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created automobile entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
 }
 
 /**
@@ -1099,35 +1186,118 @@ declare class CanvasEntity extends BaseEntity {
 /**
  * Class for a character entity.
  */
+/**
+ * Class for a character entity.
+ */
 declare class CharacterEntity extends BaseEntity {
     /** Constructor for character entity. */
     constructor();
 
+    /** Whether or not to fix the height if below ground. */
+    fixHeight: boolean;
+
     /**
-     * Set the movement speed of the character.
-     * @param speed Movement speed.
+     * Create a character entity.
+     * @param parent Parent of the entity to create.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param scale Scale of the entity relative to its parent.
+     * @param isSize Whether or not the scale parameter is a size.
+     * @param tag Tag of the character entity.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created character entity object.
+     * @returns The character entity object.
+     */
+    static Create(parent: BaseEntity, position: Vector3, rotation: Quaternion, scale: Vector3, isSize?: boolean, tag?: string, id?: string, onLoaded?: string): CharacterEntity;
+
+    /**
+     * Create a character entity with mesh.
+     * @param parent Parent of the entity to create.
+     * @param meshObject Path to the mesh object to load for this entity.
+     * @param meshResources Paths to mesh resources for this entity.
+     * @param meshOffset Offset for the mesh character entity object.
+     * @param meshRotation Rotation for the mesh character entity object.
+     * @param avatarLabelOffset Offset for the avatar label.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param scale Scale of the entity relative to its parent.
+     * @param isSize Whether or not the scale parameter is a size.
+     * @param tag Tag of the character entity.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created character entity object.
+     * @returns The character entity object.
+     */
+    static Create(parent: BaseEntity, meshObject: string, meshResources: string[], meshOffset: Vector3, meshRotation: Quaternion, avatarLabelOffset: Vector3, position: Vector3, rotation: Quaternion, scale: Vector3, isSize?: boolean, tag?: string, id?: string, onLoaded?: string): CharacterEntity;
+
+    /**
+     * Create a character entity from a JSON string.
+     * @param jsonEntity JSON string containing the character entity configuration.
+     * @param parent Parent entity for the character entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created character entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Set the character model.
+     * @param meshObject The new character model to use.
+     * @param meshOffset The offset to apply.
+     * @param meshRotation The rotation to apply.
+     * @param labelOffset The offset to apply to the label.
+     * @returns Whether or not the setting was successful.
+     */
+    SetCharacterModel(meshObject: string, meshOffset: Vector3, meshRotation: Quaternion, labelOffset: Vector3): boolean;
+
+    /**
+     * Set the character model offset.
+     * @param newOffset The new offset to apply.
+     * @param synchronize Whether or not to synchronize the change.
+     * @returns Whether or not the setting was successful.
+     */
+    SetCharacterModelOffset(newOffset: Vector3, synchronize?: boolean): boolean;
+
+    /**
+     * Set the character model rotation.
+     * @param newRotation The new rotation to apply.
+     * @param synchronize Whether or not to synchronize the change.
+     * @returns Whether or not the setting was successful.
+     */
+    SetCharacterModelRotation(newRotation: Quaternion, synchronize?: boolean): boolean;
+
+    /**
+     * Set the character label offset.
+     * @param newOffset The new offset to apply.
+     * @param synchronize Whether or not to synchronize the change.
+     * @returns Whether or not the setting was successful.
+     */
+    SetCharacterLabelOffset(newOffset: Vector3, synchronize?: boolean): boolean;
+
+    /**
+     * Apply motion to the character entity with the given vector.
+     * @param amount Amount to move the character entity.
      * @returns Whether or not the operation was successful.
      */
-    SetMovementSpeed(speed: number): boolean;
+    Move(amount: Vector3): boolean;
 
     /**
-     * Get the movement speed of the character.
-     * @returns The movement speed.
-     */
-    GetMovementSpeed(): number;
-
-    /**
-     * Set the jump speed of the character.
-     * @param speed Jump speed.
+     * Apply a jump to the character entity by the given amount.
+     * @param amount Amount to jump the character entity.
      * @returns Whether or not the operation was successful.
      */
-    SetJumpSpeed(speed: number): boolean;
+    Jump(amount: number): boolean;
 
     /**
-     * Get the jump speed of the character.
-     * @returns The jump speed.
+     * Returns whether or not the character entity is on a surface.
+     * @returns Whether or not the character entity is on a surface.
      */
-    GetJumpSpeed(): number;
+    IsOnSurface(): boolean;
+
+    /**
+     * Set the visibility of the entity.
+     * @param visible Whether or not to make entity visible.
+     * @param synchronize Whether or not to synchronize the setting.
+     * @returns Whether or not the operation was successful.
+     */
+    SetVisibility(visible: boolean, synchronize?: boolean): boolean;
 }
 
 /**
@@ -1213,16 +1383,47 @@ declare class HTMLEntity extends BaseEntity {
 /**
  * Class for an image entity.
  */
+/**
+ * Class for an image entity.
+ */
 declare class ImageEntity extends BaseEntity {
     /** Constructor for image entity. */
     constructor();
 
     /**
-     * Set the image source.
-     * @param url URL of the image.
+     * Create an image entity.
+     * @param parent Parent canvas of the entity to create.
+     * @param imageFile Path to image file to apply to the new image entity.
+     * @param positionPercent Position of the entity within its canvas.
+     * @param sizePercent Size of the entity relative to its canvas.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created image entity object.
+     * @returns The image entity object.
+     */
+    static Create(parent: BaseEntity, imageFile: string, positionPercent: Vector2, sizePercent: Vector2, id?: string, tag?: string, onLoaded?: string): ImageEntity;
+
+    /**
+     * Create an image entity from a JSON string.
+     * @param jsonEntity JSON string containing the image entity configuration.
+     * @param parent Parent entity for the image entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created image entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Stretch the image entity to fill its parent.
+     * @param stretch Whether to stretch to parent. If false, restores normal sizing.
      * @returns Whether or not the operation was successful.
      */
-    SetImageSource(url: string): boolean;
+    StretchToParent(stretch?: boolean): boolean;
+
+    /**
+     * Set the alignment of the image entity within its parent.
+     * @param alignment Alignment to set.
+     * @returns Whether or not the operation was successful.
+     */
+    SetAlignment(alignment: UIElementAlignment): boolean;
 }
 
 /**
@@ -1283,16 +1484,187 @@ declare class LightEntity extends BaseEntity {
 /**
  * Class for a mesh entity.
  */
+/**
+ * Class for a mesh entity.
+ */
 declare class MeshEntity extends BaseEntity {
     /** Constructor for mesh entity. */
     constructor();
 
     /**
-     * Set the mesh.
-     * @param url URL of the mesh.
-     * @returns Whether or not the operation was successful.
+     * Create a mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param meshObject Path to the mesh object to load for this entity.
+     * @param meshResources Paths to mesh resources for this entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @param checkForUpdateIfCached Whether or not to check for update if in cache.
+     * @returns The mesh entity object.
      */
-    SetMesh(url: string): boolean;
+    static Create(parent: BaseEntity, meshObject: string, meshResources: string[], position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string, checkForUpdateIfCached?: boolean): MeshEntity;
+
+    /**
+     * Create a mesh entity from a JSON string.
+     * @param jsonEntity JSON string containing the mesh entity configuration.
+     * @param parent Parent entity for the mesh entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created mesh entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Queue create a mesh entity synchronously.
+     * @param parent Parent of the entity to create.
+     * @param meshObject Path to the mesh object to load for this entity.
+     * @param meshResources Paths to mesh resources for this entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @param checkForUpdateIfCached Whether or not to check for update if in cache.
+     */
+    static QueueCreate(parent: BaseEntity, meshObject: string, meshResources: string[], position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string, checkForUpdateIfCached?: boolean): void;
+
+    /**
+     * Create a mesh entity collection from a JSON string.
+     * @param jsonEntity JSON string containing the mesh entity collection configuration.
+     * @param parent Parent entity for the mesh entities. If null, the entities will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entities are created. The callback will receive an array of created mesh entities as a parameter.
+     */
+    static CreateCollection(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Create a cube primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateCube(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a sphere primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateSphere(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a capsule primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateCapsule(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a cylinder primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateCylinder(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a plane primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreatePlane(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a torus primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateTorus(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a cone primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateCone(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a rectangular pyramid primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateRectangularPyramid(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a tetrahedron primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateTetrahedron(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create a prism primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreatePrism(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
+
+    /**
+     * Create an arch primitive mesh entity.
+     * @param parent Parent of the entity to create.
+     * @param color Color to apply to the mesh entity.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created mesh entity object.
+     * @returns The mesh entity object.
+     */
+    static CreateArch(parent: BaseEntity, color: Color, position: Vector3, rotation: Quaternion, id?: string, onLoaded?: string): MeshEntity;
 }
 
 /**
@@ -1303,19 +1675,101 @@ declare class TerrainEntity extends BaseEntity {
     constructor();
 
     /**
-     * Apply a modification to the terrain.
-     * @param modification Modification to apply.
-     * @returns Whether or not the operation was successful.
+     * Create a heightmap terrain entity.
+     * @param parent Parent of the entity to create.
+     * @param length Length of the terrain in terrain units.
+     * @param width Width of the terrain in terrain units.
+     * @param height Height of the terrain in terrain units.
+     * @param heights 2D array of heights for the terrain.
+     * @param layers Layers for the terrain.
+     * @param layerMasks Layer masks for the terrain.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created terrain entity object.
+     * @param stitchTerrains Whether to stitch terrains.
+     * @returns The heightmap terrain entity object.
      */
-    ApplyModification(modification: TerrainEntityModification): boolean;
+    static CreateHeightmap(parent: BaseEntity, length: number, width: number, height: number, heights: number[][], layers: TerrainEntityLayer[], layerMasks: TerrainEntityLayerMaskCollection, position: Vector3, rotation: Quaternion, id?: string, tag?: string, onLoaded?: string, stitchTerrains?: boolean): TerrainEntity;
 
     /**
-     * Set a terrain layer.
-     * @param index Layer index.
-     * @param layer Layer data.
+     * Create a hybrid terrain entity.
+     * @param parent Parent of the entity to create.
+     * @param length Length of the terrain in terrain units.
+     * @param width Width of the terrain in terrain units.
+     * @param height Height of the terrain in terrain units.
+     * @param heights 2D array of heights for the terrain.
+     * @param layers Layers for the terrain.
+     * @param layerMasks Layer masks for the terrain.
+     * @param modifications Modifications for the terrain.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created terrain entity object.
+     * @param stitchTerrains Whether to stitch terrains.
+     * @returns The hybrid terrain entity object.
+     */
+    static CreateHybrid(parent: BaseEntity, length: number, width: number, height: number, heights: number[][], layers: TerrainEntityLayer[], layerMasks: TerrainEntityLayerMaskCollection, modifications: TerrainEntityModification[], position: Vector3, rotation: Quaternion, id?: string, tag?: string, onLoaded?: string, stitchTerrains?: boolean): TerrainEntity;
+
+    /**
+     * Create a terrain entity from a JSON string.
+     * @param jsonEntity JSON string containing the terrain entity configuration.
+     * @param parent Parent entity for the terrain entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created terrain entity as a parameter.
+     */
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Build on the terrain entity. Only valid for hybrid terrain entities.
+     * @param position Position at which to build.
+     * @param brushType Type of brush to use.
+     * @param layer Layer to build on.
+     * @param size Size of the addition, in meters.
+     * @param synchronizeChange Whether or not to synchronize the change.
      * @returns Whether or not the operation was successful.
      */
-    SetLayer(index: number, layer: TerrainEntityLayer): boolean;
+    Build(position: Vector3, brushType: TerrainEntityBrushType, layer: number, size?: number, synchronizeChange?: boolean): boolean;
+
+    /**
+     * Dig on the terrain entity. Only valid for hybrid terrain entities.
+     * @param position Position at which to dig.
+     * @param brushType Type of brush to use.
+     * @param layer Layer to dig on.
+     * @param size Size of the hole, in meters.
+     * @param synchronizeChange Whether or not to synchronize the change.
+     * @returns Whether or not the operation was successful.
+     */
+    Dig(position: Vector3, brushType: TerrainEntityBrushType, layer: number, size: number, synchronizeChange?: boolean): boolean;
+
+    /**
+     * Get the height at a given x and y index.
+     * @param xIndex X index at which to get the height.
+     * @param yIndex Y index at which to get the height.
+     * @returns The height at the given x and y index.
+     */
+    GetHeight(xIndex: number, yIndex: number): number;
+
+    /**
+     * Get the layer mask for a given terrain entity layer.
+     * @param index Index for which to get the layer mask.
+     * @returns A layer mask (a 2d array of values between 0 and 1 corresponding to the intensity of the given layer).
+     */
+    GetLayerMask(index: number): number[][] | null;
+
+    /**
+     * Get the block at a given position.
+     * @param position Position to get the block at.
+     * @returns Block at the given position (array containing the operation (as a string) and layer index (as an int)). Operations: build, dig, unset.
+     */
+    GetBlockAtPosition(position: Vector3): any[] | null;
+
+    /**
+     * Get all modifications for the terrain.
+     * @returns All modifications for the terrain.
+     */
+    GetModifications(): TerrainEntityModification[] | null;
 }
 
 /**
@@ -1368,24 +1822,70 @@ declare class TextEntity extends BaseEntity {
 /**
  * Class for a voxel entity.
  */
+/**
+ * Class for a voxel entity.
+ */
 declare class VoxelEntity extends BaseEntity {
     /** Constructor for voxel entity. */
     constructor();
 
     /**
-     * Set a voxel block.
-     * @param position Position of the block.
-     * @param block Block information.
-     * @returns Whether or not the operation was successful.
+     * Create a voxel entity.
+     * @param parent Parent of the entity to create.
+     * @param position Position of the entity relative to its parent.
+     * @param rotation Rotation of the entity relative to its parent.
+     * @param scale Scale of the entity relative to its parent.
+     * @param id ID of the entity. One will be created if not provided.
+     * @param tag Tag of the entity.
+     * @param onLoaded Action to perform on load. This takes a single parameter containing the created voxel entity object.
+     * @returns The voxel entity object.
      */
-    SetBlock(position: Vector3Int, block: VoxelBlockInfo): boolean;
+    static Create(parent: BaseEntity, position: Vector3, rotation: Quaternion, scale: Vector3, id?: string, tag?: string, onLoaded?: string): VoxelEntity;
 
     /**
-     * Get a voxel block.
-     * @param position Position of the block.
-     * @returns Block information.
+     * Create a voxel entity from a JSON string.
+     * @param jsonEntity JSON string containing the voxel entity configuration.
+     * @param parent Parent entity for the voxel entity. If null, the entity will be created at the world root.
+     * @param onLoaded JavaScript callback function to execute when the entity is created. The callback will receive the created voxel entity as a parameter.
      */
-    GetBlock(position: Vector3Int): VoxelBlockInfo;
+    static Create(jsonEntity: string, parent?: BaseEntity, onLoaded?: string): void;
+
+    /**
+     * Set the blockinfo for a given block with an ID.
+     * @param id ID of the block.
+     * @param info Info for the block.
+     * @returns Whether or not the operation was successful.
+     */
+    SetBlockInfo(id: number, info: VoxelBlockInfo): boolean;
+
+    /**
+     * Set the block at a given coordinate.
+     * @param x X coordinate.
+     * @param y Y coordinate.
+     * @param z Z coordinate.
+     * @param type Block type at coordinate.
+     * @param subType Block subtype at coordinate.
+     * @returns Whether or not the operation was successful.
+     */
+    SetBlock(x: number, y: number, z: number, type: number, subType: number): boolean;
+
+    /**
+     * Get the block at a given coordinate.
+     * @param x X coordinate.
+     * @param y Y coordinate.
+     * @param z Z coordinate.
+     * @returns Integer array with the first element being the block type, and the second being the block subtype.
+     */
+    GetBlock(x: number, y: number, z: number): number[] | null;
+
+    /**
+     * Whether or not the voxel entity contains a given chunk.
+     * @param x X index of the chunk.
+     * @param y Y index of the chunk.
+     * @param z Z index of the chunk.
+     * @returns Whether or not the chunk exists.
+     */
+    ContainsChunk(x: number, y: number, z: number): boolean;
 }
 
 /**
