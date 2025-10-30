@@ -496,12 +496,28 @@ declare class QuaternionD {
 declare class UUID {
     /**
      * Constructor for a UUID.
-     * @param uuid UUID string.
+     * @param input Input string to use (optional).
      */
-    constructor(uuid: string);
+    constructor(input?: string);
 
-    /** Convert the UUID to a string. */
-    ToString(): string;
+    /**
+     * Get a new UUID.
+     * @returns A new UUID.
+     */
+    static NewUUID(): UUID;
+
+    /**
+     * Parse a UUID from a string.
+     * @param input Input string to use.
+     * @returns A UUID containing the provided value, or null.
+     */
+    static Parse(input: string): UUID;
+
+    /**
+     * Convert UUID to string.
+     * @returns String representation of the UUID, or null.
+     */
+    ToString(): string | null;
 }
 
 // ============================================================================
