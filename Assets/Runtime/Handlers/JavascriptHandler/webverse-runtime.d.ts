@@ -1499,43 +1499,60 @@ declare enum InteractionState {
 /**
  * Struct for entity motion.
  */
+/**
+ * Motion state for an entity.
+ */
 declare interface EntityMotion {
-    /** Angular velocity. */
+    /** Angular velocity of the entity. */
     angularVelocity: Vector3;
-    /** Velocity. */
+    /** Whether or not the entity is stationary. */
+    stationary: boolean;
+    /** Velocity of the entity. */
     velocity: Vector3;
-    /** Static friction. */
-    staticFriction: number;
-    /** Dynamic friction. */
-    dynamicFriction: number;
 }
 
 /**
  * Class for entity physical properties.
  */
 declare class EntityPhysicalProperties {
-    /** Angular drag. */
-    angularDrag: number;
-    /** Mass. */
-    mass: number;
-    /** Drag. */
-    drag: number;
-    /** Whether or not gravity is enabled. */
-    gravitational: boolean;
+    /** Angular drag of the entity. */
+    angularDrag: number | null;
+    /** Center of mass of the entity. */
+    centerOfMass: Vector3 | null;
+    /** Drag of the entity. */
+    drag: number | null;
+    /** Whether or not the entity is gravitational. */
+    gravitational: boolean | null;
+    /** Mass of the entity. */
+    mass: number | null;
+
+    /**
+     * Constructor for entity physical properties.
+     * @param angularDrag Angular drag of the entity.
+     * @param centerOfMass Center of mass of the entity.
+     * @param drag Drag of the entity.
+     * @param gravitational Whether or not the entity is gravitational.
+     * @param mass Mass of the entity.
+     */
+    constructor(angularDrag: number | null, centerOfMass: Vector3 | null, drag: number | null, gravitational: boolean | null, mass: number | null);
 }
 
 /**
  * Struct for light properties.
  */
 declare interface LightProperties {
-    /** Light type. */
-    type: LightType;
-    /** Light color. */
+    /** Color of the light. */
     color: Color;
-    /** Light intensity. */
+    /** Temperature of the light. */
+    temperature: number;
+    /** Intensity of the light. */
     intensity: number;
-    /** Light range. */
+    /** Range of the light. */
     range: number;
+    /** Inner spot angle for the light. */
+    innerSpotAngle: number;
+    /** Outer spot angle for the light. */
+    outerSpotAngle: number;
 }
 
 /**
