@@ -3611,6 +3611,113 @@ declare class Input {
      * @returns Whether or not the right mouse button is pressed.
      */
     static GetRight(): boolean;
+
+    /**
+     * Get the current position of the left hand.
+     * @returns Current position of the left hand, or Vector3.zero if it does not exist.
+     */
+    static GetLeftHandPosition(): Vector3;
+
+    /**
+     * Get the current position of the right hand.
+     * @returns Current position of the right hand, or Vector3.zero if it does not exist.
+     */
+    static GetRightHandPosition(): Vector3;
+
+    /**
+     * Get the current rotation of the left hand.
+     * @returns Current rotation of the left hand, or Quaternion.identity if it does not exist.
+     */
+    static GetLeftHandRotation(): Quaternion;
+
+    /**
+     * Get the current rotation of the right hand.
+     * @returns Current rotation of the right hand, or Quaternion.identity if it does not exist.
+     */
+    static GetRightHandRotation(): Quaternion;
+
+    /**
+     * Get a raycast from the pointer.
+     * @param direction Direction to cast the ray in.
+     * @param pointerIndex Index of the pointer to get raycast from.
+     * @returns A raycast from the pointer, or null.
+     */
+    static GetPointerRaycast(direction: Vector3, pointerIndex?: number): RaycastHitInfo | null;
+
+    /** The pointer mode for the left hand. */
+    static leftVRPointerMode: VRPointerMode;
+
+    /** The pointer mode for the right hand. */
+    static rightVRPointerMode: VRPointerMode;
+
+    /** The poker mode for the left hand. */
+    static leftVRPokerEnabled: boolean;
+
+    /** The poker mode for the right hand. */
+    static rightVRPokerEnabled: boolean;
+
+    /** The interaction mode for the left hand. */
+    static leftInteractionEnabled: boolean;
+
+    /** The interaction mode for the right hand. */
+    static rightInteractionEnabled: boolean;
+
+    /** The turn locomotion mode. */
+    static turnLocomotionMode: VRTurnLocomotionMode;
+
+    /** The joystick motion mode. */
+    static joystickMotionEnabled: boolean;
+
+    /** The grab move mode for the left hand. */
+    static leftGrabMoveEnabled: boolean;
+
+    /** The grab move mode for the right hand. */
+    static rightGrabMoveEnabled: boolean;
+
+    /** The two-handed grab move mode. */
+    static twoHandedGrabMoveEnabled: boolean;
+
+    /**
+     * Add a rig follower (an entity that follows the rig).
+     * @param entityToFollowRig Entity to follow the rig.
+     * @returns Whether or not the operation was successful.
+     */
+    static AddRigFollower(entityToFollowRig: BaseEntity): boolean;
+
+    /**
+     * Add a left hand follower (an entity that follows the left hand).
+     * @param entityToFollowLeftHand Entity to follow the left hand.
+     * @returns Whether or not the operation was successful.
+     */
+    static AddLeftHandFollower(entityToFollowLeftHand: BaseEntity): boolean;
+
+    /**
+     * Add a right hand follower (an entity that follows the right hand).
+     * @param entityToFollowRightHand Entity to follow the right hand.
+     * @returns Whether or not the operation was successful.
+     */
+    static AddRightHandFollower(entityToFollowRightHand: BaseEntity): boolean;
+
+    /**
+     * Remove a rig follower (an entity that follows the rig).
+     * @param entityToFollowRig Entity that follows the rig to remove.
+     * @returns Whether or not the operation was successful.
+     */
+    static RemoveRigFollower(entityToFollowRig: BaseEntity): boolean;
+
+    /**
+     * Remove a left hand follower (an entity that follows the left hand).
+     * @param entityToFollowLeftHand Entity that follows the left hand to remove.
+     * @returns Whether or not the operation was successful.
+     */
+    static RemoveLeftHandFollower(entityToFollowLeftHand: BaseEntity): boolean;
+
+    /**
+     * Remove a right hand follower (an entity that follows the right hand).
+     * @param entityToFollowRightHand Entity that follows the right hand to remove.
+     * @returns Whether or not the operation was successful.
+     */
+    static RemoveRightHandFollower(entityToFollowRightHand: BaseEntity): boolean;
 }
 
 // ============================================================================
