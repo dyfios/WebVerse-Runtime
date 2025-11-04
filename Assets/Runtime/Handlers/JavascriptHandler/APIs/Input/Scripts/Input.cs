@@ -744,6 +744,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
                 {
                     return WebVerseRuntime.Instance.inputManager.desktopRig.gravityEnabled;
                 }
+                if (WebVerseRuntime.Instance.platformInput is WebVerse.Input.Desktop.DesktopInput)
+                {
+                    return ((WebVerse.Input.Desktop.DesktopInput)WebVerseRuntime.Instance.platformInput).gravityEnabled;
+                }
                 return false;
             }
         }
@@ -770,6 +774,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
                 if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
                 {
                     return WebVerseRuntime.Instance.inputManager.desktopRig.wasdMotionEnabled;
+                }
+                if (WebVerseRuntime.Instance.platformInput is WebVerse.Input.Desktop.DesktopInput)
+                {
+                    return ((WebVerse.Input.Desktop.DesktopInput)WebVerseRuntime.Instance.platformInput).wasdMotionEnabled;
                 }
                 return false;
             }
@@ -798,6 +806,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
                 {
                     return WebVerseRuntime.Instance.inputManager.desktopRig.mouseLookEnabled;
                 }
+                if (WebVerseRuntime.Instance.platformInput is WebVerse.Input.Desktop.DesktopInput)
+                {
+                    return ((WebVerse.Input.Desktop.DesktopInput)WebVerseRuntime.Instance.platformInput).mouseLookEnabled;
+                }
                 return false;
             }
         }
@@ -824,6 +836,10 @@ namespace FiveSQD.WebVerse.Handlers.Javascript.APIs.Input
                 if (WebVerseRuntime.Instance.inputManager.desktopRig != null)
                 {
                     return WebVerseRuntime.Instance.inputManager.desktopRig.jumpEnabled;
+                }
+                if (WebVerseRuntime.Instance.platformInput is WebVerse.Input.Desktop.DesktopInput)
+                {
+                    return ((WebVerse.Input.Desktop.DesktopInput)WebVerseRuntime.Instance.platformInput).jumpEnabled;
                 }
                 return false;
             }
