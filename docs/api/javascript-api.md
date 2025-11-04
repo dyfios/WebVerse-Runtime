@@ -688,6 +688,101 @@ Input.onMouseMove = function(position, delta) {
 };
 ```
 
+### Input Control Flags
+
+The Input API provides control flags for configuring VR and desktop input behavior. For complete TypeScript definitions, see [input-control-flags.d.ts](input-control-flags.d.ts).
+
+#### VR Control Flags
+
+```javascript
+// Joystick locomotion
+Input.joystickMotionEnabled = true;         // Enable/disable joystick movement
+
+// Grab movement
+Input.leftGrabMoveEnabled = true;          // Enable left hand grab movement
+Input.rightGrabMoveEnabled = true;         // Enable right hand grab movement
+Input.twoHandedGrabMoveEnabled = true;     // Enable two-handed grab and scale
+
+// Interaction
+Input.leftInteractionEnabled = true;       // Enable left hand interactions
+Input.rightInteractionEnabled = true;      // Enable right hand interactions
+
+// Pointers (values: VRPointerMode.None, VRPointerMode.Teleport, VRPointerMode.UI)
+Input.leftVRPointerMode = VRPointerMode.Teleport;   // Set left pointer mode
+Input.rightVRPointerMode = VRPointerMode.UI;        // Set right pointer mode
+
+// Poker (direct touch interaction)
+Input.leftVRPokerEnabled = true;           // Enable left hand poker
+Input.rightVRPokerEnabled = true;          // Enable right hand poker
+
+// Turn locomotion (values: VRTurnLocomotionMode.None, VRTurnLocomotionMode.Smooth, VRTurnLocomotionMode.Snap)
+Input.turnLocomotionMode = VRTurnLocomotionMode.Smooth;  // Set turn mode
+```
+
+#### Desktop Control Flags
+
+```javascript
+// Movement controls
+Input.wasdMotionEnabled = true;            // Enable WASD movement
+Input.mouseLookEnabled = true;             // Enable mouse look
+Input.jumpEnabled = true;                  // Enable jumping
+Input.gravityEnabled = true;               // Enable gravity
+
+// Movement parameters
+Input.movementSpeed = 5.0;                 // Set movement speed
+Input.lookSpeed = 2.0;                     // Set mouse sensitivity
+
+// Avatar configuration
+Input.SetAvatarEntityByTag("PlayerModel"); // Set avatar by entity tag
+Input.SetRigOffset("0,1.7,0");            // Set camera offset (eye level)
+```
+
+**VR Configuration Example:**
+```javascript
+// Configure VR for teleport-based movement
+Input.joystickMotionEnabled = false;       // Disable joystick movement
+Input.leftVRPointerMode = VRPointerMode.Teleport;  // Left hand for teleport
+Input.rightVRPointerMode = VRPointerMode.UI;       // Right hand for UI
+Input.leftGrabMoveEnabled = true;          // Allow grab movement
+Input.turnLocomotionMode = VRTurnLocomotionMode.Snap;  // Snap turning
+```
+
+**Desktop Configuration Example:**
+```javascript
+// Configure standard FPS controls
+Input.wasdMotionEnabled = true;
+Input.mouseLookEnabled = true;
+Input.jumpEnabled = true;
+Input.gravityEnabled = true;
+Input.movementSpeed = 5.0;
+Input.lookSpeed = 2.0;
+
+// Set up player avatar
+Input.SetAvatarEntityByTag("PlayerCharacter");
+Input.SetRigOffset("0,1.7,0");  // Eye level at 1.7 units
+```
+
+**Toggle Flight Mode Example:**
+```javascript
+function toggleFlightMode(enabled) {
+    if (enabled) {
+        // Enable flight mode
+        Input.gravityEnabled = false;
+        Input.movementSpeed = 10.0;
+        Logging.Log("Flight mode enabled");
+    } else {
+        // Enable walking mode
+        Input.gravityEnabled = true;
+        Input.jumpEnabled = true;
+        Input.movementSpeed = 5.0;
+        Logging.Log("Walking mode enabled");
+    }
+}
+
+// Toggle flight mode
+toggleFlightMode(true);  // Enable flight
+```
+
 ## Networking APIs
 
 ### HTTP Requests
