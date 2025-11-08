@@ -3936,23 +3936,121 @@ declare class VOSSynchronization {
      * @param tls Whether to use TLS.
      * @param id RFC 4122-encoded UUID identifier for the session.
      * @param tag Tag for the session.
-     * @param transport Transport to use.
+     * @param transport Transport to use (default: TCP).
      * @returns Whether or not the operation was successful.
      */
     static CreateSession(host: string, port: number, tls: boolean, id: string, tag: string, transport?: VSSTransport): boolean;
 
     /**
-     * Create a VOS Synchronization Session with position.
+     * Create a VOS Synchronization Session with world offset.
      * @param host Host of the connection to create the session on.
      * @param port Port of the connection to create the session on.
      * @param tls Whether to use TLS.
      * @param id RFC 4122-encoded UUID identifier for the session.
      * @param tag Tag for the session.
-     * @param position Initial position for the session.
-     * @param transport Transport to use.
+     * @param worldOffset Offset for this synchronized client in the world.
+     * @param transport Transport to use (default: TCP).
+     * @param clientID Optional client ID.
+     * @param clientToken Optional client token.
      * @returns Whether or not the operation was successful.
      */
-    static CreateSession(host: string, port: number, tls: boolean, id: string, tag: string, position: Vector3, transport?: VSSTransport): boolean;
+    static CreateSession(host: string, port: number, tls: boolean, id: string, tag: string, worldOffset: Vector3, transport?: VSSTransport, clientID?: string, clientToken?: string): boolean;
+
+    /**
+     * Destroy a VOS Synchronization Session.
+     * @param id ID of the session to destroy.
+     * @returns Whether or not the operation was successful.
+     */
+    static DestroySession(id: string): boolean;
+
+    /**
+     * Join a VOS Synchronization Session.
+     * @param host Host of the connection of the session to join.
+     * @param port Port of the connection of the session to join.
+     * @param tls Whether to use TLS.
+     * @param id RFC 4122-encoded UUID identifier of the session.
+     * @param tag Tag of the client.
+     * @param callback Optional callback function name to invoke when joined.
+     * @param transport Transport to use (default: TCP).
+     * @param clientID Optional client ID.
+     * @param clientToken Optional client token.
+     * @returns Client ID of the joined session, or null if failed.
+     */
+    static JoinSession(host: string, port: number, tls: boolean, id: string, tag: string, callback?: string, transport?: VSSTransport, clientID?: string, clientToken?: string): string | null;
+
+    /**
+     * Join a VOS Synchronization Session with world offset.
+     * @param host Host of the connection of the session to join.
+     * @param port Port of the connection of the session to join.
+     * @param tls Whether to use TLS.
+     * @param id RFC 4122-encoded UUID identifier of the session.
+     * @param tag Tag of the client.
+     * @param worldOffset Offset for this synchronized client in the world.
+     * @param callback Optional callback function name to invoke when joined.
+     * @param transport Transport to use (default: TCP).
+     * @param clientID Optional client ID.
+     * @param clientToken Optional client token.
+     * @returns Client ID of the joined session, or null if failed.
+     */
+    static JoinSession(host: string, port: number, tls: boolean, id: string, tag: string, worldOffset: Vector3, callback?: string, transport?: VSSTransport, clientID?: string, clientToken?: string): string | null;
+
+    /**
+     * Exit a VOS Synchronization Session.
+     * @param id ID of the session to exit.
+     * @returns Whether or not the operation was successful.
+     */
+    static ExitSession(id: string): boolean;
+
+    /**
+     * Check if a session is established.
+     * @param sessionID ID of session to check.
+     * @returns Whether or not the session is established.
+     */
+    static IsSessionEstablished(sessionID: string): boolean;
+
+    /**
+     * Start synchronizing an entity.
+     * @param sessionID Session ID to synchronize the entity on.
+     * @param entityID ID of the entity to synchronize.
+     * @param deleteWithClient Whether or not to delete the entity upon disconnection of the client (default: false).
+     * @param filePath Optional path to a file to load with the entity.
+     * @param resources Optional resources to include with the entity.
+     * @returns Whether or not the operation was successful.
+     */
+    static StartSynchronizingEntity(sessionID: string, entityID: string, deleteWithClient?: boolean, filePath?: string, resources?: string[]): boolean;
+
+    /**
+     * Stop synchronizing an entity.
+     * @param sessionID Session ID to stop synchronizing the entity on.
+     * @param entityID ID of the entity to stop synchronizing.
+     * @returns Whether or not the operation was successful.
+     */
+    static StopSynchronizingEntity(sessionID: string, entityID: string): boolean;
+
+    /**
+     * Send a message.
+     * @param sessionID Session ID to send the message on.
+     * @param topic Topic to send the message on.
+     * @param message Message to send.
+     * @returns Whether or not the operation was successful.
+     */
+    static SendMessage(sessionID: string, topic: string, message: string): boolean;
+
+    /**
+     * Register a message callback.
+     * @param sessionID Session ID to register the message callback on.
+     * @param callback Function name to invoke when a message is received. Function receives (topic: string, senderID: string, message: string).
+     * @returns Whether or not the operation was successful.
+     */
+    static RegisterMessageCallback(sessionID: string, callback: string): boolean;
+
+    /**
+     * Get the tag for a user.
+     * @param sessionID Session ID of the session containing the user.
+     * @param userID ID of the user to get the tag of.
+     * @returns Tag of the user, or null if not found.
+     */
+    static GetUserTag(sessionID: string, userID: string): string | null;
 }
 
 // ============================================================================
