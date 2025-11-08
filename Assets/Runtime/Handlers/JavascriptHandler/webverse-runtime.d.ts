@@ -78,6 +78,18 @@ declare interface RaycastHitInfo {
 }
 
 /**
+ * Struct for a transform containing position, rotation, and scale.
+ */
+declare interface Transform {
+    /** Position of the transform. */
+    position: Vector3;
+    /** Rotation of the transform. */
+    rotation: Quaternion;
+    /** Scale of the transform. */
+    scale: Vector3;
+}
+
+/**
  * Class for a 2-dimensional vector.
  */
 declare class Vector2 {
@@ -1785,34 +1797,70 @@ declare class BaseEntity {
     GetParent(): BaseEntity | null;
 
     /**
+     * Place the world camera on this entity.
+     * @returns Whether or not the operation was successful.
+     */
+    PlaceCameraOn(): boolean;
+
+    /**
+     * Get the children of the entity.
+     * @returns An array of entities that are children of this one.
+     */
+    GetChildren(): BaseEntity[];
+
+    /**
+     * Get the transform of the entity.
+     * @returns The transform of the entity.
+     */
+    GetTransform(): Transform;
+
+    /**
      * Get the position of the entity.
      * @param local Whether or not to get the local position.
      * @returns The position of the entity.
      */
-    GetPosition(local?: boolean): Vector3;
+    GetPosition(local: boolean): Vector3;
 
     /**
      * Set the position of the entity.
      * @param position Position to set.
-     * @param local Whether or not to set the local position.
+     * @param local Whether or not the position is local.
+     * @param synchronizeChange Whether or not to synchronize the change.
      * @returns Whether or not the operation was successful.
      */
-    SetPosition(position: Vector3, local?: boolean): boolean;
+    SetPosition(position: Vector3, local: boolean, synchronizeChange?: boolean): boolean;
 
     /**
      * Get the rotation of the entity.
      * @param local Whether or not to get the local rotation.
      * @returns The rotation of the entity.
      */
-    GetRotation(local?: boolean): Quaternion;
+    GetRotation(local: boolean): Quaternion;
 
     /**
      * Set the rotation of the entity.
      * @param rotation Rotation to set.
-     * @param local Whether or not to set the local rotation.
+     * @param local Whether or not the rotation is local.
+     * @param synchronizeChange Whether or not to synchronize the change.
      * @returns Whether or not the operation was successful.
      */
-    SetRotation(rotation: Quaternion, local?: boolean): boolean;
+    SetRotation(rotation: Quaternion, local: boolean, synchronizeChange?: boolean): boolean;
+
+    /**
+     * Get the Euler rotation of the entity.
+     * @param local Whether or not to get the local rotation.
+     * @returns The Euler rotation of the entity.
+     */
+    GetEulerRotation(local: boolean): Vector3;
+
+    /**
+     * Set the Euler rotation of the entity.
+     * @param eulerRotation Euler rotation to set.
+     * @param local Whether or not the rotation is local.
+     * @param synchronizeChange Whether or not to synchronize the change.
+     * @returns Whether or not the operation was successful.
+     */
+    SetEulerRotation(eulerRotation: Vector3, local: boolean, synchronizeChange?: boolean): boolean;
 
     /**
      * Get the scale of the entity.
@@ -1823,9 +1871,10 @@ declare class BaseEntity {
     /**
      * Set the scale of the entity.
      * @param scale Scale to set.
+     * @param synchronizeChange Whether or not to synchronize the change.
      * @returns Whether or not the operation was successful.
      */
-    SetScale(scale: Vector3): boolean;
+    SetScale(scale: Vector3, synchronizeChange?: boolean): boolean;
 
     /**
      * Get the size of the entity.
@@ -1836,9 +1885,10 @@ declare class BaseEntity {
     /**
      * Set the size of the entity.
      * @param size Size to set.
+     * @param synchronizeChange Whether or not to synchronize the change.
      * @returns Whether or not the operation was successful.
      */
-    SetSize(size: Vector3): boolean;
+    SetSize(size: Vector3, synchronizeChange: boolean): boolean;
 
     /**
      * Get the visibility of the entity.
@@ -1849,9 +1899,10 @@ declare class BaseEntity {
     /**
      * Set the visibility of the entity.
      * @param visible Whether or not the entity should be visible.
+     * @param synchronize Whether or not to synchronize the setting.
      * @returns Whether or not the operation was successful.
      */
-    SetVisibility(visible: boolean): boolean;
+    SetVisibility(visible: boolean, synchronize?: boolean): boolean;
 
     /**
      * Get the highlight state of the entity.
@@ -1907,22 +1958,87 @@ declare class BaseEntity {
 
     /**
      * Delete the entity.
+     * @param synchronizeChange Whether or not to synchronize the setting.
      * @returns Whether or not the operation was successful.
      */
-    Delete(): boolean;
+    Delete(synchronizeChange?: boolean): boolean;
 
     /**
-     * Place camera on the entity.
+     * Compare this entity with another.
+     * @param other Other entity to compare with.
+     * @returns Whether or not the entities match.
      */
-    PlaceCameraOn(): void;
+    Compare(other: BaseEntity): boolean;
 
     /**
-     * Perform a raycast from the entity.
-     * @param direction Direction to cast the ray.
-     * @param distance Maximum distance to cast.
-     * @returns Raycast hit information.
+     * Get a raycast forward from this entity.
+     * @returns A raycast forward from this entity, or null.
      */
-    Raycast(direction: Vector3, distance: number): RaycastHitInfo;
+    GetRaycast(): RaycastHitInfo | null;
+
+    /**
+     * Get a raycast from this entity.
+     * @param direction Direction to cast the ray in.
+     * @returns A raycast from this entity, or null.
+     */
+    GetRaycast(direction: Vector3): RaycastHitInfo | null;
+
+    /**
+     * Add a placement socket to the entity.
+     * @param position Position of the placement socket relative to the entity.
+     * @param rotation Rotation of the placement socket relative to the entity.
+     * @param connectingOffset Offset to apply when connecting to another socket.
+     * @returns Whether or not the operation was successful.
+     */
+    AddSocket(position: Vector3, rotation: Quaternion, connectingOffset: Vector3): boolean;
+
+    /**
+     * Play an animation.
+     * @param animationName Name of animation to play.
+     * @returns Whether or not the operation was successful.
+     */
+    PlayAnimation(animationName: string): boolean;
+
+    /**
+     * Stop an animation.
+     * @param animationName Name of animation to stop.
+     * @returns Whether or not the operation was successful.
+     */
+    StopAnimation(animationName: string): boolean;
+
+    /**
+     * Set the speed of an animation.
+     * @param animationName Name of animation to set speed of.
+     * @param speed Speed to set animation to.
+     * @returns Whether or not the operation was successful.
+     */
+    SetAnimationSpeed(animationName: string, speed: number): boolean;
+
+    /**
+     * Enable broadcasting of position via synchronizer.
+     * @param interval Interval at which to broadcast, <= 0 to not broadcast.
+     * @returns Whether or not the operation was successful.
+     */
+    EnablePositionBroadcast(interval: number): boolean;
+
+    /**
+     * Disable broadcasting of position via synchronizer.
+     * @returns Whether or not the operation was successful.
+     */
+    DisablePositionBroadcast(): boolean;
+
+    /**
+     * Enable broadcasting of rotation via synchronizer.
+     * @param interval Interval at which to broadcast, <= 0 to not broadcast.
+     * @returns Whether or not the operation was successful.
+     */
+    EnableRotationBroadcast(interval: number): boolean;
+
+    /**
+     * Disable broadcasting of rotation via synchronizer.
+     * @returns Whether or not the operation was successful.
+     */
+    DisableRotationBroadcast(): boolean;
 }
 
 /**
