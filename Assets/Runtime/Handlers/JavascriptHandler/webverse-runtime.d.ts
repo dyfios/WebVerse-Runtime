@@ -4445,7 +4445,7 @@ declare class Context {
  */
 declare class Date {
     /** Get a Date for the current millisecond. */
-    static readonly now: Date;
+    static get now(): Date;
 
     /** Year. */
     readonly year: number;
